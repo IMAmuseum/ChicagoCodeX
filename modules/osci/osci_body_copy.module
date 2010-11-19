@@ -1,0 +1,164 @@
+<?php
+
+function osci_body_copy_field_info()
+{
+    return array(
+        'osci_body_copy' => array(
+            'label' => t('Body Copy'),
+            'description' => t('Includes text area for body copy and multi-value field for footnotes'),
+            'default_widget' => 'osci_body_copy_widget',
+            'default_formatter' => 'osci_body_copy_formatter'
+        )
+    );
+}
+
+function osci_body_copy_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items)
+{
+dpm($items);
+dpm($_POST);
+    if ($field['type'] === 'osci_body_copy') {
+        if (is_array($items[0]['footnotes'])) {
+            foreach($items[0]['footnotes'] as $id => $footnote) {
+                if (empty($footnote) || $id == 'footnote_index') {
+                    unset($items[0]['footnotes'][$id]);
+                }
+            }
+        }
+        $items[0]['footnotes'] = serialize($items[0]['footnotes']);
+    }
+}
+
+function osci_body_copy_field_is_empty($item, $field)
+{
+    $return = false;
+
+    if (empty($item['body_copy'])) {
+        $return = true;
+    }
+
+    return $return;
+}
+
+/***********************************************************************
+ *  Field Type API: Formatter
+ **********************************************************************/
+
+function osci_body_copy_field_formatter_info()
+{
+    return array(
+        'osci_body_copy_formatter' => array(
+            'label' => t('Body Copy'),
+            'field types' => array('osci_body_copy')
+        )
+    );
+}
+
+function osci_body_copy_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display)
+{
+    $element = array();
+
+    if ($display['type'] == 'osci_body_copy_formatter') {
+        foreach($items as $delta => $item) {
+            $element[$delta] = 'test';
+        }
+    }
+
+    return $element;
+}
+
+/**************************************************************************
+ * Field Type API: Widget
+ **************************************************************************/
+
+function osci_body_copy_field_widget_info()
+{
+
+    return array(
+        'osci_body_copy_widget' => array(
+            'label' => t('Body copy with footnotes'),
+            'field types' => array('osci_body_copy'),
+            'settings' => array('body_copy_rows' => 5, 'footnote_rows' => 3)
+        )
+    );
+}
+
+function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element)
+{
+    $footnoteCount = isset($items[$delta]['footnote_count']) ? $items[$delta]['footnote_count'] : 1;
+    $footnoteCount = $footnoteCount ? $footnoteCount : 1;
+
+    $nid = $form['nid']['#value'];
+    $fieldName = str_replace('field_', '', $field['field_name']);
+
+    $bodyCopy = array(
+        '#type' => 'fieldset',
+        '#attached' => array(
+            'js' => array(drupal_get_path('module', 'osci_body_copy') . '/js/body_copy_field.js'),
+        ),
+        'body_copy' => array(
+            '#type' => 'textarea',
+            '#default_value' => isset($items[$delta]['body_copy']) ? $items[$delta]['body_copy'] : NULL,
+            '#rows' => $instance['widget']['settings']['body_copy_rows'],
+        ),
+        'footnotes' => array(
+            '#type' => 'fieldset',
+            '#attributes' => array('class' => array('footnotes-wrapper')),
+            '#title' => t('Footnotes'),
+            'footnote_index' => array(
+                '#type' => 'hidden',
+                '#default_value' => $footnoteCount
+            )
+        )
+    );
+
+    $footnotes = array('footnote-blank' => '');
+    $footnotes += isset($items[$delta]['footnotes']) ? unserialize($items[$delta]['footnotes']) : array();
+
+    foreach ($footnotes as $id => $footnote) {
+        $bodyCopy['footnotes'][$id] = array(
+            '#title' => $id,
+            '#type' => 'textarea',
+            '#default_value' => $footnote,
+            '#rows' => $instance['widget']['settings']['footnote_rows'],
+            '#attributes' => array('class' => array('footnote'))
+        );
+    }
+
+    $bodyCopy['footnotes']['add_another'] = array(
+        '#type' => 'item',
+        '#markup' => '<a href="#" class="footnote-add-another">Add Footnote</a>'
+    );
+
+    return $element + $bodyCopy;
+}
+
+/**
+ * Implements hook_field_widget_settings_form().
+ */
+function osci_body_copy_field_widget_settings_form($field, $instance) 
+{
+    $widget = $instance['widget'];
+    $settings = $widget['settings'];
+
+    $form['body_copy_rows'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Body Copy Rows'),
+        '#description' => t('The number of rows to use for the Body Copy textarea.'),
+        '#default_value' => $settings['body_copy_rows'],
+        '#required' => TRUE,
+        '#element_validate' => array('_element_validate_integer_positive')
+    );
+
+    $form['footnote_rows'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Footnote Rows'),
+        '#description' => t('The number of rows to use for the Footnote textarea.'),
+        '#default_value' => $settings['footnote_rows'],
+        '#required' => TRUE,
+        '#element_validate' => array('_element_validate_integer_positive')
+    );
+
+    return $form;
+}
+
+?>

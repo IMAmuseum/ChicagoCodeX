@@ -1,0 +1,30 @@
+<?php
+
+function osci_body_copy_field_schema($field)
+{
+    $columns = array();
+
+    if ($field['type'] == 'osci_body_copy') {
+        $columns = array(
+            'body_copy' => array(
+                'type' => 'text',
+                'size' => 'big',
+                'not null' => false
+            ),
+            'footnotes' => array(
+                'type' => 'text',
+                'size' => 'big',
+                'not null' => false
+            ),
+            'footnote_index' => array(
+                'type' => 'int',
+                'not null' => false
+            )
+        );
+    }
+
+    return array('columns' => $columns);
+}
+
+
+?>
