@@ -11,6 +11,11 @@ function osci_body_copy_field_schema($field)
                 'size' => 'big',
                 'not null' => false
             ),
+            'body_copy_format' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => false
+            ),
             'footnotes' => array(
                 'type' => 'text',
                 'size' => 'big',

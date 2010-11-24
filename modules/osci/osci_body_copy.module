@@ -14,17 +14,24 @@ function osci_body_copy_field_info()
 
 function osci_body_copy_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items)
 {
-dpm($items);
 dpm($_POST);
     if ($field['type'] === 'osci_body_copy') {
-        if (is_array($items[0]['footnotes'])) {
-            foreach($items[0]['footnotes'] as $id => $footnote) {
-                if (empty($footnote) || $id == 'footnote_index') {
-                    unset($items[0]['footnotes'][$id]);
+        $items[0]['footnote_index'] = (int)$items[0]['footnotes']['footnote_index'];
+        $items[0]['body_copy_format'] = $items[0]['body_copy']['format'];
+        $items[0]['body_copy'] = $items[0]['body_copy']['value'];
+
+        $finalFootnotes = array();
+        if (is_array($_POST[$field['field_name']]['und'][0]['footnotes'])) {
+            $footnotes = $_POST[$field['field_name']]['und'][0]['footnotes'];
+            foreach($footnotes as $id => $footnote) { 
+                $uid = substr($field['field_name'], 6) . '-' . $entity->nid . '-' . $id;
+                if (empty($footnote) || $id == 'footnote_index' || $id == 'footnote-blank') {
+                    continue;
                 }
+                $finalFootnotes[$uid] = $footnote;
             }
         }
-        $items[0]['footnotes'] = serialize($items[0]['footnotes']);
+        $items[0]['footnotes'] = serialize($finalFootnotes);
     }
 }
 
@@ -59,7 +66,12 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
 
     if ($display['type'] == 'osci_body_copy_formatter') {
         foreach($items as $delta => $item) {
-            $element[$delta] = 'test';
+            $markup = $item['body_copy'];
+
+            $footnotes = unserialize($item['footnotes']);
+            $markup .= theme_item_list(array('items' => $footnotes, 'title' => 'Footnotes', 'type' => 'ol', 'attributes' => array()));
+
+            $element[$delta]['#markup'] = $markup;
         }
     }
 
@@ -77,18 +89,18 @@ function osci_body_copy_field_widget_info()
         'osci_body_copy_widget' => array(
             'label' => t('Body copy with footnotes'),
             'field types' => array('osci_body_copy'),
-            'settings' => array('body_copy_rows' => 5, 'footnote_rows' => 3)
+            'settings' => array('body_copy_rows' => 5, 'footnote_rows' => 3),
+            'behaviors' => array('default value' => FIELD_BEHAVIOR_NONE)
         )
     );
 }
 
 function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element)
 {
-    $footnoteCount = isset($items[$delta]['footnote_count']) ? $items[$delta]['footnote_count'] : 1;
-    $footnoteCount = $footnoteCount ? $footnoteCount : 1;
+    drupal_add_library('system', 'ui.tabs');
 
-    $nid = $form['nid']['#value'];
-    $fieldName = str_replace('field_', '', $field['field_name']);
+    $footnoteCount = isset($items[$delta]['footnote_index']) ? $items[$delta]['footnote_index'] : 0;
+    $footnoteCount = $footnoteCount ? $footnoteCount : 0;
 
     $bodyCopy = array(
         '#type' => 'fieldset',
@@ -96,9 +108,11 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             'js' => array(drupal_get_path('module', 'osci_body_copy') . '/js/body_copy_field.js'),
         ),
         'body_copy' => array(
-            '#type' => 'textarea',
+            '#type' => 'text_format',
+            '#base_type' => 'textarea',
             '#default_value' => isset($items[$delta]['body_copy']) ? $items[$delta]['body_copy'] : NULL,
             '#rows' => $instance['widget']['settings']['body_copy_rows'],
+            '#format' => null,
         ),
         'footnotes' => array(
             '#type' => 'fieldset',
@@ -107,26 +121,48 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             'footnote_index' => array(
                 '#type' => 'hidden',
                 '#default_value' => $footnoteCount
-            )
+            ),
         )
     );
 
     $footnotes = array('footnote-blank' => '');
-    $footnotes += isset($items[$delta]['footnotes']) ? unserialize($items[$delta]['footnotes']) : array();
+    $loadnotes = isset($items[$delta]['footnotes']) ? unserialize($items[$delta]['footnotes']) : array();
+    $footnotes += $loadnotes ? $loadnotes : array();
+ 
+    $bodyCopy['footnotes']['add_another'] = array(
+        '#markup' => '<a href="#" class="footnote-add-another">Add Footnote</a>',
+        '#weight' => -1,
+    );
 
+    $fieldName = substr($field['field_name'], 6);
+    $nid = $form['nid']['#value'];
+
+    $fnList = array();
     foreach ($footnotes as $id => $footnote) {
+        if ($id !== 'footnote-blank') {
+            $id = substr($id, strrpos($id, '-') + 1); 
+        }
+        $fnId = $fieldName . '-' . $nid . '-' . $id;
         $bodyCopy['footnotes'][$id] = array(
-            '#title' => $id,
+            '#title' => $id . ' <span>(' . $fieldName . '-' . $nid . '-' . $id . ')</span>',
+            //'#base_type' => 'textarea',
             '#type' => 'textarea',
             '#default_value' => $footnote,
             '#rows' => $instance['widget']['settings']['footnote_rows'],
-            '#attributes' => array('class' => array('footnote'))
+            '#attributes' => array('class' => array('footnote')),
+            '#prefix' => '<div id="' . $fnId . '" data-fnprefix="' . $fieldName . '-' . $nid . '-">',
+            '#suffix' => '</div>',
+            '#weight' => $id,
         );
+        //if ($id !== 'footnote-blank') {
+            $fnList[] = '<li><a href="#' . $fnId . '">' . $id . '</a></li>';
+        //}
     }
-
-    $bodyCopy['footnotes']['add_another'] = array(
-        '#type' => 'item',
-        '#markup' => '<a href="#" class="footnote-add-another">Add Footnote</a>'
+    
+    $bodyCopy['footnotes']['footnote_list'] = array(
+        //'#markup' => theme_item_list(array('items' => $fnList, 'title' => null, 'type' => 'ul', 'attributes' => array())),
+        '#markup' => '<ul>' . implode("\n", $fnList) . '</ul>',
+        '#weight' => 0
     );
 
     return $element + $bodyCopy;

@@ -10,20 +10,6 @@
 function osci_filters_init() {
     drupal_add_js(drupal_get_path('module', 'osci_filters').'/js/osci_filters.js', array('weight' => '5'));
 }
-/**
- * Implementation of hook_node_insert
- */
-function osci_filters_node_insert(&$node) {
-    dpm($node);
-}
-
-/**
- * Implementation of hook_node_update
- */
-function osci_filters_node_update(&$node) {
-    $node->body['und'][0]['value'] = _footnote_replace($node->body['und'][0]['value']);
-    dpm($node);
-}
 
 /**
  * Implementation of hook_filter_info
@@ -105,7 +91,3 @@ function _filter_footnote_tips() {
  * HELPER FUNCTIONS
  *
  */
-
-function _footnote_replace($text) {
-    dpm($text);
-}
