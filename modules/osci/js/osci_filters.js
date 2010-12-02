@@ -21,27 +21,32 @@
         function listenForPaste(selector) {
             var editor = CKEDITOR.instances[selector];
 
+            // Load paste from word function if we don't already have it
+            if (!CKEDITOR.cleanWord) {
+                CKEDITOR.scriptLoader.load('/osci/sites/all/libraries/ckeditor/plugins/pastefromword/filter/default.js');
+            }
+
             editor.on('paste', function(evt) {
                 //  replace footnotes with data
                 var data = $('<span>' + evt.data.html + '</span>');
                 // Search for footnote links in body text
                 $('a', data).each(function(idx, val) {
                     var name = $(this).attr('name');
-                    var id = idx + 1;
 
                     if (name.indexOf('_ftnref') === 0) {
-                        $('#' + selector).parents('.fieldset-wrapper').find('.footnote-add-another').click();
+                        $('#' + selector).parents('.fieldset-wrapper').find('.footnote-add-another').trigger('click', true);
                         var footnote = name.replace('ref', '');
                         var content  = data.find('[name=' + footnote + ']').next().html();
+                        content = CKEDITOR.cleanWord(content, editor);
 
-                        $(val).replaceWith('[footnote:' + newIdSelector + ']');
-                        $(newIdSelector.replace('#','') + ' textarea').html(content);
+                        $(val).replaceWith('[footnote:' + newIdSelector.replace('#', '') + ']');
+                        $(newIdSelector + ' textarea').html(content);
+                        data.find('#' + footnote.replace('_', '')).remove();
                     } else {
                         $(this).next().html('');
                         $(this).html('');
                     }
                 }); 
-
                 evt.data.html = data.html();
             });
         }

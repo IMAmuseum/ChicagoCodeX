@@ -1,9 +1,11 @@
 var newIdSelector = '';
+
 (function ($) {
     $(document).ready(function() {
+        var config = Drupal.settings.wysiwyg.configs.ckeditor.formatfootnote;
         $('.footnotes-wrapper .fieldset-wrapper').tabs({
             add : function (e, ui) {
-                $(this).tabs("select", ui.panel.id);
+                //$(this).tabs("select", ui.panel.id);
             },
             selected : 1
         });
@@ -24,7 +26,7 @@ var newIdSelector = '';
             $tabs.tabs("remove", $tabs.tabs('option', 'selected'));
         });
 
-        $("a.footnote-add-another").click(function(e){
+        $("a.footnote-add-another").click(function(e, noEditor) {
             e.preventDefault();
             var container = $(this).parents("div.ui-tabs");
             var hiddenCountElem = $('[type="hidden"]', container);
@@ -39,6 +41,30 @@ var newIdSelector = '';
 
             container.tabs("add", newIdSelector, count);
             hiddenCountElem.val(count);
+
+            if (noEditor !== true) {
+                container.tabs('select', newIdSelector);
+            }
         });
+
+        /**************************************************
+         * CKEDITOR 
+         */
+        $('.footnotes-wrapper textarea.first').ckeditor(function() {}, config);
+        $('.ui-tabs').live('tabsselect', function(e, ui) {
+            initCKeditor(ui.tab.hash + ' textarea');
+        });
+
+        function initCKeditor(obj) {
+            $('.footnotes-wrapper textarea').each(function() {
+                // Find all editor instances and destroy them
+                var instance = $(this).data('ckeditorInstance');
+                if (instance != undefined) {
+                    var editor = $(this).ckeditorGet();
+                    editor.destroy();
+                }
+            });
+            $(obj).ckeditor(function() {}, config);
+        }
     });
 })(jQuery);

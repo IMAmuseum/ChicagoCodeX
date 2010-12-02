@@ -26,6 +26,14 @@ function osci_filters_filter_info() {
         'tips callback'     => '_filter_footnote_tips',
     );
 
+    $filters['osci_figure'] = array(
+        'title'             => t('Figure filter'),
+        'description'       => t('Add references to figure images in content'),
+        'process callback'  => '_filter_figure',
+        'settings callback' => '_filter_settings',
+        'tips callback'     => '_filter_figure_tips',
+    );
+
     return $filters;
 }
 
@@ -72,8 +80,15 @@ function _filter_footnote($text, $filter, $format) {
  * Regex replace callback
  */
 function _process_footnote($text) {
-    if (!is_numeric($text[1])) return $text[0]; 
-    return l('Footnote', $_GET['q'], array('fragment' => 'footnote-'.$text[1]));
+    if (empty($text[1])) return $text[0]; 
+
+    $options = array(
+        'fragment'      => $text[1],
+        'attributes'    => array(
+            'class'     => array('superscript', 'footnote-link'),
+        ),
+    );
+    return l($text[1], $_GET['q'], $options); 
 }
 
 /**
@@ -83,6 +98,25 @@ function _filter_footnote_tips() {
     return t('Insert a footnote with [footnote:ID]');
 }
 
+
+/***********************************************************************
+ *
+ * FIGURE
+ *
+ */
+
+function _filter_figure($text, $filter, $format) {
+    $regex = '/\[figure:(.*?)\]/i';
+    return preg_replace_callback($regex, '_process_figure', $text);
+}
+
+function _process_figure($text) {
+
+}
+
+function _filter_figure_tips() {
+    return t('Insert a reference to a figure with [figure:ID]');
+}
 /************** INSERT OTHER FILTER FUNCTIONS HERE ********************/
 
 

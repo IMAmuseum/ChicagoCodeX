@@ -1,5 +1,95 @@
 <?php
 
+function osci_body_copy_menu()
+{
+    $items = array();
+
+    $items['node/%/bodycopy'] = array(
+        'title' => 'Body Copy',
+        'description' => 'Body copy layout for book display',
+        'page callback' => 'osci_body_copy_render_layout',
+        'page arguments' => array(1),
+        'access arguments' => array('access content'),
+        'type' => MENU_LOCAL_TASK
+    );
+
+    return $items;
+}
+
+function osci_body_copy_theme()
+{
+    return array(
+        'body_copy_field_html5' => array(
+            'render element' => 'element',
+            'template' => 'osci_body_copy_field_html5'
+        ),
+        'body_copy_footnote' => array(
+            'template' => 'osci_body_copy_footnote',
+            'variables' => array(
+                'fnId' => null,
+                'fnCopy' => null
+            )
+        ),
+        'body_copy_node' => array(
+            'template' => 'osci_body_copy_node',
+            'render element' => 'element'
+        )
+    );
+}
+
+function osci_body_copy_render_layout($nid)
+{
+    $node = node_load($nid);
+    $elements = node_view($node, 'body_copy');
+    $footnotes = array();
+    foreach($elements as $k => $v) {
+        if (is_array($v) && isset($v['#field_type']) && $v['#field_type'] === 'osci_body_copy') {
+            $elements[$k]['#theme'] = 'body_copy_field_html5';
+
+            $dom = new domDocument;
+            $dom->loadHTML($v[0]['#markup']);
+            $xpath = new DOMXpath($dom);
+
+            $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' footnote-link ')]");
+            if (!is_null($links)) {
+                foreach($links as $link) {
+                    dpm($link->nodeValue);
+                }
+            }
+
+            $footnotes += $v[0]['osci_footnotes'];
+        }
+    }
+
+    if (count($footnotes)) {
+        $elements['field_osci_footnotes'] = array(
+            '#theme' => 'body_copy_field_html5',
+            '#title' => 'Footnotes',
+            '#weight' => 999,
+            '#label_display' => 'inline',
+            '#field_name' => 'field_osci_footnotes',
+            0 => array(
+                '#markup' => implode(' ',$footnotes),
+            ),
+        );
+    }
+
+    $elements['#theme'] = 'body_copy_node';
+    unset($elements['#pre_render']);
+dpm($elements);
+    
+//    print render($elements);
+    return render($elements);
+}
+
+function osci_body_copy_entity_info_alter(&$entity_info) 
+{
+    $entity_info['node']['view modes']['body_copy'] = array(
+        'label' => t('Body Copy'),
+        'custom settings' => TRUE,
+    );
+}
+
 function osci_body_copy_field_info()
 {
     return array(
@@ -14,7 +104,6 @@ function osci_body_copy_field_info()
 
 function osci_body_copy_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items)
 {
-dpm($_POST);
     if ($field['type'] === 'osci_body_copy') {
         $items[0]['footnote_index'] = (int)$items[0]['footnotes']['footnote_index'];
         $items[0]['body_copy_format'] = $items[0]['body_copy']['format'];
@@ -54,7 +143,11 @@ function osci_body_copy_field_formatter_info()
 {
     return array(
         'osci_body_copy_formatter' => array(
-            'label' => t('Body Copy'),
+            'label' => t('Body Copy View'),
+            'field types' => array('osci_body_copy')
+        ),
+        'osci_body_copy_formatter_html5' => array(
+            'label' => t('Body Copy HTML5'),
             'field types' => array('osci_body_copy')
         )
     );
@@ -64,15 +157,37 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
 {
     $element = array();
 
-    if ($display['type'] == 'osci_body_copy_formatter') {
-        foreach($items as $delta => $item) {
-            $markup = $item['body_copy'];
+    switch ($display['type']) {
+        case 'osci_body_copy_formatter':
+            foreach($items as $delta => $item) {
+                $markup = check_markup($item['body_copy'], $item['body_copy_format']);
 
-            $footnotes = unserialize($item['footnotes']);
-            $markup .= theme_item_list(array('items' => $footnotes, 'title' => 'Footnotes', 'type' => 'ol', 'attributes' => array()));
+                $footnotes = unserialize($item['footnotes']);
+                // Add anchor tags
+                foreach($footnotes as $id => $footnote) {
+                    $footnotes[$id] = theme('body_copy_footnote', array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format'])));
+                }
+                $markup .= theme_item_list(array('items' => $footnotes, 'title' => 'Footnotes', 'type' => 'ol', 'attributes' => array()));
 
-            $element[$delta]['#markup'] = $markup;
-        }
+                $element[$delta]['#markup'] = $markup;
+            }
+            break;
+        case 'osci_body_copy_formatter_html5':
+            foreach($items as $delta => $item) {
+                $markup = check_markup($item['body_copy'], $item['body_copy_format']);
+                
+                $footnotes = unserialize($item['footnotes']);
+                // Add anchor tags
+                foreach($footnotes as $id => $footnote) {
+                    $footnotes[$id] = theme('body_copy_footnote', array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format'])));
+                }
+                $element[$delta] = array(
+                    '#markup' => $markup,
+                    '#theme' => 'body_copy_field_html5',
+                    'osci_footnotes' => $footnotes
+                );
+            }
+            break;
     }
 
     return $element;
@@ -143,13 +258,14 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             $id = substr($id, strrpos($id, '-') + 1); 
         }
         $fnId = $fieldName . '-' . $nid . '-' . $id;
+        $class = ($id == 1) ? 'footnote first' : 'footnote';
         $bodyCopy['footnotes'][$id] = array(
             '#title' => $id . ' <span>(' . $fieldName . '-' . $nid . '-' . $id . ')</span>',
             //'#base_type' => 'textarea',
             '#type' => 'textarea',
             '#default_value' => $footnote,
             '#rows' => $instance['widget']['settings']['footnote_rows'],
-            '#attributes' => array('class' => array('footnote')),
+            '#attributes' => array('class' => array($class)),
             '#prefix' => '<div id="' . $fnId . '" data-fnprefix="' . $fieldName . '-' . $nid . '-">',
             '#suffix' => '</div>',
             '#weight' => $id,
