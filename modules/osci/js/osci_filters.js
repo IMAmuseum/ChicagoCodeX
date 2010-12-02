@@ -23,7 +23,7 @@
 
             // Load paste from word function if we don't already have it
             if (!CKEDITOR.cleanWord) {
-                CKEDITOR.scriptLoader.load('/osci/sites/all/libraries/ckeditor/plugins/pastefromword/filter/default.js');
+                CKEDITOR.scriptLoader.load(CKEDITOR.basePath + 'plugins/pastefromword/filter/default.js');
             }
 
             editor.on('paste', function(evt) {
