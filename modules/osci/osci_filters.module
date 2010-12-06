@@ -9,6 +9,12 @@
 
 function osci_filters_init() {
     drupal_add_js(drupal_get_path('module', 'osci_filters').'/js/osci_filters.js', array('weight' => '5'));
+    $settings = array(
+        'osci_filters' => array(
+            'modulePath' => base_path().drupal_get_path('module', 'osci_filters'),
+        ),
+    );
+    drupal_add_js($settings, 'setting');
 }
 
 /**
@@ -43,17 +49,15 @@ function osci_filters_filter_info() {
 function osci_filters_wysiwyg_plugin($editor, $version) {
     switch($editor) {
         case 'ckeditor':
-/*
             return array(
                 'osci_filters' => array(
-                    'path'      => drupal_get_path('module', 'osci_filters').'/js/osci_filters.js',
+                    'path'      => drupal_get_path('module', 'osci_filters').'/js/osci_filters.plugin.js',
                     'buttons'   => array(
                         'footnote' => t('OSCI - Footnote'),
                     ),
                     'load'      => TRUE,
                 ),
             );
-*/
     }
 }
 
@@ -81,14 +85,7 @@ function _filter_footnote($text, $filter, $format) {
  */
 function _process_footnote($text) {
     if (empty($text[1])) return $text[0]; 
-
-    $options = array(
-        'fragment'      => $text[1],
-        'attributes'    => array(
-            'class'     => array('superscript', 'footnote-link'),
-        ),
-    );
-    return l($text[1], $_GET['q'], $options); 
+    return '<a href="#'.$text[1].'" class="superscript footnote-link">'.$text[1].'</a>'; 
 }
 
 /**

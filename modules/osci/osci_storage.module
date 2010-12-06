@@ -1,0 +1,17 @@
+<?php
+
+function osci_storage_menu() {
+    $items = array();
+
+    $items['storage-demo'] = array(
+        'title'     => t('localStorage Demo'),
+        'page callback' => 'osci_storage_demo',
+    );
+
+    return $items;
+}
+
+function osci_storage_demo() {
+    drupal_add_js(drupal_get_path('module', 'osci_storage').'/js/jquery.storage.js')
+    return 'hi';
+}

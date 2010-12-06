@@ -33,6 +33,12 @@ function osci_body_copy_theme()
         'body_copy_node' => array(
             'template' => 'osci_body_copy_node',
             'render element' => 'element'
+        ),
+        'body_copy_footnotes' => array(
+            'template' => 'osci_body_copy_footnotes',
+            'variables' => array(
+                'footnotes' => array()
+            )
         )
     );
 }
@@ -42,19 +48,32 @@ function osci_body_copy_render_layout($nid)
     $node = node_load($nid);
     $elements = node_view($node, 'body_copy');
     $footnotes = array();
+    $footnoteOrder = array();
+    $footnoteCount = 0;
     foreach($elements as $k => $v) {
         if (is_array($v) && isset($v['#field_type']) && $v['#field_type'] === 'osci_body_copy') {
             $elements[$k]['#theme'] = 'body_copy_field_html5';
 
-            $dom = new domDocument;
-            $dom->loadHTML($v[0]['#markup']);
-            $xpath = new DOMXpath($dom);
+            $markup = $v[0]['#markup'];
+            if (strlen($markup)) {
+                $dom = new domDocument;
+                $dom->loadHTML($v[0]['#markup']);
+                $xpath = new DOMXpath($dom);
 
-            $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' footnote-link ')]");
-            if (!is_null($links)) {
-                foreach($links as $link) {
-                    dpm($link->nodeValue);
+                $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' footnote-link ')]");
+                if (!is_null($links)) {
+                    foreach($links as $link) {
+                        $fnId = $link->nodeValue;
+                        $originalLinkHtml = $dom->saveXML($link);
+
+                        $link->nodeValue = ++$footnoteCount;
+                        $linkHtml = $dom->saveXML($link);
+                        $markup = str_replace($originalLinkHtml, $linkHtml, $markup);
+
+                        $footnoteOrder[$footnoteCount] = $fnId;
+                    }
                 }
+                $elements[$k][0]['#markup'] = $markup;
             }
 
             $footnotes += $v[0]['osci_footnotes'];
@@ -62,6 +81,14 @@ function osci_body_copy_render_layout($nid)
     }
 
     if (count($footnotes)) {
+        $finalFootnotes = array();
+        foreach($footnoteOrder as $k => $fnId) {
+            if (isset($footnotes[$fnId])) {
+                $finalFootnotes[$k] = $footnotes[$fnId];
+            }
+        }
+
+
         $elements['field_osci_footnotes'] = array(
             '#theme' => 'body_copy_field_html5',
             '#title' => 'Footnotes',
@@ -69,17 +96,16 @@ function osci_body_copy_render_layout($nid)
             '#label_display' => 'inline',
             '#field_name' => 'field_osci_footnotes',
             0 => array(
-                '#markup' => implode(' ',$footnotes),
+                '#markup' => theme('body_copy_footnotes', array('footnotes' => $finalFootnotes))
             ),
         );
     }
 
     $elements['#theme'] = 'body_copy_node';
     unset($elements['#pre_render']);
-dpm($elements);
     
-//    print render($elements);
-    return render($elements);
+    print render($elements);
+//    return render($elements);
 }
 
 function osci_body_copy_entity_info_alter(&$entity_info) 

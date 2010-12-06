@@ -1,0 +1,5 @@
+name = "OSCI Citation"
+description = "Allows creation of citations on a page"
+package = "OSCI"
+version = "0.1"
+core = "7.x"

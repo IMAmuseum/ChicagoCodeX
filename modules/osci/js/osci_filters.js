@@ -1,17 +1,7 @@
 (function ($) {
-/*
-    CKEDITOR.plugin.add('osci_filters', {
-        init:   function(editor) {
-            editor.ui.addCommand('addfootnote', new CKEDITOR.dialogCommand('addfootnote');
-            editor.ui.addButton('footnote', {
-                label: 'Footnote',
-                icon: this.path + 'footnote_edit.png',
-                command: 'addfootnote' 
-            });
-        }
-    });
-*/
+    if (typeof(CKEDITOR) === 'undefined') return;
 
+    CKEDITOR.timestamp = ( new Date() ).valueOf();
     $(document).ready(function() {
         $('.field-type-osci-body-copy').each(function() {
             var id = $(this).attr('id');
