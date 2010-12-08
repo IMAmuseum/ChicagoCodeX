@@ -1,25 +1,104 @@
-jQuery.fn.urlStorage = function(config) {
-    var settings = jQuery.extend({
-        url:    '',
-        expire: 86400 // One day
-    }, config);
+/*
+EXAMPLE
 
-    // return if a url is not set
-    if (settings.url == '') return false;
+$.osci.getURL({
+    expire: 86400, // epoch time to hold onto cached object, defaults to 1 day
+    clear: false, // if set to true localStorage cache will be cleared
+    type: 'html', //see $.ajax() documentation
+    url: 'path/to/url' // a path to the url you wish to cache
+});
 
-    // if browser supports localStorage proceed
-    if ('localStorage' in window && window['localStorage'] !== null) {
-        var store = window.localStorage;
-
-        var item = store.getItem(settings.url);
-        console.log(item);
-
-        
+*/
+(function($) {
+    if (!$.osci) {
+        $.osci = {};
     }
-    var urlStorage = {
-        getItem: function() {
 
-        },
+    $.osci.getUrl = function(config) {
+        //urlStorage:  function(config) {
+        var settings = jQuery.extend({}, $.osci.getUrl.defaultSettings, config);
+
+        // return if a url is not set
+        if (settings.url == '') return false;
+
+        // if browser supports localStorage proceed
+        if ('localStorage' in window && window['localStorage'] !== null) {
+            var store = window.localStorage;
+            var time = new Date();
+            var start = new Date();
+            time = Math.floor(time.getTime() / 1000);
+
+            if (settings.clear === true) {
+                store.clear();
+            }
+
+            var item = store.getItem(settings.url);
+            if (item == null || item.expire <= time) {
+                $.ajax({
+                    url: settings.url,
+                    cache: false,
+                    async: false,
+                    dataType: settings.type,
+                    success: function(data) {
+                        var time = new Date();
+                        time = Math.floor(time.getTime() / 1000 + settings.expire);
+                        item = {
+                            data:   data,
+                            expire: time 
+                        };
+                        jsonItem = JSON.stringify(item);
+                        store.setItem(settings.url, jsonItem); 
+                        item.cache = 'false';
+                    },
+                    error: function(arg1, arg2) {
+                        console.log('An error has occurred');
+                        return null;
+                    }
+                });
+
+            } else {
+                item = eval('(' + item + ')');
+                item.cache = 'true';
+            }
+
+            var finished = new Date();
+            item.time = finished.getTime() - start.getTime();
+            return item;
+        
+        }
+
+    }
+
+    $.osci.getUrl.clearCache = function() {
+        if ('localStorage' in window && window['localStorage'] !== null) {
+            window.localStorage.clear();
+            $('.stat').html('Cache cleared');
+            $('#returnResult').html('');
+            return true;
+        } 
     }
     
-};
+    $.osci.getUrl.defaultSettings = {
+        url:    '',
+        expire: 86400, // One day
+        type:   'html',
+        clear:  false
+    }
+})(jQuery);
+
+(function ($) {
+    $(document).ready(function() {
+        $('#getText').click(function() {
+            var config = {
+                url: '/osci/node/9/bodycopy'
+            };
+            var content = $.osci.getUrl({ url: '/osci/node/9/bodycopy' });
+            $('.stat').html('CACHE: ' + content.cache + '<br/> TIME: ' + content.time + 'ms');
+            $('#returnResult').html(content.data);
+            return false;
+        });
+        $('#clearCache').click(function() {
+            $.osci.getUrl.clearCache(); 
+        });
+    });
+})(jQuery);
