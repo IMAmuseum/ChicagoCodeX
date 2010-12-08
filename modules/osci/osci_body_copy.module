@@ -21,21 +21,21 @@ function osci_body_copy_theme()
     return array(
         'body_copy_field_html5' => array(
             'render element' => 'element',
-            'template' => 'osci_body_copy_field_html5'
+            'template' => 'templates/osci_body_copy_field_html5'
         ),
         'body_copy_footnote' => array(
-            'template' => 'osci_body_copy_footnote',
+            'template' => 'templates/osci_body_copy_footnote',
             'variables' => array(
                 'fnId' => null,
                 'fnCopy' => null
             )
         ),
         'body_copy_node' => array(
-            'template' => 'osci_body_copy_node',
+            'template' => 'templates/osci_body_copy_node',
             'render element' => 'element'
         ),
         'body_copy_footnotes' => array(
-            'template' => 'osci_body_copy_footnotes',
+            'template' => 'templates/osci_body_copy_footnotes',
             'variables' => array(
                 'footnotes' => array()
             )
@@ -94,6 +94,7 @@ function osci_body_copy_render_layout($nid)
             '#title' => 'Footnotes',
             '#weight' => 999,
             '#label_display' => 'inline',
+            '#field_type' => 'osci_body_copy',
             '#field_name' => 'field_osci_footnotes',
             0 => array(
                 '#markup' => theme('body_copy_footnotes', array('footnotes' => $finalFootnotes))

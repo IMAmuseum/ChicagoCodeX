@@ -26,8 +26,12 @@
                     if (name.indexOf('_ftnref') === 0) {
                         $('#' + selector).parents('.fieldset-wrapper').find('.footnote-add-another').trigger('click', true);
                         var footnote = name.replace('ref', '');
-                        var content  = data.find('[name=' + footnote + ']').next().html();
-                        content = CKEDITOR.cleanWord(content, editor);
+                        var content  = data.find('#' + footnote.replace('_', ''));
+                        $('a', content).remove();
+                        content = $(content).text();
+                        if (content !== null) {
+                            content = CKEDITOR.cleanWord(content, editor);
+                        }
 
                         $(val).replaceWith('[footnote:' + newIdSelector.replace('#', '') + ']');
                         $(newIdSelector + ' textarea').html(content);

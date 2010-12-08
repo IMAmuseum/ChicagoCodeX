@@ -6,9 +6,9 @@
  *
  */
 
-
 function osci_filters_init() {
     drupal_add_js(drupal_get_path('module', 'osci_filters').'/js/osci_filters.js', array('weight' => '5'));
+    drupal_add_css(drupal_get_path('module', 'osci_filters').'/css/osci_filters.css');
     $settings = array(
         'osci_filters' => array(
             'modulePath' => base_path().drupal_get_path('module', 'osci_filters'),
