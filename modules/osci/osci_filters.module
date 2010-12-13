@@ -44,6 +44,13 @@ function osci_filters_filter_info() {
 }
 
 /**
+ * Implementation of hook_theme
+ */
+function osci_filters_theme() {
+
+}
+
+/**
  * Implementation of hook_wysiwyg_plugin
  */
 function osci_filters_wysiwyg_plugin($editor, $version) {
@@ -108,11 +115,34 @@ function _filter_figure($text, $filter, $format) {
 }
 
 function _process_figure($text) {
-
+    $data = _process_args($text[1]);
+    dpm($data);
 }
 
 function _filter_figure_tips() {
-    return t('Insert a reference to a figure with [figure:ID]');
+    return t('[figure:identifier|col=columns|pos=position]
+
+        <p><b>identifier</b> - A string identifier for the figure. 
+        All media types will have a required identifier field. From 
+        the sample data, Mon-33.439-Ste-Adresse_MAC-19.jpg, the 
+        identifier would be MAC-19.</p>
+
+        <p><b>columns</b> - A hint of how many columns the figure 
+        should span on a page. This can be either a number 
+        (1 or greater) or a percentage (0%-100%).</p>
+
+        <p><b>position</b> - A hint on how to place the figure on 
+        a page. Possible values:
+        <ul>
+            <li>t - top</li>
+            <li>b - bottom</li>
+            <li>tl - top-left</li>
+            <li>tr - top-right</li>
+            <li>bl - bottom-left</li>
+            <li>br - bottom-right</li>
+            <li>p - full page</li>
+        </ul>
+    ');
 }
 /************** INSERT OTHER FILTER FUNCTIONS HERE ********************/
 
@@ -122,3 +152,22 @@ function _filter_figure_tips() {
  * HELPER FUNCTIONS
  *
  */
+
+/*
+ * @param $text
+ * A string of text with arguments
+ * @return
+ * A keyed array with id and args
+ */
+function _process_args($text) {
+    $data = array();
+    list($data['id'], $args) = explode('|', $text);
+    $args = explode(',', $args);
+
+    foreach ($args as $val) {
+        $arg = explode('=', $val);
+        $data['args'][$arg[0]] = $arg[1];
+    }
+
+    return $data;
+}

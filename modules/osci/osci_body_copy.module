@@ -84,7 +84,7 @@ function osci_body_copy_render_layout($nid)
         $finalFootnotes = array();
         foreach($footnoteOrder as $k => $fnId) {
             if (isset($footnotes[$fnId])) {
-                $finalFootnotes[$k] = $footnotes[$fnId];
+                $finalFootnotes[$k] = array_merge($footnotes[$fnId], array('fnCount' => $k));
             }
         }
 
@@ -206,7 +206,7 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                 $footnotes = unserialize($item['footnotes']);
                 // Add anchor tags
                 foreach($footnotes as $id => $footnote) {
-                    $footnotes[$id] = theme('body_copy_footnote', array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format'])));
+                    $footnotes[$id] = array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format']));
                 }
                 $element[$delta] = array(
                     '#markup' => $markup,
