@@ -7,6 +7,8 @@
  */
 
 function osci_filters_init() {
+    drupal_add_js(drupal_get_path('module', 'osci_filters').'/fancybox/jquery.fancybox-1.3.4.js', array('weight' => '5'));
+    drupal_add_css(drupal_get_path('module', 'osci_filters').'/fancybox/jquery.fancybox-1.3.4.css');
     drupal_add_js(drupal_get_path('module', 'osci_filters').'/js/osci_filters.js', array('weight' => '5'));
     drupal_add_css(drupal_get_path('module', 'osci_filters').'/css/osci_filters.css');
     $settings = array(
@@ -41,13 +43,6 @@ function osci_filters_filter_info() {
     );
 
     return $filters;
-}
-
-/**
- * Implementation of hook_theme
- */
-function osci_filters_theme() {
-
 }
 
 /**
@@ -102,7 +97,6 @@ function _filter_footnote_tips() {
     return t('Insert a footnote with [footnote:ID]');
 }
 
-
 /***********************************************************************
  *
  * FIGURE
@@ -115,8 +109,26 @@ function _filter_figure($text, $filter, $format) {
 }
 
 function _process_figure($text) {
-    $data = _process_args($text[1]);
-    dpm($data);
+    if (empty($text[1])) return $text[0];   
+    static $count;
+    $count++;
+
+    return '<a href="#'.$text[1].'" class="figure">Figure '.$count.'</a>';
+    /*
+    // Get the field
+    $result = db_query('SELECT entity_id FROM {field_data_field_identifier} WHERE field_identifier_value = :identifier', array(':identifier' => $data['id']));
+    $entity = $result->fetchObject();
+
+    // Build the node
+    $node = node_load($entity->entity_id);
+    node_build_content($node, 'full');
+
+    // Build the content
+    $additional_data = 'data-columns="'.$data['args']['col'].'" data-position="'.$data['args']['pos'].'"';
+    $output = drupal_render($node->content['field_image']);
+
+    return '<div '.$additional_data.' id="figure-'.$node->nid.'" class="figure">'.$output.'</div>';
+    */
 }
 
 function _filter_figure_tips() {

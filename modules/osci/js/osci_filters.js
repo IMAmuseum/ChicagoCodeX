@@ -1,8 +1,70 @@
 (function ($) {
+    $(document).ready(function() {
+
+        /****************************************
+         * Figure Image Handling
+         */
+
+        var containerWidth = $('#content').width();
+
+        $('.figure').each(function() {
+            var data = $(this).data();
+            data.columns = data.columns.replace('%', '');
+            data.columns = data.columns / 100;
+            var width = containerWidth * data.columns;
+
+            if (data.position) {
+                $(this).find('img').addClass('position-' + data.position);
+            }
+            $(this).find('img').width(width);
+        }); 
+
+
+        /***************************************
+         * Hot key popup image
+         */
+
+        var keyCode = 70;
+        var checkKey = false;
+
+        $('.field-name-field-primary-image a').fancybox({ 
+            speedIn: 100, 
+            speedOut: 100, 
+            scroll: 'no' 
+        });
+
+        $(document).keydown(function(e) {
+            if (e.keyCode == keyCode && checkKey === false) {
+                checkKey = true;
+                $('.field-name-field-primary-image a').click();
+                e.preventDefault();
+/* TOGGLE WITH KEY
+            } else if (e.keyCode == 32 && checkKey === true) {
+                checkKey = false;
+                $('#fancybox-close').click();
+                e.preventDefault();
+*/
+            }
+        });
+        $(document).keyup(function(e) {
+            if (e.keyCode == keyCode && checkKey == true) {
+                checkKey = false;
+                $('#fancybox-close').click();
+                e.preventDefault();
+            }
+        });
+
+    });
+
+    /**************************************************
+     * CKEditor Paste from word and create footnotes
+     */
+
     if (typeof(CKEDITOR) === 'undefined') return;
 
     CKEDITOR.timestamp = ( new Date() ).valueOf();
     $(document).ready(function() {
+
         $('.field-type-osci-body-copy').each(function() {
             var id = $(this).attr('id');
             listenForPaste($('#' + id + ' textarea').attr('id'));

@@ -86,6 +86,7 @@ $.osci.getURL({
     }
 })(jQuery);
 
+/*
 (function ($) {
     $(document).ready(function() {
         $('#getText').click(function() {
@@ -102,3 +103,4 @@ $.osci.getURL({
         });
     });
 })(jQuery);
+*/

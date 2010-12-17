@@ -24,6 +24,15 @@ function osci_body_copy_field_schema($field)
             'footnote_index' => array(
                 'type' => 'int',
                 'not null' => false
+            ),
+            'figures' => array(
+                'type' => 'text',
+                'size' => 'big',
+                'not null' => false
+            ),
+            'figure_index' => array(
+                'type' => 'int',
+                'not null' => false
             )
         );
     }

@@ -17,6 +17,28 @@ function osci_storage_menu() {
 
 function osci_storage_demo() {
     drupal_add_js(drupal_get_path('module', 'osci_storage').'/js/jquery.storage.js');
+
+    $demoJs = <<<DEMO
+(function ($) {
+    $(document).ready(function() {
+        $('#getText').click(function() {
+            var config = {
+                url: '/osci/node/9/bodycopy'
+            };
+            var content = $.osci.getUrl({ url: '/osci/node/9/bodycopy' });
+            $('.stat').html('CACHE: ' + content.cache + '<br/> TIME: ' + content.time + 'ms');
+            $('#returnResult').html(content.data);
+            return false;
+        });
+        $('#clearCache').click(function() {
+            $.osci.getUrl.clearCache();
+        });
+    });
+})(jQuery);
+DEMO;
+
+    drupal_add_js($demoJs, array('type' => 'inline', 'scope' => 'footer'));
+
     return '<a id="getText" href="#">Get Node</a> |
             <a id="clearCache" href="#">Clear Cache</a>
             <br/>

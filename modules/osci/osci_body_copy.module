@@ -122,7 +122,7 @@ function osci_body_copy_field_info()
     return array(
         'osci_body_copy' => array(
             'label' => t('Body Copy'),
-            'description' => t('Includes text area for body copy and multi-value field for footnotes'),
+            'description' => t('Includes text area for body copy and multi-value field for footnotes & figures'),
             'default_widget' => 'osci_body_copy_widget',
             'default_formatter' => 'osci_body_copy_formatter'
         )
@@ -134,7 +134,7 @@ function osci_body_copy_field_presave($entity_type, $entity, $field, $instance, 
     if ($field['type'] === 'osci_body_copy') {
         $items[0]['footnote_index'] = (int)$items[0]['footnotes']['footnote_index'];
         $items[0]['body_copy_format'] = $items[0]['body_copy']['format'];
-        $items[0]['body_copy'] = $items[0]['body_copy']['value'];
+        $items[0]['body_copy'] = trim($items[0]['body_copy']['value']);
 
         $finalFootnotes = array();
         if (is_array($_POST[$field['field_name']]['und'][0]['footnotes'])) {
@@ -229,9 +229,9 @@ function osci_body_copy_field_widget_info()
 
     return array(
         'osci_body_copy_widget' => array(
-            'label' => t('Body copy with footnotes'),
+            'label' => t('Body copy with footnotes & figures'),
             'field types' => array('osci_body_copy'),
-            'settings' => array('body_copy_rows' => 5, 'footnote_rows' => 3),
+            'settings' => array('body_copy_rows' => 5, 'footnote_rows' => 3, 'figure_caption_rows' => 3),
             'behaviors' => array('default value' => FIELD_BEHAVIOR_NONE)
         )
     );
@@ -243,6 +243,9 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
 
     $footnoteCount = isset($items[$delta]['footnote_index']) ? $items[$delta]['footnote_index'] : 0;
     $footnoteCount = $footnoteCount ? $footnoteCount : 0;
+
+    $figureCount = isset($items[$delta]['figure_index']) ? $items[$delta]['figure_index'] : 0;
+    $figureCount = $figureCount ? $figureCount : 0;
 
     $bodyCopy = array(
         '#type' => 'fieldset',
@@ -263,6 +266,16 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             'footnote_index' => array(
                 '#type' => 'hidden',
                 '#default_value' => $footnoteCount
+            ),
+        ),
+        'figures' => array(
+            '#type' => 'fieldset',
+            '#attributes' => array('class' => array('figures-wrapper')),
+            '#title' => t('Figures'),
+            'figure_index' => array(
+                '#type' => 'hidden',
+                '#default_value' => $footnoteCount,
+                '#weight' => -100
             ),
         )
     );
@@ -287,8 +300,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
         $fnId = $fieldName . '-' . $nid . '-' . $id;
         $class = ($id == 1) ? 'footnote first' : 'footnote';
         $bodyCopy['footnotes'][$id] = array(
-            '#title' => $id . ' <span>(' . $fieldName . '-' . $nid . '-' . $id . ')</span>',
-            //'#base_type' => 'textarea',
+            '#title' => $id . ' <span>(' . $fnId . ')</span>',
             '#type' => 'textarea',
             '#default_value' => $footnote,
             '#rows' => $instance['widget']['settings']['footnote_rows'],
@@ -297,14 +309,45 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#suffix' => '</div>',
             '#weight' => $id,
         );
-        //if ($id !== 'footnote-blank') {
-            $fnList[] = '<li><a href="#' . $fnId . '">' . $id . '</a></li>';
-        //}
+
+        $fnList[] = '<li><a href="#' . $fnId . '">' . $id . '</a></li>';
     }
     
     $bodyCopy['footnotes']['footnote_list'] = array(
-        //'#markup' => theme_item_list(array('items' => $fnList, 'title' => null, 'type' => 'ul', 'attributes' => array())),
         '#markup' => '<ul>' . implode("\n", $fnList) . '</ul>',
+        '#weight' => 0
+    );
+
+    $figures = array('figure-blank' => '');
+    $loadFigures = isset($items[$delta]['figures']) ? unserialize($items[$delta]['figures']) : array();
+    $figures += $loadFigures ? $loadFigures : array();
+
+    $bodyCopy['figures']['add_another'] = array(
+        '#markup' => '<a href="#" class="figure-add-another">Add Figure</a>',
+        '#weight' => -1,
+    );
+
+    $figureList = array();
+    foreach($figures as $id => $figure) {
+        if ($id !== 'figure-blank') {
+            $id = substr($id, strrpos($id, '-') + 1);
+    	}
+        $figId = $fieldName . '-fig-' . $nid . '-' . $id;
+        $class = ($id == 1) ? 'figure first' : 'figure';
+        $bodyCopy['figures'][$id] = array(
+            '#title' => $id . ' <span>(' . $figId . ')</span>',
+            '#type' => 'fieldset',
+            '#attributes' => array('class' => array($class)),
+            '#prefix' => '<div id="' . $figId . '" data-figprefix="' . $fieldName . '-fig-' . $nid . '-">',
+            '#postfix' => '</div>',
+            '#weight' => $id
+        );
+
+        $figureList[] = '<li><a href="#' . $figId . '">' . $id . '</a></li>';
+    }
+
+    $bodyCopy['figures']['figure_list'] = array(
+        '#markup' => '<ul>' . implode("\n", $figureList) . '</ul>',
         '#weight' => 0
     );
 
@@ -333,6 +376,15 @@ function osci_body_copy_field_widget_settings_form($field, $instance)
         '#title' => t('Footnote Rows'),
         '#description' => t('The number of rows to use for the Footnote textarea.'),
         '#default_value' => $settings['footnote_rows'],
+        '#required' => TRUE,
+        '#element_validate' => array('_element_validate_integer_positive')
+    );
+
+    $form['figure_caption_rows'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Figure Caption Rows'),
+        '#description' => t('The number of rows to use for the Figure caption textarea.'),
+        '#default_value' => $settings['figure_caption_rows'],
         '#required' => TRUE,
         '#element_validate' => array('_element_validate_integer_positive')
     );
