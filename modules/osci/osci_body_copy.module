@@ -240,7 +240,7 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                             'figId'         => $id, 
                             'figCaption'    => $figure['caption'], 
                             'figContent'    => $content, 
-                            'data'          => array($figure)
+                            'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'])
                         )
                     );
 
