@@ -5,6 +5,7 @@
          * Figure Image Handling
          */
 
+        /*
         var containerWidth = $('#content').width();
 
         $('.figure').each(function() {
@@ -18,6 +19,7 @@
             }
             $(this).find('img').width(width);
         }); 
+        */
 
 
         /***************************************
@@ -26,11 +28,13 @@
 
         var keyCode = 70;
         var checkKey = false;
-
+        var titleLink = '<a target="_blank" href="' + $('.field-name-field-primary-image a').attr('href') + '">Open in new window</a>';
+        
         $('.field-name-field-primary-image a').fancybox({ 
             speedIn: 100, 
             speedOut: 100, 
-            scroll: 'no' 
+            scroll: 'no',
+            title: titleLink 
         });
 
         $(document).keydown(function(e) {

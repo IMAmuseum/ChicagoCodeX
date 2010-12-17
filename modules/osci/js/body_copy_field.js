@@ -10,6 +10,10 @@ var newIdSelector = '';
             selected : 1
         });
 
+        $('.figures-wrapper .fieldset-wrapper').tabs({
+            selected : 1
+        });
+
         $("<a />", {
             "class" : "footnote-remove",
             text : "remove",
