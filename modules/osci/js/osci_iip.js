@@ -17,13 +17,15 @@ var po = org.polymaps;
 	{
 		
 		var mapdiv = $('#map');
-		console.log(mapdiv);
-		console.log("test");
+		//console.log(mapdiv);
+		//console.log("test");
 		ptiff = mapdiv.attr('data-ptiff');
 		image_w = mapdiv.attr('data-iw');
 		image_h = mapdiv.attr('data-ih');
 		zoom_max = mapdiv.attr('data-zl') - 1;
 		iipsrv = mapdiv.attr('data-iipsrv');
+		
+		console.log('test4');
 		
 		var map = po.map()
 				.container($('#map')[0].appendChild(po.svg('svg')))
@@ -36,8 +38,60 @@ var po = org.polymaps;
 		map.add(po.interact());
 		map.add(po.hash());
 		map.add(po.compass().pan("none"));
+		// Add full screen control
+		var nmap = n$('#map').style("visibility", "visible");
+		var fs = nmap.add("svg:svg").attr("width",32).attr("height",32).attr("class", "fullscreen")
+			.style("position","absolute").style("right","16px").style("top","16px")
+			.style("visibility","visible").on("mousedown",toggle_fullscreen);
+		fs.add("svg:circle").attr("cx",16).attr("cy",16).attr("r",14).attr("fill","#000")
+			.attr("stroke","#ccc").attr("stroke-width",4).add("svg:title").text("Toggle fullscreen. (ESC)");
+		fs.add("svg:path").attr("transform","translate(16,16)rotate(-45)scale(5)translate(-1.85,0)")
+			.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
+			.attr("pointer-events","none").attr("fill","#aaa");
+		console.log("test");
+		/* // This is the fullscreen toggle control
+		(function() {
+			function d(){
+				if(b=!b){
+					console.log(c.parent());
+					c.style("position","fixed").style("border-width",0).style("width","100%")
+						.style("height","100%").style("top",0).style("left",0);a.style("position","fixed")
+						.style("right","16px").style("top","16px");
+					e.attr("transform","translate(16,16)rotate(135)scale(5)translate(-1.85,0)");
+					f.style("visibility","hidden").style("overflow","hidden");
+				}else{
+					c.style("position",null).style("border-width",null).style("width",null).style("height",null)
+						.style("top",null).style("left",null);
+					a.style("position","absolute").style("right","16px").style("top","16px");
+					e.attr("transform","translate(16,16)rotate(-45)scale(5)translate(-1.85,0)");
+					f.style("visibility",null).style("overflow",null)
+				}
+				map.resize()
+			}
+			
+			var f=n$(document.body);
+			var c=n$("#map").style("visibility","visible");
+			var b=false;
+			var a=c.add("svg:svg").attr("width",32).attr("height",32).style("position","absolute")
+				.style("right","16px").style("top","16px").style("visibility","visible").on("mousedown",d);
+			a.add("svg:circle").attr("cx",16).attr("cy",16).attr("r",14).attr("fill","#fff")
+				.attr("stroke","#ccc").attr("stroke-width",4).add("svg:title").text("Toggle fullscreen. (ESC)");
+			var e=a.add("svg:path").attr("transform","translate(16,16)rotate(-45)scale(5)translate(-1.85,0)")
+				.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
+				.attr("pointer-events","none").attr("fill","#aaa");
+			window.addEventListener("keydown",function(g){
+				g.keyCode==27&&b&&d();
+			},false);
+		})(); 
+		*/
+		
+		
 	});	
 }) (jQuery);
+
+function toggle_fullscreen() {
+	
+}
 
 /**
  * Load an IIP image tile into polymaps

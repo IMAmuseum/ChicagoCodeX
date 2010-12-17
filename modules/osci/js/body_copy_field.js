@@ -1,12 +1,7 @@
-var newIdSelector = '';
-
 (function ($) {
     $(document).ready(function() {
         var config = Drupal.settings.wysiwyg.configs.ckeditor.formatfootnote;
         $('.footnotes-wrapper .fieldset-wrapper').tabs({
-            add : function (e, ui) {
-                //$(this).tabs("select", ui.panel.id);
-            },
             selected : 1
         });
 
@@ -20,25 +15,35 @@ var newIdSelector = '';
             "src" : "#"
         }).appendTo($("label",".footnotes-wrapper"));
 
+        $("<a />", {
+            "class" : "figure-remove",
+            text : "remove",
+            "src" : "#"
+        }).appendTo($("div.figure_identifier",".figures-wrapper"));
+
         $('div[id$="footnote-blank"]').hide();
         $("li:first", "ul.ui-tabs-nav").hide();
+        $('div[id$="figure-blank"]').hide();
 
-        $(".footnote-remove").live("click", function(e) {
+        $(".footnote-remove, .figure-remove").live("click", function(e) {
             e.preventDefault();
             //$("textarea", $(this).parent().parent()).remove();
             var $tabs = $(this).parents(".ui-tabs");
             $tabs.tabs("remove", $tabs.tabs('option', 'selected'));
         });
 
-        $("a.footnote-add-another").click(function(e, noEditor) {
+        $("a.footnote-add-another, a.figure-add-another").click(function(e, noEditor) {
             e.preventDefault();
-            var container = $(this).parents("div.ui-tabs");
-            var hiddenCountElem = $('[type="hidden"]', container);
-            var count = parseFloat(hiddenCountElem.val()) + 1;
-            var newElement = $('div[id$="footnote-blank"]', container).clone().show();
+            var newIdSelector, container, hiddenCountElem, count, selectorText, newElement, newHtml;
 
-            var newHtml = newElement.wrap("<span />").parent().html();
-            newHtml = newHtml.replace(/footnote-blank/gi, count);
+            container = $(this).parents("div.ui-tabs");
+            hiddenCountElem = $('[type="hidden"]', container);
+            count = parseFloat(hiddenCountElem.val()) + 1;
+            selectorText = $(this).attr('class').split('-');
+
+            newElement = $('div[id$="' + selectorText[0] + '-blank"]', container).clone().show();
+            newHtml = newElement.wrap("<span />").parent().html();
+            newHtml = newHtml.replace(new RegExp(selectorText[0] + "-blank", 'gi'), count);
             newIdSelector = "#" + $(newHtml).attr("id");
 
             container.append(newHtml);

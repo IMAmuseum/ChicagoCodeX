@@ -42,14 +42,13 @@
                 checkKey = true;
                 $('.field-name-field-primary-image a').click();
                 e.preventDefault();
-/* TOGGLE WITH KEY
-            } else if (e.keyCode == 32 && checkKey === true) {
+            } else if (e.keyCode == keyCode && checkKey === true) {
                 checkKey = false;
                 $('#fancybox-close').click();
                 e.preventDefault();
-*/
             }
         });
+        /* KEYUP
         $(document).keyup(function(e) {
             if (e.keyCode == keyCode && checkKey == true) {
                 checkKey = false;
@@ -57,6 +56,7 @@
                 e.preventDefault();
             }
         });
+        */
 
     });
 

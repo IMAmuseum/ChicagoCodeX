@@ -113,7 +113,7 @@ function _process_figure($text) {
     static $count;
     $count++;
 
-    return '<a href="#'.$text[1].'" class="figure">Figure '.$count.'</a>';
+    return '<a href="#'.$text[1].'" class="figure">(fig. '.$count.')</a>';
     /*
     // Get the field
     $result = db_query('SELECT entity_id FROM {field_data_field_identifier} WHERE field_identifier_value = :identifier', array(':identifier' => $data['id']));
@@ -132,29 +132,7 @@ function _process_figure($text) {
 }
 
 function _filter_figure_tips() {
-    return t('[figure:identifier|col=columns|pos=position]
-
-        <p><b>identifier</b> - A string identifier for the figure. 
-        All media types will have a required identifier field. From 
-        the sample data, Mon-33.439-Ste-Adresse_MAC-19.jpg, the 
-        identifier would be MAC-19.</p>
-
-        <p><b>columns</b> - A hint of how many columns the figure 
-        should span on a page. This can be either a number 
-        (1 or greater) or a percentage (0%-100%).</p>
-
-        <p><b>position</b> - A hint on how to place the figure on 
-        a page. Possible values:
-        <ul>
-            <li>t - top</li>
-            <li>b - bottom</li>
-            <li>tl - top-left</li>
-            <li>tr - top-right</li>
-            <li>bl - bottom-left</li>
-            <li>br - bottom-right</li>
-            <li>p - full page</li>
-        </ul>
-    ');
+    return t('Insert a figure with [figure:ID]');
 }
 /************** INSERT OTHER FILTER FUNCTIONS HERE ********************/
 
