@@ -1,0 +1,84 @@
+<?php 
+
+
+function osci_iip_menu() {
+    $items = array();
+
+    $items['iip-demo'] = array(
+        'title'             => t('IIP Demo'),
+        'page callback'     => 'osci_iip_demo',
+        'access arguments'  => array('access content'),
+    );
+    $items['iip-get-image-attr/%'] = array(
+        'title'             => t('Get IIP Image Attributes'),
+        'page callback'     => 'osci_iip_get_image_attr',
+    	'page arguments'	=> array(1),
+        'access arguments'  => array('access content'),
+    	'type'				=> MENU_CALLBACK,
+    );
+    $items['iip-viewer/%'] = array(
+        'title'             => t('Get IIP Image Attributes'),
+        'page callback'     => 'osci_iip_viewer',
+    	'page arguments'	=> array(1),
+        'access arguments'  => array('access content'),
+    	'type'				=> MENU_CALLBACK,
+    );
+
+    return $items;
+}
+
+function osci_iip_demo() {
+    return '<iframe src="iip-viewer/19" style="border: thin solid black; width: 640px; height: 480px; "></iframe>'.
+    	'<iframe src="iip-viewer/19" style="border: thin solid black; width: 640px; height: 480px; "></iframe>';
+}
+
+function osci_iip_viewer($nid) {
+	if (!is_numeric($nid)) return false;
+	$node = node_load($nid);
+	$attr = _osci_iip_get_image_attr($nid);
+	$iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
+	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/polymaps.min.js');
+    drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
+    print '<html><head>';
+    print '<script src="../misc/jquery.js" type="text/javascript"></script>';
+    print '<script src="../'.drupal_get_path('module', 'osci_iip').'/js/polymaps.min.js" type="text/javascript"></script>';
+    print '<script src="../'.drupal_get_path('module', 'osci_iip').'/js/osci_iip.js" type="text/javascript"></script>';
+    print '<style>*{margin:0;} .chevron{stroke:#FFF} .direction{stroke:#FFF} .back{stroke:#FFF} .fore{stroke:#FFF}</style>';
+    print '</head><body>';
+    
+    print '<div id="map" data-node="'.$node->nid.'" data-ptiff="'.$node->field_ptiff['und'][0]['value'].'" '
+    	.'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" data-iipsrv="'.$iipsrv.'" '
+    	.'style="width: 100%; height: 100%; "></div>';
+    
+    print '</body></html>';
+}
+
+function _osci_iip_get_image_attr($nid) {
+	if (!is_numeric($nid)) return false;
+	$iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
+	$node = node_load($nid);
+	$ptiff = $node->field_ptiff['und'][0]['value'];
+	// Get image data as a text response from the IIP server
+	// Must supply the fif parameter
+	$url = $iipsrv.'FIF='.$ptiff.'&OBJ=Basic-info';
+	$curl = curl_init($url);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	$res = curl_exec($curl);
+	if(!stristr($res, 'error')) {
+		// Parse the image maximum dimensions and the number of zoom layers
+		preg_match('/Max-size:(\d+) (\d+)/', $res, $matches);
+		$iw = $matches[1];
+		$ih = $matches[2];
+		preg_match('/Resolution-number:(\d+)/', $res, $matches);
+		$zl = $matches[1];
+		
+		// Craft our return response
+		$ret = array(
+			'iw' => $iw, 
+			'ih' => $ih,
+			'zl' => $zl,
+		);
+		return $ret;
+	}
+	return false;
+}
