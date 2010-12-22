@@ -9,49 +9,75 @@ function osci_iip_menu() {
         'page callback'     => 'osci_iip_demo',
         'access arguments'  => array('access content'),
     );
-    $items['iip-get-image-attr/%'] = array(
-        'title'             => t('Get IIP Image Attributes'),
-        'page callback'     => 'osci_iip_get_image_attr',
-    	'page arguments'	=> array(1),
-        'access arguments'  => array('access content'),
-    	'type'				=> MENU_CALLBACK,
-    );
-    $items['iip-viewer/%'] = array(
-        'title'             => t('Get IIP Image Attributes'),
-        'page callback'     => 'osci_iip_viewer',
-    	'page arguments'	=> array(1),
-        'access arguments'  => array('access content'),
-    	'type'				=> MENU_CALLBACK,
-    );
 
     return $items;
 }
 
 function osci_iip_demo() {
-    return '<iframe src="iip-viewer/19" style="border: thin solid black; width: 640px; height: 480px; "></iframe>';
-    	// '<iframe src="iip-viewer/19" style="border: thin solid black; width: 640px; height: 480px; "></iframe>';
+	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_nns.min.js');
+	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.min.js');
+	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
+	$node = node_load(19);
+	$attr = _osci_iip_get_image_attr(19);
+	$return = "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet aliquam quam nec volutpat. Ut sem eros, tincidunt in vestibulum quis, hendrerit at leo. Ut nibh elit, sollicitudin nec tempor in, malesuada nec ante.</p>";
+    $return .= '<div id="map_19" class="iipmap" data-node="'.$node->nid.'" '
+    	.'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" '
+    	.'data-collapsed="true" style="width: 640px; height: 480px; position:relative; background-color: rgba(0,0,0,.8);"></div>';
+    $return .= _osci_iip_build_tile_loader(19);
+    $return .= "<style>.layer path { fill: none; stroke: red; stroke-width: 4; vector-effect: non-scaling-stroke;}</style>";
+    
+    // And again
+    $node = node_load(20);
+	$attr = _osci_iip_get_image_attr(20);
+	$return .= '<p>&nbsp;<p>Mauris condimentum tincidunt ligula et adipiscing. Mauris leo nibh, iaculis quis tincidunt nec, pretium nec erat. Curabitur dui sem, dignissim sit amet condimentum in, ultrices eu nisl. Vivamus vestibulum tellus sit amet dui bibendum sagittis.</p>';
+    $return .= '<div id="map_20" class="iipmap" data-node="'.$node->nid.'" '
+    	.'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" '
+    	.'data-collapsed="true" style="width: 640px; height: 480px; position:relative; background-color: rgba(0,0,0,.8);"></div>';
+    $return .= _osci_iip_build_tile_loader(20);
+    
+    
+    $return .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
+    return $return;
 }
 
-function osci_iip_viewer($nid) {
-	if (!is_numeric($nid)) return false;
-	$node = node_load($nid);
-	$attr = _osci_iip_get_image_attr($nid);
-	$iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
-	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/polymaps.min.js');
-    drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
-    print '<html><head>';
-    print '<script src="../misc/jquery.js" type="text/javascript"></script>';
-    print '<script src="../'.drupal_get_path('module', 'osci_iip').'/js/nns.min.js" type="text/javascript"></script>';
-    print '<script src="../'.drupal_get_path('module', 'osci_iip').'/js/polymaps.min.js" type="text/javascript"></script>';
-    print '<script src="../'.drupal_get_path('module', 'osci_iip').'/js/osci_iip.js" type="text/javascript"></script>';
-    print '<style>*{margin:0;} .chevron{stroke:#FFF} .direction{stroke:#FFF} .back{stroke:#FFF} .fore{stroke:#FFF}</style>';
-    print '</head><body>';
-    
-    print '<div id="map" data-node="'.$node->nid.'" data-ptiff="'.$node->field_ptiff['und'][0]['value'].'" '
-    	.'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" data-iipsrv="'.$iipsrv.'" '
-    	.'style="width: 100%; height: 100%; "></div>';
-    
-    print '</body></html>';
+function _osci_iip_build_tile_loader($nid) {
+	if(is_numeric($nid)) {
+		$node = node_load($nid);
+		$attr = _osci_iip_get_image_attr($nid);
+		$iipsrv = 'http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi';
+		$return  = '<script type="text/javascript">'."\n".
+			'function tile_loader_'.$nid.'(c) {'."\n".
+				// Set up our context for this node
+				'var ptiff = "'.$node->field_ptiff['und'][0]['value'].'";'."\n".
+				'var image_h = '.$attr['ih'].';'."\n".
+				'var image_w = '.$attr['iw'].';'."\n".
+				'var zoom_max = '.$attr['zl'].' - 1;'."\n".
+				'var tile_size = 256;'."\n".
+				// Determine the scale factor of this zoom
+				'var scale = Math.pow(2, zoom_max - c.zoom);'."\n".
+				// Figure out the w/h of the image at this zoom
+				'var mw = Math.round(image_w / scale);'."\n".
+				'var mh = Math.round(image_h / scale);'."\n".
+				// Figure out how many tiles are at this zoom
+				'var tw = Math.ceil(mw / tile_size);'."\n".
+				'var th = Math.ceil(mh / tile_size);'."\n".
+				// Everything above this point should be cached per zoom level
+				// Bail out if this tile if out of range
+				'if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return;'."\n".
+				// If this is an edge case, we need to adjust the size
+				'if (c.row == (th - 1)) {'."\n".
+					'c.element.setAttribute("height", mh % tile_size);'."\n".		
+				'}'."\n".
+				'if (c.column == (tw - 1)) {'."\n".
+					'c.element.setAttribute("width", mw % tile_size);'."\n".
+				'}'."\n".
+				'return "'.$iipsrv.'?fif=" + ptiff + "&jtl=" + c.zoom + "," + ((c.row * tw) + c.column);'."\n".
+			'}'."\n";
+			
+		$return .= '</script>';
+		return $return;
+	}
+		
 }
 
 function _osci_iip_get_image_attr($nid) {

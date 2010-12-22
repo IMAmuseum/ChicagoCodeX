@@ -113,7 +113,8 @@ function _process_figure($text) {
     static $count;
     $count++;
 
-    return '<a href="#'.$text[1].'" class="figure">(fig. '.$count.')</a>';
+    //return '<a href="#'.$text[1].'" class="figure">(fig. '.$count.')</a>';
+    return '<a href="#'.$text[1].'" class="figure-link">'.$text[1].'</a>';
     /*
     // Get the field
     $result = db_query('SELECT entity_id FROM {field_data_field_identifier} WHERE field_identifier_value = :identifier', array(':identifier' => $data['id']));

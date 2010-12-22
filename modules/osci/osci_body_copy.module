@@ -55,6 +55,12 @@ function osci_body_copy_theme()
                 'figContent'    => null,
                 'figData'       => array()
             )
+        ),
+        'body_copy_figures' => array(
+            'template' => 'templates/osci_body_copy_figures',
+            'variables' => array(
+                'figures' => array()
+            )
         )
     );
 }
@@ -66,6 +72,10 @@ function osci_body_copy_render_layout($nid)
     $footnotes = array();
     $footnoteOrder = array();
     $footnoteCount = 0;
+    $figures = array();
+    $figureOrder = array();
+    $figureCount = 0;
+
     foreach($elements as $k => $v) {
         if (is_array($v) && isset($v['#field_type']) && $v['#field_type'] === 'osci_body_copy') {
             $elements[$k]['#theme'] = 'body_copy_field_html5';
@@ -89,10 +99,24 @@ function osci_body_copy_render_layout($nid)
                         $footnoteOrder[$footnoteCount] = $fnId;
                     }
                 }
+                $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' figure-link ')]");
+                if (!is_null($links)) {
+                    foreach($links as $link) {
+                        $fId = $link->nodeValue;
+                        $originalLinkHtml = $dom->saveXML($link);
+
+                        $link->nodeValue = 'Fig. ' .  ++$figureCount . '';
+                        $linkHtml = $dom->saveXML($link);
+                        $markup = str_replace($originalLinkHtml, $linkHtml, $markup);
+
+                        $figureOrder[$figureCount] = $fId;
+                    }
+                }
                 $elements[$k][0]['#markup'] = $markup;
             }
 
             $footnotes += $v[0]['osci_footnotes'];
+            $figures += $v[0]['osci_figures'];
         }
     }
 
@@ -114,6 +138,27 @@ function osci_body_copy_render_layout($nid)
             '#field_name'       => 'field_osci_footnotes',
             0 => array(
                 '#markup' => theme('body_copy_footnotes', array('footnotes' => $finalFootnotes))
+            ),
+        );
+    }
+
+    if (count($figures)) {
+        $finalFigures = array();
+        foreach($figureOrder as $k => $fId) {
+            if (isset($figures[$fId])) {
+                $finalFigures[$k] = array_merge($figures[$fId], array('figCount' => $k));
+            }
+        }
+
+        $elements['field_osci_figures'] = array(
+            '#theme'            => 'body_copy_field_html5',
+            '#title'            => 'Figures',
+            '#weight'           => 1000,
+            '#label_display'    => 'inline',
+            '#field_type'       => 'osci_body_copy',
+            '#field_name'       => 'field_osci_figures',
+            0 => array(
+                '#markup' => theme('body_copy_figures', array('figures' => $finalFigures))
             ),
         );
     }
@@ -233,14 +278,14 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                     $node = node_load($figure['figure_reference']);
                     node_build_content($node);
 
-                    $figure['caption'] = (empty($figure['caption'])) ? $node->title : $figure['caption'];
+                    $figure['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $item['body_copy_format']);
                     $content = drupal_render($node->content['field_image']);
                     $rendered_figures[] = theme('body_copy_figure', 
                         array(
                             'figId'         => $id, 
                             'figCaption'    => $figure['caption'], 
                             'figContent'    => $content, 
-                            'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'])
+                            'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'], 'aspect' => $node->field_aspect_ratio['und'][0]['value']),
                         )
                     );
 
@@ -259,10 +304,38 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                 foreach($footnotes as $id => $footnote) {
                     $footnotes[$id] = array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format']));
                 }
+
+                $renderedFigures = array();
+                $figures = unserialize($item['figures']);
+                $nids = array();
+                foreach($figures as $id => $figure) {
+                    $nids[] = $figure['figure_reference'];                    
+                }
+                if (count($nids)) {
+                    $nodes = node_load_multiple($nids);
+                    foreach($figures as $id => $figure) {
+                        if (isset($nodes[$figure['figure_reference']])) {
+                            $node = $nodes[$figure['figure_reference']];
+                            node_build_content($node);
+                            
+                            $figure['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $item['body_copy_format']);
+                            $content = drupal_render($node->content['field_image']);
+                           
+                            $renderedFigures[$id] = array(
+                                'figId'         => $id,
+                                'figCaption'    => $figure['caption'],
+                                'figContent'    => $content,
+                                'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'], 'aspect' => $node->field_aspect_ratio['und'][0]['value'])
+                            );
+                        }
+                    }
+                }
+
                 $element[$delta] = array(
                     '#markup' => $markup,
                     '#theme' => 'body_copy_field_html5',
-                    'osci_footnotes' => $footnotes
+                    'osci_footnotes' => $footnotes,
+                    'osci_figures' => $renderedFigures
                 );
             }
             break;

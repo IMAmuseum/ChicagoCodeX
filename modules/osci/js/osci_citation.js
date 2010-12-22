@@ -22,12 +22,15 @@
 
             // build dialog and open
             $('#edit-citation').html(selection);
-            selection = '';
+            //selection = '';
             $('#osci-citation-dialog').dialog('open');
             
             // reset variable
         });
 
+        $('#content').bind('copy', function(e) {
+            console.log(e);
+        });
 
 
     });
@@ -44,5 +47,5 @@ function getSelected() {
         if(selection.text) { selection = selection.text; } 
     } 
     selection =  new String(selection).replace(/^\s+|\s+$/g,'');
-    return selection 
+    return selection; 
 } 

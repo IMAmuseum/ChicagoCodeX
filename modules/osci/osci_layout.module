@@ -18,7 +18,7 @@ function osci_layout_menu()
 
 function osci_layout_render($nid) 
 {
-    drupal_add_js('http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js','external');
+    //drupal_add_js('http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js','external');
     drupal_add_js(drupal_get_path('module', 'osci_storage').'/js/jquery.storage.js');
     drupal_add_js(drupal_get_path('module', 'osci_layout').'/js/jquery.osci.layout.js');
     drupal_add_css(drupal_get_path('module', 'osci_layout').'/css/osci_layout.css');

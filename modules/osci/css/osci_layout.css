@@ -22,12 +22,7 @@
 #osci_viewer_wrapper {
     padding: 10px;
     border: 1px solid #efefef;
-    background: #fff;
-    background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* firefox */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5)); /* webkit */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* ie */
-    -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3);
+    background: #CCC;
 }
 
 #osci_viewer {
@@ -37,15 +32,22 @@
     position: relative;
 }
 
+#osci_viewer .osci_page {
+    position: absolute;
+    -webkit-box-shadow: #444 0px 2px 5px;
+    background: #FFF;
+    -webkit-transition: -webkit-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
+    -moz-transition: -moz-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
+    transition: transform 0.2s cubic-bezier(0, 0, 0.25, 1); 
+    overflow: hidden;
+}
+
 #osci_viewer .column {
     display: inline;
     position: absolute;
     overflow: hidden;
     top: 0;
     text-align: justify;
-    -webkit-transition: -webkit-transform 0.75s ease-in-out;
-    -moz-transition: -moz-transform 0.75s ease-in-out;
-    transition: transform 0.75s ease-in-out;
 }
 
 #osci_viewer_wrapper a.awesome{
@@ -77,4 +79,22 @@
     float: left;
     font-weight: bold;
     padding: 0 4px 0;
+}
+
+#osci_viewer figure {
+    position: absolute;
+}
+
+#osci_viewer figure .figureContent {
+    overflow: hidden;
+}
+
+#osci_viewer figure figcaption {
+    text-align: center;
+    color: #AAA;
+    font-size: 12px;
+}
+
+#osci_viewer figure figcaption p {
+    margin: 0;
 }
