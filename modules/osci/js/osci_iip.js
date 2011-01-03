@@ -38,7 +38,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	map.container(div[0].appendChild(svg));
 	map.zoomRange([1, zoom_max]);
 	map.zoom(4);
-	map.center({lat:80.87, lon:-150});
+	var center_pos = {lat:80.87, lon:-150};
+	map.center(center_pos);
 	image = po.image();
 	// tile_loader_x code gets appended dynamically to the map div in osci_iip.module
 	var tl = 'tile_loader_'+node;
@@ -125,6 +126,9 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	
 	function make_fullscreen() {
+		
+		// Store center coordinate of map so we are looking at the same thing between resizes
+		center_pos = map.center();
 	
 		// Wrap the original location in a div and embed the old div's style
 		// so we know where we came from in make_small()
@@ -135,25 +139,34 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('height', div.css('height'));
 				
 		// move the .iipmap div to <body> and position	
-		div.css('position', 'absolute')
-			.css('top', '50px')
+		div.css('position', 'relative')
 			.css('margin', 'auto')
-			.css('width', '100%')
+			.css('width', '95%')
 			.css('height', '95%')
 			.appendTo('body');
+		
+		var fs_wrap = div.wrap('<div id="fs_wrap" />').parent();
+		fs_wrap.css('position', 'absolute')
+			.css('top', '5%')
+			.css('width', '100%')
+			.css('height', '100%');
 		
 		// flip the arrow around on the fullscreen toggle southwest
 		arrow.attr("transform", "translate(16,16)rotate(135)scale(5)translate(-1.85,0)");
 		
 		// redefine our mousedown callback
 		fs.off("mousedown", make_fullscreen).on("mousedown", make_small);
-		console.log('make_fullscreen');
-		console.log(fs);
 		map.resize();
+		// restore center
+		map.center(center_pos);
 	
 	}
 	
 	function make_small() {
+		// Store center coordinate of map so we are looking at the same thing between resizes
+		center_pos = map.center();
+		// remove the fs_wrap div wrapper
+		div.unwrap();
 		// append the div to the origin
 		var origin = $("#origin");
 		div.appendTo("#origin");
@@ -173,9 +186,9 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		
 		// redefine mousedown callback
 		fs.off("mousedown", make_small).on("mousedown", make_fullscreen);
-		console.log('make_small');
-		console.log(fs);
 		map.resize();
+		// restore center
+		map.center(center_pos);
 	}
 	
 }
