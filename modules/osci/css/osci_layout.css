@@ -83,6 +83,7 @@
 
 #osci_viewer figure {
     position: absolute;
+    overflow: hidden;
 }
 
 #osci_viewer figure .figureContent {

@@ -22,11 +22,18 @@
 
             // build dialog and open
             $('#edit-citation').html(selection);
+            $('#edit-citation').appendTo('<textarea id="copyTxt">' + selection + '</textarea>';
+            $('#copyTxt').select();
+            var CopiedTxt = document.selection.createRange();
+            CopiedTxt.execCommand("Copy");
+
             //selection = '';
             $('#osci-citation-dialog').dialog('open');
             
             // reset variable
         });
+
+
 
         $('#content').bind('copy', function(e) {
             console.log(e);

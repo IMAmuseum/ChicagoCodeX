@@ -49,11 +49,13 @@ function osci_body_copy_theme()
         ),
         'body_copy_figure' => array(
             'template'  => 'templates/osci_body_copy_figure',
+            'file'      => 'osci_body_copy.templates.inc',
             'variables' => array(
                 'figId'         => null,
                 'figCaption'    => null,
                 'figContent'    => null,
-                'figData'       => array()
+                'figData'       => array(),
+                'figType'       => null
             )
         ),
         'body_copy_figures' => array(
@@ -286,6 +288,7 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                             'figCaption'    => $figure['caption'], 
                             'figContent'    => $content, 
                             'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'], 'aspect' => $node->field_aspect_ratio['und'][0]['value']),
+                            'figType'       => $node->type
                         )
                     );
 
@@ -317,7 +320,7 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                         if (isset($nodes[$figure['figure_reference']])) {
                             $node = $nodes[$figure['figure_reference']];
                             node_build_content($node);
-                            
+                           
                             $figure['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $item['body_copy_format']);
                             $content = drupal_render($node->content['field_image']);
                            
@@ -325,7 +328,8 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                                 'figId'         => $id,
                                 'figCaption'    => $figure['caption'],
                                 'figContent'    => $content,
-                                'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'], 'aspect' => $node->field_aspect_ratio['und'][0]['value'])
+                                'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'], 'aspect' => $node->field_aspect_ratio['und'][0]['value']),
+                                'figType'       => $node->type
                             );
                         }
                     }

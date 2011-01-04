@@ -1,26 +1,17 @@
 (function ($) {
+    /****************************************
+     * Figure Image Handling
+     */
+    $(document).bind("osci_layout_complete", function(e) {
+        $('.figureContent img').each(function() {
+            $(this).width($(this).parents('.figureContent').width());
+            $(this).height($(this).parents('.figureContent').height());
+        });
+
+    });
+
     $(document).ready(function() {
-
-        /****************************************
-         * Figure Image Handling
-         */
-
-        /*
-        var containerWidth = $('#content').width();
-
-        $('.figure').each(function() {
-            var data = $(this).data();
-            data.columns = data.columns.replace('%', '');
-            data.columns = data.columns / 100;
-            var width = containerWidth * data.columns;
-
-            if (data.position) {
-                $(this).find('img').addClass('position-' + data.position);
-            }
-            $(this).find('img').width(width);
-        }); 
-        */
-
+        $('.figureContent a').fancybox();
 
         /***************************************
          * Hot key popup image

@@ -15,10 +15,10 @@
  
         base.init = function()
         {
-            base.data = $(data).filter(".root");
+            base.data = $("section > *:not(section, header), header > *", data);
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.viewer = $("#" + base.options.viewerId);
- 
+
             $(window).resize(function(){
                 if (base.resizeTimer) clearTimeout(base.resizeTimer);
                 base.resizeTimer = setTimeout(base.render, 100);
@@ -29,6 +29,8 @@
 
         base.render = function()
         {
+            var i = 0, elements, totalElements = 0, page, currentElement, pageElementCount, figureLinks, overflow, contentOffset = 0;
+
             base.$el.append(base.data.clone());
             base.figures = $("figure", base.$el);
             base.viewer.empty();
@@ -36,100 +38,141 @@
             base.options.viewHeight = base.viewer.height();
             base.options.viewWidth  = base.viewer.width();
             base.options.columnCount = 1;
-            base.options.pageCount = 1;
+            base.options.pageCount = 0;
 
             _calcViewerInfo();
 
-            _calcFigureInfo();
-
             base.$el.css("width", base.options.columnWidth + "px");
-            //$("img",base.$el).css("width", base.options.columnWidth + "px");
 
-            _processData(
-                base.$el.children(),
-                _newPage().appendTo(base.viewer)
-            );
+            elements = base.$el.children();
+            totalElements = elements.length;
 
-            base.$el.empty();
-        };
+            while (i < totalElements) {
+                currentElement = $(elements[i]).clone();
 
-        function _processData(data, page)
-        {
-            var maxHeight, heightRemain, leftOffset, topOffset = 0, lineHeight = 0, column, columns, pageColumnCount;
+                if (currentElement.text() == 'Figures') {
+                    break;
+                }
 
-            maxHeight = base.options.innerPageHeight;
+                if (page == undefined || page.data("process") == 'done') {
+                    if (page !== undefined) {
+                        contentOffset = page.data("contentStartOffset");
+                    }
+                    base.options.pageCount++;
+                    page = _newPage().appendTo(base.viewer);
+                    page.data("contentStartOffset", contentOffset);
+                    pageElementCount = 0;
+                }
 
-            columns = page.children("div.column");
-            pageColumnCount = columns.length;
+                if (_addPageContent(currentElement, page)) {
+                    i--;
+                } else {
+                    pageElementCount++;
+                }
+                i++;
 
-            if (pageColumnCount) {
-                column = $(columns[pageColumnCount - 1]);
-            } else {
-                pageColumnCount++;
-                column = _newColumn(pageColumnCount).appendTo(page);
+                if (page.data("process") == "restart") {
+                    _reset_page(page);
+                    i = i - pageElementCount;
+                    pageElementCount = 0;
+                }
             }
 
-            data.each(function(i, elem){
-                var clone, cloneCount = 0, colHeight, $elem = $(elem), figureLinks;
+            base.$el.empty();
 
-                switch(elem.tagName) {
-                    case 'HEADER':
-                    case 'SECTION':
-                        if ($elem.attr("id") == 'field_osci_figures') {
-                            return true;
-                        }
-                        page = _processData($elem.children(), page);
-                        return true;
-                        break;
-                    default:
-                        figureLinks = $("a.figure-link",$elem);
-                        figureLinks.each(function(i, l){
-                            base.figures.filter($(l).attr("href")).clone().appendTo(page);
-                        });
-                        column.append($elem.clone());
-                        break;
-                }
+            $(document).trigger("osci_layout_complete");
+        };
 
-                lineHeight = parseFloat($elem.css("line-height"));
-                heightRemain = maxHeight - column.height();
+        function _addPageContent(content, page)
+        {
+            var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, lineHeight, colHeight, overflow = false;
 
-                while (heightRemain <= 0) {
-                    base.options.columnCount++;
-                    pageColumnCount++;
+            figureLinks = $("a.figure-link:not(.processed)", content);
+            if (figureLinks.length) {
+                figureLinks.each(function(i, l){
+                    _process_figure(l, page);
+                });
+                page.data("process", "restart");
+                return true;
+            }
 
-                    if (elem.tagName !== 'SECTION') {
-                        colHeight = $elem.position().top + (Math.floor((maxHeight - $elem.position().top - parseInt(column.css("margin-top"))) / lineHeight) * lineHeight);
-                        column.height(colHeight);
-                        heightRemain -= maxHeight - colHeight;
-                    }
- 
-                    if (pageColumnCount > base.options.columnsPerPage) {
-                        base.options.pageCount++;
-                        page = _newPage().appendTo(base.viewer);
-                        pageColumnCount = 1;
-                    }
-
-                    column = _newColumn(pageColumnCount).appendTo(page);
-                    if (elem.tagName !== 'SECTION' && heightRemain < 0) {
-                        topOffset = $elem.height() + heightRemain;
-                        if (topOffset % lineHeight !== 0) {
-                            topOffset = (Math.ceil(topOffset / lineHeight) * lineHeight) + lineHeight;
+            pageColumnData = page.data("column_data")
+            pageColumnDataCount = pageColumnData.length;
+            for (var i = 0; i < pageColumnDataCount; i++) {
+                if (pageColumnData[i].heightRemain > 0) {
+                    column = $("div.column_" + i, page);
+                    pageColumnNumber = i;
+                    page.data("current_column", pageColumnNumber);
+                    if (!column.length) {
+                        column = _newColumn(page).appendTo(page);
+                        if (pageColumnNumber > 0) {
+                            offset = pageColumnData[(pageColumnNumber-1)].heightRemain;
                         } else {
-                            topOffset += lineHeight;
+                            offset = page.data("contentStartOffset");
                         }
-                        clone = $elem.clone();
-                        cloneCount++;
-                        if (clone.attr("id")) {
-                            clone.attr("id", clone.attr("id") + "-" + cloneCount);
-                        }
-                        clone.css("margin-top", "-" + topOffset + "px");
-                        column.append(clone);
                     }
-                    heightRemain = maxHeight - column.height() + topOffset;
+                    break;
                 }
-            });
+            }
 
-            return page;
+            if (column == undefined) {
+                page.data("process", "done");
+                return true;
+            }
+
+            column.append(content);
+
+            lineHeight = parseFloat(content.css("line-height"));
+
+            if (offset !== 0) {
+                offset = content.height() + offset;
+
+                if (offset % lineHeight !== 0) {
+                    offset = (Math.ceil(offset / lineHeight) * lineHeight) + lineHeight;
+                } else {
+                    offset += lineHeight;
+                }
+            }
+
+            content.css("margin-top", "-" + offset + "px");
+
+            heightRemain = pageColumnData[pageColumnNumber].height - column.height() + offset;
+            pageColumnData[pageColumnNumber].heightRemain = heightRemain;
+
+            if (heightRemain < 0) {
+                //colHeight = content.position().top + (Math.floor((pageColumnData[pageColumnNumber].height - content.position().top - parseInt(column.css("margin-top"))) / lineHeight) * lineHeight);
+                colHeight = content.position().top + (Math.floor((pageColumnData[pageColumnNumber].height - content.position().top - parseInt($("*:first",column).css("margin-top"))) / lineHeight) * lineHeight);
+
+                while (colHeight > pageColumnData[pageColumnNumber].height) {
+                    colHeight -= lineHeight;
+                }
+                heightRemain -= (pageColumnData[pageColumnNumber].height - colHeight);
+                column.height(colHeight + "px");
+                pageColumnData[pageColumnNumber].heightRemain = heightRemain;
+                overflow = true;
+            }
+
+            if (pageColumnNumber == (base.options.columnsPerPage - 1) && heightRemain <= 0) {
+                page.data("process", "done");
+                page.data("contentStartOffset", heightRemain);
+            }
+            
+            return overflow;
+        }
+
+        function _process_figure(figureLink, page)
+        {
+            var figure;
+
+            figureLink = $(figureLink);
+            $("a[href=" + figureLink.attr("href") + "]", base.$el).addClass("processed");
+            figureLink.addClass("processed");
+
+            figure = base.figures.filter(figureLink.attr("href"));
+
+            figure.addClass("processed").appendTo(page);
+
+            _calcFigureInfo(figure, page.data("current_column"));
         }
 
         function _calcViewerInfo()
@@ -165,32 +208,54 @@
             base.options.columnsPerPage = perPage;
         };
 
-        function _newColumn(pageColumnCount)
+        function _newColumn(page)
         {
-            var leftOffset = ((pageColumnCount - 1) * base.options.columnWidth) + (base.options.gutterWidth * (pageColumnCount - 1) + (base.options.innerPageGutter));
+            var topOffset, leftOffset, pageFigures, heightLength = 0, colNumber = 1, columnData;
+
+            columnData = page.data("column_data");
+
+            heightLength = columnData.length;
+            for(var i = 0; i < heightLength; i++) {
+                if (columnData[i].heightRemain > 0) {
+                    colNumber = i;
+                    leftOffset = (i * base.options.columnWidth) + (base.options.gutterWidth * i) + base.options.innerPageGutter;
+                    topOffset = columnData[i].topOffset;
+                    break;
+                }
+            }
 
             return $("<div>", {
-                "class" : "column column_" + base.options.columnCount,
-                data : {column : base.options.columnCount},
+                "class" : "column column_" + colNumber,
+                data : {column : colNumber},
                 css : {
                     width : base.options.columnWidth + "px",
                     "margin-left" : leftOffset + "px",
-                    "margin-top" : base.options.innerPageGutter + "px"
+                    "margin-top" : topOffset + "px"
                 } 
             });
         }
 
         function _newPage()
         {
-            var leftGutterOffset = base.options.outerPageGutter;
+            var data, colDataArray, leftGutterOffset = base.options.outerPageGutter;
 
             if (base.options.pageCount > 1) {
                 leftGutterOffset = base.options.outerPageGutter + (base.options.outerPageGutter * 2 * (base.options.pageCount - 1));
             }
- 
+
+            data = {
+                page : base.options.pageCount
+            };
+
+            colDataArray = []
+            for (var i = 0; i < base.options.columnsPerPage; i++) {
+                colDataArray[i] = {height : base.options.innerPageHeight, topOffset : base.options.innerPageGutter, heightRemain : base.options.innerPageHeight};
+            }
+            data["column_data"] = colDataArray;
+
             return $("<div>",{
                 "class" : "osci_page osci_page_" + base.options.pageCount,
-                data : {page : base.options.pageCount},
+                data : data,
                 css : {
                     width : base.options.pageWidth + "px",
                     left : ((base.options.pageCount - 1) * base.options.pageWidth) + leftGutterOffset + "px",
@@ -200,65 +265,137 @@
             });
         }
 
-        function _calcFigureInfo()
+        function _reset_page(page)
         {
-            base.figures.each(function(i, elem){
-                var $elem, aspect, columns, position, verticalPosition, horizontalPosition, offsetLeft, offsetTop, width, height, captionHeight;
-                $elem = $(elem);
+            var data, figures, columnCoverage, height, topOffset, heightRemain, pageNum = page.data("page"), lineHeight, minHeight;
 
-                columns = $elem.data("columns");
-                position = $elem.data("position");
-                aspect = $elem.data("aspect");
+            lineHeight = parseInt(page.css("line-height"));
+            minHeight = lineHeight * base.options.minLinesPerColumn;
 
-                verticalPosition = position.substr(0,1);
-                horizontalPosition = (position.length == 2) ? position.substr(1,1) : position.substr(0,1); 
+            data = {
+                page : pageNum,
+                process : "start"
+            }
 
-                if (typeof(columns) == 'string' && columns.indexOf("%") > 0) {
-                    columns = Math.ceil((parseInt(columns) / 100) * base.options.columnsPerPage);
+            $("div.column", page).remove();
+
+            figures = $("figure", page);
+
+            colDataArray = []
+            for (var i = 0; i < base.options.columnsPerPage; i++) {
+                height = base.options.innerPageHeight;
+                topOffset = base.options.innerPageGutter;
+                heightRemain = height;
+
+                if (figures.length) {
+                    figures.each(function(j, fig) {
+                        var $fig = $(fig);
+                        columnCoverage = $fig.data("column_coverage");
+
+                        if (columnCoverage[i]) {
+                            height -= $fig.height();
+                            heightRemain -= $fig.height();
+
+                            if (height < minHeight) {
+                                height = 0;
+                                heightRemain = 0;
+                                return;
+                            }
+
+                            switch ($fig.data("vertical_position")) {
+                                case 't':
+                                case 'p':
+                                    topOffset += $fig.height();
+                                    break;
+                                case 'b':
+                                    topOffset = topOffset;
+                                    break;
+                            }
+
+                        }
+                    });
                 }
+                colDataArray[i] = {height : height, topOffset : topOffset, heightRemain : heightRemain};
+            }
 
-                if (columns > base.options.columnsPerPage || position == 'p') {
-                    width = base.options.innerPageWidth;
-                } else {
-                    width = (columns * base.options.columnWidth) + (base.options.gutterWidth * (columns - 1));
-                }
-                $elem.css("width", width + "px");
+            data["column_data"] = colDataArray;
 
-                captionHeight = $("figcaption", $elem).height();
-                height = (width / aspect) + captionHeight;
-                if (position == 'p' || height > base.options.innerPageHeight) {
-                    height = base.options.innerPageHeight;
-                }
-                $elem.css("height", height + "px");
+            page.data(data);
+        }
 
-                $(".figureContent", $elem).css({
-                    width : width,
-                    height : height - captionHeight
-                });
+        function _calcFigureInfo(figure, column)
+        {
+            var aspect, columns, position, verticalPosition, horizontalPosition, offsetLeft, offsetTop, width, height, captionHeight, columnCoverage = [], colStart, colEnd;
 
-                switch (horizontalPosition) {
-                    case 'r':
-                        offsetLeft = ((base.options.columnsPerPage - columns) * base.options.columnWidth) + (((base.options.columnsPerPage - 1) - (columns - 1)) * base.options.gutterWidth) + base.options.innerPageGutter;
-                        break;
-                    case 'l':
-                    case 'p':
-                        offsetLeft = base.options.innerPageGutter;
-                        break;
-                }
-                $elem.css("margin-left", offsetLeft);
+            columns = figure.data("columns");
+            position = figure.data("position");
+            aspect = figure.data("aspect");
 
-                switch (verticalPosition) {
-                    case 't':
-                    case 'p':
-                        offsetTop = base.options.innerPageGutter;
-                        break;
-                    case 'b':
-                        offsetTop = base.options.innerPageHeight - height + base.options.innerPageGutter;
-                        break;
-                }
+            verticalPosition = position.substr(0,1);
+            horizontalPosition = (position.length == 2) ? position.substr(1,1) : position.substr(0,1); 
 
-                $elem.css("margin-top", offsetTop);
+            figure.data("vertical_position", verticalPosition);
+            figure.data("horizontal_position", horizontalPosition);
+
+            if (typeof(columns) == 'string' && columns.indexOf("%") > 0) {
+                columns = Math.ceil((parseInt(columns) / 100) * base.options.columnsPerPage);
+            }
+
+            if (columns > base.options.columnsPerPage || position == 'p') {
+                width = base.options.innerPageWidth;
+                columns = base.options.columnsPerPage;
+            } else {
+                width = (columns * base.options.columnWidth) + (base.options.gutterWidth * (columns - 1));
+            }
+            figure.css("width", width + "px");
+
+            captionHeight = $("figcaption", figure).height();
+            height = (width / aspect) + captionHeight;
+            if (height > base.options.innerPageHeight) {
+                height = base.options.innerPageHeight;
+            }
+            figure.css("height", height + "px");
+
+            $(".figureContent", figure).css({
+                width : width,
+                height : height - captionHeight
             });
+
+            switch (horizontalPosition) {
+                case 'r':
+                    offsetLeft = ((base.options.columnsPerPage - columns) * base.options.columnWidth) + (((base.options.columnsPerPage - 1) - (columns - 1)) * base.options.gutterWidth) + base.options.innerPageGutter;
+                    break;
+                case 'l':
+                case 'p':
+                    offsetLeft = base.options.innerPageGutter;
+                    break;
+                default:
+                    offsetLeft = base.options.innerPageGutter;
+            }
+            figure.css("margin-left", offsetLeft);
+
+            switch (verticalPosition) {
+                case 't':
+                case 'p':
+                    offsetTop = base.options.innerPageGutter;
+                    break;
+                case 'b':
+                    offsetTop = base.options.innerPageHeight - height + base.options.innerPageGutter;
+                    break;
+            }
+            figure.css("margin-top", offsetTop);
+
+            for (var i = 0; i < base.options.columnsPerPage; i++) {
+                colStart = (base.options.columnWidth * i) + (base.options.gutterWidth * i) + base.options.innerPageGutter;
+                colEnd = (base.options.columnWidth * (i + 1)) + (base.options.gutterWidth * i) + base.options.innerPageGutter;
+
+                if (offsetLeft <= colStart && (offsetLeft + width) >= colEnd) {
+                    columnCoverage[i] = true;
+                } else {
+                    columnCoverage[i] = false;
+                }
+            }
+            figure.data("column_coverage", columnCoverage);
         }
 
         base.init();
@@ -270,7 +407,8 @@
         gutterWidth : 40,
         innerPageGutter : 10,
         outerPageGutter : 20,
-        viewerId : 'osci_viewer'
+        viewerId : 'osci_viewer',
+        minLinesPerColumn : 5
     };
 
     $.fn.osci_layout = function( data, options )

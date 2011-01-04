@@ -10,6 +10,8 @@ function osci_citation_node_view($node, $view_mode, $langcode) {
 function osci_citation_dialog($form, &$form_state) {
     $form = array();
 
+    $form['#prefix'] = '<div id="osci-citation-dialog">';
+    $form['#suffix'] = '</div>';
     $form['citation'] = array(
         '#type'     => 'textarea',
         '#title'    => t('Citation'),
