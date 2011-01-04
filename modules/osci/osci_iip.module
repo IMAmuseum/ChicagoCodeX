@@ -40,6 +40,30 @@ function osci_iip_demo() {
     return $return;
 }
 
+function osci_iip_node_insert($node) {	
+	if ($node->type == 'image' && (!isset($node->field_aspect_ratio['und'][0]['value']))) {
+		_osci_iip_save_aspect_ratio($node->nid);		
+	}
+}
+
+function osci_iip_node_update($node) {
+	dpm($node);
+	if ($node->type == 'image' && (!isset($node->field_aspect_ratio['und'][0]['value']))) {
+		_osci_iip_save_aspect_ratio($node->nid);		
+	}
+}
+
+
+function _osci_iip_save_aspect_ratio($nid) {
+	// Retrieve and store aspect ratio - called in node_insert and node_update
+	// x:1(y) where x is the stored value and y is the constant 1
+	$node = node_load($nid);
+	$attr = _osci_iip_get_image_attr($node->nid);
+	$ar = ($attr['iw'] / $attr['ih']);
+	$node->field_aspect_ratio['und'][0]['value'] = round($ar, 4);
+	node_save($node);
+}
+
 function _osci_iip_build_tile_loader($nid) {
 	if(is_numeric($nid)) {
 		$node = node_load($nid);
@@ -76,8 +100,7 @@ function _osci_iip_build_tile_loader($nid) {
 			
 		$return .= '</script>';
 		return $return;
-	}
-		
+	}	
 }
 
 function _osci_iip_get_image_attr($nid) {
