@@ -13,5 +13,10 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     
     $vars['type'] = $node->type;
     $vars['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $vars['body_copy_format']);
-    $vars['content'] = drupal_render($node->content['field_image']);
+    if ($node->type == 'image') {
+    	$vars['content'] = _osci_iip_create_iip_div($node);
+    }
+    else {
+	    	
+    }
 }

@@ -48,6 +48,19 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	map.add(po.interact());
 	map.add(po.compass().pan("none"));
 	
+	// Load in svg markup
+	var feature_obj = { type: 'FeatureCollection', features: new Array(), };
+	console.log(feature_obj);
+	$.get("/sites/default/modules/osci/images/gimp-linepaths-test.svg", function(data){
+		var markup_svg = n$(data.childNodes[1]);
+		var markup_elements = markup_svg.element.children;  
+		$(markup_elements).each( function(index, elem) {
+			console.log(this.tagName);
+			
+			
+		})
+	});
+	
 	// Overlay SVG markup
 	var p1 = map.coordinateLocation({zoom:7, column:10, row:10});
 	var p2 = map.coordinateLocation({zoom:7, column:11, row:11});
@@ -58,43 +71,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			"coordinates": [ [p1.lon, p1.lat], [p1.lon, p2.lat], [p2.lon, p2.lat], [p2.lon, p1.lat], [p1.lon, p1.lat] ]
 		},
 	}]));
-				
-				
-	/*
-	// Overlay SVG
-	map.add(po.geoJson()
-    .features([{geometry: {coordinates: [80.87, -150], type: "Point"}}])
-    .on("load", load));
-		
-	function load(e) {
-		console.log($(e));
-  		var r = 20 * Math.pow(2, e.tile.zoom - zoom_max);
-  		for (var i = 0; i < e.features.length; i++) {
-			var c = $(e.features[i].element),
-        	g = c.parent().append("svg:g");
-
-    		g.attr("transform", "translate(" + c.attr("cx") + "," + c.attr("cy") + ")");
-
-    		g.add("svg:circle")
-		        .attr("r", r)
-		        .attr("transform", "translate(" + r + ",0)skewX(-45)")
-		        .attr("opacity", .5)
-		        .attr("filter", "url(#shadow)");
-
-		    g.add(c
-		        .attr("fill", "url(#r1)")
-		        .attr("r", r)
-		        .attr("cx", null)
-		        .attr("cy", null));
-
-		    g.add("svg:circle")
-		        .attr("transform", "scale(.95,1)")
-		        .attr("fill", "url(#r2)")
-		        .attr("r", r);
-		}
-	}
-	*/
-	
 	
 	// if collapsed, add a expand button to go fullscreen
 	if (collapsed) {
@@ -196,9 +172,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 (function($) {
 	$(document).ready(function()
 	{
-		
-		var mapdivs = $('.iipmap');
-		mapdivs.each(function(){ iipmap($(this)); });	
+		$('.iipmap').each(function(){ iipmap($(this)); });	
 	});	
 
 }) (jQuery);
