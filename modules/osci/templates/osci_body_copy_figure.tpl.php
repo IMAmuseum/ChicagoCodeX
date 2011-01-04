@@ -1,11 +1,11 @@
 <?php 
 $data = '';
-foreach($figData as $k => $v) {
+foreach($figure['data'] as $k => $v) {
     $data .= 'data-' . $k . '="' . $v . '" ';
 }
 ?>
-<a name="<?php print $figId; ?>"></a>
-<figure id="<?php print $figId; ?>" <?php print $data; ?> class="<?php print $figType; ?>">
+<a name="<?php print $figure['id']; ?>"></a>
+<figure id="<?php print $figure['id']; ?>" <?php print $data; ?> class="<?php print $figType; ?>">
     <div class="figureContent">
         <?php print $figContent; ?>
     </div>
