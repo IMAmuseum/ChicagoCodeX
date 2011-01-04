@@ -274,26 +274,13 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
 
                 $figures = unserialize($item['figures']);
                 foreach($figures as $id => $figure) {
-                    /*
-                    $node = node_load($figure['figure_reference']);
-                    node_build_content($node);
-
-                    $figure['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $item['body_copy_format']);
-                    $content = drupal_render($node->content['field_image']);
-                    
+                    $figure['id'] = $id;
                     $rendered_figures[] = theme('body_copy_figure', 
                         array(
-                            'figId'         => $id, 
-                            'figCaption'    => $figure['caption'], 
-                            'figContent'    => $content, 
-                            'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'], 'aspect' => $node->field_aspect_ratio['und'][0]['value']),
-                            'figType'       => $node->type
+                            'figure' => $figure, 
+                            'body_copy_format' => $item['body_copy_format']
                         )
                     );
-                    */
-                    $figure['id'] = $id;
-                    $rendered_figures[] = theme('body_copy_figure', array('figure' => $figure, 'body_copy_format' => $item['body_copy_format']));
-
                 }
                 $markup .= theme('item_list', array('items' => $rendered_figures, 'title' => t('Figures'), 'type' => 'ol'));
 
@@ -320,19 +307,8 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                     $nodes = node_load_multiple($nids);
                     foreach($figures as $id => $figure) {
                         if (isset($nodes[$figure['figure_reference']])) {
-                            $node = $nodes[$figure['figure_reference']];
-                            node_build_content($node);
-                           
-                            $figure['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $item['body_copy_format']);
-                            $content = drupal_render($node->content['field_image']);
-                           
-                            $renderedFigures[$id] = array(
-                                'figId'         => $id,
-                                'figCaption'    => $figure['caption'],
-                                'figContent'    => $content,
-                                'figData'       => array('position' => $figure['position'], 'columns' => $figure['columns'], 'aspect' => $node->field_aspect_ratio['und'][0]['value']),
-                                'figType'       => $node->type
-                            );
+                            $figure['id'] = $id;
+                            $renderedFigures[$id] = $figure;
                         }
                     }
                 }
