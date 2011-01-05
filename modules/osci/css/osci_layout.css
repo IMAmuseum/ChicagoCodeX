@@ -99,3 +99,8 @@
 #osci_viewer figure figcaption p {
     margin: 0;
 }
+
+#osci_viewer span.osci_paragraph_identifier {
+    position: absolute;
+    color: #BBB;
+}

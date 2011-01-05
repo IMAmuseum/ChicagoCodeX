@@ -21,9 +21,9 @@
             "src" : "#"
         }).appendTo($("div.figure_identifier",".figures-wrapper"));
 
-        $('div[id$="footnote-blank"]').hide();
+        $('div[id$="footnote_blank"]').hide();
         $("li:first", "ul.ui-tabs-nav").hide();
-        $('div[id$="figure-blank"]').hide();
+        $('div[id$="figure_blank"]').hide();
 
         $(".footnote-remove, .figure-remove").live("click", function(e) {
             e.preventDefault();
@@ -37,12 +37,13 @@
             var newIdSelector, container, hiddenCountElem, count, selectorText, newElement, newHtml;
 
             container = $(this).parents("div.ui-tabs");
-            hiddenCountElem = $('[type="hidden"]', container);
+            hiddenCountElem = $('[type="hidden"]:first', container);
             count = parseFloat(hiddenCountElem.val()) + 1;
             selectorText = $(this).attr('class').split('-');
 
-            newElement = $('div[id$="' + selectorText[0] + '-blank"]', container).clone().show();
+            newElement = $('div[id$="' + selectorText[0] + '_blank"]', container).clone().show();
             newHtml = newElement.wrap("<span />").parent().html();
+            newHtml = newHtml.replace(new RegExp(selectorText[0] + "_blank", 'gi'), count);
             newHtml = newHtml.replace(new RegExp(selectorText[0] + "-blank", 'gi'), count);
             newIdSelector = "#" + $(newHtml).attr("id");
 

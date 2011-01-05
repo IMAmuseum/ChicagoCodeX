@@ -135,6 +135,7 @@ function osci_body_copy_render_layout($nid)
             '#label_display'    => 'inline',
             '#field_type'       => 'osci_body_copy',
             '#field_name'       => 'field_osci_footnotes',
+            '#attributes'        => array('class' => array('osci_column_break')),
             0 => array(
                 '#markup' => theme('body_copy_footnotes', array('footnotes' => $finalFootnotes))
             ),
@@ -164,7 +165,7 @@ function osci_body_copy_render_layout($nid)
 
     $elements['#theme'] = 'body_copy_node';
     unset($elements['#pre_render']);
-    
+
     print render($elements);
 //    return render($elements);
 }
@@ -201,7 +202,7 @@ function osci_body_copy_field_presave($entity_type, $entity, $field, $instance, 
         if (is_array($_POST[$field['field_name']]['und'][0]['footnotes'])) {
             $footnotes = $_POST[$field['field_name']]['und'][0]['footnotes'];
             foreach($footnotes as $id => $footnote) { 
-                $uid = substr($field['field_name'], 6) . '-' . $entity->nid . '-' . $id;
+                $uid = substr($field['field_name'], 6) . '_fn_' . $entity->nid . '_' . $id;
                 if (empty($footnote) || $id == 'footnote_index' || $id == 'footnote-blank') {
                     continue;
                 }
@@ -214,7 +215,7 @@ function osci_body_copy_field_presave($entity_type, $entity, $field, $instance, 
         if (is_array($_POST[$field['field_name']]['und'][0]['figures'])) {
             $figures = $_POST[$field['field_name']]['und'][0]['figures'];
             foreach($figures as $id => $figure) {
-                $uid = substr($field['field_name'], 6) . '-fig-' . $entity->nid . '-' . $id;
+                $uid = substr($field['field_name'], 6) . '_fig_' . $entity->nid . '_' . $id;
                 if (empty($figure['figure_reference']) || $id == 'figure_index' || $id == 'figure-blank') {
                     continue;
                 }
@@ -275,12 +276,8 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                 $figures = unserialize($item['figures']);
                 foreach($figures as $id => $figure) {
                     $figure['id'] = $id;
-                    $rendered_figures[] = theme('body_copy_figure', 
-                        array(
-                            'figure' => $figure, 
-                            'body_copy_format' => $item['body_copy_format']
-                        )
-                    );
+                    $figure['format'] = $item['body_copy_format'];
+                    $rendered_figures[] = theme('body_copy_figure', array('figure' => $figure));
                 }
                 $markup .= theme('item_list', array('items' => $rendered_figures, 'title' => t('Figures'), 'type' => 'ol'));
 
@@ -308,6 +305,7 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                     foreach($figures as $id => $figure) {
                         if (isset($nodes[$figure['figure_reference']])) {
                             $figure['id'] = $id;
+                            $figure['format'] = $item['body_copy_format'];
                             $renderedFigures[$id] = $figure;
                         }
                     }
@@ -386,7 +384,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
         )
     );
 
-    $footnotes = array('footnote-blank' => '');
+    $footnotes = array('footnote_blank' => '');
     $loadnotes = isset($items[$delta]['footnotes']) ? unserialize($items[$delta]['footnotes']) : array();
     $footnotes += $loadnotes ? $loadnotes : array();
  
@@ -400,10 +398,10 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
 
     $fnList = array();
     foreach ($footnotes as $id => $footnote) {
-        if ($id !== 'footnote-blank') {
-            $id = substr($id, strrpos($id, '-') + 1); 
+        if ($id !== 'footnote_blank') {
+            $id = substr($id, strrpos($id, '_') + 1); 
         }
-        $fnId = $fieldName . '-' . $nid . '-' . $id;
+        $fnId = $fieldName . '_fn_' . $nid . '_' . $id;
         $class = ($id == 1) ? 'footnote first' : 'footnote';
         $bodyCopy['footnotes'][$id] = array(
             '#title' => $id . ' <span>(' . $fnId . ')</span>',
@@ -411,7 +409,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#default_value' => $footnote,
             '#rows' => $instance['widget']['settings']['footnote_rows'],
             '#attributes' => array('class' => array($class)),
-            '#prefix' => '<div id="' . $fnId . '" data-fnprefix="' . $fieldName . '-' . $nid . '-">',
+            '#prefix' => '<div id="' . $fnId . '" data-fnprefix="' . $fieldName . '_fn_' . $nid . '_">',
             '#suffix' => '</div>',
             '#weight' => $id,
         );
@@ -424,7 +422,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
         '#weight' => 0
     );
 
-    $figures = array('figure-blank' => '');
+    $figures = array('figure_blank' => '');
     $loadFigures = isset($items[$delta]['figures']) ? unserialize($items[$delta]['figures']) : array();
     $figures += $loadFigures ? $loadFigures : array();
 
@@ -435,21 +433,21 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
 
     $figureList = array();
     foreach($figures as $id => $figure) {
-        if ($id !== 'figure-blank') {
-            $id = substr($id, strrpos($id, '-') + 1);
+        if ($id !== 'figure_blank') {
+            $id = substr($id, strrpos($id, '_') + 1);
     	}
-        $figId = $fieldName . '-fig-' . $nid . '-' . $id;
+        $figId = $fieldName . '_fig_' . $nid . '_' . $id;
         $class = ($id == 1) ? 'figure first' : 'figure';
         $bodyCopy['figures'][$id] = array(
             '#title'        => $id . ' <span>(' . $figId . ')</span>',
             '#type'         => 'fieldset',
             '#attributes'   => array('class' => array($class)),
-            '#prefix'       => '<div id="' . $figId . '" data-figprefix="' . $fieldName . '-fig-' . $nid . '-">',
+            '#prefix'       => '<div id="' . $figId . '" data-figprefix="' . $fieldName . '_fig_' . $nid . '_">',
             '#postfix'      => '</div>',
             '#weight'       => $id,
             '#tree'         => true,
             'figure_id'     => array(
-                '#markup'   => '<div class="figure_identifier">' . $id . ' <span>' . $figId . ')</span> </div>'
+                '#markup'   => '<div class="figure_identifier">' . $id . ' <span>(' . $figId . ')</span> </div>'
             ),
             'figure_reference' => array(
                 '#title'                => t('Figure Reference'),

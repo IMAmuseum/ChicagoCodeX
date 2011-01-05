@@ -47,6 +47,14 @@
             elements = base.$el.children();
             totalElements = elements.length;
 
+            elements.filter("p").each(function(i, elem){
+                $(elem).prepend($("<span>",{
+                    html : i + 1,
+                    "class" : "osci_paragraph_identifier osci_paragraph_" + (i + 1),
+                    "data-paragraph_id" : i + 1 
+                })).addClass("osci_paragraph_" + (i + 1) + " osci_paragraph").attr("data-paragraph_id", i + 1);
+            });
+
             while (i < totalElements) {
                 currentElement = $(elements[i]).clone();
 
@@ -63,7 +71,7 @@
                     page.data("contentStartOffset", contentOffset);
                     pageElementCount = 0;
                 }
-
+                
                 if (_addPageContent(currentElement, page)) {
                     i--;
                 } else {
@@ -85,7 +93,7 @@
 
         function _addPageContent(content, page)
         {
-            var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, lineHeight, colHeight, overflow = false;
+            var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, lineHeight, colHeight, overflow = false, paragraphIdentifier;
 
             figureLinks = $("a.figure-link:not(.processed)", content);
             if (figureLinks.length) {
@@ -122,6 +130,18 @@
 
             column.append(content);
 
+            // Position Paragraph Identifiers in the gutter
+            paragraphIdentifier = $("span.osci_paragraph_identifier", content).remove();
+
+            if (paragraphIdentifier.length) {
+                if ($("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id"), page).length == 0) {
+                    paragraphIdentifier.appendTo(page).css({
+                        "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2)) + "px",
+                        "margin-top" : content.position().top + base.options.innerPageGutter[0] + "px"
+                    });
+                }
+            }
+
             lineHeight = parseFloat(content.css("line-height"));
 
             if (offset !== 0) {
@@ -140,7 +160,6 @@
             pageColumnData[pageColumnNumber].heightRemain = heightRemain;
 
             if (heightRemain < 0) {
-                //colHeight = content.position().top + (Math.floor((pageColumnData[pageColumnNumber].height - content.position().top - parseInt(column.css("margin-top"))) / lineHeight) * lineHeight);
                 colHeight = content.position().top + (Math.floor((pageColumnData[pageColumnNumber].height - content.position().top - parseInt($("*:first",column).css("margin-top"))) / lineHeight) * lineHeight);
 
                 while (colHeight > pageColumnData[pageColumnNumber].height) {
@@ -181,10 +200,10 @@
                 perPage = 1,
                 gutterCheck = 0;
 
-            base.options.pageWidth = base.options.viewWidth - (base.options.outerPageGutter * 2);
-            base.options.pageHeight = base.options.viewHeight - (base.options.outerPageGutter * 2);
-            base.options.innerPageHeight = base.options.pageHeight - (base.options.innerPageGutter * 2);
-            base.options.innerPageWidth = base.options.pageWidth - (base.options.innerPageGutter * 2);
+            base.options.pageWidth = base.options.viewWidth - (base.options.outerPageGutter[1] + base.options.outerPageGutter[3]);
+            base.options.pageHeight = base.options.viewHeight - (base.options.outerPageGutter[0] + base.options.outerPageGutter[2]);
+            base.options.innerPageHeight = base.options.pageHeight - (base.options.innerPageGutter[0] + base.options.innerPageGutter[2]);
+            base.options.innerPageWidth = base.options.pageWidth - (base.options.innerPageGutter[1] + base.options.innerPageGutter[3]);
 
             if (base.options.innerPageWidth < base.options.maxColumnWidth) {
                 colWidth = base.options.innerPageWidth;
@@ -218,7 +237,7 @@
             for(var i = 0; i < heightLength; i++) {
                 if (columnData[i].heightRemain > 0) {
                     colNumber = i;
-                    leftOffset = (i * base.options.columnWidth) + (base.options.gutterWidth * i) + base.options.innerPageGutter;
+                    leftOffset = (i * base.options.columnWidth) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
                     topOffset = columnData[i].topOffset;
                     break;
                 }
@@ -237,10 +256,10 @@
 
         function _newPage()
         {
-            var data, colDataArray, leftGutterOffset = base.options.outerPageGutter;
+            var data, colDataArray, leftGutterOffset = base.options.outerPageGutter[3];
 
             if (base.options.pageCount > 1) {
-                leftGutterOffset = base.options.outerPageGutter + (base.options.outerPageGutter * 2 * (base.options.pageCount - 1));
+                leftGutterOffset = base.options.outerPageGutter[3] + ((base.options.outerPageGutter[1] + base.options.outerPageGutter[3]) * (base.options.pageCount - 1));
             }
 
             data = {
@@ -249,7 +268,7 @@
 
             colDataArray = []
             for (var i = 0; i < base.options.columnsPerPage; i++) {
-                colDataArray[i] = {height : base.options.innerPageHeight, topOffset : base.options.innerPageGutter, heightRemain : base.options.innerPageHeight};
+                colDataArray[i] = {height : base.options.innerPageHeight, topOffset : base.options.innerPageGutter[0], heightRemain : base.options.innerPageHeight};
             }
             data["column_data"] = colDataArray;
 
@@ -259,7 +278,7 @@
                 css : {
                     width : base.options.pageWidth + "px",
                     left : ((base.options.pageCount - 1) * base.options.pageWidth) + leftGutterOffset + "px",
-                    top : base.options.outerPageGutter + "px",
+                    top : base.options.outerPageGutter[0] + "px",
                     height : base.options.pageHeight + "px"
                 }
             });
@@ -278,13 +297,14 @@
             }
 
             $("div.column", page).remove();
+            $("span.osci_paragraph_identifier", page).remove();
 
             figures = $("figure", page);
 
             colDataArray = []
             for (var i = 0; i < base.options.columnsPerPage; i++) {
                 height = base.options.innerPageHeight;
-                topOffset = base.options.innerPageGutter;
+                topOffset = base.options.innerPageGutter[0];
                 heightRemain = height;
 
                 if (figures.length) {
@@ -363,31 +383,31 @@
 
             switch (horizontalPosition) {
                 case 'r':
-                    offsetLeft = ((base.options.columnsPerPage - columns) * base.options.columnWidth) + (((base.options.columnsPerPage - 1) - (columns - 1)) * base.options.gutterWidth) + base.options.innerPageGutter;
+                    offsetLeft = ((base.options.columnsPerPage - columns) * base.options.columnWidth) + (((base.options.columnsPerPage - 1) - (columns - 1)) * base.options.gutterWidth) + base.options.innerPageGutter[3];
                     break;
                 case 'l':
                 case 'p':
-                    offsetLeft = base.options.innerPageGutter;
+                    offsetLeft = base.options.innerPageGutter[3];
                     break;
                 default:
-                    offsetLeft = base.options.innerPageGutter;
+                    offsetLeft = base.options.innerPageGutter[3];
             }
             figure.css("margin-left", offsetLeft);
 
             switch (verticalPosition) {
                 case 't':
                 case 'p':
-                    offsetTop = base.options.innerPageGutter;
+                    offsetTop = base.options.innerPageGutter[0];
                     break;
                 case 'b':
-                    offsetTop = base.options.innerPageHeight - height + base.options.innerPageGutter;
+                    offsetTop = base.options.innerPageHeight - height + base.options.innerPageGutter[0];
                     break;
             }
             figure.css("margin-top", offsetTop);
 
             for (var i = 0; i < base.options.columnsPerPage; i++) {
-                colStart = (base.options.columnWidth * i) + (base.options.gutterWidth * i) + base.options.innerPageGutter;
-                colEnd = (base.options.columnWidth * (i + 1)) + (base.options.gutterWidth * i) + base.options.innerPageGutter;
+                colStart = (base.options.columnWidth * i) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
+                colEnd = (base.options.columnWidth * (i + 1)) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
 
                 if (offsetLeft <= colStart && (offsetLeft + width) >= colEnd) {
                     columnCoverage[i] = true;
@@ -405,8 +425,8 @@
         minColumnWidth : 200,
         maxColumnWidth : 300,
         gutterWidth : 40,
-        innerPageGutter : 10,
-        outerPageGutter : 20,
+        innerPageGutter : [20, 40, 20, 40],
+        outerPageGutter : [20, 20, 20, 20],
         viewerId : 'osci_viewer',
         minLinesPerColumn : 5
     };
@@ -473,7 +493,7 @@ jQuery(document).ready(function() {
 
         var newOffset = 0;
         if (currentPage > 0) {
-            newOffset = -1 * ((currentPage * layoutData.pageWidth) + (layoutData.outerPageGutter * 2 * (currentPage)));
+            newOffset = -1 * ((currentPage * layoutData.pageWidth) + ((layoutData.outerPageGutter[1] + layoutData.outerPageGutter[3]) * (currentPage)));
         }
 
         newX = newOffset;
@@ -533,8 +553,8 @@ jQuery(document).ready(function() {
         var $this = jQuery(this);
 
         navigateTo({
-	    operation : 'column',
-            value : parseInt(jQuery($this.attr("href")).parent(".column").data("column"))
+	    operation : 'page',
+            value : jQuery($this.attr("href")).parents(".osci_page").data("page")
         });
     });
 

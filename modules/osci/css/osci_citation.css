@@ -1,6 +1,34 @@
 .highlighter {
     color: #FF0000;
 }
-#osci-citation-dialog--2 {
+#osci-citation-dialog {
     display: none;
+}
+
+.cite-paragraph {
+    /*border: 1px dashed #999;*/
+    background-color: #ccc;
+    border-left: 2px dashed #666;
+    cursor: pointer;
+}
+
+.osci-citation-dialog {
+    background-color: #fff;
+    border: 1px;
+    padding: 10px;
+}
+
+ul.selection-toolbar {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    background-color: #fff;
+    padding: 10px !important;
+}
+ul.selection-toolbar,
+ul.selection-toolbar li {
+    display: inline;
+}
+ul.selection-toolbar li a {
+    padding: 5px !important;
 }

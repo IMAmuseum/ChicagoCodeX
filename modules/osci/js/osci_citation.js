@@ -1,5 +1,7 @@
 (function($) {
-    $(document).ready(function() {
+    //$(document).ready(function() {
+    $(document).bind("osci_layout_complete", function(e) {
+
 
         $('#osci-citation-dialog').dialog({ 
             title:      'Add a citation', 
@@ -8,41 +10,62 @@
             draggable:  false
         });
 
-        $('p').mouseup(function() {
-            var selection = getSelected();
-            if (selection == '') return;
+        $('#osci_viewer p.osci_paragraph').hover(
+        function() {
+            var id = $(this).data('paragraph_id');
+            $('span.osci_paragraph_' + id).css('color', '#000');
+            $(this).addClass('cite-paragraph');
+        },
+        function() {
+            var id = $(this).data('paragraph_id');
+            $('span.osci_paragraph_' + id).css('color', '#999');
+            $(this).removeClass('cite-paragraph');
+        });
 
-            // alter the body text
-            var txt = $(this);
-            var len = txt.html().length;
-            var start = txt.html().indexOf(selection);
-            var end = start + selection.length;
-            var replacementTxt = '<span class="highlighter">' + selection + '</span>';
-            txt.html(txt.html().substring(0, start) + replacementTxt + txt.html().substring(end, len));
+        $('#osci_viewer p.osci_paragraph').click(function() {
+            if (getSelection() != '') return;
+
+            //var id = $(this).data('paragraph_id');
+            //$('span.osci_paragraph_' + id).append('<div class="osci-citation-dialog"><a href="#note">Add Note</a></div>');
+
+        });
+
+        $('#osci_viewer p.osci_paragraph').mouseup(function() {
+            $('.osci-citation-dialog').remove();
+
+            var selection = getSelected();
+            if (selection == '') { 
+                $('ul.selection-toolbar').remove();
+                return;
+            }
 
             // build dialog and open
-            $('#edit-citation').html(selection);
-            $('#edit-citation').appendTo('<textarea id="copyTxt">' + selection + '</textarea>';
-            $('#copyTxt').select();
-            var CopiedTxt = document.selection.createRange();
-            CopiedTxt.execCommand("Copy");
+            $('#edit-citation--2').html(selection);
 
             //selection = '';
-            $('#osci-citation-dialog').dialog('open');
+            //$('#osci-citation-dialog').dialog('open');
+            $(this).prepend('<ul class="selection-toolbar"><li><a href="#highlight">Highlight</a></li><li><a href="#note">Note</a></li></ul>');
             
-            // reset variable
         });
 
-
-
-        $('#content').bind('copy', function(e) {
-            console.log(e);
+        $('a[href="#highlight"]').live('click', function() {
+            highlightTxt($(this).parents('.osci_paragraph'));
+            $(this).parents('ul.selection-toolbar').remove();
         });
-
-
     });
 
 })(jQuery);
+
+function highlightTxt(obj) {
+    var selection = getSelected();
+    var txt = $(obj);
+    var len = txt.html().length;
+    var start = txt.html().indexOf(selection);
+    var end = start + selection.length;
+    $(selection).find('span').remove();
+    var replacementTxt = '<span class="highlighter">' + selection + '</span>';
+    txt.html(txt.html().substring(0, start) + replacementTxt + txt.html().substring(end, len));
+}
 
 /* attempt to find a text selection */ 
 function getSelected() { 
