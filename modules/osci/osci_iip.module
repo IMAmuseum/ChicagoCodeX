@@ -18,7 +18,6 @@ function osci_iip_demo() {
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.min.js');
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
 	$node = node_load(19);
-	dpm($node);
 	
 	$return = "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet aliquam quam nec volutpat. Ut sem eros, tincidunt in vestibulum quis, hendrerit at leo. Ut nibh elit, sollicitudin nec tempor in, malesuada nec ante.</p>";
     $return .= '<div style="width:640px; height:480px;">';
@@ -28,7 +27,6 @@ function osci_iip_demo() {
     
     // And again
     $node = node_load(20);
-    dpm($node);
 	$attr = _osci_iip_get_image_attr(20);
 	$return .= '<p>&nbsp;<p>Mauris condimentum tincidunt ligula et adipiscing. Mauris leo nibh, iaculis quis tincidunt nec, pretium nec erat. Curabitur dui sem, dignissim sit amet condimentum in, ultrices eu nisl. Vivamus vestibulum tellus sit amet dui bibendum sagittis.</p>';
     $return .= '<div style="width:640px; height:480px;">';

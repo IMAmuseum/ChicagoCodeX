@@ -26,8 +26,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	
 	// Extract our class variables from the div data attrs	
-	// this.image_w = div.attr('data-iw');
-	// this.image_h = div.attr('data-ih');
 	var zoom_max = div.attr('data-zl');
 	var node = div.attr('data-node');
 	var collapsed = div.attr('data-collapsed');
@@ -44,7 +42,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	map.zoom(4);
 	var center_pos = {lat:80.87, lon:-150};
 	map.center(center_pos);
-	image = po.image();
+	var image = po.image();
 	
 	var tl = 'tile_loader_'+figure_id+' = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
 	eval(tl);
@@ -116,10 +114,13 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// Wrap the original location in a div and embed the old div's style
 		// so we know where we came from in make_small()
 		// Yes, I know, 'just clone it' you say, but alas, polymaps breaks
+		// must grab these values now, they become screwy after the wrapping
+		var div_width = div.css('width');
+		var div_height = div.css('height');
 		var origin = div.wrap('<div id="origin" />').parent();
 		origin.css('position', div.css('position'))
-			.css('width', div.css('width'))
-			.css('height', div.css('height'));
+			.css('width', div_width)
+			.css('height', div_height);
 				
 		// move the .iipmap div to <body> and position	
 		div.css('position', 'relative')
