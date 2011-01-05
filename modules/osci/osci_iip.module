@@ -33,6 +33,9 @@ function osci_iip_demo() {
 	$return .= _osci_iip_create_iip_div($node);    
     $return .= '</div>';
 	$return .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
+	
+	// make it live!
+	$return .= '<script type="text/javascript">(function($) { $(document).ready(function()	{ $(".iipmap").each(function(){ iipmap($(this)); }); }); }) (jQuery);</script>';
     return $return;
 }
 
