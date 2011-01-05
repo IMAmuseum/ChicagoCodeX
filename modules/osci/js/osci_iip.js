@@ -180,7 +180,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 }
 
 (function($) {
-	$(document).ready(function()
+	$(document).bind("osci_layout_complete", function()
 	{
 		$('.iipmap').each(function(){ iipmap($(this)); });	
 	});	
