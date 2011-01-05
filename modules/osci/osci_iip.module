@@ -134,6 +134,8 @@ function _osci_iip_create_iip_div($node) {
 	$ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" ';
 	$ret .= 'data-ptiff="'.$node->field_ptiff['und'][0]['value'].'" data-figure-id=""';
 	$ret .= 'data-collapsed="true" style="width: 100%; height: 100%; position:relative; background-color: rgba(0,0,0,.8);"></div>';
+	$ret .= "<style>.layer path { fill: none; stroke: red; stroke-width: 4; vector-effect: non-scaling-stroke;}</style>";
+	$ret .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
 	// $ret .= _osci_iip_build_tile_loader($node->nid);
 	return $ret;
 }
