@@ -31,6 +31,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var zoom_max = div.attr('data-zl') - 1;
 	var node = div.attr('data-node');
 	var collapsed = div.attr('data-collapsed');
+	var figure_id = div.attr('data-figure-id');
+	var ptiff = div.attr('data-ptiff');
+	var image_h = div.attr('data-ih');
+	var image_w = div.attr('data-iw');
 	
 	// Create map
 	var map = po.map();
@@ -41,25 +45,31 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var center_pos = {lat:80.87, lon:-150};
 	map.center(center_pos);
 	image = po.image();
-	// tile_loader_x code gets appended dynamically to the map div in osci_iip.module
-	var tl = 'tile_loader_'+node;
-	image.url(eval(tl));
+	
+	var tl = 'function tile_loader_'+node+' (c) { alert("tile loader present"); var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+	tl_func = eval(tl);
+	console.log(tl);
+	console.log(tl_func);
+	
+	// console.log('test of function: '+tl_func({zoom:2, column:1, row:1}));
+	console.log('test');
+	image.url(tl_func);
 	map.add(image);
 	map.add(po.interact());
 	map.add(po.compass().pan("none"));
 	
+	/*
 	// Load in svg markup
 	var feature_obj = { type: 'FeatureCollection', features: new Array(), };
-	console.log(feature_obj);
 	$.get("/sites/default/modules/osci/images/gimp-linepaths-test.svg", function(data){
 		var markup_svg = n$(data.childNodes[1]);
 		var markup_elements = markup_svg.element.children;  
 		$(markup_elements).each( function(index, elem) {
-			console.log(this.tagName);
 			
 			
 		})
 	});
+	*/
 	
 	// Overlay SVG markup
 	var p1 = map.coordinateLocation({zoom:7, column:10, row:10});

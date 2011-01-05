@@ -18,25 +18,21 @@ function osci_iip_demo() {
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.min.js');
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
 	$node = node_load(19);
-	$attr = _osci_iip_get_image_attr(19);
+	
 	$return = "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet aliquam quam nec volutpat. Ut sem eros, tincidunt in vestibulum quis, hendrerit at leo. Ut nibh elit, sollicitudin nec tempor in, malesuada nec ante.</p>";
-    $return .= '<div id="map_19" class="iipmap" data-node="'.$node->nid.'" '
-    	.'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" '
-    	.'data-collapsed="true" style="width: 640px; height: 480px; position:relative; background-color: rgba(0,0,0,.8);"></div>';
-    $return .= _osci_iip_build_tile_loader(19);
+    $return .= '<div style="width:640px; height:480px;">';
+	$return .= _osci_iip_create_iip_div($node);
+	$return .= '</div>';
     $return .= "<style>.layer path { fill: none; stroke: red; stroke-width: 4; vector-effect: non-scaling-stroke;}</style>";
     
     // And again
     $node = node_load(20);
 	$attr = _osci_iip_get_image_attr(20);
 	$return .= '<p>&nbsp;<p>Mauris condimentum tincidunt ligula et adipiscing. Mauris leo nibh, iaculis quis tincidunt nec, pretium nec erat. Curabitur dui sem, dignissim sit amet condimentum in, ultrices eu nisl. Vivamus vestibulum tellus sit amet dui bibendum sagittis.</p>';
-    $return .= '<div id="map_20" class="iipmap" data-node="'.$node->nid.'" '
-    	.'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" '
-    	.'data-collapsed="true" style="width: 640px; height: 480px; position:relative; background-color: rgba(0,0,0,.8);"></div>';
-    $return .= _osci_iip_build_tile_loader(20);
-    
-    
-    $return .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
+    $return .= '<div style="width:640px; height:480px;">';
+	$return .= _osci_iip_create_iip_div($node);    
+    $return .= '</div>';
+	$return .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
     return $return;
 }
 
@@ -136,7 +132,8 @@ function _osci_iip_create_iip_div($node) {
 	$attr = _osci_iip_get_image_attr($node->nid);
 	$ret = '<div id="map_'.$node->nid.'" class="iipmap" data-node="'.$node->nid.'" ';
 	$ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" ';
+	$ret .= 'data-ptiff="'.$node->field_ptiff['und'][0]['value'].'" data-figure-id=""';
 	$ret .= 'data-collapsed="true" style="width: 100%; height: 100%; position:relative; background-color: rgba(0,0,0,.8);"></div>';
-	$ret .= _osci_iip_build_tile_loader($node->nid);
+	// $ret .= _osci_iip_build_tile_loader($node->nid);
 	return $ret;
 }
