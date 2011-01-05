@@ -2,7 +2,6 @@
     //$(document).ready(function() {
     $(document).bind("osci_layout_complete", function(e) {
 
-
         $('#osci-citation-dialog').dialog({ 
             title:      'Add a citation', 
             autoOpen:   false,
@@ -14,12 +13,12 @@
         function() {
             var id = $(this).data('paragraph_id');
             $('span.osci_paragraph_' + id).css('color', '#000');
-            $(this).addClass('cite-paragraph');
+            $('p.osci_paragraph_' + id).addClass('cite-paragraph');
         },
         function() {
             var id = $(this).data('paragraph_id');
             $('span.osci_paragraph_' + id).css('color', '#999');
-            $(this).removeClass('cite-paragraph');
+            $('p.osci_paragraph_' + id).removeClass('cite-paragraph');
         });
 
         $('#osci_viewer p.osci_paragraph').click(function() {
@@ -50,7 +49,9 @@
 
         $('a[href="#highlight"]').live('click', function() {
             highlightTxt($(this).parents('.osci_paragraph'));
-            $(this).parents('ul.selection-toolbar').remove();
+        });
+        $('a[href="#note"]').live('click', function() {
+            $('#osci-citation-dialog').dialog('open');
         });
     });
 
@@ -65,6 +66,7 @@ function highlightTxt(obj) {
     $(selection).find('span').remove();
     var replacementTxt = '<span class="highlighter">' + selection + '</span>';
     txt.html(txt.html().substring(0, start) + replacementTxt + txt.html().substring(end, len));
+    $('ul.selection-toolbar').remove();
 }
 
 /* attempt to find a text selection */ 
