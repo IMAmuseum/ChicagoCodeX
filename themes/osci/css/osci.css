@@ -1,0 +1,21 @@
+.superscript { 
+    position: relative; 
+    top: -0.5em; 
+    font-size: 80%; 
+    text-decoration: none; 
+    padding-left: 3px;
+    font-weight: bold;
+}
+
+.field-items {
+    position: relative;
+}
+
+.page-node-reader #content, .page-node-reader #main, .page-node-reader #header div.section, .page-node-reader #footer, .page-node-reader #page-wrapper {
+    width: 100%;
+    min-width: 10px;
+}
+
+.page-node-reader #seconday-menu {
+    width: 200px;
+}
