@@ -93,16 +93,7 @@
 
         function _addPageContent(content, page)
         {
-            var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, lineHeight, colHeight, overflow = false, paragraphIdentifier;
-
-            figureLinks = $("a.figure-link:not(.processed)", content);
-            if (figureLinks.length) {
-                figureLinks.each(function(i, l){
-                    _process_figure(l, page);
-                });
-                page.data("process", "restart");
-                return true;
-            }
+            var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, lineHeight, colHeight, overflow = false, paragraphIdentifier, figureProcessed = false;
 
             pageColumnData = page.data("column_data")
             pageColumnDataCount = pageColumnData.length;
@@ -129,6 +120,27 @@
             }
 
             column.append(content);
+
+            figureLinks = $("a.figure-link:not(.processed)", content);
+            if (figureLinks.length) {
+                figureLinks.each(function(i, l){
+                    var linkLocation, viewTop, viewBottom;
+
+                    linkLocation  = $(l).position().top;
+                    viewTop = -1 * parseInt(column.children().first().css("margin-top"));
+                    viewBottom = viewTop + pageColumnData[pageColumnNumber].height;
+
+                    if (linkLocation >= viewTop && linkLocation <= viewBottom) {
+                        _process_figure(l, page);
+                        figureProcessed = true;
+                    }
+                });
+
+                if (figureProcessed) {
+                    page.data("process", "restart");
+                    return true;
+                }
+            }
 
             // Position Paragraph Identifiers in the gutter
             paragraphIdentifier = $("span.osci_paragraph_identifier", content).remove();
@@ -367,13 +379,14 @@
             } else {
                 width = (columns * base.options.columnWidth) + (base.options.gutterWidth * (columns - 1));
             }
+            figure.css("width", width + "px");
 
             captionHeight = $("figcaption", figure).height();
             height = (width / aspect) + captionHeight;
 
             if (height > base.options.innerPageHeight) {
                 height = base.options.innerPageHeight;
-console.log([height, captionHeight, aspect]);
+
                 width = (height - captionHeight) * aspect;
             }
             figure.css({ height :  height + "px", width : width + "px"});
@@ -392,7 +405,10 @@ console.log([height, captionHeight, aspect]);
                     offsetLeft = base.options.innerPageGutter[3];
                     break;
                 default:
-                    offsetLeft = base.options.innerPageGutter[3];
+                    if ((column + columns) > base.options.columnsPerPage) {
+                        column -= (column + columns) - base.options.columnsPerPage;
+                    }
+                    offsetLeft = base.options.innerPageGutter[3] + (column * base.options.columnWidth) + (column * base.options.gutterWidth);
             }
             figure.css("margin-left", offsetLeft);
 
