@@ -6,7 +6,10 @@
             title:      'Add a citation', 
             autoOpen:   false,
             modal:      true,
-            draggable:  false
+            draggable:  false,
+            close: function() {
+                $('ul.selection-toolbar').remove();
+            }
         });
 
         $('#osci_viewer p.osci_paragraph').hover(
@@ -51,6 +54,7 @@
             highlightTxt($(this).parents('.osci_paragraph'));
         });
         $('a[href="#note"]').live('click', function() {
+            $('#edit-citation').html(getSelected());
             $('#osci-citation-dialog').dialog('open');
         });
     });

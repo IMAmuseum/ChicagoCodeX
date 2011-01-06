@@ -1,7 +1,8 @@
 .highlighter {
-    color: #FF0000;
+    background-color: #FFCC33;
 }
-#osci-citation-dialog {
+
+div#osci-citation-dialog {
     display: none;
 }
 

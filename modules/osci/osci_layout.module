@@ -25,5 +25,7 @@ function osci_layout_render($nid)
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.min.js', 'file');
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js', 'file');
     drupal_add_css(drupal_get_path('module', 'osci_layout').'/css/osci_layout.css');
-    return '<div id="osci_viewer_wrapper"><div id="osci_viewer"></div><div id="osci_navigation"></div><div id="osci_reader_content"></div></div>';
+    $output = render(drupal_get_form('osci_citation_dialog'));
+    $output .= '<div id="osci_viewer_wrapper"><div id="osci_viewer"></div><div id="osci_navigation"></div><div id="osci_reader_content"></div></div>';
+    return $output;
 }

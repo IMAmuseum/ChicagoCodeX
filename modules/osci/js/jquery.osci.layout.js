@@ -367,14 +367,16 @@
             } else {
                 width = (columns * base.options.columnWidth) + (base.options.gutterWidth * (columns - 1));
             }
-            figure.css("width", width + "px");
 
             captionHeight = $("figcaption", figure).height();
             height = (width / aspect) + captionHeight;
+
             if (height > base.options.innerPageHeight) {
                 height = base.options.innerPageHeight;
+console.log([height, captionHeight, aspect]);
+                width = (height - captionHeight) * aspect;
             }
-            figure.css("height", height + "px");
+            figure.css({ height :  height + "px", width : width + "px"});
 
             $(".figureContent", figure).css({
                 width : width,
@@ -409,7 +411,7 @@
                 colStart = (base.options.columnWidth * i) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
                 colEnd = (base.options.columnWidth * (i + 1)) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
 
-                if (offsetLeft <= colStart && (offsetLeft + width) >= colEnd) {
+                if (offsetLeft <= colStart && (offsetLeft + width) >= colStart) {
                     columnCoverage[i] = true;
                 } else {
                     columnCoverage[i] = false;

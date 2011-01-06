@@ -163,8 +163,6 @@ function osci_body_copy_render_layout($nid)
         );
     }
 
-    $elements['osci_citation_dialog'] = drupal_get_form('osci_citation_dialog');
-
     $elements['#theme'] = 'body_copy_node';
     unset($elements['#pre_render']);
 
