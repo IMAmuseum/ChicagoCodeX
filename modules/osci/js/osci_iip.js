@@ -39,7 +39,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// Calculate best zoom level to start at based on div parent's size.
 	var parent_w = parseInt(div.parent().css('width'));
 	var parent_h = parseInt(div.parent().css('height'));
-	var zoom_level = Math.sqrt(image_w / parent_w);
+	var zoom_level = custLog(image_w / parent_w, 2);
 	
 	console.log(['parent width:', parent_w, 'parent height:', parent_h, 'image width:', image_w, 'image height:', image_h, 'zoom max:', zoom_max, 'zoom level:', zoom_level]);
 
@@ -216,6 +216,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		map.resize();
 		// restore center
 		map.center(center_pos);
+	}
+	
+	function custLog(x,base) {
+		// Created 1997 by Brian Risk.  http://brianrisk.com
+		return (Math.log(x))/(Math.log(base));
 	}
 	
 }
