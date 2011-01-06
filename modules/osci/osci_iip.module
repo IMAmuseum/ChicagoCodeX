@@ -20,7 +20,7 @@ function osci_iip_demo() {
 	$node = node_load(19);
 	
 	$return = "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet aliquam quam nec volutpat. Ut sem eros, tincidunt in vestibulum quis, hendrerit at leo. Ut nibh elit, sollicitudin nec tempor in, malesuada nec ante.</p>";
-    $return .= '<div style="width:640px; height:480px;">';
+    $return .= '<div style="width:525px; height:400px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
     $return .= "<style>.layer path { fill: none; stroke: red; stroke-width: 4; vector-effect: non-scaling-stroke;}</style>";
@@ -66,45 +66,6 @@ function _osci_iip_save_aspect_ratio($nid) {
 	node_save($node);
 }
 
-function _osci_iip_build_tile_loader($nid) {
-	if(is_numeric($nid)) {
-		$node = node_load($nid);
-		$attr = _osci_iip_get_image_attr($nid);
-		$iipsrv = 'http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi';
-		$return  = '<script type="text/javascript">'."\n".
-			'function tile_loader_'.$nid.'(c) {'."\n".
-				// Set up our context for this node
-				'var ptiff = "'.$node->field_ptiff['und'][0]['value'].'";'."\n".
-				'var image_h = '.$attr['ih'].';'."\n".
-				'var image_w = '.$attr['iw'].';'."\n".
-				'var zoom_max = '.$attr['zl'].' - 1;'."\n".
-				'var tile_size = 256;'."\n".
-				// Determine the scale factor of this zoom
-				'var scale = Math.pow(2, zoom_max - c.zoom);'."\n".
-				// Figure out the w/h of the image at this zoom
-				'var mw = Math.round(image_w / scale);'."\n".
-				'var mh = Math.round(image_h / scale);'."\n".
-				// Figure out how many tiles are at this zoom
-				'var tw = Math.ceil(mw / tile_size);'."\n".
-				'var th = Math.ceil(mh / tile_size);'."\n".
-				// Everything above this point should be cached per zoom level
-				// Bail out if this tile if out of range
-				'if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return;'."\n".
-				// If this is an edge case, we need to adjust the size
-				'if (c.row == (th - 1)) {'."\n".
-					'c.element.setAttribute("height", mh % tile_size);'."\n".		
-				'}'."\n".
-				'if (c.column == (tw - 1)) {'."\n".
-					'c.element.setAttribute("width", mw % tile_size);'."\n".
-				'}'."\n".
-				'return "'.$iipsrv.'?fif=" + ptiff + "&jtl=" + c.zoom + "," + ((c.row * tw) + c.column);'."\n".
-			'}'."\n";
-			
-		$return .= '</script>';
-		return $return;
-	}	
-}
-
 function _osci_iip_get_image_attr($nid) {
 	if (!is_numeric($nid)) return false;
 	$iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
@@ -140,7 +101,7 @@ function _osci_iip_create_iip_div($node, $figure_id) {
 	$ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
 	$ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zl="'.$attr['zl'].'" ';
 	$ret .= 'data-ptiff="'.$node->field_ptiff['und'][0]['value'].'" data-figure-id="'.$figure_id.'"';
-	$ret .= 'data-collapsed="true" style="width: 100%; height: 100%; position:relative; background-color: rgba(0,0,0,.8);"></div>';
+	$ret .= 'data-collapsed="true" style="width: 100%; height: 100%; position:relative; background-color: rgba(255,0,0,.8);"></div>';
 	$ret .= "<style>.layer path { fill: none; stroke: red; stroke-width: 4; vector-effect: non-scaling-stroke;}</style>";
 	$ret .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
 	// $ret .= _osci_iip_build_tile_loader($node->nid);

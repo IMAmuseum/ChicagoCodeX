@@ -39,8 +39,14 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// Calculate best zoom level to start at based on div parent's size.
 	var parent_w = parseInt(div.parent().css('width'));
 	var parent_h = parseInt(div.parent().css('height'));
-	var zoom_level = custLog(image_w / parent_w, 2);
-	
+	var zoom_level_h = custLog((image_h / parent_h), 2);
+	var zoom_level_w = custLog((image_w / parent_w), 2);
+	if (zoom_level_h <= zoom_level_w) {
+		var zoom_level = zoom_level_h;
+	}
+	else {
+		var zoom_level = zoom_level_w;
+	}
 	console.log(['parent width:', parent_w, 'parent height:', parent_h, 'image width:', image_w, 'image height:', image_h, 'zoom max:', zoom_max, 'zoom level:', zoom_level]);
 
 	
@@ -49,41 +55,15 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var map = po.map();
 	var svg = po.svg('svg');
 	map.container(div[0].appendChild(svg));
-	// console.log(map.center());
 	map.zoomRange([1, zoom_max]);
 	map.zoom(zoom_level);
-	
-	// Center
-	var center_pos = {lat:81.25, lon:-136.25};
-	// console.log(map.center());
-	// map.center(center_pos);
 
-	
-	
-	
-	
-	
-	
 	// Set visible window so that full image fits inside and doesn't overflow
 	var th = parent_h / tile_size; // tiles high
 	var tw = parent_w / tile_size; // tiles wide
 	console.log(['tiles wide:', tw, 'tiles high:', tw]);
-	
 	// map extents are to be given as SW corner, NE corner
 	map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
-	console.log(map.zoom());
-	//console.log([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
 	
 	// Load in our image and define the tile loader for it
 	var image = po.image();
@@ -219,7 +199,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	
 	function custLog(x,base) {
-		// Created 1997 by Brian Risk.  http://brianrisk.com
 		return (Math.log(x))/(Math.log(base));
 	}
 	
