@@ -41,14 +41,14 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var parent_h = parseInt(div.parent().css('height'));
 	var zoom_level_h = custLog((image_h / parent_h), 2);
 	var zoom_level_w = custLog((image_w / parent_w), 2);
-	console.log(['zoom_level_h:', zoom_level_h, 'zoom_level_w', zoom_level_w]);
+	// console.log(['zoom_level_h:', zoom_level_h, 'zoom_level_w', zoom_level_w]);
 	if (zoom_level_h >= zoom_level_w) {
 		var zoom_level = zoom_max - zoom_level_h -1;
 	}
 	else {
 		var zoom_level = zoom_max - zoom_level_w -1;
 	}
-	console.log(['parent width:', parent_w, 'parent height:', parent_h, 'image width:', image_w, 'image height:', image_h, 'zoom max:', zoom_max, 'zoom level:', zoom_level]);
+	// console.log(['parent width:', parent_w, 'parent height:', parent_h, 'image width:', image_w, 'image height:', image_h, 'zoom max:', zoom_max, 'zoom level:', zoom_level]);
 
 	
 	
@@ -62,13 +62,13 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// Set visible window so that full image fits inside and doesn't overflow
 	var th = parent_h / tile_size; // tiles high
 	var tw = parent_w / tile_size; // tiles wide
-	console.log(['tiles wide:', tw, 'tiles high:', tw]);
+	// console.log(['tiles wide:', tw, 'tiles high:', tw]);
 	// map extents are to be given as SW corner, NE corner
 	map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
 	
 	// Load in our image and define the tile loader for it
 	var image = po.image();
-	var tl = 'tile_loader_'+figure_id+' = function (c) { console.log(c); var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+	var tl = 'tile_loader_'+figure_id+' = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
 	eval(tl);
 	image.url(window['tile_loader_'+figure_id]);
 	map.add(image);
