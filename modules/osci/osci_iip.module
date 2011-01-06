@@ -20,7 +20,7 @@ function osci_iip_demo() {
 	$node = node_load(19);
 	
 	$return = "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet aliquam quam nec volutpat. Ut sem eros, tincidunt in vestibulum quis, hendrerit at leo. Ut nibh elit, sollicitudin nec tempor in, malesuada nec ante.</p>";
-    $return .= '<div style="width:525px; height:400px;">';
+    $return .= '<div style="width:320px; height:240px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
     $return .= "<style>.layer path { fill: none; stroke: red; stroke-width: 4; vector-effect: non-scaling-stroke;}</style>";

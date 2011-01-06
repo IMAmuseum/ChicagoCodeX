@@ -41,11 +41,12 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var parent_h = parseInt(div.parent().css('height'));
 	var zoom_level_h = custLog((image_h / parent_h), 2);
 	var zoom_level_w = custLog((image_w / parent_w), 2);
-	if (zoom_level_h <= zoom_level_w) {
-		var zoom_level = zoom_level_h;
+	console.log(['zoom_level_h:', zoom_level_h, 'zoom_level_w', zoom_level_w]);
+	if (zoom_level_h >= zoom_level_w) {
+		var zoom_level = zoom_max - zoom_level_h -1;
 	}
 	else {
-		var zoom_level = zoom_level_w;
+		var zoom_level = zoom_max - zoom_level_w -1;
 	}
 	console.log(['parent width:', parent_w, 'parent height:', parent_h, 'image width:', image_w, 'image height:', image_h, 'zoom max:', zoom_max, 'zoom level:', zoom_level]);
 
@@ -55,7 +56,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var map = po.map();
 	var svg = po.svg('svg');
 	map.container(div[0].appendChild(svg));
-	map.zoomRange([1, zoom_max]);
+	map.zoomRange([0, zoom_max]);
 	map.zoom(zoom_level);
 
 	// Set visible window so that full image fits inside and doesn't overflow
