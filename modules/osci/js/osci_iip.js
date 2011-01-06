@@ -67,7 +67,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// Set visible window so that full image fits inside and doesn't overflow
 	var th = parent_h / tile_size; // tiles high
 	var tw = parent_w / tile_size; // tiles wide
-	console.log(['tiles wide:', tw, 'tiles high:', tw])
+	console.log(['tiles wide:', tw, 'tiles high:', tw]);
 	
 	// map extents are to be given as SW corner, NE corner
 	map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
