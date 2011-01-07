@@ -53,14 +53,6 @@
   <title><?php print $head_title; ?></title>
   <?php print $styles; ?>
   <?php print $scripts; ?>
-  <script type="text/javascript">
-  	if (window.console == undefined) {
-  	  	var console = new Object();
-		console.log = function(data) {
-			return;
-		}
-  	}
-  </script>
 </head>
 <body class="<?php print $classes; ?>" <?php print $attributes;?>>
   <div id="skip-link">
