@@ -152,8 +152,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		
 		var fs_wrap = div.wrap('<div id="fs_wrap" />').parent();
 		fs_wrap.css('position', 'absolute')
-			.css('top', '0px');
-			.css('left', '0px');
+			.css('top', '0px')
+			.css('left', '0px')
 			.css('width', '100%')
 			.css('height', '100%');
 		
