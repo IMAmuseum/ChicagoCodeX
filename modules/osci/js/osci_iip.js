@@ -129,6 +129,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr("fill","#aaa")
 			.attr("class", "svg_arrow");
 	}
+	console.log(window);
+	
 	
 	function make_fullscreen() {
 		
@@ -136,6 +138,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// so we know where we came from in make_small()
 		// Yes, I know, 'just clone it' you say, but alas, polymaps breaks
 		// must grab these values now, they become screwy after the wrapping
+		var top_offset = $(window).height() * 0.05; // offset should be 5%
 		var div_width = div.css('width');
 		var div_height = div.css('height');
 		var origin = div.wrap('<div id="origin" />').parent();
@@ -146,8 +149,9 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// move the .iipmap div to <body> and position	
 		div.css('position', 'relative')
 			.css('margin', 'auto')
+			.css('top', top_offset+'px')
 			.css('width', '95%')
-			.css('height', '95%')
+			.css('height', '90%')
 			.appendTo('body');
 		
 		var fs_wrap = div.wrap('<div id="fs_wrap" />').parent();
@@ -155,7 +159,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('top', '0px')
 			.css('left', '0px')
 			.css('width', '100%')
-			.css('height', '100%');
+			.css('height', '100%')
+			.css('background-color', 'rgba(0,255,0,0.8)');
 		
 		// flip the arrow around on the fullscreen toggle southwest
 		arrow.attr("transform", "translate(16,16)rotate(135)scale(5)translate(-1.85,0)");
