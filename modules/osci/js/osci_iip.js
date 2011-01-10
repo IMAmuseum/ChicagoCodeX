@@ -181,8 +181,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr('data-figure-id', figure_id)
 			.attr('data-ptiff', ptiff)
 			.attr('data-ih', image_h)
-			.attr('data-iw', image_w)
-			.attr('centerpoint', centerpoint);
+			.attr('data-iw', image_w);
 		
 		iipmap(newdiv);
 	
