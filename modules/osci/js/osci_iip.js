@@ -132,9 +132,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	function make_fullscreen() {
 		
-		// Store center coordinate of map so we are looking at the same thing between resizes
-		center_pos = map.center();
-	
 		// Wrap the original location in a div and embed the old div's style
 		// so we know where we came from in make_small()
 		// Yes, I know, 'just clone it' you say, but alas, polymaps breaks
@@ -166,13 +163,12 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		fs.off("mousedown", make_fullscreen).on("mousedown", make_small);
 		map.resize();
 		// restore center
-		map.center(center_pos);
+		map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
 	
 	}
 	
 	function make_small() {
-		// Store center coordinate of map so we are looking at the same thing between resizes
-		center_pos = map.center();
+		
 		// remove the fs_wrap div wrapper
 		div.unwrap();
 		// append the div to the origin
@@ -196,7 +192,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		fs.off("mousedown", make_small).on("mousedown", make_fullscreen);
 		map.resize();
 		// restore center
-		map.center(center_pos);
+		map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
+
 	}
 	
 	function custLog(x,base) {
