@@ -129,77 +129,67 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr("fill","#aaa")
 			.attr("class", "svg_arrow");
 	}
-	console.log(window);
-	
+	else {
+		var nmap = n$(div[0]);
+		var fs = nmap.add("svg:svg")
+			.attr("width",32)
+			.attr("height",32)
+			.attr("class", "fullscreen")
+			.style("position","absolute")
+			.style("right","5px")
+			.style("top","5px")
+			.style("visibility","visible")
+			.on("mousedown",make_small);
+		var circle = fs.add("svg:circle")
+			.attr("cx",16)
+			.attr("cy",16)
+			.attr("r",14)
+			.attr("fill","#000")
+			.attr("stroke","#ccc")
+			.attr("stroke-width",4)
+			.add("svg:title")
+			.text("Toggle fullscreen.");
+		var arrow = fs.add("svg:path")
+			.attr("transform","translate(16,16)rotate(135)scale(5)translate(-1.85,0)")
+			.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
+			.attr("pointer-events","none")
+			.attr("fill","#aaa")
+			.attr("class", "svg_arrow");
+	}
+		
 	
 	function make_fullscreen() {
 		
-		// Wrap the original location in a div and embed the old div's style
-		// so we know where we came from in make_small()
-		// Yes, I know, 'just clone it' you say, but alas, polymaps breaks
-		// must grab these values now, they become screwy after the wrapping
-		var top_offset = $(window).height() * 0.05; // offset should be 5%
-		var div_width = div.css('width');
-		var div_height = div.css('height');
-		var origin = div.wrap('<div id="origin" />').parent();
-		origin.css('position', div.css('position'))
-			.css('width', div_width)
-			.css('height', div_height);
-				
-		// move the .iipmap div to <body> and position	
-		div.css('position', 'relative')
-			.css('margin', 'auto')
-			.css('top', '5%')
-			.css('width', '95%')
-			.css('height', '90%')
-			.appendTo('body');
-		
-		var fs_wrap = div.wrap('<div id="fs_wrap" />').parent();
+		var fs_wrap = $('<div id="fs_wrap" />').appendTo('body');
 		fs_wrap.css('position', 'absolute')
 			.css('top', '0px')
 			.css('left', '0px')
 			.css('width', '100%')
 			.css('height', '100%')
-			.css('background-color', 'rgba(0,255,0,0.8)');
+			.css('background-color', 'rgba(0,0,0,0.8)');
+
+		var newdiv = $('<div id="iip_fullscreen" />').appendTo(fs_wrap);
+		newdiv.css('position', 'relative')
+		.css('margin', 'auto')
+		.css('top', '5%')
+		.css('width', '95%')
+		.css('height', '90%');
 		
-		// flip the arrow around on the fullscreen toggle southwest
-		arrow.attr("transform", "translate(16,16)rotate(135)scale(5)translate(-1.85,0)");
+		// append attributes for the image
+		newdiv.attr('data-zl', zoom_max)
+			.attr('data-node', node)
+			.attr('data-figure-id', figure_id)
+			.attr('data-ptiff', ptiff)
+			.attr('data-ih', image_h)
+			.attr('data-iw', image_w)
+			.attr('centerpoint', centerpoint);
 		
-		// redefine our mousedown callback
-		fs.off("mousedown", make_fullscreen).on("mousedown", make_small);
-		map.resize();
-		// restore center
-		map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
+		iipmap(newdiv);
 	
 	}
 	
 	function make_small() {
-		
-		// remove the fs_wrap div wrapper
-		div.unwrap();
-		// append the div to the origin
-		var origin = $("#origin");
-		div.appendTo("#origin");
-		
-		// copy back the css to the div from the origin
-		div.css('position', origin.css('position'))
-			.css('top', '')
-			.css('margin', '')
-			.css('width', origin.css('width'))
-			.css('height', origin.css('height'));
-		
-		// unwrap the div, discarding the origin
-		div.unwrap();
-		
-		// flip the fullscreen toggle arrow back to northeast
-		arrow.attr("transform", "translate(16,16)rotate(-45)scale(5)translate(-1.85,0)");
-		
-		// redefine mousedown callback
-		fs.off("mousedown", make_small).on("mousedown", make_fullscreen);
-		map.resize();
-		// restore center
-		map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
-
+		$('#iip_fullscreen').parent().remove();
 	}
 	
 	function custLog(x,base) {
