@@ -149,7 +149,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// move the .iipmap div to <body> and position	
 		div.css('position', 'relative')
 			.css('margin', 'auto')
-			.css('top', top_offset+'px')
+			.css('top', '5%')
 			.css('width', '95%')
 			.css('height', '90%')
 			.appendTo('body');
