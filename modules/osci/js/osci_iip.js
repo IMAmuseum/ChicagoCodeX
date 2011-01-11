@@ -33,6 +33,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var ptiff = div.attr('data-ptiff');
 	var image_h = div.attr('data-ih');
 	var image_w = div.attr('data-iw');
+	var center_lat = div.attr('data-center-lat');
+	var center_lon = div.attr('data-center-lon');
 	var tile_size = 256;
 	
 	
@@ -77,6 +79,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	map.add(po.interact());
 	map.add(po.compass().pan("none"));
 	
+	// If we have a center value set, let's use it
+	if (center_lat && center_lon) {
+		map.center({lat: parseFloat(center_lat), lon: parseFloat(center_lon)});
+	}
 	/*
 	// Load in svg markup
 	var feature_obj = { type: 'FeatureCollection', features: new Array(), };
@@ -176,13 +182,15 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		.css('height', '90%');
 		
 		// append attributes for the image
+		var center = map.center();
 		newdiv.attr('data-zl', zoom_max)
 			.attr('data-node', node)
 			.attr('data-figure-id', figure_id)
 			.attr('data-ptiff', ptiff)
 			.attr('data-ih', image_h)
-			.attr('data-iw', image_w);
-		
+			.attr('data-iw', image_w)
+			.attr('data-center-lat', center.lat)
+			.attr('data-center-lon', center.lon);
 		iipmap(newdiv);
 	
 	}
