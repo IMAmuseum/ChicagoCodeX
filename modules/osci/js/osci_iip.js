@@ -103,7 +103,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
     .features([{
 		"geometry": {
 			"type": "LineString",
-			"coordinates": [ [p1.lon, p1.lat], [p1.lon, p2.lat], [p2.lon, p2.lat], [p2.lon, p1.lat], [p1.lon, p1.lat] ]
+			"coordinates": [ [p1.lon -1.5, p2.lat -.5], [p1.lon -1.5, p2.lat], [p1.lon, p1.lat] ]
 		},
 	}]));
 	
