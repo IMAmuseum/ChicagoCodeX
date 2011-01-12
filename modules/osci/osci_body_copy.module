@@ -443,7 +443,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#type'         => 'fieldset',
             '#attributes'   => array('class' => array($class)),
             '#prefix'       => '<div id="' . $figId . '" data-figprefix="' . $fieldName . '_fig_' . $nid . '_">',
-            '#postfix'      => '</div>',
+            '#suffix'      => '</div>',
             '#weight'       => $id,
             '#tree'         => true,
             'figure_id'     => array(

@@ -31,6 +31,10 @@
         {
             var i = 0, elements, totalElements = 0, page, currentElement, pageElementCount, figureLinks, overflow, contentOffset = 0;
 
+            $(document).trigger("osci_layout_start");
+
+            _updateHeights();
+
             base.$el.append(base.data.clone());
             base.figures = $("figure", base.$el);
             base.viewer.empty();
@@ -93,7 +97,8 @@
 
         function _addPageContent(content, page)
         {
-            var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, lineHeight, colHeight, overflow = false, paragraphIdentifier, figureProcessed = false;
+            var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, 
+                lineHeight, colHeight, overflow = false, paragraphIdentifier, figureProcessed = false, columnContentCount;
 
             pageColumnData = page.data("column_data")
             pageColumnDataCount = pageColumnData.length;
@@ -121,16 +126,26 @@
 
             column.append(content);
 
+            lineHeight = parseFloat(content.css("line-height"));
+
+            if (offset !== 0) {
+                offset = content.outerHeight() + offset;
+                //if (offset % lineHeight !== 0) {
+                //    offset = (Math.ceil(offset / lineHeight) * lineHeight) + lineHeight;
+                //} else {
+                //    offset += lineHeight;
+                //}
+            }
+
+            content.css("margin-top", "-" + offset + "px");
+
             figureLinks = $("a.figure-link:not(.processed)", content);
             if (figureLinks.length) {
                 figureLinks.each(function(i, l){
-                    var linkLocation, viewTop, viewBottom;
+                    var linkLocation;
 
                     linkLocation  = $(l).position().top;
-                    viewTop = -1 * parseInt(column.children().first().css("margin-top"));
-                    viewBottom = viewTop + pageColumnData[pageColumnNumber].height;
-
-                    if (linkLocation >= viewTop && linkLocation <= viewBottom) {
+                    if (linkLocation >= 0 && linkLocation <= pageColumnData[pageColumnNumber].height) {
                         _process_figure(l, page);
                         figureProcessed = true;
                     }
@@ -149,36 +164,25 @@
                 if ($("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id"), page).length == 0) {
                     paragraphIdentifier.appendTo(page).css({
                         "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2)) + "px",
-                        "margin-top" : content.position().top + base.options.innerPageGutter[0] + "px"
+                        "margin-top" : content.position().top + parseInt(column.css("margin-top")) + "px"
                     });
                 }
             }
 
-            lineHeight = parseFloat(content.css("line-height"));
-
-            if (offset !== 0) {
-                offset = content.height() + offset;
-
-                if (offset % lineHeight !== 0) {
-                    offset = (Math.ceil(offset / lineHeight) * lineHeight) + lineHeight;
-                } else {
-                    offset += lineHeight;
-                }
-            }
-
-            content.css("margin-top", "-" + offset + "px");
-
             heightRemain = pageColumnData[pageColumnNumber].height - column.height() + offset;
+            if (heightRemain > 0 && heightRemain < lineHeight) {
+                heightRemain = 0;
+            }
             pageColumnData[pageColumnNumber].heightRemain = heightRemain;
 
             if (heightRemain < 0) {
                 colHeight = content.position().top + (Math.floor((pageColumnData[pageColumnNumber].height - content.position().top - parseInt($("*:first",column).css("margin-top"))) / lineHeight) * lineHeight);
-
                 while (colHeight > pageColumnData[pageColumnNumber].height) {
                     colHeight -= lineHeight;
                 }
-                heightRemain -= (pageColumnData[pageColumnNumber].height - colHeight);
                 column.height(colHeight + "px");
+                columnChildrenCount = column.children().length ? offset : 0;
+                heightRemain = -1 * (content.outerHeight() - (colHeight - content.position().top) - columnChildrenCount);
                 pageColumnData[pageColumnNumber].heightRemain = heightRemain;
                 overflow = true;
             }
@@ -238,6 +242,16 @@
 
             base.options.columnsPerPage = perPage;
         };
+
+        function _updateHeights()
+        {
+            var container;
+
+            container = base.viewer.parent();
+
+            container.height($(window).height() - (container.outerHeight() - container.height()));
+            base.viewer.height(container.height() - $("#osci_navigation").height() - 20);
+        }
 
         function _newColumn(page)
         {
@@ -566,6 +580,11 @@ jQuery(document).ready(function() {
         }
     }).appendTo("#osci_navigation");
 
+    jQuery("#osci_viewer_wrapper").swipe({
+        swipeLeft : function () { $("a.next","#osci_navigation").click(); },
+        swipeRight : function () { $("a.prev","#osci_navigation").click(); }
+    });
+
     jQuery("a.footnote-link, a.figure-link","#osci_viewer").live('click',function(e){
         e.preventDefault();
         var $this = jQuery(this);
@@ -574,6 +593,8 @@ jQuery(document).ready(function() {
 	    operation : 'page',
             value : jQuery($this.attr("href")).parents(".osci_page").data("page")
         });
+
+        jQuery($this.attr("href")).effect("pulsate", { times : 3 }, 1000);
     });
 
     jQuery(document).keydown(function(e){
