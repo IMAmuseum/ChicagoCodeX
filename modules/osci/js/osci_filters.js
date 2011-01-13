@@ -29,7 +29,7 @@
         });
 
         $(document).keydown(function(e) {
-            if (e.keyCode == keyCode && checkKey === false) {
+            if (e.keyCode == keyCode && e.ctrlKey === true && checkKey === false) {
                 checkKey = true;
                 $('.field-name-field-primary-image a').click();
                 e.preventDefault();
