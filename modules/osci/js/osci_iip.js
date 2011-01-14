@@ -26,7 +26,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	
 	// Extract our class variables from the div data attrs	
-	var zoom_max = div.attr('data-zl');
+	var zoom_max = div.attr('data-zlm');
 	var node = div.attr('data-node');
 	var collapsed = div.attr('data-collapsed');
 	var figure_id = div.attr('data-figure-id');
@@ -35,24 +35,25 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var image_w = div.attr('data-iw');
 	var center_lat = div.attr('data-center-lat');
 	var center_lon = div.attr('data-center-lon');
+	var svg_path = div.attr('data-svg');
 	var tile_size = 256;
 	
 	
 	// Calculate best zoom level to start at based on div parent's size.
 	var parent_w = parseInt(div.parent().css('width'));
 	var parent_h = parseInt(div.parent().css('height'));
+	var th = parent_h / tile_size; // tiles high
+	var tw = parent_w / tile_size; // tiles wide
 	var zoom_level_h = custLog((image_h / parent_h), 2);
 	var zoom_level_w = custLog((image_w / parent_w), 2);
-	// console.log(['zoom_level_h:', zoom_level_h, 'zoom_level_w', zoom_level_w]);
-	if (zoom_level_h >= zoom_level_w) {
-		var zoom_level = zoom_max - zoom_level_h -1;
+	if(!zoom_level) {
+		if (zoom_level_h >= zoom_level_w) {
+			var zoom_level = zoom_max - zoom_level_h -1;
+		}
+		else {
+			var zoom_level = zoom_max - zoom_level_w -1;
+		}
 	}
-	else {
-		var zoom_level = zoom_max - zoom_level_w -1;
-	}
-	// console.log(['parent width:', parent_w, 'parent height:', parent_h, 'image width:', image_w, 'image height:', image_h, 'zoom max:', zoom_max, 'zoom level:', zoom_level]);
-
-	
 	
 	// Create map
 	var map = po.map();
@@ -61,12 +62,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	map.zoomRange([0, zoom_max]);
 	map.zoom(zoom_level);
 
-	// Set visible window so that full image fits inside and doesn't overflow
-	var th = parent_h / tile_size; // tiles high
-	var tw = parent_w / tile_size; // tiles wide
-	// console.log(['tiles wide:', tw, 'tiles high:', tw]);
-	// map extents are to be given as SW corner, NE corner
-	map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
+	// Set the map extents to our image
+	reset_map();
+	
+	// Save our original center for later use (reset)
+	var orig_center = map.center();
 	
 	// Load in our image and define the tile loader for it
 	var image = po.image();
@@ -76,40 +76,34 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	map.add(image);
 	
 	// Controls and functionality
+	var nmap = n$(div[0]); // the map container ran through the nns js library for svg manipulation
 	map.add(po.interact());
-	map.add(po.compass().pan("none"));
+	map.add(po.compass().pan('none'));
 	
-	// If we have a center value set, let's use it
-	if (center_lat && center_lon) {
-		map.center({lat: parseFloat(center_lat), lon: parseFloat(center_lon)});
-	}
-	/*
-	// Load in svg markup
-	var feature_obj = { type: 'FeatureCollection', features: new Array(), };
-	$.get("/sites/default/modules/osci/images/gimp-linepaths-test.svg", function(data){
-		var markup_svg = n$(data.childNodes[1]);
-		var markup_elements = markup_svg.element.children;  
-		$(markup_elements).each( function(index, elem) {
-			
-			
-		})
-	});
-	*/
+	// Add reset button
+	var reset_btn = nmap.add("svg:svg")
+		.attr("width", 40)
+		.attr("height", 15)
+		.attr("class", "fullscreen")
+		.style("position","absolute")
+		.style("left","15px")
+		.style("top","65px")
+		.style("visibility","visible")
+		.on("mousedown",reset_map);
+	reset_btn.add("svg:rect")
+		.attr("width", "100%")
+		.attr("height", "100%")
+		.style("fill", "rgb(0,0,0)");
+	reset_btn.add("svg:text")
+		.attr("x", "4")
+		.attr("y", "10")
+		.attr("font-size", 9)
+		.attr("font-family", "Arial, Arial, Helvetica, sans-serif")
+		.attr("fill", "white")
+		.text("RESET");	
 	
-	// Overlay SVG markup
-	var p1 = map.coordinateLocation({zoom:7, column:10, row:10});
-	var p2 = map.coordinateLocation({zoom:7, column:11, row:11});
-	map.add(po.geoJson()
-    .features([{
-		"geometry": {
-			"type": "LineString",
-			"coordinates": [ [p1.lon -1.5, p2.lat -.5], [p1.lon -1.5, p2.lat], [p1.lon, p1.lat] ]
-		},
-	}]));
-	
-	// if collapsed, add a expand button to go fullscreen
+	// If collapsed, add a expand button to go fullscreen
 	if (collapsed) {
-		var nmap = n$(div[0]);
 		var fs = nmap.add("svg:svg")
 			.attr("width",32)
 			.attr("height",32)
@@ -135,8 +129,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr("fill","#aaa")
 			.attr("class", "svg_arrow");
 	}
+	// Else add the downsize (destroy) button
 	else {
-		var nmap = n$(div[0]);
 		var fs = nmap.add("svg:svg")
 			.attr("width",32)
 			.attr("height",32)
@@ -162,7 +156,44 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr("fill","#aaa")
 			.attr("class", "svg_arrow");
 	}
-		
+	
+	
+	
+	// Load in svg markup
+	
+	if (svg_path) {
+		// console.log(['svg_path: ', svg_path]);
+		var geojson = { type: 'GeometryCollection', geometries: new Array(), };
+		$.get(svg_path, function(data){
+			var markup_svg = n$(data.childNodes[1]);
+			var markup_elements = markup_svg.element.children;  
+			$(markup_elements).each( function(index, elem) {
+				var path_string = $(this).attr('d');
+				var coords = parseSVG(path_string);
+				var geometry = new Object;
+				geometry.type = "LineString";
+				geometry.coordinates = [coords];
+				console.log(geometry);
+				
+				
+				
+			})
+		});
+	}
+	
+	/*
+	// Overlay SVG markup
+	var p1 = map.coordinateLocation({zoom:7, column:10, row:10});
+	var p2 = map.coordinateLocation({zoom:7, column:11, row:11});
+	map.add(po.geoJson()
+    .features([{
+		"geometry": {
+			"type": "LineString",
+			"coordinates": [ [p1.lon -1.5, p2.lat -.5], [p1.lon -1.5, p2.lat], [p1.lon, p1.lat] ]
+		},
+	}]));
+	*/
+	
 	
 	function make_fullscreen() {
 		
@@ -182,15 +213,14 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		.css('height', '90%');
 		
 		// append attributes for the image
-		var center = map.center();
-		newdiv.attr('data-zl', zoom_max)
+		newdiv.attr('data-zlm', zoom_max)
 			.attr('data-node', node)
 			.attr('data-figure-id', figure_id)
 			.attr('data-ptiff', ptiff)
 			.attr('data-ih', image_h)
 			.attr('data-iw', image_w)
-			.attr('data-center-lat', center.lat)
-			.attr('data-center-lon', center.lon);
+			.attr('data-center-lat', orig_center.lat)
+			.attr('data-center-lon', orig_center.lon);
 		iipmap(newdiv);
 	
 	}
@@ -199,8 +229,40 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		$('#iip_fullscreen').parent().remove();
 	}
 	
+	function reset_map() { // Set visible window so that full image fits inside and doesn't overflow
+		// If we have a center value set, let's use it, else calculate
+		// best center based on coordinates of our image tiles.
+		if (center_lat && center_lon) { // primarily used for make_fullscreen to retain center
+			map.center({lat: parseFloat(center_lat), lon: parseFloat(center_lon)});
+			map.zoom(zoom_level);
+		}
+		else {
+			// map extents are to be given as SW corner, NE corner
+			map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
+		}
+	}
+	
 	function custLog(x,base) {
 		return (Math.log(x))/(Math.log(base));
+	}
+	
+	function parseSVG(data) {
+		// given an svg path, return an array of coordinates
+		var pixels = [];
+		var coords = [];
+		// We need to adjust the pixel positions according to scale of the current image.
+		// This is because Polymaps will only give us the coordinate of a pixel position
+		// relative to the upper left corner of the current map.
+		var scale = div.width() / image_w;
+		// extract all pairs of numbers
+		pixels = data.match(/\d+\.?\d+?, ?\d+\.?\d+?/g);
+		// step through each pair and translate
+		for (i=0; i < pixels.length; i++) {
+			var xy = pixels[i].split(",");
+			var translated = map.pointLocation({ x: (xy[0] * scale), y: (xy[1] * scale) });
+			coords.push(translated);
+		}
+		return coords;
 	}
 	
 }
