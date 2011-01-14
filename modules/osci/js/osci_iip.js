@@ -59,6 +59,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var map = po.map();
 	var svg = po.svg('svg');
 	map.container(div[0].appendChild(svg));
+	// map.tileSize({x: 256, y: 256});
 	map.zoomRange([0, zoom_max]);
 	map.zoom(zoom_level);
 
@@ -86,7 +87,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		.attr("height", 15)
 		.attr("class", "fullscreen")
 		.style("position","absolute")
-		.style("left","15px")
+		.style("left","16px")
 		.style("top","65px")
 		.style("visibility","visible")
 		.on("mousedown",reset_map);
@@ -100,6 +101,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		.attr("font-size", 9)
 		.attr("font-family", "Arial, Arial, Helvetica, sans-serif")
 		.attr("fill", "white")
+		.attr("pointer-events","none")
 		.text("RESET");	
 	
 	// If collapsed, add a expand button to go fullscreen
