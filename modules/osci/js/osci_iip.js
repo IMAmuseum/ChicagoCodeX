@@ -170,7 +170,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		fs.style("visibility", "visible");
 	
 	});
-	
 	div.mouseout(function() {
 		// Hide controls
 		$('g.compass', div).css("visibility", "hidden");
