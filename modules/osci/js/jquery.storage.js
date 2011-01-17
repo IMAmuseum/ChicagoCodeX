@@ -32,7 +32,7 @@ $.osci.getURL({
                 store.clear();
             }
 
-            var item = store.getItem(settings.url);
+            var item = JSON.parse(store.getItem(settings.url));
             if (item == null || item.expire <= time) {
                 $.ajax({
                     url: settings.url,
@@ -57,7 +57,6 @@ $.osci.getURL({
                 });
 
             } else {
-                item = eval('(' + item + ')');
                 item.cache = 'true';
             }
 

@@ -5,12 +5,12 @@ function osci_body_copy_menu()
     $items = array();
 
     $items['node/%/bodycopy'] = array(
-        'title'             => 'Body Copy',
+        'title'             => 'Raw Content',
         'description'       => 'Body copy layout for book display',
         'page callback'     => 'osci_body_copy_render_layout',
         'page arguments'    => array(1),
         'access arguments'  => array('access content'),
-        'type'              => MENU_LOCAL_TASK
+        'type'              => MENU_CALLBACK
     );
 
     $items['ajax/figure'] = array(
@@ -147,6 +147,7 @@ function osci_body_copy_render_layout($nid)
         foreach($figureOrder as $k => $fId) {
             if (isset($figures[$fId])) {
                 $finalFigures[$k] = array_merge($figures[$fId], array('figCount' => $k));
+                $finalFigures[$k]['caption'] = $finalFigures[$k]['caption']; 
             }
         }
 
@@ -268,16 +269,20 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
 
                 $footnotes = unserialize($item['footnotes']);
                 // Add anchor tags
-                foreach($footnotes as $id => $footnote) {
-                    $footnotes[$id] = theme('body_copy_footnote', array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format'])));
+                if (is_array($footnotes)) {
+                    foreach($footnotes as $id => $footnote) {
+                        $footnotes[$id] = theme('body_copy_footnote', array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format'])));
+                    }
                 }
                 $markup .= theme_item_list(array('items' => $footnotes, 'title' => 'Footnotes', 'type' => 'ol', 'attributes' => array()));
 
                 $figures = unserialize($item['figures']);
-                foreach($figures as $id => $figure) {
-                    $figure['id'] = $id;
-                    $figure['format'] = $item['body_copy_format'];
-                    $rendered_figures[] = theme('body_copy_figure', array('figure' => $figure));
+                if (is_array($figures)) {
+                    foreach($figures as $id => $figure) {
+                        $figure['id'] = $id;
+                        $figure['format'] = $item['body_copy_format'];
+                        $rendered_figures[] = theme('body_copy_figure', array('figure' => $figure));
+                    }
                 }
                 $markup .= theme('item_list', array('items' => $rendered_figures, 'title' => t('Figures'), 'type' => 'ol'));
 
@@ -290,15 +295,19 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
                 
                 $footnotes = unserialize($item['footnotes']);
                 // Add anchor tags
-                foreach($footnotes as $id => $footnote) {
-                    $footnotes[$id] = array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format']));
+                if (is_array($footnotes)) {
+                    foreach($footnotes as $id => $footnote) {
+                        $footnotes[$id] = array('fnId' => $id, 'fnCopy' => check_markup($footnote, $item['body_copy_format']));
+                    }
                 }
 
                 $renderedFigures = array();
                 $figures = unserialize($item['figures']);
                 $nids = array();
-                foreach($figures as $id => $figure) {
-                    $nids[] = $figure['figure_reference'];                    
+                if (is_array($figures)) {
+                    foreach($figures as $id => $figure) {
+                        $nids[] = $figure['figure_reference'];                    
+                    }
                 }
                 if (count($nids)) {
                     $nodes = node_load_multiple($nids);
@@ -354,7 +363,10 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
     $bodyCopy = array(
         '#type' => 'fieldset',
         '#attached' => array(
-            'js' => array(drupal_get_path('module', 'osci_body_copy') . '/js/body_copy_field.js'),
+            'js' => array(
+                base_path() . 'sites/all/libraries/ckeditor/adapters/jquery.js',
+                drupal_get_path('module', 'osci_body_copy') . '/js/body_copy_field.js',
+            ),
         ),
         'body_copy' => array(
             '#type' => 'text_format',

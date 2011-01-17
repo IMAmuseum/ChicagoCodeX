@@ -91,13 +91,19 @@
 }
 
 #osci_viewer figure figcaption {
-    text-align: center;
+    display: block;
     color: #AAA;
     font-size: 12px;
 }
 
 #osci_viewer figure figcaption p {
+    display: inline;
     margin: 0;
+}
+
+#osci_viewer figure figcaption .figure_number {
+    color: #777;
+    margin: 0 6px 0 0;
 }
 
 #osci_viewer span.osci_paragraph_identifier {

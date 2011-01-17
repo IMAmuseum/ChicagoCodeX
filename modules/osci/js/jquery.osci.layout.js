@@ -15,7 +15,8 @@
  
         base.init = function()
         {
-            base.data = $("section > *:not(section, header), header > *", data);
+            //base.data = $("section > *:not(section, header), header > *", data);
+            base.data = $("section > *:not(section, header)", data);
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.viewer = $("#" + base.options.viewerId);
 
@@ -339,8 +340,8 @@
                         columnCoverage = $fig.data("column_coverage");
 
                         if (columnCoverage[i]) {
-                            height -= $fig.height();
-                            heightRemain -= $fig.height();
+                            height -= $fig.height() + base.options.innerPageGutter[0];
+                            heightRemain -= $fig.height() + base.options.innerPageGutter[0];
 
                             if (height < minHeight) {
                                 height = 0;
@@ -351,7 +352,7 @@
                             switch ($fig.data("vertical_position")) {
                                 case 't':
                                 case 'p':
-                                    topOffset += $fig.height();
+                                    topOffset += $fig.height() + base.options.innerPageGutter[0];
                                     break;
                                 case 'b':
                                     topOffset = topOffset;

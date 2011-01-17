@@ -3,5 +3,8 @@
     <div class="figureContent">
         <?php print $content; ?>
     </div>
-    <figcaption><?php print $caption; ?></figcaption>
+    <figcaption>
+        <span class="figure_number">Fig <?php print isset($figure['figCount']) ? $figure['figCount'] : $figure['id']; ?></span>
+        <?php print $caption; ?>
+    </figcaption>
 </figure>

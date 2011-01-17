@@ -53,7 +53,7 @@ function osci_filters_wysiwyg_plugin($editor, $version) {
         case 'ckeditor':
             return array(
                 'osci_filters' => array(
-                    'path'      => drupal_get_path('module', 'osci_filters').'/js/osci_filters.plugin.js',
+                    'path'      => drupal_get_path('module', 'osci_filters').'/js/osci_filters',
                     'buttons'   => array(
                         'footnote' => t('OSCI - Footnote'),
                     ),
