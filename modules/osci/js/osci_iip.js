@@ -79,17 +79,20 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// Controls and functionality
 	var nmap = n$(div[0]); // the map container ran through the nns js library for svg manipulation
 	map.add(po.interact());
-	map.add(po.compass().pan('none'));
+	var compass = po.compass().pan('none');
+	map.add(compass);
+	// hide it in initial view
+	$('#map_'+figure_id+' g.compass').css("visibility", "hidden");
 	
 	// Add reset button
 	var reset_btn = nmap.add("svg:svg")
 		.attr("width", 40)
 		.attr("height", 15)
-		.attr("class", "fullscreen")
+		.attr("class", "reset-button")
 		.style("position","absolute")
 		.style("left","16px")
 		.style("top","65px")
-		.style("visibility","visible")
+		.style("visibility","hidden")
 		.on("mousedown",reset_map);
 	reset_btn.add("svg:rect")
 		.attr("width", "100%")
@@ -113,7 +116,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.style("position","absolute")
 			.style("right","5px")
 			.style("top","5px")
-			.style("visibility","visible")
+			.style("visibility","hidden")
 			.on("mousedown",make_fullscreen);
 		var circle = fs.add("svg:circle")
 			.attr("cx",16)
@@ -140,7 +143,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.style("position","absolute")
 			.style("right","5px")
 			.style("top","5px")
-			.style("visibility","visible")
+			.style("visibility","hidden")
 			.on("mousedown",make_small);
 		var circle = fs.add("svg:circle")
 			.attr("cx",16)
@@ -159,7 +162,21 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr("class", "svg_arrow");
 	}
 	
+	// Set up our control visibility toggles for mouse events
+	div.mouseover(function() {
+		// Show controls
+		$('g.compass', div).css("visibility", "visible");
+		reset_btn.style("visibility", "visible");
+		fs.style("visibility", "visible");
 	
+	});
+	
+	div.mouseout(function() {
+		// Hide controls
+		$('g.compass', div).css("visibility", "hidden");
+		reset_btn.style("visibility", "hidden");
+		fs.style("visibility", "hidden");
+	});
 	
 	// Load in svg markup
 	
