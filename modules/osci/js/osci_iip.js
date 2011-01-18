@@ -82,7 +82,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var compass = po.compass().pan('none');
 	map.add(compass);
 	// hide it in initial view
-	$('#map_'+figure_id+' g.compass').css("visibility", "hidden");
+	$('g.compass', div).css("visibility", "hidden");
 	
 	// Add reset button
 	var reset_btn = nmap.add("svg:svg")
