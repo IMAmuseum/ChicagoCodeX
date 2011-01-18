@@ -614,6 +614,6 @@ jQuery(document).ready(function() {
     var url = document.URL;
     url = url.replace("reader","bodycopy");
 
-    var content = jQuery.osci.getUrl({ url: url });
+    var content = jQuery.osci.getUrl({ url: url, clear : true });
     jQuery("#osci_reader_content").osci_layout(content.data, {});
 });

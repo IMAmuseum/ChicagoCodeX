@@ -397,7 +397,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
     );
 
     $footnotes = array('footnote_blank' => '');
-    $loadnotes = isset($items[$delta]['footnotes']) ? unserialize($items[$delta]['footnotes']) : array();
+    $loadnotes = (isset($items[$delta]['footnotes']) && !is_array($items[$delta]['footnotes'])) ? unserialize($items[$delta]['footnotes']) : array();
     $footnotes += $loadnotes ? $loadnotes : array();
  
     $bodyCopy['footnotes']['add_another'] = array(
@@ -421,7 +421,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#default_value' => $footnote,
             '#rows' => $instance['widget']['settings']['footnote_rows'],
             '#attributes' => array('class' => array($class)),
-            '#prefix' => '<div id="' . $fnId . '" data-fnprefix="' . $fieldName . '_fn_' . $nid . '_">',
+            '#prefix' => '<div id="' . $fnId . '" class="footnote-wrapper" data-fnprefix="' . $fieldName . '_fn_' . $nid . '_">',
             '#suffix' => '</div>',
             '#weight' => $id,
         );

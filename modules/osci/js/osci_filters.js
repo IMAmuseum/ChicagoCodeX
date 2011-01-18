@@ -82,6 +82,7 @@
 
                     if (name.indexOf('_ftnref') === 0) {
                         $('#' + selector).parents('.fieldset-wrapper').find('.footnote-add-another').trigger('click', true);
+                        var newIdSelector = $('#' + selector).parents('.fieldset-wrapper').find('.footnote-wrapper').last().attr('id');
                         var footnote = name.replace('ref', '');
                         var content  = data.find('#' + footnote.replace('_', ''));
                         $('a', content).remove();
@@ -90,8 +91,8 @@
                             content = CKEDITOR.cleanWord(content, editor);
                         }
 
-                        $(val).replaceWith('[footnote:' + newIdSelector.replace('#', '') + ']');
-                        $(newIdSelector + ' textarea').html(content);
+                        $(val).replaceWith('[footnote:' + newIdSelector + ']');
+                        $('#' + newIdSelector + ' textarea').html(content);
                         data.find('#' + footnote.replace('_', '')).remove();
                     } else {
                         $(this).next().html('');
