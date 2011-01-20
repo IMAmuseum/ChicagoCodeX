@@ -1,0 +1,322 @@
+<?php
+
+function osci_navigation_services_resources()
+{
+    return array(
+        'navigation' => array(
+            'retrieve' => array(
+                'callback' => '_osci_navigation_get_toc',
+                'args' => array(
+                    array(
+                        'name' => 'nid',
+                        'optional' => false,
+                        'type' => 'int',
+                        'description' => 'The nid to load the table of contents for.',
+                        'source' => array('path' => '0')
+                    ),
+                    array(
+                        'name' => 'full_book',
+                        'type' => 'int',
+                        'description' => 'Display navigation details for the full book this node belongs to.',
+                        'optional' => true,
+                        'source' => array('param' => 'full_book'),
+                        'default' => false
+                    )
+                ),
+                'access callback' => 'user_access',
+                'access arguments' => array('access content'),
+                'access arguments append' => false
+            ),
+            'index' => array(
+                'callback' => '_osci_navigation_get_books',
+                'access callback' => 'user_access',
+                'access arguments' => array('access content'),
+                'access arguments append' => false
+            ),
+            'relationships' => array(
+                'next' => array(
+                    'callback' => '_osci_navigation_next',
+                    'args' => array(),
+                    'access callback' => 'user_access',
+                    'access arguments' => array('access content'),
+                    'access arguments append' => false
+                ),
+                'prev' => array(
+                    'callback' => '_osci_navigation_prev',
+                    'args' => array(),
+                    'access callback' => 'user_access',
+                    'access arguments' => array('access content'),
+                    'access arguments append' => false
+                ),
+                'parent' => array(
+                    'callback' => '_osci_navigation_parent',
+                    'args' => array(),
+                    'access callback' => 'user_access',
+                    'access arguments' => array('access content'),
+                    'access arguments append' => false
+                ),
+                'book' => array(
+                    'callback' => '_osci_navigation_get_book_toc',
+                    'args' => array(),
+                    'access callback' => 'user_access',
+                    'access arguments' => array('access content'),
+                    'access arguments append' => false
+                )
+            )
+        )
+    );
+}
+
+function _osci_navigation_get_toc($nid, $fullBook = false)
+{
+    $toc = null;
+    $node = node_load($nid);
+
+    if (isset($node->book)) {
+        if ($fullBook) {
+            foreach (book_get_books() as $book_id => $book) {
+                if ($book['bid'] == $node->book['bid']) {
+                    $toc = book_menu_subtree_data($book);              
+                    $toc = _osci_navigation_clean_toc($toc);
+                    break;
+                }
+            }
+        } else {
+            $toc = book_menu_subtree_data($node->book);
+            $toc = _osci_navigation_clean_toc($toc);
+        }
+    }
+
+    return $toc;
+}
+
+function _osci_navigation_get_book_toc($nid)
+{
+    $toc = null;
+    $node = node_load($nid);
+
+    if (isset($node->book)) {
+        foreach (book_get_books() as $book_id => $book) {
+            if ($book['bid'] == $node->book['bid']) {
+                $toc = book_menu_subtree_data($book);
+                $toc = _osci_navigation_clean_toc($toc);
+                break;
+            }
+        }
+    }
+
+    return $toc;
+}
+
+function _osci_navigation_get_books()
+{
+    $allBooks = array();
+    $books = book_get_books();
+   
+    foreach($books as $book) {
+        $allBooks['bid_' . $book['bid']] = array_pop(_osci_navigation_clean_toc(array('link' => $book)));
+    }
+
+    return $allBooks;
+}
+
+function _osci_navigation_next($nid)
+{
+    $toc = array();
+    $node = node_load($nid);
+
+    if ($node->book) {
+        if ($next = book_next($node->book)) {
+            $toc = _osci_navigation_clean_toc(array('link' => $next));
+        }
+    }
+
+    return $toc;
+}
+
+function _osci_navigation_prev($nid)
+{
+    $toc = array();
+    $node = node_load($nid);
+
+    if ($node->book) {
+        if ($prev = book_prev($node->book)) {
+            $toc = _osci_navigation_clean_toc(array('link' => $prev));
+        }
+    }
+
+    return $toc;
+}
+
+function _osci_navigation_parent($nid)
+{
+    $toc = array();
+    $node = node_load($nid);
+    if ($node->book['plid'] && $parent = book_link_load($node->book['plid'])) {
+        $toc = _osci_navigation_clean_toc(array('link' => $parent));
+    }
+    return $toc;
+}
+
+function _osci_navigation_clean_toc($toc)
+{
+    $cleanToc = _osci_navigation_clean_toc_iterate($toc);
+    $totalLength = 0;
+    $rootId = null;
+    foreach($cleanToc as $id => $toc) {
+        $totalLength += $toc['length'];
+        if (empty($toc['parent']) && empty($toc['prev'])) {
+            $rootId = $id;
+        }
+    }
+
+    if ($rootId) {
+        $cleanToc[$rootId]['total_length'] = $totalLength;
+    }
+
+    return $cleanToc;
+}
+
+function _osci_navigation_clean_toc_iterate($toc)
+{
+    $cleanToc = array();
+
+    $id = null;
+    $nids = array();
+    foreach($toc as $k => $v) {
+        switch ($k) {
+            case 'link':
+                if (isset($v['nid'])) {
+                    $nid = $v['nid'];
+                } else {
+                    $nid = substr($v['href'], strrpos($v['href'], '/') + 1);
+                }
+                $nids[] = $nid;
+
+                $id = 'nid_' . $nid;
+                $nextPage = array();
+                $prevPage = array();
+                $parentPage = array();
+                if ($v['mlid']) {
+                    if ($prev = book_prev($v)) {
+                        $prevPage = array(
+                            'href' => url($prev['href']),
+                            'title' => check_plain($prev['title']),
+                            'mlid' => $prev['mlid'],
+                            'bodycopy' => url($prev['href'] . '/bodycopy'),
+                            'nid' => substr($prev['href'], strrpos($prev['href'], '/') + 1)
+                        );
+                        $nids[] = $prevPage['nid'];
+                    }
+
+                    if ($v['plid'] && $parent = book_link_load($v['plid'])) {
+                        $parentPage = array(
+                            'href' => url($parent['href']),
+                            'title' => check_plain($parent['title']),
+                            'mlid' => $parent['mlid'],
+                            'bodycopy' => url($parent['href'] . '/bodycopy'),
+                            'nid' => substr($parent['href'], strrpos($parent['href'], '/') + 1)
+                        );
+                        $nids[] = $parentPage['nid'];
+                    }
+
+                    if ($next = book_next($v)) {
+                        $nextPage = array(
+                            'href' => url($next['href']),
+                            'title' => check_plain($next['title']),
+                            'mlid' => $next['mlid'],
+                            'bodycopy' => url($next['href'] . '/bodycopy'),
+                            'nid' => substr($next['href'], strrpos($next['href'], '/') + 1)
+                        );
+                        $nids[] = $nextPage['nid'];
+                    }
+                }
+
+                $cleanToc[$id] = array(
+                    'nid'      => $nid,
+                    'title'    => $v['title'],
+                    'href'     => url($v['href']),
+                    'bodycopy' => url($v['href'] . '/bodycopy'),
+                    'mlid'     => $v['mlid'],
+                    'next'     => $nextPage,
+                    'prev'     => $prevPage,
+                    'parent'   => $parentPage
+                );
+
+                if (isset($v['bid'])) {
+                    $cleanToc[$id]['bid'] = $v['bid'];
+                }
+
+                break;
+            case 'below':
+                //if (is_array($v) && !empty($v)) {
+                //    $cleanToc[$bidNid]['children'] = _osci_navigation_clean_toc_iterate($v);
+                //}
+                //break;
+            default:
+                if (is_array($v) && !empty($v)) {
+                    $cleanToc = array_merge($cleanToc, _osci_navigation_clean_toc_iterate($v));
+                }
+        }
+    }
+
+    $contentLengths = _osci_navigation_get_node_content_length($nids);
+    if (!empty($contentLengths)) {
+        foreach($cleanToc as $id => $toc) {
+            if (isset($contentLengths[$toc['nid']])) {
+                $cleanToc[$id]['length'] = $contentLengths[$toc['nid']];
+            }
+            if (isset($toc['next']['nid']) && isset($contentLengths[$toc['next']['nid']])) {
+                $cleanToc[$id]['next']['length'] = $contentLengths[$toc['next']['nid']];
+            }
+            if (isset($toc['prev']['nid']) && isset($contentLengths[$toc['prev']['nid']])) {
+                $cleanToc[$id]['prev']['length'] = $contentLengths[$toc['prev']['nid']];
+            }
+            if (isset($toc['parent']['nid']) && isset($contentLengths[$toc['parent']['nid']])) {
+                $cleanToc[$id]['parent']['length'] = $contentLengths[$toc['parent']['nid']];
+            }
+        }
+    }
+
+    return $cleanToc;
+}
+
+function osci_navigation_node_submit($node, $form, &$form_state)
+{
+    if (isset($form_state['node']->field_osci_content_length)) {
+        $wordCount = 0;
+
+        foreach($form_state['values'] as $k => $v) {
+            if (strpos($k, 'field_osci') === 0) {
+                if (isset($v['und'][0]['body_copy'])) {
+                    $wordCount += str_word_count(strip_tags($v['und'][0]['body_copy']['value']));
+                } elseif (isset($v['und'][0]['value'])) {
+                    $wordCount += str_word_count(strip_tags($v['und'][0]['value']));
+                }
+            }
+        }
+
+        $form_state['node']->field_osci_content_length['und'][0]['value'] = $wordCount;
+    }
+}
+
+function osci_navigation_form_alter(&$form, &$form_state, $form_id)
+{
+    if (strpos($form_id, '_node_form') !== false && isset($form['field_osci_content_length'])) {
+        $form['field_osci_content_length']['und'][0]['value']['#type'] = 'hidden';
+    }
+}
+
+function _osci_navigation_get_node_content_length($nids)
+{
+    $contentLengths = array();
+
+    if ($nodes = node_load_multiple($nids)) {
+        foreach($nodes as $nid => $node) {
+            $contentLengths[$nid] = isset($node->field_osci_content_length['und'][0]['value']) ? $node->field_osci_content_length['und'][0]['value'] : 0;
+        }
+    }
+
+    return $contentLengths;
+}
+?>
