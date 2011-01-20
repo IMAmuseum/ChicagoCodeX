@@ -27,7 +27,7 @@ function osci_iip_demo() {
     
     // And again
     $node = node_load(20);
-	$attr = _osci_iip_get_image_attr(20);
+	$attr = _osci_iip_get_image_attr($node);
 	$return .= '<p>&nbsp;<p>Mauris condimentum tincidunt ligula et adipiscing. Mauris leo nibh, iaculis quis tincidunt nec, pretium nec erat. Curabitur dui sem, dignissim sit amet condimentum in, ultrices eu nisl. Vivamus vestibulum tellus sit amet dui bibendum sagittis.</p>';
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);    
