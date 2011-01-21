@@ -23,16 +23,18 @@ $.osci.getURL({
 
         // if browser supports localStorage proceed
         if ('localStorage' in window && window['localStorage'] !== null) {
-            var store = window.localStorage;
-            var time = new Date();
-            var start = new Date();
+            var store = window.localStorage,
+                time = new Date(),
+                start = new Date(),
+                key = (settings.key == 'url') ? settings.url : settings.key;
+                    
             time = Math.floor(time.getTime() / 1000);
 
             if (settings.clear === true) {
                 store.clear();
             }
 
-            var item = JSON.parse(store.getItem(settings.url));
+            var item = JSON.parse(store.getItem(key));
             if (item == null || item.expire <= time) {
                 $.ajax({
                     url: settings.url,
@@ -40,14 +42,15 @@ $.osci.getURL({
                     async: false,
                     dataType: settings.type,
                     success: function(data) {
-                        var time = new Date();
+                        var time = new Date()
                         time = Math.floor(time.getTime() / 1000 + settings.expire);
                         item = {
                             data:   data,
                             expire: time 
                         };
                         jsonItem = JSON.stringify(item);
-                        store.setItem(settings.url, jsonItem); 
+                        
+                        store.setItem(key, jsonItem); 
                         item.cache = 'false';
                     },
                     error: function(arg1, arg2) {
@@ -81,7 +84,8 @@ $.osci.getURL({
         url:    '',
         expire: 86400, // One day
         type:   'html',
-        clear:  false
+        clear:  false,
+        key:    'url'
     }
 })(jQuery);
 
