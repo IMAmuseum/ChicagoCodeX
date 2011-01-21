@@ -165,9 +165,7 @@ function _osci_navigation_clean_toc($toc)
     $rootId = null;
     foreach($cleanToc as $id => $toc) {
         $totalLength += $toc['length'];
-        if (empty($toc['parent']) && empty($toc['prev'])) {
-            $rootId = $id;
-        }
+        $rootId = ($rootId === null) ? $id : $rootId;
     }
 
     if ($rootId) {
