@@ -1,0 +1,49 @@
+<?php
+
+function osci_reader_menu()
+{
+    $items = array();
+
+    $items['node/%/reader'] = array(
+        'title' => 'Reader',
+        'description' => 'Reader layout for book display',
+        'page callback' => 'osci_reader_render',
+        'page arguments' => array(1),
+        'access arguments' => array('access content'),
+        'type' => MENU_LOCAL_TASK
+    );
+
+    return $items;
+}
+
+function osci_reader_theme()
+{
+    return array(
+        'osci_viewer' => array(
+            'template'  => 'templates/osci_viewer',
+        ),
+    );
+}
+
+function osci_reader_render($nid)
+{
+    $node = node_load($nid);
+    $bid = isset($node->book['bid']) ? $node->book['bid'] : 0;
+    $mlid = isset($node->book['mlid']) ? $node->book['mlid'] : 0;
+
+    drupal_add_js(array('osci' => array('nid' => $nid, 'bid' => $bid, 'mlid' => $mlid)), 'setting');
+
+    drupal_add_js(drupal_get_path('module', 'osci_layout') . '/js/jquery.jswipe-0.1.2.js');
+    drupal_add_js("misc/ui/jquery.effects.core.min.js");
+    drupal_add_js("misc/ui/jquery.effects.pulsate.min.js");
+    drupal_add_js(drupal_get_path('module', 'osci_storage') . '/js/jquery.storage.js');
+    drupal_add_js(drupal_get_path('module', 'osci_layout') . '/js/jquery.osci.layout.js');
+    drupal_add_js(drupal_get_path('module', 'osci_navigation') . '/js/jquery.osci.navigation.js');
+    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_nns.min.js', 'file');
+    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_polymaps.min.js', 'file');
+    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip.js', 'file');
+    drupal_add_css(drupal_get_path('module', 'osci_layout').'/css/osci_layout.css');
+    $output = render(drupal_get_form('osci_citation_dialog'));
+    $output .= theme('osci_viewer');
+    return $output;
+}

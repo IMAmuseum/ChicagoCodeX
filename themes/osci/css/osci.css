@@ -21,3 +21,21 @@ body.page-node-reader {
     min-width: 10px;
     margin: 0;
 }
+
+#osci_header {
+    background: url('../images/bg-osci-titlebar.png') repeat-x;   
+    height: 66px;
+    padding: 6px 0 0 40px;
+}
+
+#osci_header h1 {
+    font-size: 1em; 
+    border: 0px;  
+    margin: 0 0 4px 0;
+}
+
+#osci_header h2 {
+    font-size: .75em;  
+    border: 0px; 
+    margin: 0;
+}

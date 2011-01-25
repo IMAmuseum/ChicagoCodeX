@@ -12,7 +12,7 @@
         base.el = el;
 
         base.$el.data("osci.layout", base);
- 
+
         base.init = function()
         {
             //base.data = $("section > *:not(section, header), header > *", data);
@@ -20,79 +20,91 @@
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.viewer = $("#" + base.options.viewerId);
 
-            $(window).resize(function(){
-                if (base.resizeTimer) clearTimeout(base.resizeTimer);
-                base.resizeTimer = setTimeout(base.render, 100);
-            });
+// Moved to the navigation module so that it does not get triggerd multiple times after more than one node has been loaded
+//            if (!window.resizeTimer) {
+//                $(window).resize(function(){
+//                    if (window.resizeTimer) clearTimeout(window.resizeTimer);
+//                    window.resizeTimer = setTimeout(base.render, 100);
+//                });
+//            }
 
             base.render();
         };
 
         base.render = function()
         {
-            var i = 0, elements, totalElements = 0, page, currentElement, pageElementCount, figureLinks, overflow, contentOffset = 0;
+            var i = 0, elements, totalElements = 0, page, currentElement, pageElementCount, 
+                figureLinks, overflow, contentOffset = 0, cache = null;
 
             $(document).trigger("osci_layout_start");
-
             _updateHeights();
-
-            base.$el.append(base.data.clone());
-            base.figures = $("figure", base.$el);
             base.viewer.empty();
-
-            base.options.viewHeight = base.viewer.height();
-            base.options.viewWidth  = base.viewer.width();
-            base.options.columnCount = 1;
-            base.options.pageCount = 0;
-
-            _calcViewerInfo();
-
-            base.$el.css("width", base.options.columnWidth + "px");
-
-            elements = base.$el.children();
-            totalElements = elements.length;
-
-            elements.filter("p").each(function(i, elem){
-                $(elem).prepend($("<span>",{
-                    html : i + 1,
-                    "class" : "osci_paragraph_identifier osci_paragraph_" + (i + 1),
-                    "data-paragraph_id" : i + 1 
-                })).addClass("osci_paragraph_" + (i + 1) + " osci_paragraph").attr("data-paragraph_id", i + 1);
-            });
-
-            while (i < totalElements) {
-                currentElement = $(elements[i]).clone();
-
-                if (currentElement.text() == 'Figures') {
-                    break;
-                }
-
-                if (page == undefined || page.data("process") == 'done') {
-                    if (page !== undefined) {
-                        contentOffset = page.data("contentStartOffset");
-                    }
-                    base.options.pageCount++;
-                    page = _newPage().appendTo(base.viewer);
-                    page.data("contentStartOffset", contentOffset);
-                    pageElementCount = 0;
-                }
+            
+            cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
+            
+            if (cache == null) {
+                base.$el.append(base.data.clone());
+                base.figures = $("figure", base.$el);
                 
-                if (_addPageContent(currentElement, page)) {
-                    i--;
-                } else {
-                    pageElementCount++;
+                base.options.viewHeight = base.viewer.height();
+                base.options.viewWidth  = base.viewer.width();
+                base.options.columnCount = 1;
+                base.options.pageCount = 0;
+    
+                _calcViewerInfo();
+    
+                base.$el.css("width", base.options.columnWidth + "px");
+    
+                elements = base.$el.children();
+                totalElements = elements.length;
+    
+                elements.filter("p").each(function(i, elem){
+                    $(elem).prepend($("<span>",{
+                        html : i + 1,
+                        "class" : "osci_paragraph_identifier osci_paragraph_" + (i + 1),
+                        "data-paragraph_id" : i + 1 
+                    })).addClass("osci_paragraph_" + (i + 1) + " osci_paragraph").attr("data-paragraph_id", i + 1);
+                });
+    
+                while (i < totalElements) {
+                    currentElement = $(elements[i]).clone();
+    
+                    if (currentElement.text() == 'Figures') {
+                        break;
+                    }
+    
+                    if (page == undefined || page.data("process") == 'done') {
+                        if (page !== undefined) {
+                            contentOffset = page.data("contentStartOffset");
+                        }
+                        base.options.pageCount++;
+                        page = _newPage().appendTo(base.viewer);
+                        page.data("contentStartOffset", contentOffset);
+                        pageElementCount = 0;
+                    }
+                    
+                    if (_addPageContent(currentElement, page)) {
+                        i--;
+                    } else {
+                        pageElementCount++;
+                    }
+                    i++;
+    
+                    if (page.data("process") == "restart") {
+                        _reset_page(page);
+                        i = i - pageElementCount;
+                        pageElementCount = 0;
+                    }
                 }
-                i++;
-
-                if (page.data("process") == "restart") {
-                    _reset_page(page);
-                    i = i - pageElementCount;
-                    pageElementCount = 0;
-                }
+    
+                base.$el.empty();
+    
+                $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()});
+            } else {
+                base.options = cache.data.options;
+                base.viewer.append(cache.data.content);
             }
-
-            base.$el.empty();
-
+            
             $(document).trigger("osci_layout_complete");
         };
 
@@ -246,12 +258,18 @@
 
         function _updateHeights()
         {
-            var container;
+            var container, viewerHeight = 0;
 
             container = base.viewer.parent();
 
             container.height($(window).height() - (container.outerHeight() - container.height()));
-            base.viewer.height(container.height() - $("#osci_navigation").height() - 20);
+            
+            viewerHeight = container.height();
+            container.children(":not(#osci_viewer)").each(function(i, elem){
+                viewerHeight -= $(elem).height();
+            });
+            base.viewer.height(viewerHeight - 20);
+            //base.viewer.height(container.height() - container.children(":not(#osci_viewer)").height() - 20);
         }
 
         function _newColumn(page)
@@ -459,9 +477,10 @@
         maxColumnWidth : 300,
         gutterWidth : 40,
         innerPageGutter : [20, 40, 20, 40],
-        outerPageGutter : [20, 20, 20, 20],
+        outerPageGutter : [10, 10, 10, 10],
         viewerId : 'osci_viewer',
-        minLinesPerColumn : 5
+        minLinesPerColumn : 5,
+        cacheId : null
     };
 
     $.fn.osci_layout = function( data, options )
@@ -474,6 +493,7 @@
 
 })(jQuery);
 
+/*
 var currentPage = 0;
 
 jQuery(document).ready(function() {
@@ -616,4 +636,6 @@ jQuery(document).ready(function() {
 
     var content = jQuery.osci.getUrl({ url: url, clear : true });
     jQuery("#osci_reader_content").osci_layout(content.data, {});
+
 });
+*/
