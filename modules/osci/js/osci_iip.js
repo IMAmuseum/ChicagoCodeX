@@ -18,6 +18,31 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		alert("IIP - requires Polymaps");
 		return false;
 	}
+	// extend Polymaps with our svgLayer
+	po.svgLayer = function(svgMarkup) {
+		var svgLayer = po.layer(load, unload);
+		svgLayer.tile(false);
+		// svgLayer.transform(function() {return [0,0,0,0,0,0]});
+		function load(tile) {
+			
+			var	element = tile.element = po.svg('g');
+			
+			$(element).append(svgMarkup);
+
+			//tile.element.setAttribute("width", parent_w);
+		    //tile.element.setAttribute("height", parent_h);
+		    tile.ready = true;
+			image.dispatch({type: "load", tile: tile});	
+			console.log(svgLayer.transform());
+			console.log(tile);		
+		}
+		
+		function unload(tile) {
+			if (tile.request) tile.request.abort(true);
+		}
+		
+		return svgLayer;
+	};
 	
 	// Ensure we have something to work on
 	if (div.length < 1) {
@@ -178,27 +203,25 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	});
 	
 	// Load in svg markup
-	
+	/*
 	if (svg_path) {
-		// console.log(['svg_path: ', svg_path]);
-		var geojson = { type: 'GeometryCollection', geometries: new Array(), };
+		
 		$.get(svg_path, function(data){
-			var markup_svg = n$(data.childNodes[1]);
-			var markup_elements = markup_svg.element.children;  
-			$(markup_elements).each( function(index, elem) {
-				var path_string = $(this).attr('d');
-				var coords = parseSVG(path_string);
-				var geometry = new Object;
-				geometry.type = "LineString";
-				geometry.coordinates = [coords];
-				console.log(geometry);
+			// drop the document, we just need the svg inside
+			var markup_svg = $(data.childNodes[1]);
+			// remove the width and height, we just need the viewbox
+			markup_svg.removeAttr('width').removeAttr('height');
+			markup_svg.attr('x', '0').attr('y', '0');
+			console.log(markup_svg)
+			var svgLayer = po.svgLayer(markup_svg);
+			map.add(svgLayer);
+			
 				
 				
 				
-			})
 		});
 	}
-	
+	*/
 	/*
 	// Overlay SVG markup
 	var p1 = map.coordinateLocation({zoom:7, column:10, row:10});
@@ -238,7 +261,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr('data-ih', image_h)
 			.attr('data-iw', image_w)
 			.attr('data-center-lat', orig_center.lat)
-			.attr('data-center-lon', orig_center.lon);
+			.attr('data-center-lon', orig_center.lon)
+			.attr('data-svg', svg_path);
 		iipmap(newdiv);
 	
 	}
