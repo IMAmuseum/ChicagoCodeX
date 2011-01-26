@@ -15,9 +15,9 @@ function osci_iip_menu() {
 
 function osci_iip_demo() {
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_nns.min.js');
-	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.min.js');
+	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.js');
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
-	$node = node_load(19);
+	$node = node_load(22);
 	
 	$return = "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet aliquam quam nec volutpat. Ut sem eros, tincidunt in vestibulum quis, hendrerit at leo. Ut nibh elit, sollicitudin nec tempor in, malesuada nec ante.</p>";
     $return .= '<div style="width:320px; height:240px;">';
@@ -49,7 +49,30 @@ function osci_iip_node_insert($node) {
 }
 
 function osci_iip_node_update($node) {
-	if ($node->type == 'image' && (!isset($node->field_aspect_ratio['und'][0]['value']))) {
+	// For an image - If the user supplied a PTIFF path, but no image, let's get a thumbnail
+	if ($node->type == 'image' 
+		&& empty($node->field_image['und']) 
+		&& !empty($node->field_ptiff['und']))
+	{
+		// Get the image data by calling the iip server and asking for a whole jpeg
+		$iipSrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
+		$command = "FIF={$node->field_ptiff['und'][0]['value']}&CVT=jpeg";
+		$curl = curl_init($iipSrv.$command);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		$output = curl_exec($curl);
+		// Save the file with the new Drupal 7 File API
+		$fo = file_save_data($output, "public://iip_thumbs/iip_image_node_".$node->nid.".jpg", FILE_EXISTS_REPLACE);
+		if ($fo) 
+		{
+			$node->field_image['und'][0]['fid'] = $fo->fid;
+			node_save($node);
+		}
+	}
+	// For an image - If the aspect ratio isn't set, and a ptiff was supplied, get our aspect ratio
+	if ($node->type == 'image' 
+		&& !isset($node->field_aspect_ratio['und'][0]['value']) 
+		&& isset($node->field_ptiff['und'][0])) 
+	{
 		_osci_iip_save_aspect_ratio($node);		
 	}
 }
