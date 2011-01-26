@@ -27,14 +27,12 @@
                 nid : base.options.nid,
                 mlid : base.options.mlid,
                 currentPage : 0,
-                totalPages : 0,
+                pageCount : 0,
                 startPage : 'first'
             }
             
             toc = _get_table_of_contents(base.options.nid, base.options.bid);
             base.navigation.toc = toc.data;
-            
-            console.log(base);
             
             $(document).bind("osci_layout_complete",function(){
                 _reset_navigation();
@@ -76,6 +74,9 @@
         
         function _osci_resize()
         {
+            var firstParagraph = $("p.osci_paragraph:first", "div.osci_page_" + (base.navigation.currentPage + 1));
+            base.navigation.startPage = "paragraph:" + firstParagraph.data("paragraph_id");
+            
             $.osci.storage.clearCache('osci_layout_cache:');
             _load_section();
         }
@@ -116,14 +117,25 @@
         
         function _reset_navigation()
         {
-            var layoutData = $("#" + base.options.readerId).data("osci.layout");
+            var paragraphData, page, 
+                navigateTo = {operation : base.navigation.startPage},
+                layoutData = $("#" + base.options.readerId).data("osci.layout");
 
             base.navigation.currentPage = 0;
             base.navigation.pageCount = layoutData.options.pageCount;
             base.navigation.layoutData = layoutData.options;
 
+            if (base.navigation.startPage.indexOf("paragraph:") >= 0) {
+                paragraphData = base.navigation.startPage.split(":");
+                page = $("p.osci_paragraph_" + paragraphData[1] + ":first","#" + layoutData.options.viewerId).parents(".osci_page").data("page");
+                navigateTo = {
+                    operation : "page",
+                    value : page
+                };
+            }
+
             _update_title();
-            _navigateTo({operation : base.navigation.startPage});
+            _navigateTo(navigateTo);
         };
         
         function _update_title()
