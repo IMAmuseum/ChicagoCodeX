@@ -8,5 +8,4 @@
         <a href="#" id="osci_nav_prev">&lsaquo; prev</a>
         <a href="#" id="osci_nav_next">next &rsaquo;</a>
     </div>
-    <div id="osci_reader_content"></div>
 </div>

@@ -4,7 +4,7 @@
         $.osci = {};
     }
 
-    $.osci.navigation = function(el, data, options)
+    $.osci.navigation = function(el, options)
     {
         var base = this;
 
@@ -109,10 +109,20 @@
             
             content = $.osci.storage.getUrl({
                 url :  base.options.contentEndpoint.replace('{$nid}', loadNid),
-                expire : 86400
+                expire : base.options.cacheTime
             });
             
-            $("#" + base.options.readerId).osci_layout(content.data, {cacheId : loadNid});
+            $("#" + base.options.readerId).osci_layout(content.data, {
+                cacheId : loadNid,
+                minColumnWidth : Drupal.settings.osci_layout.min_column_width,
+                maxColumnWidth : Drupal.settings.osci_layout.max_column_width,
+                gutterWidth : Drupal.settings.osci_layout.gutter_width,
+                innerPageGutter : Drupal.settings.osci_layout.inner_page_gutter,
+                outerPageGutter : Drupal.settings.osci_layout.outer_page_gutter,
+                viewerId : Drupal.settings.osci_layout.viewer_id,
+                minLinesPerColumn : Drupal.settings.osci_layout.min_lines_per_column,
+                layoutCacheTime : Drupal.settings.osci_layout.cache_time
+            });
         };
         
         function _reset_navigation()
@@ -241,7 +251,7 @@
     };
 
     $.osci.navigation.defaultOptions = {
-        readerId : 'osci_reader_content',
+        readerId : 'osci_viewer_wrapper',
         headerId : 'osci_header',
         apiEndpoint : 'http://osci.localhost/api/navigation/',
         contentEndpoint : 'http://osci.localhost/node/{$nid}/bodycopy',
@@ -249,22 +259,19 @@
         nid : 0,
         mlid : 0,
         prevLinkId : "osci_nav_prev",
-        nextLinkId : "osci_nav_next"
+        nextLinkId : "osci_nav_next",
+        cacheTime : 86400
     };
 
-    $.fn.osci_navigation = function( data, options )
+    $.fn.osci_navigation = function( options )
     {
         return this.each(function()
         {
-            (new $.osci.navigation(this, data, options)); 
+            (new $.osci.navigation(this, options)); 
         });
     };
 
 })(jQuery);
-
-jQuery(document).ready(function() {
-    jQuery("#osci_navigation").osci_navigation();
-});
 
 /*
 var currentPage = 0;

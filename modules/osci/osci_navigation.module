@@ -1,5 +1,96 @@
 <?php
 
+function osci_navigation_init()
+{
+    drupal_add_js(array('osci_navigation' => array(
+    	'reader_id' => variable_get('osci_navigation_reader_id', 'osci_viewer_wrapper'),
+        'header_id' => variable_get('osci_navigation_header_id', 'osci_header'),
+    	'api_endpoint' => variable_get('osci_navigation_api_endpoint', 'http://osci.localhost/api/navigation/'),
+    	'content_endpoint' => variable_get('osci_navigation_content_endpoint', 'http://osci.localhost/node/{$nid}/bodycopy'),
+    	'prev_link_id' => variable_get('osci_navigation_prev_link_id', 'osci_nav_prev'),
+    	'next_link_id' => variable_get('osci_navigation_next_link_id', 'osci_nav_next'),
+    	'cache_time' => (int)variable_get('osci_navigation_cache_time', 86400),
+    )), 'setting');
+}
+
+function osci_navigation_menu()
+{
+    $items = array();
+
+    $items['admin/config/user-interface/osci_navigation'] = array(
+        'title' => 'OSCI Navigation settings',
+        'description' => 'Configure the OSCI navigation module',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('osci_navigation_admin'),
+        'access arguments' => array('access administration pages'),
+    );
+
+    return $items;
+}
+
+function osci_navigation_admin()
+{
+    $form = array();
+
+    $form['osci_navigation_reader_id'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Reader Id'),
+    	'#default_value' => variable_get('osci_navigation_reader_id', 'osci_viewer_wrapper'),
+    	'#description' => t("The HTML Id of the div that will contain OSCI reader layout."),
+    	'#required' => TRUE,
+    );
+
+    $form['osci_navigation_header_id'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Header Id'),
+    	'#default_value' => variable_get('osci_navigation_header_id', 'osci_header'),
+    	'#description' => t("The HTML Id of the div that will contain OSCI header."),
+    	'#required' => TRUE,
+    );
+
+    $form['osci_navigation_api_endpoint'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Navigation Api Endpoint'),
+    	'#default_value' => variable_get('osci_navigation_api_endpoint', 'http://osci.localhost/api/navigation/'),
+    	'#description' => t("The url of the navigation service endpoint."),
+    	'#required' => TRUE,
+    );
+
+    $form['osci_navigation_content_endpoint'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Content Endpoint'),
+    	'#default_value' => variable_get('osci_navigation_content_endpoint', 'http://osci.localhost/node/{$nid}/bodycopy'),
+    	'#description' => t("The url for retrieving HTML5 content."),
+    	'#required' => TRUE,
+    );
+
+    $form['osci_navigation_prev_link_id'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Prev Link Id'),
+    	'#default_value' => variable_get('osci_navigation_prev_link_id', 'osci_nav_prev'),
+    	'#description' => t("The HTML id of the previous navigation link."),
+    	'#required' => TRUE,
+    );
+
+   $form['osci_navigation_next_link_id'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Next Link Id'),
+    	'#default_value' => variable_get('osci_navigation_next_link_id', 'osci_nav_next'),
+    	'#description' => t("The HTML id of the next navigation link."),
+    	'#required' => TRUE,
+    );
+
+    $form['osci_navigation_cache_time'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Cache Lifetime'),
+    	'#default_value' => variable_get('osci_navigation_cache_time', 86400),
+    	'#description' => t("How long to cache each node (in seconds)."),
+    	'#required' => TRUE,
+    );
+
+    return system_settings_form($form);
+}
+
 function osci_navigation_services_resources()
 {
     return array(

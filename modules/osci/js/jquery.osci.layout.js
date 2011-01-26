@@ -19,7 +19,12 @@
             base.data = $("section > *:not(section, header)", data);
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.viewer = $("#" + base.options.viewerId);
-
+            base.prerender = $("#osci_reader_content");
+            
+            if (!base.prerender.length) {
+                base.prerender = $("<div>", {id : "osci_reader_content"});
+                base.$el.append(base.prerender);
+            }
 // Moved to the navigation module so that it does not get triggerd multiple times after more than one node has been loaded
 //            if (!window.resizeTimer) {
 //                $(window).resize(function(){
@@ -43,8 +48,8 @@
             cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
             
             if (cache == null) {
-                base.$el.append(base.data.clone());
-                base.figures = $("figure", base.$el);
+                base.prerender.append(base.data.clone());
+                base.figures = $("figure", base.prerender);
                 
                 base.options.viewHeight = base.viewer.height();
                 base.options.viewWidth  = base.viewer.width();
@@ -53,9 +58,9 @@
     
                 _calcViewerInfo();
     
-                base.$el.css("width", base.options.columnWidth + "px");
+                base.prerender.css("width", base.options.columnWidth + "px");
     
-                elements = base.$el.children();
+                elements = base.prerender.children();
                 totalElements = elements.length;
     
                 elements.filter("p").each(function(i, elem){
@@ -97,9 +102,9 @@
                     }
                 }
     
-                base.$el.empty();
+                base.prerender.empty();
     
-                $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()});
+                $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
             } else {
                 base.options = cache.data.options;
                 base.viewer.append(cache.data.content);
@@ -213,7 +218,7 @@
             var figure;
 
             figureLink = $(figureLink);
-            $("a[href=" + figureLink.attr("href") + "]", base.$el).addClass("processed");
+            $("a[href=" + figureLink.attr("href") + "]", base.prerender).addClass("processed");
             figureLink.addClass("processed");
 
             figure = base.figures.filter(figureLink.attr("href"));
@@ -480,7 +485,8 @@
         outerPageGutter : [10, 10, 10, 10],
         viewerId : 'osci_viewer',
         minLinesPerColumn : 5,
-        cacheId : null
+        cacheId : null,
+        layoutCacheTime : 86400
     };
 
     $.fn.osci_layout = function( data, options )
@@ -492,150 +498,3 @@
     };
 
 })(jQuery);
-
-/*
-var currentPage = 0;
-
-jQuery(document).ready(function() {
-    function navigateTo(to)
-    {
-        var newX, totalColumns, newPage, layoutData = jQuery("#osci_reader_content").data("osci.layout").options;
- 
-        switch(to.operation) {
-            case 'first':
-               currentPage = 0;
-               break;
-
-            case 'last':
-               currentPage = layoutData.pageCount - 1;
-               break;
-
-            case 'next':
-                currentPage++;
-                if (currentPage >= layoutData.pageCount) {
-                    currentPage--;
-                    return;
-                }
-                break;
-
-            case 'prev':
-                if (currentPage < 1) {
-                    return;
-                }
-                currentPage--;
-                break;
-
-            case 'page':
-                if (to.value > layoutData.pageCount || to.value < 1) {
-                    return;
-                }
-                currentPage = to.value - 1;
-                break;
-
-            case 'column':
-                totalColumns = layoutData.columnsPerPage * layoutData.pageCount;
-                if (to.value > totalColumns || to.value < 1) {
-                    return;
-                }
-
-                newPage = Math.ceil(to.value / layoutData.columnsPerPage);
-                navigateTo({operation:'page',value:newPage});
-                return;
-                break;
-        }
-
-        var newOffset = 0;
-        if (currentPage > 0) {
-            newOffset = -1 * ((currentPage * layoutData.pageWidth) + ((layoutData.outerPageGutter[1] + layoutData.outerPageGutter[3]) * (currentPage)));
-        }
-
-        newX = newOffset;
-        jQuery(".osci_page", "#osci_viewer").css({
-            "-webkit-transform" : "translate(" + newX + "px, 0)",
-            "-moz-transform" : "translate(" + newX + "px, 0)",
-            "transform" : "translate(" + newX + "px, 0)"
-        });
-    };
-
-    jQuery("<a>", {
-        href : "#",
-        "class" : "first awesome",
-        html : "&laquo; first",
-        click : function(e) {
-            var $this = jQuery(this);
-            e.preventDefault();
-            navigateTo({operation:'first'});
-        }
-    }).appendTo("#osci_navigation");
-
-    jQuery("<a>", {
-        href : "#",
-        "class" : "prev awesome",
-        html : "&lsaquo; prev",
-        click : function(e) {
-            var $this = jQuery(this);
-            e.preventDefault();
-            navigateTo({operation:'prev'});
-        }
-    }).appendTo("#osci_navigation");
-
-    jQuery("<a>", {
-        href : "#",
-        "class" : "next awesome",
-        html : "next &rsaquo;",
-        click : function(e) {
-            var $this = jQuery(this);
-            e.preventDefault();
-            navigateTo({operation:'next'});
-        }
-    }).appendTo("#osci_navigation");
-
-    jQuery("<a>", {
-        href : "#",
-        "class" : "last awesome",
-        html : "last &raquo;",
-        click : function(e) {
-            var $this = jQuery(this);
-            e.preventDefault();
-            navigateTo({operation:'last'});
-        }
-    }).appendTo("#osci_navigation");
-
-    jQuery("#osci_viewer_wrapper").swipe({
-        swipeLeft : function () { $("a.next","#osci_navigation").click(); },
-        swipeRight : function () { $("a.prev","#osci_navigation").click(); }
-    });
-
-    jQuery("a.footnote-link, a.figure-link","#osci_viewer").live('click',function(e){
-        e.preventDefault();
-        var $this = jQuery(this);
-
-        navigateTo({
-	    operation : 'page',
-            value : jQuery($this.attr("href")).parents(".osci_page").data("page")
-        });
-
-        jQuery($this.attr("href")).effect("pulsate", { times : 3 }, 1000);
-    });
-
-    jQuery(document).keydown(function(e){
-        var keyCode = e.keyCode || e.which;
-
-        switch(keyCode) {
-            case 37:
-                jQuery("a.prev").click();
-                break;
-            case 39:
-                jQuery("a.next").click();
-                break;
-        }
-    });
-
-    var url = document.URL;
-    url = url.replace("reader","bodycopy");
-
-    var content = jQuery.osci.getUrl({ url: url, clear : true });
-    jQuery("#osci_reader_content").osci_layout(content.data, {});
-
-});
-*/
