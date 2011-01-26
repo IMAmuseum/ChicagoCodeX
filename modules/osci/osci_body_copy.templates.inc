@@ -17,10 +17,10 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]))
     	{
     		// ptiff is empty, use the image field for display
-    		$vars['content'] = theme_image(array(
+    		$vars['content'] = l(theme_image(array(
     			'path' => $node->field_image['und'][0]['uri'],
     			'attributes' => ''
-    		));
+    		)), file_create_url($node->field_image['und'][0]['uri']), array('html' => true));
     	}
     	elseif (isset($node->field_ptiff['und'][0]))
     	{
