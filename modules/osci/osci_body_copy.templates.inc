@@ -14,7 +14,18 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $vars['type'] = $node->type;
     $vars['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $figure['format']);
     if ($node->type == 'image') {
-    	$vars['content'] = _osci_iip_create_iip_div($node, $figure['id']);
+    	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]))
+    	{
+    		// ptiff is empty, use the image field for display
+    		$vars['content'] = theme_image(array(
+    			'path' => $node->field_image['und'][0]['uri'],
+    			'attributes' => ''
+    		));
+    	}
+    	elseif (isset($node->field_ptiff['und'][0]))
+    	{
+    		$vars['content'] = _osci_iip_create_iip_div($node, $figure['id']);
+    	}
     }
     else {
 	    	
