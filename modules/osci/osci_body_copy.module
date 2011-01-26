@@ -488,7 +488,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             ),
             'figure_reference' => array(
                 '#title'                => t('Figure Reference'),
-                '#description'          => t('The node id of the media that this figure should display.'),
+                '#description'          => t('Type the identifier of the media that this figure should display.'),
                 '#type'                 => 'textfield',
                 '#autocomplete_path'    => 'ajax/figure',
                 '#default_value'        => isset($figure['figure_reference']) ? $figure['figure_reference'] : '',
