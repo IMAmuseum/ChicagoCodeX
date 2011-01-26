@@ -82,13 +82,11 @@ function osci_iip_node_update($node) {
 function _osci_iip_save_aspect_ratio($node) {
 	// Retrieve and store aspect ratio - called in node_insert and node_update
 	// x:1(y) where x is the stored value and y is the constant 1
-	dpm($node);
 	if (isset($node->field_ptiff['und'][0]))
 	{
 		$attr = _osci_iip_get_image_attr($node);
 		if($attr) 
 		{
-			dpm($attr);
 			$ar = ($attr['iw'] / $attr['ih']);
 			$node->field_aspect_ratio['und'][0]['value'] = round($ar, 4);
 			node_save($node);
@@ -101,7 +99,6 @@ function _osci_iip_save_aspect_ratio($node) {
 		$attr = image_get_info($uri);
 		if ($attr)
 		{
-			dpm($attr);
 			$ar = ($attr['width'] / $attr['height']);
 			$node->field_aspect_ratio['und'][0]['value'] = $ar;
 			node_save($node);
