@@ -85,7 +85,7 @@ function osci_body_copy_render_layout($nid)
         }
     }
     asort($bodyCopyElements);
-    
+
     foreach ($bodyCopyElements as $k => $weight) {
         $v = $elements[$k];
         $elements[$k]['#theme'] = 'body_copy_field_html5';
@@ -156,7 +156,7 @@ function osci_body_copy_render_layout($nid)
         foreach($figureOrder as $k => $fId) {
             if (isset($figures[$fId])) {
                 $finalFigures[$k] = array_merge($figures[$fId], array('figCount' => $k));
-                $finalFigures[$k]['caption'] = $finalFigures[$k]['caption']; 
+                $finalFigures[$k]['caption'] = $finalFigures[$k]['caption'];
             }
         }
 
@@ -180,7 +180,7 @@ function osci_body_copy_render_layout($nid)
 //    return render($elements);
 }
 
-function osci_body_copy_entity_info_alter(&$entity_info) 
+function osci_body_copy_entity_info_alter(&$entity_info)
 {
     $entity_info['node']['view modes']['body_copy'] = array(
         'label'             => t('Body Copy'),
@@ -211,7 +211,7 @@ function osci_body_copy_field_presave($entity_type, $entity, $field, $instance, 
         $finalFootnotes = array();
         if (is_array($_POST[$field['field_name']]['und'][0]['footnotes'])) {
             $footnotes = $_POST[$field['field_name']]['und'][0]['footnotes'];
-            foreach($footnotes as $id => $footnote) { 
+            foreach($footnotes as $id => $footnote) {
                 $uid = substr($field['field_name'], 6) . '_fn_' . $entity->nid . '_' . $id;
                 if (empty($footnote) || $id == 'footnote_index' || $id == 'footnote-blank') {
                     continue;
@@ -334,7 +334,7 @@ function osci_body_copy_field_formatter_view($object_type, $object, $field, $ins
         case 'osci_body_copy_formatter_html5':
             foreach($items as $delta => $item) {
                 $markup = check_markup($item['body_copy'], $item['body_copy_format']);
- 
+
                 $footnotes = $item['footnotes'];
                 // Add anchor tags
                 if (is_array($footnotes)) {
@@ -424,7 +424,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
     $footnotes = array('footnote_blank' => '');
     $loadnotes = (isset($items[$delta]['footnotes']) && !is_array($items[$delta]['footnotes'])) ? unserialize($items[$delta]['footnotes']) : array();
     $footnotes += $loadnotes ? $loadnotes : array();
- 
+
     $bodyCopy['footnotes']['add_another'] = array(
         '#markup' => '<a href="#" class="footnote-add-another">Add Footnote</a>',
         '#weight' => -1,
@@ -436,7 +436,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
     $fnList = array();
     foreach ($footnotes as $id => $footnote) {
         if ($id !== 'footnote_blank') {
-            $id = substr($id, strrpos($id, '_') + 1); 
+            $id = substr($id, strrpos($id, '_') + 1);
         }
         $fnId = $fieldName . '_fn_' . $nid . '_' . $id;
         $class = ($id == 1) ? 'footnote first' : 'footnote';
@@ -453,7 +453,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
 
         $fnList[] = '<li><a href="#' . $fnId . '">' . $id . '</a></li>';
     }
-    
+
     $bodyCopy['footnotes']['footnote_list'] = array(
         '#markup' => '<ul>' . implode("\n", $fnList) . '</ul>',
         '#weight' => 0
@@ -518,7 +518,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             'columns' => array(
                 '#title'            => t('Columns'),
                 '#type'             => 'textfield',
-                '#default_value'    => isset($figure['columns']) ? $figure['columns'] : '',
+                '#default_value'    => isset($figure['columns']) ? $figure['columns'] : '50%',
                 '#description'      => t('A hint of how many columns the figure should span on a page. This can be either a number (1 or greater) or a percentage (0%-100%).')
             )
         );
@@ -537,7 +537,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
 /**
  * Implements hook_field_widget_settings_form().
  */
-function osci_body_copy_field_widget_settings_form($field, $instance) 
+function osci_body_copy_field_widget_settings_form($field, $instance)
 {
     $widget = $instance['widget'];
     $settings = $widget['settings'];
