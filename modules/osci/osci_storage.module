@@ -25,13 +25,13 @@ function osci_storage_demo() {
             var config = {
                 url: '/osci/node/9/bodycopy'
             };
-            var content = $.osci.getUrl({ url: '/osci/node/9/bodycopy' });
+            var content = $.osci.storage.getUrl({ url: '/osci/node/9/bodycopy' });
             $('.stat').html('CACHE: ' + content.cache + '<br/> TIME: ' + content.time + 'ms');
             $('#returnResult').html(content.data);
             return false;
         });
         $('#clearCache').click(function() {
-            $.osci.getUrl.clearCache();
+            $.osci.storage.clearCache();
         });
     });
 })(jQuery);
