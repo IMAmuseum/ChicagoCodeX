@@ -42,12 +42,15 @@
             selectorText = $(this).attr('class').split('-');
 
             newElement = $('div[id$="' + selectorText[0] + '_blank"]', container).clone().show();
+            $(".autocomplete-processed", newElement).removeClass("autocomplete-processed");
             newHtml = newElement.wrap("<span />").parent().html();
             newHtml = newHtml.replace(new RegExp(selectorText[0] + "_blank", 'gi'), count);
             newHtml = newHtml.replace(new RegExp(selectorText[0] + "-blank", 'gi'), count);
             newIdSelector = "#" + $(newHtml).attr("id");
 
             container.append(newHtml);
+
+            Drupal.behaviors.autocomplete.attach(newIdSelector, null); 
 
             container.tabs("add", newIdSelector, count);
             hiddenCountElem.val(count);
