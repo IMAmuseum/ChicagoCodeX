@@ -40,11 +40,22 @@ function osci_iip_demo() {
 }
 
 function osci_iip_node_insert($node) {	
+	// must set is_new to false or subsequent save attempts fail
+	$node->is_new = FALSE;
+	
 	if ($node->type == 'image') {
-		if(!isset($node->field_aspect_ratio['und'][0]['value'])) {
+		// For an image - If the aspect ratio isn't set, and a ptiff or image 
+		// was supplied, get our aspect ratio
+		if(!isset($node->field_aspect_ratio['und'][0]['value']) 
+			&& (isset($node->field_ptiff['und'][0]) || isset($node->field_image['und'][0]))) 
+		{
 			_osci_iip_save_aspect_ratio($node);
 		}
-		// Retrieve image from IIP server and set it as the image field
+		
+		// if no image was uploaded, but ptiff was supplied, get image
+		if (empty($node->field_image['und']) && !empty($node->field_ptiff['und'])) {
+			_osci_iip_get_image($node);
+		}
 	}
 }
 
@@ -54,19 +65,7 @@ function osci_iip_node_update($node) {
 		&& empty($node->field_image['und']) 
 		&& !empty($node->field_ptiff['und']))
 	{
-		// Get the image data by calling the iip server and asking for a whole jpeg
-		$iipSrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
-		$command = "FIF={$node->field_ptiff['und'][0]['value']}&CVT=jpeg";
-		$curl = curl_init($iipSrv.$command);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		$output = curl_exec($curl);
-		// Save the file with the new Drupal 7 File API
-		$fo = file_save_data($output, "public://iip_thumbs/iip_image_node_".$node->nid.".jpg", FILE_EXISTS_REPLACE);
-		if ($fo) 
-		{
-			$node->field_image['und'][0]['fid'] = $fo->fid;
-			node_save($node);
-		}
+		_osci_iip_get_image($node);	
 	}
 	// For an image - If the aspect ratio isn't set, and a ptiff or image 
 	// was supplied, get our aspect ratio
@@ -82,6 +81,8 @@ function osci_iip_node_update($node) {
 function _osci_iip_save_aspect_ratio($node) {
 	// Retrieve and store aspect ratio - called in node_insert and node_update
 	// x:1(y) where x is the stored value and y is the constant 1
+		
+	// If a ptiff is defined, it trumps all other methods
 	if (isset($node->field_ptiff['und'][0]))
 	{
 		$attr = _osci_iip_get_image_attr($node);
@@ -90,21 +91,44 @@ function _osci_iip_save_aspect_ratio($node) {
 			$ar = ($attr['iw'] / $attr['ih']);
 			$node->field_aspect_ratio['und'][0]['value'] = round($ar, 4);
 			node_save($node);
+			unset($attr);
 		}
 	}
-	elseif (isset($node->field_image['und'][0]))
+	// If no ptiff, use the field_image uri to get attributes
+	elseif (isset($node->field_image['und'][0]['uri']))
 	{
-		$uri = isset($node->field_image['und'][0]['uri']) ? 
-			$node->field_image['und'][0]['uri'] : $node->original->field_image['und'][0]['uri'];
-		$attr = image_get_info($uri);
-		if ($attr)
-		{
-			$ar = ($attr['width'] / $attr['height']);
-			$node->field_aspect_ratio['und'][0]['value'] = $ar;
-			node_save($node);
-		}
+		$attr = image_get_info($node->field_image['und'][0]['uri']);
+	}
+	// No uri, check for file fid - new uploads
+	elseif (isset($node->field_image['und'][0]['fid']))
+	{
+		$file = file_load($node->field_image['und'][0]['fid']);
+		$attr = image_get_info($file->uri);
 	}
 	
+	// If we obtained attributes, calculate aspect ratio and save
+	if(isset($attr)) 
+	{
+		$ar = ($attr['width'] / $attr['height']);
+		$node->field_aspect_ratio['und'][0]['value'] = round($ar, 4);
+		node_save($node);
+	}
+}
+
+function _osci_iip_get_image($node) {
+	// Get the image data by calling the iip server and asking for a whole jpeg
+	$iipSrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
+	$command = "FIF={$node->field_ptiff['und'][0]['value']}&CVT=jpeg";
+	$curl = curl_init($iipSrv.$command);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	$output = curl_exec($curl);
+	// Save the file with the new Drupal 7 File API
+	$fo = file_save_data($output, "public://iip_thumbs/iip_image_node_".$node->nid.".jpg", FILE_EXISTS_REPLACE);
+	if ($fo) 
+	{
+		$node->field_image['und'][0]['fid'] = $fo->fid;
+		node_save($node);
+	}
 }
 
 function _osci_iip_get_image_attr($node) {
