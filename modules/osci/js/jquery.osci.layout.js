@@ -48,7 +48,7 @@
             cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
             
             if (cache == null) {
-                base.prerender.append(base.data.clone());
+                base.prerender.append(base.data);
                 base.figures = $("figure", base.prerender);
                 
                 base.options.viewHeight = base.viewer.height();
@@ -101,7 +101,7 @@
                         pageElementCount = 0;
                     }
                 }
-    
+
                 base.prerender.empty();
     
                 $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
@@ -109,6 +109,8 @@
                 base.options = cache.data.options;
                 base.viewer.append(cache.data.content);
             }
+            
+            delete base.data;
             
             $(document).trigger("osci_layout_complete");
         };
@@ -271,7 +273,9 @@
             
             viewerHeight = container.height();
             container.children(":not(#osci_viewer)").each(function(i, elem){
-                viewerHeight -= $(elem).height();
+                if ($(elem).css("position") != "absolute") {
+                    viewerHeight -= $(elem).height();
+                }
             });
             base.viewer.height(viewerHeight - 20);
             //base.viewer.height(container.height() - container.children(":not(#osci_viewer)").height() - 20);

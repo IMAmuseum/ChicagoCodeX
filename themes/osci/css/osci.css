@@ -39,3 +39,67 @@ body.page-node-reader {
     border: 0px; 
     margin: 0;
 }
+
+#osci_viewer_wrapper {
+    position: relative;   
+}
+
+#osci_navigation_wrapper {
+    position: absolute; 
+    bottom: 0;  
+    left: 0;
+    right: 0;
+    height: 40px;
+}
+
+#osci_navigation {
+    position: relative;
+    width: 100%;
+}
+
+#osci_nav_prev {
+    position: absolute;
+    width: 60px;
+    top: 0;
+    left: 20px;
+}
+
+#osci_nav_next {
+    position: absolute;
+    right: 20px;
+    top: 0;
+    width: 60px;
+    text-align: right;
+}
+
+#osci_navigation_tools {
+    position: absolute;
+    left: 100px;
+    right: 100px;
+    height: 10px; 
+    top: 0;
+}
+
+#osci_navigation_section_list {
+    list-style-type: none;   
+}
+
+#osci_navigation_section_list li {
+    background: #CCC;   
+    height: 10px;
+    float: left;
+    cursor: pointer;
+    border-right: 1px solid #FFF;
+}
+
+#osci_navigation_section_list li:hover {
+    background: #DDD;   
+}
+
+#osci_navigation_section_list li.last {
+    border-right: 0;   
+}
+
+#osci_navigation_section_list li.active {
+    background: #444;   
+}

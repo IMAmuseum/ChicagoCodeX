@@ -17,6 +17,8 @@
         {
             var toc;
             
+            $.osci.storage.clearCache("osci_layout_cache:");
+            
             base.options = $.extend({}, $.osci.navigation.defaultOptions, options);
             
             base.options.bid = (base.options.bid) ? base.options.bid : parseInt(Drupal.settings.osci.bid);
@@ -28,8 +30,10 @@
                 mlid : base.options.mlid,
                 currentPage : 0,
                 pageCount : 0,
-                startPage : 'first'
+                to : {operation : "page", value : "first"}
             }
+            
+            window.history.replaceState({nid:base.navigation.nid}, document.title);
             
             toc = _get_table_of_contents(base.options.nid, base.options.bid);
             base.navigation.toc = toc.data;
@@ -38,18 +42,41 @@
                 _reset_navigation();
             });
             
+            $(window).bind("popstate",function(e){
+                if (e.originalEvent.state !== null && e.originalEvent.state.nid) {
+                    if (base.navigation.nid !== e.originalEvent.state.nid) {
+                        base.navigation.nid = e.originalEvent.state.nid;
+                        base.navigation.to = {operation : "page", value : "first"};
+                        _load_section();
+                    }
+                }
+            });
+            
             $("#" + base.options.prevLinkId).click(function (e){
                 e.preventDefault();
                 _navigateTo({
-                    operation : 'prev'
+                    operation : "prev"
                 });
             });
             
             $("#" + base.options.nextLinkId).click(function (e){
                 e.preventDefault();
                 _navigateTo({
-                    operation : 'next'
+                    operation : "next"
                 });
+            });
+            
+            $(document).keydown(function(e){
+                var keyCode = e.keyCode || e.which;
+
+                switch(keyCode) {
+                    case 37:
+                        $("#" + base.options.prevLinkId).click();
+                        break;
+                    case 39:
+                        $("#" + base.options.nextLinkId).click();
+                        break;
+                }
             });
             
             //Not sure if this fits here but prevents this getting assigned more than once in the layout module
@@ -66,54 +93,34 @@
         function _get_table_of_contents(nid, bid)
         {
             return $.osci.storage.getUrl({
-                url : base.options.apiEndpoint + nid + '/book.json',
-                key : 'bid_' + bid,
-                type : 'json'
+                url : base.options.apiEndpoint + nid + "/book.json",
+                key : "bid_" + bid,
+                type : "json"
             });
         };
         
         function _osci_resize()
         {
             var firstParagraph = $("p.osci_paragraph:first", "div.osci_page_" + (base.navigation.currentPage + 1));
-            base.navigation.startPage = "paragraph:" + firstParagraph.data("paragraph_id");
+            base.navigation.to = { operation : "paragraph", value : firstParagraph.data("paragraph_id")};
             
-            $.osci.storage.clearCache('osci_layout_cache:');
-            _load_section();
+            $.osci.storage.clearCache("osci_layout_cache:");
+            _load_section(false);
         }
         
-        function _load_section(section)
+        function _load_section(changeState)
         {
-            var content, loadNid = base.navigation.nid, tocData, startPage;
-            
-            switch(section) {
-                case 'next':
-                    tocData = base.navigation.toc['nid_' + base.navigation.nid].next;
-                    if (tocData.nid) {
-                        loadNid = tocData.nid;
-                        startPage = 'first';
-                    }
-                    break;
-                case 'prev':
-                    tocData = base.navigation.toc['nid_' + base.navigation.nid].prev;
-                    if (tocData.nid) {
-                        loadNid = tocData.nid;
-                        startPage = 'last';
-                    }
-                    break;
+            if (changeState === undefined) {
+                changeState = true;
             }
             
-            if (loadNid !== base.navigation.nid) {
-                base.navigation.nid = loadNid;
-                base.navigation.startPage = startPage;
-            }
-            
-            content = $.osci.storage.getUrl({
-                url :  base.options.contentEndpoint.replace('{$nid}', loadNid),
+            var content = $.osci.storage.getUrl({
+                url :  base.options.contentEndpoint.replace("{$nid}", base.navigation.nid),
                 expire : base.options.cacheTime
             });
             
             $("#" + base.options.readerId).osci_layout(content.data, {
-                cacheId : loadNid,
+                cacheId : base.navigation.nid,
                 minColumnWidth : Drupal.settings.osci_layout.min_column_width,
                 maxColumnWidth : Drupal.settings.osci_layout.max_column_width,
                 gutterWidth : Drupal.settings.osci_layout.gutter_width,
@@ -123,29 +130,29 @@
                 minLinesPerColumn : Drupal.settings.osci_layout.min_lines_per_column,
                 layoutCacheTime : Drupal.settings.osci_layout.cache_time
             });
+            
+            if (changeState) {
+                window.history.pushState(
+                    {nid : base.navigation.nid},
+                    document.title, 
+                    "/node/" + base.navigation.nid + "/reader"
+                );
+            }
         };
         
         function _reset_navigation()
         {
-            var paragraphData, page, 
-                navigateTo = {operation : base.navigation.startPage},
+            var paragraphData, page,
                 layoutData = $("#" + base.options.readerId).data("osci.layout");
 
             base.navigation.currentPage = 0;
             base.navigation.pageCount = layoutData.options.pageCount;
             base.navigation.layoutData = layoutData.options;
-
-            if (base.navigation.startPage.indexOf("paragraph:") >= 0) {
-                paragraphData = base.navigation.startPage.split(":");
-                page = $("p.osci_paragraph_" + paragraphData[1] + ":first","#" + layoutData.options.viewerId).parents(".osci_page").data("page");
-                navigateTo = {
-                    operation : "page",
-                    value : page
-                };
-            }
+            base.navigation.length = parseInt(base.navigation.toc["nid_" + base.navigation.nid].length);
 
             _update_title();
-            _navigateTo(navigateTo);
+            _create_section_navigation_bar();
+            _navigateTo(base.navigation.to);
         };
         
         function _update_title()
@@ -155,14 +162,14 @@
                 titleParts = [],
                 nid = base.navigation.nid,
                 titleLength = 0,
-                bookTitle = '',
-                subTitle = '';
+                bookTitle = "",
+                subTitle = "";
             
             while (hasParent) {
-                titleParts.push(base.navigation.toc['nid_' + nid].title);
+                titleParts.push(base.navigation.toc["nid_" + nid].title);
                 
-                if (base.navigation.toc['nid_' + nid].parent.nid) {
-                    nid = base.navigation.toc['nid_' + nid].parent.nid;
+                if (base.navigation.toc["nid_" + nid].parent.nid) {
+                    nid = base.navigation.toc["nid_" + nid].parent.nid;
                 } else {
                     hasParent = false;
                 }
@@ -174,7 +181,7 @@
                     bookTitle = titleParts[i];
                 } else {
                     if (subTitle.length) {
-                        subTitle = titleParts[i] + ': ' + subTitle;
+                        subTitle = titleParts[i] + ": " + subTitle;
                     } else {
                         subTitle = titleParts[i];
                     }
@@ -187,74 +194,148 @@
         
         function _navigateTo(to)
         {
-            var newX, totalColumns, newPage;
-     
+            var totalColumns, newPage, tocData, newOffset;
+
             switch(to.operation) {
-                case 'first':
-                    base.navigation.currentPage = 0;
-                   break;
-
-                case 'last':
-                    base.navigation.currentPage = base.navigation.pageCount - 1;
-                   break;
-
-                case 'next':
+                case "next":
                     base.navigation.currentPage++;
                     if (base.navigation.currentPage >= base.navigation.pageCount) {
-                        _load_section('next');
+                        tocData = base.navigation.toc["nid_" + base.navigation.nid].next;
+                        if (tocData.nid) {
+                            base.navigation.nid = tocData.nid;
+                            base.navigation.to = {operation : "page", value : "first"};
+                        }
+
+                        _load_section();
                         return;
                     }
                     break;
 
-                case 'prev':
+                case "prev":
                     if (base.navigation.currentPage < 1) {
-                        _load_section('prev');
+                        tocData = base.navigation.toc["nid_" + base.navigation.nid].prev;
+                        if (tocData.nid) {
+                            base.navigation.nid = tocData.nid;
+                            base.navigation.to = {operation : "page", value : "last"};
+                        }
+
+                        _load_section();
                         return;
                     }
                     base.navigation.currentPage--;
                     break;
 
-                case 'page':
-                    if (to.value > base.navigation.pageCount || to.value < 1) {
+                case "page":
+                    if (to.value === "first") {
+                        base.navigation.currentPage = 0;
+                    } else if (to.value === "last") {
+                        base.navigation.currentPage = base.navigation.pageCount - 1;
+                    } else if (to.value > base.navigation.pageCount || to.value < 1) {
                         return;
+                    } else {
+                        base.navigation.currentPage = to.value - 1;
                     }
-                    base.navigation.currentPage = to.value - 1;
                     break;
 
-                case 'column':
+                case "column":
                     totalColumns = base.navigation.layoutData.columnsPerPage * base.navigation.pageCount;
                     if (to.value > totalColumns || to.value < 1) {
                         return;
                     }
 
                     newPage = Math.ceil(to.value / base.navigation.layoutData.columnsPerPage);
-                    navigateTo({operation:'page',value:newPage});
+                    _navigateTo({operation:"page",value:newPage});
+                    return;
+                    break;
+                    
+                case "paragraph":
+                    newPage = $("p.osci_paragraph_" + to.value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
+                    _navigateTo({operation:"page",value:newPage});
                     return;
                     break;
             }
 
-            var newOffset = 0;
+            newOffset = 0;
             if (base.navigation.currentPage > 0) {
                 newOffset = -1 * ((base.navigation.currentPage * base.navigation.layoutData.pageWidth) + 
                     ((base.navigation.layoutData.outerPageGutter[1] + base.navigation.layoutData.outerPageGutter[3]) * (base.navigation.currentPage)));
             }
 
-            newX = newOffset;
+            $("#" + base.options.sectionNavId).trigger("osci_update_navigation_section", base.navigation.currentPage);
+
             jQuery(".osci_page", "#osci_viewer").css({
-                "-webkit-transform" : "translate(" + newX + "px, 0)",
-                "-moz-transform" : "translate(" + newX + "px, 0)",
-                "transform" : "translate(" + newX + "px, 0)"
+                "-webkit-transform" : "translate(" + newOffset + "px, 0)",
+                "-moz-transform" : "translate(" + newOffset + "px, 0)",
+                "transform" : "translate(" + newOffset + "px, 0)"
             });
         };
+        
+        function _create_section_navigation_bar()
+        {
+            var container = $("#" + base.options.sectionNavId),
+                parts = base.navigation.pageCount,
+                partWidth = Math.floor(container.width() / base.navigation.pageCount),
+                navBar, i, classes = "", heightRemain = 0, genWidth = 0, li;
+
+            heightRemain = container.width() - (parts * partWidth) - 1;
+            
+            navBar = $("#osci_navigation_section_list", container);
+            if (!navBar.length) {
+                navBar = $("<ul>", {
+                    id : "osci_navigation_section_list"
+                }).appendTo(container);
+            }
+            navBar.empty();
+            
+            i = 1;
+            while (i <= parts) {
+                classes = "";
+                if (i === 1) {
+                    classes += "first active";
+                } else if (i === parts) {
+                    partWidth += heightRemain;
+                    classes += "last";
+                }
+                
+                li = $("<li>",{
+                    css : { width : partWidth + "px" },
+                    data : { navigateTo : i },
+                    "class" : classes,
+                    click : function (e) {
+                        e.preventDefault();
+                        
+                        var page, $this;
+                        
+                        $this = $(this);
+                        page = $this.data("navigateTo");
+                        
+                        $this.siblings().removeClass("active");
+                        $this.addClass("active");
+                        _navigateTo({operation : "page", value : page});
+                    }
+                }).appendTo(navBar);
+                
+                if (li.outerWidth() > li.width()) {
+                    li.width((li.width() - (li.outerWidth() - li.width())) + "px");
+                }
+                i++;
+            }
+            
+            container.bind("osci_update_navigation_section", function(e, page){
+                $("li", this).removeClass("active");
+                $("li:eq(" + page + ")", this).addClass("active");
+            });
+        }
 
         base.init();
     };
 
     $.osci.navigation.defaultOptions = {
-        readerId : 'osci_viewer_wrapper',
-        headerId : 'osci_header',
-        apiEndpoint : 'http://osci.localhost/api/navigation/',
-        contentEndpoint : 'http://osci.localhost/node/{$nid}/bodycopy',
+        readerId : "osci_viewer_wrapper",
+        headerId : "osci_header",
+        apiEndpoint : "http://osci.localhost/api/navigation/",
+        contentEndpoint : "http://osci.localhost/node/{$nid}/bodycopy",
+        sectionNavId : "osci_navigation_section",
         bid : 0,
         nid : 0,
         mlid : 0,
