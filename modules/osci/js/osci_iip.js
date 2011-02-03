@@ -22,19 +22,17 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	po.svgLayer = function(svgMarkup) {
 		var svgLayer = po.layer(load, unload);
 		svgLayer.tile(false);
-		// svgLayer.transform(function() {return [0,0,0,0,0,0]});
 		function load(tile) {
 			
 			var	element = tile.element = po.svg('g');
 			
-			$(element).append(svgMarkup);
+			$(element).append(svgMarkup.clone());
 
 			//tile.element.setAttribute("width", parent_w);
 		    //tile.element.setAttribute("height", parent_h);
 		    tile.ready = true;
 			image.dispatch({type: "load", tile: tile});	
-			console.log(svgLayer.transform());
-			console.log(tile);		
+					
 		}
 		
 		function unload(tile) {
@@ -85,7 +83,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var svg = po.svg('svg');
 	map.container(div[0].appendChild(svg));
 	// map.tileSize({x: 256, y: 256});
-	map.zoomRange([0, zoom_max]);
+	map.zoomRange([0, zoom_max-1]);
 	map.zoom(zoom_level);
 
 	// Set the map extents to our image
@@ -96,10 +94,43 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	// Load in our image and define the tile loader for it
 	var image = po.image();
-	var tl = 'tile_loader_'+figure_id+' = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+	var tl = 'tile_loader_'+figure_id+' = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://osci.localhost/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
 	eval(tl);
 	image.url(window['tile_loader_'+figure_id]);
 	map.add(image);
+	
+	
+	
+	// Set up our control visibility toggles for mouse events
+	div.mouseover(function() {
+		// Show controls
+		$('g.compass', div).css("visibility", "visible");
+		reset_btn.style("visibility", "visible");
+		fs.style("visibility", "visible");
+	
+	});
+	div.mouseout(function() {
+		// Hide controls
+		$('g.compass', div).css("visibility", "hidden");
+		reset_btn.style("visibility", "hidden");
+		fs.style("visibility", "hidden");
+	});
+	
+	// Load in svg markup
+	if (svg_path) {
+		
+		$.get(svg_path, function(data){
+			// drop the document, we just need the svg inside
+			var markup_svg = $(data.childNodes[1]);
+			// remove the width and height, we just need the viewbox
+			markup_svg.removeAttr('width').removeAttr('height');
+			markup_svg.attr('x', '0').attr('y', '0');
+			// console.log(markup_svg)
+			var svgLayer = po.svgLayer(markup_svg);
+			map.add(svgLayer);
+			
+		});
+	}
 	
 	// Controls and functionality
 	var nmap = n$(div[0]); // the map container ran through the nns js library for svg manipulation
@@ -186,55 +217,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr("fill","#aaa")
 			.attr("class", "svg_arrow");
 	}
-	
-	// Set up our control visibility toggles for mouse events
-	div.mouseover(function() {
-		// Show controls
-		$('g.compass', div).css("visibility", "visible");
-		reset_btn.style("visibility", "visible");
-		fs.style("visibility", "visible");
-	
-	});
-	div.mouseout(function() {
-		// Hide controls
-		$('g.compass', div).css("visibility", "hidden");
-		reset_btn.style("visibility", "hidden");
-		fs.style("visibility", "hidden");
-	});
-	
-	// Load in svg markup
-	/*
-	if (svg_path) {
-		
-		$.get(svg_path, function(data){
-			// drop the document, we just need the svg inside
-			var markup_svg = $(data.childNodes[1]);
-			// remove the width and height, we just need the viewbox
-			markup_svg.removeAttr('width').removeAttr('height');
-			markup_svg.attr('x', '0').attr('y', '0');
-			console.log(markup_svg)
-			var svgLayer = po.svgLayer(markup_svg);
-			map.add(svgLayer);
-			
-				
-				
-				
-		});
-	}
-	*/
-	/*
-	// Overlay SVG markup
-	var p1 = map.coordinateLocation({zoom:7, column:10, row:10});
-	var p2 = map.coordinateLocation({zoom:7, column:11, row:11});
-	map.add(po.geoJson()
-    .features([{
-		"geometry": {
-			"type": "LineString",
-			"coordinates": [ [p1.lon -1.5, p2.lat -.5], [p1.lon -1.5, p2.lat], [p1.lon, p1.lat] ]
-		},
-	}]));
-	*/
-	
 	
 	function make_fullscreen() {
 		
