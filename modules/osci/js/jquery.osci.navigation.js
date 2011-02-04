@@ -190,7 +190,7 @@
         
         function _update_history(replace)
         {
-            if (window.history) {
+            if (window.history && window.history.pushState) {
                 if (replace) {
                     window.history.replaceState({nid:base.navigation.nid}, document.title);
                 } else {
