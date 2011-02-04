@@ -201,8 +201,8 @@
                     colHeight -= lineHeight;
                 }
                 column.height(colHeight + "px");
-                columnChildrenCount = column.children().length ? offset : 0;
-                heightRemain = -1 * (content.outerHeight() - (colHeight - content.position().top) - columnChildrenCount);
+                columnContentCount = column.children().length ? offset : 0;
+                heightRemain = -1 * (content.outerHeight() - (colHeight - content.position().top) - columnContentCount);
                 pageColumnData[pageColumnNumber].heightRemain = heightRemain;
                 overflow = true;
             }

@@ -33,7 +33,7 @@
                 to : {operation : "page", value : "first"}
             }
             
-            window.history.replaceState({nid:base.navigation.nid}, document.title);
+            _update_history(true);
             
             toc = _get_table_of_contents(base.options.nid, base.options.bid);
             base.navigation.toc = toc.data;
@@ -132,11 +132,7 @@
             });
             
             if (changeState) {
-                window.history.pushState(
-                    {nid : base.navigation.nid},
-                    document.title, 
-                    "/node/" + base.navigation.nid + "/reader"
-                );
+                _update_history();
             }
         };
         
@@ -190,6 +186,21 @@
 
             $("h1.osci_book_title").text(bookTitle);
             $("h2.osci_book_section_title").text(subTitle);
+        }
+        
+        function _update_history(replace)
+        {
+            if (window.history) {
+                if (replace) {
+                    window.history.replaceState({nid:base.navigation.nid}, document.title);
+                } else {
+                    window.history.pushState(
+                        {nid : base.navigation.nid},
+                        document.title, 
+                        "/node/" + base.navigation.nid + "/reader"
+                    );
+                }
+            }
         }
         
         function _navigateTo(to)
