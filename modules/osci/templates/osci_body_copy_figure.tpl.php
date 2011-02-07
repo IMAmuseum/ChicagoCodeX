@@ -1,5 +1,5 @@
-<a name="<?php print $figure['id']; ?>"></a>
 <figure id="<?php print $figure['id']; ?>" <?php print $data; ?> class="<?php print $type; ?>">
+    <a name="<?php print $figure['id']; ?>"></a>
     <div class="figureContent">
         <?php print $content; ?>
     </div>
