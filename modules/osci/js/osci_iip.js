@@ -13,34 +13,39 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// We need Polymaps
 	if (org.polymaps) {
 		po = org.polymaps;
+		
+		// extend Polymaps with our svgLayer
+		po.svgLayer = function(svgMarkup) {
+			var svgLayer = po.layer(load, unload);
+			svgLayer.tile(false);
+			svgLayer.transform();
+			function load(tile) {
+				tile.element = po.svg('g');
+				
+				
+				$(tile.element).append(svgMarkup.clone());
+				
+
+				
+				//tile.element.setAttribute("width", parent_w);
+			    //tile.element.setAttribute("height", parent_h);
+			    tile.ready = true;
+				image.dispatch({type: "load", tile: tile});	
+				console.log(tile);
+						
+			}
+			
+			function unload(tile) {
+				if (tile.request) tile.request.abort(true);
+			}
+			
+			return svgLayer;
+		};
 	}
 	else {
 		alert("IIP - requires Polymaps");
 		return false;
 	}
-	// extend Polymaps with our svgLayer
-	po.svgLayer = function(svgMarkup) {
-		var svgLayer = po.layer(load, unload);
-		svgLayer.tile(false);
-		function load(tile) {
-			
-			var	element = tile.element = po.svg('g');
-			
-			$(element).append(svgMarkup.clone());
-
-			//tile.element.setAttribute("width", parent_w);
-		    //tile.element.setAttribute("height", parent_h);
-		    tile.ready = true;
-			image.dispatch({type: "load", tile: tile});	
-					
-		}
-		
-		function unload(tile) {
-			if (tile.request) tile.request.abort(true);
-		}
-		
-		return svgLayer;
-	};
 	
 	// Ensure we have something to work on
 	if (div.length < 1) {
@@ -121,13 +126,17 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		
 		$.get(svg_path, function(data){
 			// drop the document, we just need the svg inside
-			var markup_svg = $(data.childNodes[1]);
+			var markup_svg = $('svg', data);
 			// remove the width and height, we just need the viewbox
 			markup_svg.removeAttr('width').removeAttr('height');
-			markup_svg.attr('x', '0').attr('y', '0');
-			// console.log(markup_svg)
+			markup_svg.children().each(function(index, element) {
+				console.log(parseSVG($(element).attr('d')));
+			});
+			
+			/* Well, nice try... 
 			var svgLayer = po.svgLayer(markup_svg);
 			map.add(svgLayer);
+			*/
 			
 		});
 	}
@@ -271,6 +280,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	
 	function parseSVG(data) {
+		console.log(data);
 		// given an svg path, return an array of coordinates
 		var pixels = [];
 		var coords = [];
