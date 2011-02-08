@@ -63,8 +63,8 @@ body.page-node-reader {
 	height:20px;
     top: 0;
     left: 20px;
-	background: transparent url('image/btn-prev.png') no-repeat left top;
-	overflow:hidden;display:block;text-indent:-999px;
+	background: transparent url('../image/btn-prev.png') no-repeat left top;
+	overflow:hidden;display:block;text-indent:999px;
 	
 }
 
@@ -75,8 +75,8 @@ body.page-node-reader {
     right: 20px;
     top: 0;
     text-align: right;
-	background: transparent url('image/btn-next.png') no-repeat left top;
-	overflow:hidden;display:block;text-indent:-999px;
+	background: transparent url('../image/btn-next.png') no-repeat left top;
+	overflow:hidden;display:block;text-indent:999px;
 }
 
 #osci_navigation_tools {
