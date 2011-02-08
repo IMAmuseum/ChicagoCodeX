@@ -82,24 +82,61 @@ body.page-node-reader {
 
 #osci_navigation_section_list {
     list-style-type: none;   
+    display: inline-block;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    background-color: #cbcbcb;
+    background: -moz-linear-gradient(100% 100% 90deg, #999999, #cbcbcb);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cbcbcb), to(#999999));
 }
 
 #osci_navigation_section_list li {
-    background: #CCC;   
-    height: 10px;
+    background: transparent url("../images/bg-osci-navbar-tick.png") repeat-y right;
+    height: 7px;
     float: left;
     cursor: pointer;
-    border-right: 1px solid #FFF;
+}
+
+#osci_navigation_section_list li.first, #osci_navigation_section_list li.first.active {
+    border-top-left-radius: 3px;
+    -moz-border-radius-topleft: 3px;
+    -webkit-border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    -webkit-border-bottom-left-radius: 3px;
 }
 
 #osci_navigation_section_list li:hover {
-    background: #DDD;   
-}
-
-#osci_navigation_section_list li.last {
-    border-right: 0;   
+    background: #666 url("../images/bg-osci-navbar-tick.png") repeat-y right;
+    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -moz-linear-gradient(100% 100% 90deg, #505050, #666);
+    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
 }
 
 #osci_navigation_section_list li.active {
-    background: #444;   
+    background: #666 url("../images/bg-osci-navbar-tick.png") repeat-y right;
+    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -moz-linear-gradient(100% 100% 90deg, #505050, #666);
+    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
+}
+
+#osci_navigation_section_list li.last {
+    background: transparent;
+    border-top-right-radius: 3px;
+    -moz-border-radius-topright: 3px;
+    -webkit-border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    -moz-border-radius-bottomright: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+}
+
+#osci_navigation_section_list li.active.last {
+    background: #666;
+    background: -moz-linear-gradient(100% 100% 90deg, #505050, #666);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
+}
+
+#osci_navigation_section_list li.last:hover {
+    background: #666;
+    background: -moz-linear-gradient(100% 100% 90deg, #505050, #666);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
 }

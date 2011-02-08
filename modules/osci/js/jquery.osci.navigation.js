@@ -285,15 +285,14 @@
         {
             var container = $("#" + base.options.sectionNavId),
                 parts = base.navigation.pageCount,
-                partWidth = Math.floor(container.width() / base.navigation.pageCount),
-                navBar, i, classes = "", heightRemain = 0, genWidth = 0, li;
-
-            heightRemain = container.width() - (parts * partWidth) - 1;
+                partWidth = (1 / base.navigation.pageCount)  * 100,
+                navBar, i, classes = "", heightRemain = 0, li;
             
             navBar = $("#osci_navigation_section_list", container);
             if (!navBar.length) {
                 navBar = $("<ul>", {
-                    id : "osci_navigation_section_list"
+                    id : "osci_navigation_section_list",
+                    width : "100%"
                 }).appendTo(container);
             }
             navBar.empty();
@@ -304,12 +303,11 @@
                 if (i === 1) {
                     classes += "first active";
                 } else if (i === parts) {
-                    partWidth += heightRemain;
                     classes += "last";
                 }
                 
                 li = $("<li>",{
-                    css : { width : partWidth + "px" },
+                    css : { width : partWidth + "%" },
                     data : { navigateTo : i },
                     "class" : classes,
                     click : function (e) {
@@ -326,9 +324,6 @@
                     }
                 }).appendTo(navBar);
                 
-                if (li.outerWidth() > li.width()) {
-                    li.width((li.width() - (li.outerWidth() - li.width())) + "px");
-                }
                 i++;
             }
             
