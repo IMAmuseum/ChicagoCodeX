@@ -147,3 +147,9 @@ body.page-node-reader {
     background: -moz-linear-gradient(100% 100% 90deg, #505050, #666);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
 }
+
+
+
+.page-text:hover {
+	background: url('../images/bg-white-20.png') repeat left top !important;	
+}
