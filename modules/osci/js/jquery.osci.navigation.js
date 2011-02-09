@@ -302,8 +302,10 @@
                 classes = "";
                 if (i === 1) {
                     classes += "first active";
-                } else if (i === parts) {
-                    classes += "last";
+                } 
+
+                if (i === parts) {
+                    classes += " last";
                 }
                 
                 if (i > (parts - Math.floor(addPixels / 2)) || i < (1 + Math.ceil(addPixels / 2))) {
