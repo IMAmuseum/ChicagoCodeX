@@ -3,6 +3,9 @@
         <h1 class="osci_book_title">Book Title</h1>
         <h2 class="osci_book_section_title">Book Section Title</h2>
     </div>
+    <div id="osci_table_of_contents_wrapper">
+        <a href="#" class="osci_table_of_contents_handle">Nav</a>
+    </div>
     <div id="osci_viewer"></div>
     <div id="osci_navigation_wrapper">
         <div id="osci_navigation">

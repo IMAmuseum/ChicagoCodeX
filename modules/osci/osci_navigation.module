@@ -5,6 +5,8 @@ function osci_navigation_init()
     drupal_add_js(array('osci_navigation' => array(
     	'reader_id' => variable_get('osci_navigation_reader_id', 'osci_viewer_wrapper'),
         'header_id' => variable_get('osci_navigation_header_id', 'osci_header'),
+    	'toc_id' => variable_get('osci_navigation_toc_id', 'osci_table_of_contents_wrapper'),
+    	'nav_id' => variable_get('osci_navigation_id', 'osci_navigation_wrapper'),
     	'api_endpoint' => variable_get('osci_navigation_api_endpoint', 'http://osci.localhost/api/navigation/'),
     	'content_endpoint' => variable_get('osci_navigation_content_endpoint', 'http://osci.localhost/node/{$nid}/bodycopy'),
     	'prev_link_id' => variable_get('osci_navigation_prev_link_id', 'osci_nav_prev'),
@@ -45,6 +47,22 @@ function osci_navigation_admin()
     	'#title' => t('Header Id'),
     	'#default_value' => variable_get('osci_navigation_header_id', 'osci_header'),
     	'#description' => t("The HTML Id of the div that will contain OSCI header."),
+    	'#required' => TRUE,
+    );
+
+    $form['osci_navigation_id'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Navigation Id'),
+    	'#default_value' => variable_get('osci_navigation_id', 'osci_navigation_wrapper'),
+    	'#description' => t("The HTML Id of the div that will contain OSCI navigation controls."),
+    	'#required' => TRUE,
+    );
+
+    $form['osci_navigation_toc_id'] = array(
+        '#type' => 'textfield',
+    	'#title' => t('Table of Contents Id'),
+    	'#default_value' => variable_get('osci_navigation_toc_id', 'osci_table_of_contents_wrapper'),
+    	'#description' => t("The HTML Id of the div that will contain OSCI table of contents."),
     	'#required' => TRUE,
     );
 

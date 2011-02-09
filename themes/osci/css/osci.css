@@ -148,7 +148,83 @@ body.page-node-reader {
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
 }
 
+#osci_table_of_contents_wrapper {
+    position: absolute;
+    width: 180px;
+    top: 0;
+    left: 0;   
+    z-index: 1000;
+    padding: 0 10px;
+    background-color: #cbcbcb;
+    background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cbcbcb));
+    -moz-box-shadow: 0 0 6px #888;
+    -webkit-box-shadow: 0 0 6px #888;
+    box-shadow: 0 0 6px #888;
+    height: 100%;
+    -webkit-transition: -webkit-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
+    -moz-transition: -moz-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
+    transition: transform 0.2s cubic-bezier(0, 0, 0.25, 1); 
+}
 
+ul#osci_navigation_toc li {
+    position: relative;
+    width: 100%;
+    background: #b8b8b8;
+}
+
+ul#osci_navigation_toc li ul li {
+    background: #d8d8d8;
+}
+
+ul#osci_navigation_toc li ul {
+    overflow: hidden;
+}
+
+ul#osci_navigation_toc li ul li ul li {
+    background: transparent;
+}
+
+ul#osci_navigation_toc li a {
+    display: block;
+    border-bottom: 1px solid #888;
+    padding: 4px 10px 4px 4px;
+    color: #222;
+}
+
+ul#osci_navigation_toc li a:hover {
+    text-decoration: none;   
+}
+
+ul#osci_navigation_toc li a.osci_toc_arrow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-bottom: 0;
+    padding: 4px;
+}
+
+#osci_table_of_contents_wrapper H2 {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #CCC;
+    border-bottom: 1px solid #888;
+    margin: 10px 0 0;
+}
+
+#osci_table_of_contents_wrapper .osci_table_of_contents_handle {
+    transform: rotate(90deg); 
+    -webkit-transform: rotate(90deg); 
+    -moz-transform: rotate(90deg);
+    display: block;
+    position: absolute;
+    left: 192px;
+    top: 50%;
+    background: #cccccc;
+    padding: 4px 10px;
+    color: #222;
+    z-index: 1001;
+}
 
 .page-text:hover {
 	background: url('../images/bg-white-20.png') repeat left top !important;	

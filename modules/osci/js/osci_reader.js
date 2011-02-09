@@ -1,7 +1,9 @@
 jQuery(document).ready(function() {
-    jQuery("#osci_navigation").osci_navigation({
+    jQuery.osci.navigation({
         readerId : Drupal.settings.osci_navigation.reader_id,
         headerId : Drupal.settings.osci_navigation.header_id,
+        navId : Drupal.settings.osci_navigation.nav_id,
+        tocId : Drupal.settings.osci_navigation.toc_id,
         apiEndpoint : Drupal.settings.osci_navigation.api_endpoint,
         contentEndpoint : Drupal.settings.osci_navigation.content_endpoint,
         prevLinkId : Drupal.settings.osci_navigation.prev_link_id,
