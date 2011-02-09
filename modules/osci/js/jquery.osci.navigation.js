@@ -283,9 +283,11 @@
         {
             var container = $("#" + base.options.sectionNavId),
                 parts = base.navigation.pageCount,
-                partWidth = (1 / base.navigation.pageCount)  * 100,
-                navBar, i, classes = "", heightRemain = 0, li;
-            
+                partWidth = Math.round((1 / base.navigation.pageCount)  * 100),
+                addPixels = Math.abs(Math.round(100 - (parts * partWidth))),
+                navBar, i, classes = "", heightRemain = 0, li, finalWidth,
+                addSubPixels = (100 - (parts * partWidth)) > 0 ? 1 : -1;
+           
             navBar = $("#osci_navigation_section_list", container);
             if (!navBar.length) {
                 navBar = $("<ul>", {
@@ -304,8 +306,14 @@
                     classes += "last";
                 }
                 
+                if (i > (parts - Math.floor(addPixels / 2)) || i < (1 + Math.ceil(addPixels / 2))) {
+                    finalWidth = partWidth + addSubPixels;
+                } else {
+                    finalWidth = partWidth;
+                }
+                
                 li = $("<li>",{
-                    css : { width : partWidth + "%" },
+                    css : { width : finalWidth + "%" },
                     data : { navigateTo : i },
                     "class" : classes,
                     click : function (e) {

@@ -23,21 +23,40 @@ body.page-node-reader {
 }
 
 #osci_header {
-    background: url('../images/bg-osci-titlebar.png') repeat-x;   
-    height: 66px;
-    padding: 6px 0 0 40px;
+    background: #464646 url('../images/bg-header-bar-left.png') no-repeat;   
+    height: 26px;
+    padding: 0 0 0 40px;
 }
 
 #osci_header h1 {
-    font-size: 1em; 
+    font-size: 14px; 
     border: 0px;  
-    margin: 0 0 4px 0;
+    margin: 0;
+    padding: 2px 0 0 0;
+    color: #d8d8d8;
+    display: inline-block;
+}
+
+#osci_header h1 a {
+    color: #d8d8d8;
 }
 
 #osci_header h2 {
-    font-size: .75em;  
+    font-size: 12px;  
     border: 0px; 
     margin: 0;
+    position: absolute;
+    top: 28px;
+    left: 0;
+    text-align: center;
+    color: #B8B8B8;
+}
+
+#osci_header_controls {
+    background: #464646 url('../images/bg-header-bar-right.png') no-repeat;   
+    float: right;
+    height: 26px;
+    width: 198px;
 }
 
 #osci_viewer_wrapper {
@@ -151,7 +170,7 @@ body.page-node-reader {
 #osci_table_of_contents_wrapper {
     position: absolute;
     width: 180px;
-    top: 0;
+    top: 26px;
     left: 0;   
     z-index: 1000;
     padding: 0 10px;
