@@ -433,11 +433,11 @@
                                } else {
                                    checkElement.slideUp("normal");
                                }
+                               $this.toggleClass("expanded");
                            } else {
+                               $this.toggleClass("expanded");
                                $this.prev().click();
                            }
-                           
-                           $this.toggleClass("expanded");
                        }
                     })
                 );
