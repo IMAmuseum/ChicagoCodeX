@@ -26,6 +26,8 @@ body.page-node-reader {
     background: #464646 url('../images/bg-header-bar-left.png') no-repeat;   
     height: 26px;
     padding: 0 0 0 40px;
+    z-index: 9999;
+    position:relative;
 }
 
 #osci_header h1 {
@@ -170,17 +172,19 @@ body.page-node-reader {
 #osci_table_of_contents_wrapper {
     position: absolute;
     width: 180px;
-    top: 26px;
+    top: 0;
     left: 0;   
+    bottom: 0;
     z-index: 1000;
     padding: 0 10px;
+    margin: 26px 0 0 0;
     background-color: #cbcbcb;
     background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cbcbcb));
-    -moz-box-shadow: 0 0 6px #888;
+    -moz-box-shadow: 0 -6px 6px #888;
     -webkit-box-shadow: 0 0 6px #888;
     box-shadow: 0 0 6px #888;
-    height: 100%;
+    height: auto;
     -webkit-transition: -webkit-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
     -moz-transition: -moz-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
     transition: transform 0.2s cubic-bezier(0, 0, 0.25, 1); 
@@ -190,6 +194,7 @@ ul#osci_navigation_toc li {
     position: relative;
     width: 100%;
     background: #b8b8b8;
+    list-style-type: none;
 }
 
 ul#osci_navigation_toc li ul li {

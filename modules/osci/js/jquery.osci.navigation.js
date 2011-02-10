@@ -359,21 +359,23 @@
                 $(container).bind("osci_nav_toggle", function(e){
                     var $this = $(this);
 
-                    if (($this.position().left === 0 && !e.osci_nav_open) || e.osci_nav_close) {
+                    if (($this.hasClass("open") && !e.osci_nav_open) || e.osci_nav_close) {
                         $this.css({
                             "-webkit-transform" : "translate(-" + $this.outerWidth() + "px, 0)",
                             "-moz-transform" : "translate(-" + $this.outerWidth() + "px, 0)",
-                            "transform" : "translate(-" + $this.outerWidth() + "px, 0)",
+                            "transform" : "translate(-" + $this.outerWidth() + "px, 0)"
                         });
+                        $this.removeClass("open");
                     } else {
                         $this.css({
                             "-webkit-transform" : "translate(0px, 0)",
                             "-moz-transform" : "translate(0px, 0)",
-                            "transform" : "translate(0px, 0)",
+                            "transform" : "translate(0px, 0)"
                         });
+                        $this.addClass("open");
                     }
-                });
-                
+                }).addClass("open");
+  
                 $(".osci_table_of_contents_handle", container).click(function(e){
                     e.preventDefault();
                     container.trigger({type : "osci_nav_toggle"});
