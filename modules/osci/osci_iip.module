@@ -18,7 +18,7 @@ function osci_iip_demo() {
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.js');
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
 	$node = node_load(22);
-	
+	dpm($node);
 	$return = "<p></p>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
