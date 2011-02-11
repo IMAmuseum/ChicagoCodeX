@@ -15,24 +15,19 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		po = org.polymaps;
 		
 		// extend Polymaps with our svgLayer
-		po.svgLayer = function(svgMarkup) {
+		po.svgLayer = function(svgPath) {
 			var svgLayer = po.layer(load, unload);
 			svgLayer.tile(false);
-			svgLayer.transform();
 			function load(tile) {
-				tile.element = po.svg('g');
-				
-				
-				$(tile.element).append(svgMarkup.clone());
-				
-
-				
-				//tile.element.setAttribute("width", parent_w);
-			    //tile.element.setAttribute("height", parent_h);
+				var scale = Math.pow(2, (zoom_max - 1) - tile.zoom);
+				tile.element = po.svg('image');
+				tile.element.setAttribute("preserveAspectRatio", "none");
+				tile.element.setAttribute("x", 0);
+				tile.element.setAttribute("y", 0);
+				tile.element.setAttribute("width", image_w / scale);
+				tile.element.setAttribute("height", image_h / scale);
+				tile.element.setAttributeNS("http://www.w3.org/1999/xlink", "href", svgPath);
 			    tile.ready = true;
-				image.dispatch({type: "load", tile: tile});	
-				console.log(tile);
-						
 			}
 			
 			function unload(tile) {
@@ -77,9 +72,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	if(!zoom_level) {
 		if (zoom_level_h >= zoom_level_w) {
 			var zoom_level = zoom_max - zoom_level_h -1;
+			var scale = (parent_h / image_h);
 		}
 		else {
 			var zoom_level = zoom_max - zoom_level_w -1;
+			var scale = (parent_w / image_w);
 		}
 	}
 	
@@ -121,27 +118,18 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		fs.style("visibility", "hidden");
 	});
 	
-	// Load in svg markup
+	/*
+	 * SVG 
+	 */
+	
 	if (svg_path) {
-		
-		$.get(svg_path, function(data){
-			// drop the document, we just need the svg inside
-			var markup_svg = $('svg', data);
-			// remove the width and height, we just need the viewbox
-			markup_svg.removeAttr('width').removeAttr('height');
-			markup_svg.children().each(function(index, element) {
-				console.log(parseSVG($(element).attr('d')));
-			});
-			
-			/* Well, nice try... 
-			var svgLayer = po.svgLayer(markup_svg);
-			map.add(svgLayer);
-			*/
-			
-		});
+		map.add(po.svgLayer(svg_path));
 	}
 	
-	// Controls and functionality
+	/* 
+	 * Controls
+	 */
+	
 	var nmap = n$(div[0]); // the map container ran through the nns js library for svg manipulation
 	map.add(po.interact());
 	var compass = po.compass().pan('none');
@@ -258,6 +246,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	}
 	
+	
+	/*
+	 * Utility functions
+	 */
+	
 	function make_small() {
 		$('#iip_fullscreen').parent().remove();
 	}
@@ -279,25 +272,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		return (Math.log(x))/(Math.log(base));
 	}
 	
-	function parseSVG(data) {
-		console.log(data);
-		// given an svg path, return an array of coordinates
-		var pixels = [];
-		var coords = [];
-		// We need to adjust the pixel positions according to scale of the current image.
-		// This is because Polymaps will only give us the coordinate of a pixel position
-		// relative to the upper left corner of the current map.
-		var scale = div.width() / image_w;
-		// extract all pairs of numbers
-		pixels = data.match(/\d+\.?\d+?, ?\d+\.?\d+?/g);
-		// step through each pair and translate
-		for (i=0; i < pixels.length; i++) {
-			var xy = pixels[i].split(",");
-			var translated = map.pointLocation({ x: (xy[0] * scale), y: (xy[1] * scale) });
-			coords.push(translated);
-		}
-		return coords;
-	}
+	
 	
 }
 
