@@ -24,13 +24,13 @@ function osci_iip_demo() {
 	$return .= '</div>';
    
     $node = node_load(73);
-	$return = "<p></p>";
+	$return .= "<p></p>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
 	
 	$node = node_load(74);
-	$return = "<p></p>";
+	$return .= "<p></p>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
