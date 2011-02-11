@@ -18,6 +18,7 @@ function osci_iip_demo() {
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.js');
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
 	$node = node_load(22);
+	dpm($node, base_path());
 	$return = "<p></p>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
@@ -160,7 +161,7 @@ function _osci_iip_get_image_attr($node) {
 function _osci_iip_create_iip_div($node, $figure_id) {
 	$attr = _osci_iip_get_image_attr($node);
 	if (count($node->field_svg_file)) { 
-		$field_svg = 'sites/default/files/svg/'.$node->field_svg_file['und'][0]['filename'];
+		$field_svg = base_path().'sites/default/files/svg/'.$node->field_svg_file['und'][0]['filename'];
 	}
 	else { $field_svg = ""; }
 	$ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
