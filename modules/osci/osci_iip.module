@@ -18,19 +18,22 @@ function osci_iip_demo() {
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.js');
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
 	$node = node_load(22);
-	dpm($node);
 	$return = "<p></p>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
    
-    // And again
-    $node = node_load(20);
-	$attr = _osci_iip_get_image_attr($node);
-	$return .= '<p>&nbsp;<p>Mauris condimentum tincidunt ligula et adipiscing. Mauris leo nibh, iaculis quis tincidunt nec, pretium nec erat. Curabitur dui sem, dignissim sit amet condimentum in, ultrices eu nisl. Vivamus vestibulum tellus sit amet dui bibendum sagittis.</p>';
+    $node = node_load(73);
+	$return = "<p></p>";
     $return .= '<div style="width:640px; height:480px;">';
-	$return .= _osci_iip_create_iip_div($node, $node->nid);    
-    $return .= '</div>';
+	$return .= _osci_iip_create_iip_div($node, $node->nid);
+	$return .= '</div>';
+	
+	$node = node_load(74);
+	$return = "<p></p>";
+    $return .= '<div style="width:640px; height:480px;">';
+	$return .= _osci_iip_create_iip_div($node, $node->nid);
+	$return .= '</div>';
 	
 	// make it live!
 	$return .= '<script type="text/javascript">(function($) { $(document).ready(function()	{ $(".iipmap").each(function(){ iipmap($(this)); }); }); }) (jQuery);</script>';
