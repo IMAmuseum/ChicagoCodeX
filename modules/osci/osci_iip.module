@@ -160,7 +160,7 @@ function _osci_iip_get_image_attr($node) {
 function _osci_iip_create_iip_div($node, $figure_id) {
 	$attr = _osci_iip_get_image_attr($node);
 	if (count($node->field_svg_file)) { 
-		$field_svg = '/sites/default/files/svg/'.$node->field_svg_file['und'][0]['filename'];
+		$field_svg = 'sites/default/files/svg/'.$node->field_svg_file['und'][0]['filename'];
 	}
 	else { $field_svg = ""; }
 	$ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
