@@ -121,8 +121,8 @@
             data = $(content.data);
             footnotes = $("#field_osci_footnotes", data).remove();
             
-            //more = $("#osci_more_wrapper").data("osci.more");
-            //more.add_content("footnotes", $(".footnote", footnotes), true);
+            more = $("#osci_more_wrapper").data("osci.more");
+            more.add_content("footnotes", $(".footnote", footnotes), true);
             
             $("#" + base.options.readerId).osci_layout(data, {
                 cacheId : base.navigation.nid,

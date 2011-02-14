@@ -19,4 +19,7 @@
             </div>
         </div>
     </div>
+    <div id="osci_more_wrapper">
+        <a href="#" class="osci_more_handle">More</a>
+    </div>
 </div>

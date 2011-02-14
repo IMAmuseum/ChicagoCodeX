@@ -63,6 +63,7 @@ body.page-node-reader {
 
 #osci_viewer_wrapper {
     position: relative;   
+    overflow: hidden;
 }
 
 #osci_navigation_wrapper {
@@ -252,4 +253,83 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
 
 .page-text:hover {
 	background: url('../images/bg-white-20.png') repeat left top !important;	
+}
+
+#osci_more_wrapper {
+    background: #cccccc;
+    position: absolute;
+    height: 300px;
+    bottom: 0;
+    left: 0;   
+    width: 100%;
+}
+
+#osci_more_wrapper .osci_more_handle {
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: 300px;
+    background: #cccccc;
+    padding: 4px 10px;
+    color: #222;
+    z-index: 1001;
+}
+
+#osci_more_tabs {
+    border: 0;   
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+#osci_more_tabs ul li {
+    display: inline-block;    
+    padding: 4px 6px 2px;
+    margin: 0 10px 0 0;
+}
+
+#osci_more_tabs ul li a {
+/*    padding: 4px 6px;   */
+    text-transform: uppercase;
+    font-size: 80%;
+}
+
+#osci_more_tabs ul li.ui-state-active {
+    border-bottom: 1px solid #FFF;   
+    margin: 0 10px -1px 0;
+}
+
+#osci_more_tabs ul li.ui-state-active a {
+    background: #FFF;   
+}
+
+#osci_more_tabs ul.ui-tabs-nav {
+    border: 0;   
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    padding: 4px 10px 0;
+}
+
+#osci_more_tabs div.ui-tabs-panel {
+    overflow: hidden;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    background: #FFF;
+    height: 249px;
+    border: 0;
+    padding: 10px;
+}
+
+#osci_more_tabs div.ui-tabs-panel.ui-tabs-hide {
+    display: none;   
+}
+
+#osci_more_tabs div.osci_pager_content {
+    display: none;   
 }

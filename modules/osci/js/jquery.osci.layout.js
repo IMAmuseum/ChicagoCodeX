@@ -264,7 +264,8 @@
                 overflow = true;
             }
             
-            if (!isP && heightRemain > 0 && (heightRemain / pageColumnData[pageColumnNumber].height) < .1) {
+            //if (!isP && heightRemain > 0 && (heightRemain / pageColumnData[pageColumnNumber].height) < .1) {
+            if (!isP && heightRemain < lineHeight) {
                 content.remove();
                 heightRemain = 0;
                 overflow = true;
