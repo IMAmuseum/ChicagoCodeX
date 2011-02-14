@@ -13,5 +13,28 @@
             nextLinkId : Drupal.settings.osci_navigation.next_link_id,
             cacheTime : Drupal.settings.osci_navigation.cache_time
         });
+        
+        $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live('click',function(e){
+            e.preventDefault();
+            var $this = $(this);
+
+            $("#osci_more_wrapper").trigger({
+                type : "osci_more_goto",
+                tab_name : "footnotes",
+                id : $this.attr("href")
+            });
+        });
+        
+        $("#" + Drupal.settings.osci_layout.viewer_id).click(function(e){
+            $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
+                type : "osci_nav_toggle",
+                osci_nav_close : true
+            });
+            
+            $("#osci_more_wrapper").trigger({
+                type : "osci_more_toggle",
+                osci_more_close : true
+            });
+        });
     });
 })(jQuery);
