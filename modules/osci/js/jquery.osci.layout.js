@@ -202,6 +202,14 @@
             
             lineHeight = parseFloat(content.css("line-height"));
 
+            //If all of the content is overflowing the column remove it and move to next column
+            if (column.height() - content.position().top < lineHeight) {
+                content.remove();
+                pageColumnData[pageColumnNumber].heightRemain = heightRemain;
+                page.data("column_data", pageColumnData);
+                return true;
+            }
+            
             //If offset defined (should always be negative) add it to the height of the content to get the correct top margin
             if (offset < 0) {
                 offset = content.outerHeight() + offset;
@@ -264,7 +272,6 @@
                 overflow = true;
             }
             
-            //if (!isP && heightRemain > 0 && (heightRemain / pageColumnData[pageColumnNumber].height) < .1) {
             if (!isP && heightRemain < lineHeight) {
                 content.remove();
                 heightRemain = 0;

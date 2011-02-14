@@ -243,12 +243,14 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
     -moz-transform: rotate(90deg);
     display: block;
     position: absolute;
-    left: 192px;
+    left: 189px;
     top: 50%;
     background: #cccccc;
     padding: 4px 10px;
     color: #222;
     z-index: 1001;
+    font-size: 12px;
+    line-height: 1;
 }
 
 .page-text:hover {
@@ -276,6 +278,8 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
     padding: 4px 10px;
     color: #222;
     z-index: 1001;
+    font-size: 12px;
+    line-height: 1;
 }
 
 #osci_more_tabs {
