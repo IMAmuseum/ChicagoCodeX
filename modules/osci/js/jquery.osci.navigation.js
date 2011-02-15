@@ -163,29 +163,30 @@
             var nid = base.navigation.nid,
                 tocContainer = $("#" + base.options.tocId),
                 tocData = $("#osci_toc_node_" + nid, tocContainer).data(),
-                navImageWrapper = $("#osci_navigation_ref_image", tocContainer);
+                navImageWrapper = $("#osci_navigation_ref_image", tocContainer),
+                largeUrl = "#", thumbUrl = "";
+            
+            if (!navImageWrapper.children().length) {
+                navImageWrapper.append($("<a>", {
+                    html : $("<img>").bind("osci_nav_ref_image_alter", function(e){
+                        var $this = $(this);
+                        
+                        if (e.osci_nav_hover_image) {
+                            $this.attr("src", e.osci_nav_hover_image);
+                        } else {
+                            $this.attr("src", $this.data("default_src"));
+                        }
+                    })
+                }));
+            }
             
             if (tocData.plate_image && tocData.plate_image.full_image_url && tocData.plate_image.thumbnail_165w_url) {
-                if (!navImageWrapper.children().length) {
-                    navImageWrapper.append($("<a>", {
-                        html : $("<img>").bind("osci_nav_ref_image_alter", function(e){
-                            var $this = $(this);
-                            
-                            if (e.osci_nav_hover_image) {
-                                $this.attr("src", e.osci_nav_hover_image);
-                            } else {
-                                $this.attr("src", $this.data("default_src"));
-                            }
-                        })
-                    }));
-                }
-                
-                $("a", navImageWrapper).attr("href", tocData.plate_image.full_image_url);
-                $("img", navImageWrapper).attr("src", tocData.plate_image.thumbnail_165w_url).data("default_src", tocData.plate_image.thumbnail_165w_url);
-            } else {
-                $("a", navImageWrapper).attr("href", "#");
-                $("img", navImageWrapper).attr("src", "").data("default_src", "");
+                largeUrl = tocData.plate_image.full_image_url;
+                thumbUrl = tocData.plate_image.thumbnail_165w_url;
             }
+                
+            $("a", navImageWrapper).attr("href", largeUrl);
+            $("img", navImageWrapper).attr("src", thumbUrl).data("default_src", thumbUrl);
         }
         
         function _update_title()
