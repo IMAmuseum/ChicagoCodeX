@@ -503,7 +503,7 @@
                     function(e){
                         var data = $(this).data();
                             
-                        if (data.plate_image.thumbnail_165w_url) {
+                        if (data.plate_image && data.plate_image.thumbnail_165w_url) {
                             $("#osci_navigation_ref_image img").trigger({
                                 type : "osci_nav_ref_image_alter",
                                 osci_nav_hover_image : data.plate_image.thumbnail_165w_url
