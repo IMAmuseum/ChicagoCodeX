@@ -38,6 +38,13 @@ function osci_iip_demo() {
 	$return .= '</div>';
 	$return .= '<p>&nbsp;</p>';
 	
+	$node = node_load(75);
+	$return .= "<h2>Tiger!!!</h2>";
+    $return .= '<div style="width:640px; height:480px;">';
+	$return .= _osci_iip_create_iip_div($node, $node->nid);
+	$return .= '</div>';
+	$return .= '<p>&nbsp;</p>';
+	
 	// make it live!
 	$return .= '<script type="text/javascript">(function($) { $(document).ready(function()	{ $(".iipmap").each(function(){ iipmap($(this)); }); }); }) (jQuery);</script>';
     return $return;
