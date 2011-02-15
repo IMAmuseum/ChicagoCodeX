@@ -91,7 +91,8 @@
             return $.osci.storage.getUrl({
                 url : base.options.apiEndpoint + nid + "/book.json",
                 key : "bid_" + bid,
-                type : "json"
+                type : "json",
+                expire : base.options.cacheTime
             });
         };
         
@@ -164,7 +165,7 @@
                 tocData = $("#osci_toc_node_" + nid, tocContainer).data(),
                 navImageWrapper = $("#osci_navigation_ref_image", tocContainer);
             
-            if (tocData.plate_image.full_image_url && tocData.plate_image.thumbnail_165w_url) {
+            if (tocData.plate_image && tocData.plate_image.full_image_url && tocData.plate_image.thumbnail_165w_url) {
                 if (!navImageWrapper.children().length) {
                     navImageWrapper.append($("<a>", {
                         html : $("<img>").bind("osci_nav_ref_image_alter", function(e){
