@@ -183,7 +183,8 @@
                 $("a", navImageWrapper).attr("href", tocData.plate_image.full_image_url);
                 $("img", navImageWrapper).attr("src", tocData.plate_image.thumbnail_165w_url).data("default_src", tocData.plate_image.thumbnail_165w_url);
             } else {
-                navImageWrapper.empty();
+                $("a", navImageWrapper).attr("href", "#");
+                $("img", navImageWrapper).attr("src", "").data("default_src", "");
             }
         }
         
