@@ -18,22 +18,25 @@ function osci_iip_demo() {
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.js');
 	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
 	$node = node_load(22);
-	$return = "<p>LinePaths</p>";
+	$return = "<h2>LinePaths</h2>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
+	$return .= '<p>&nbsp;</p>';
    
     $node = node_load(73);
-	$return .= "<p>ShapePaths</p>";
+	$return .= "<h2>ShapePaths</h2>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
+	$return .= '<p>&nbsp;</p>';
 	
 	$node = node_load(74);
-	$return .= "<p>SplinePaths</p>";
+	$return .= "<h2>SplinePaths</h2>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
+	$return .= '<p>&nbsp;</p>';
 	
 	// make it live!
 	$return .= '<script type="text/javascript">(function($) { $(document).ready(function()	{ $(".iipmap").each(function(){ iipmap($(this)); }); }); }) (jQuery);</script>';
