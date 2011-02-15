@@ -35,8 +35,6 @@ function osci_reader_render($nid)
 
     drupal_add_js(drupal_get_path('module', 'osci_layout') . '/js/jquery.jswipe-0.1.2.js');
     drupal_add_js(drupal_get_path('module', 'osci_navigation') . '/js/jquery.overscroll.js');
-    drupal_add_js("misc/ui/jquery.effects.core.min.js");
-    drupal_add_js("misc/ui/jquery.effects.pulsate.min.js");
     drupal_add_js("misc/ui/jquery.ui.tabs.min.js");
     drupal_add_js(drupal_get_path('module', 'osci_storage') . '/js/jquery.storage.js');
     drupal_add_js(drupal_get_path('module', 'osci_layout') . '/js/jquery.osci.layout.js');

@@ -110,7 +110,8 @@
                     maxPagesDisplay = Math.min(maxPagesDisplay, totalPages);
                     
                     pager = $("<ul>", {
-                        id : tabId + "_pager"
+                        id : tabId + "_pager",
+                        "class" : "osci_pager"
                     });
                     
                     $("<li>", {

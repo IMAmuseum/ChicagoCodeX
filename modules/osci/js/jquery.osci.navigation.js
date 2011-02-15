@@ -152,9 +152,39 @@
             base.navigation.length = parseInt(base.navigation.toc["nid_" + base.navigation.nid].length);
 
             _update_title();
+            _update_reference_image();
             _create_section_navigation_bar();
             _navigateTo(base.navigation.to);
         };
+        
+        function _update_reference_image()
+        {
+            var nid = base.navigation.nid,
+                tocContainer = $("#" + base.options.tocId),
+                tocData = $("#osci_toc_node_" + nid, tocContainer).data(),
+                navImageWrapper = $("#osci_navigation_ref_image", tocContainer);
+            
+            if (tocData.plate_image.full_image_url && tocData.plate_image.thumbnail_165w_url) {
+                if (!navImageWrapper.children().length) {
+                    navImageWrapper.append($("<a>", {
+                        html : $("<img>").bind("osci_nav_ref_image_alter", function(e){
+                            var $this = $(this);
+                            
+                            if (e.osci_nav_hover_image) {
+                                $this.attr("src", e.osci_nav_hover_image);
+                            } else {
+                                $this.attr("src", $this.data("default_src"));
+                            }
+                        })
+                    }));
+                }
+                
+                $("a", navImageWrapper).attr("href", tocData.plate_image.full_image_url);
+                $("img", navImageWrapper).attr("src", tocData.plate_image.thumbnail_165w_url).data("default_src", tocData.plate_image.thumbnail_165w_url);
+            } else {
+                navImageWrapper.empty();
+            }
+        }
         
         function _update_title()
         {
@@ -354,6 +384,14 @@
 
             toc = $("#osci_navigation_toc", container);
             if (!toc.length) {
+                $("<h2>", {
+                    text : "Reference Image"
+                }).appendTo(container);
+                
+                $("<div>", {
+                    id : "osci_navigation_ref_image"
+                }).appendTo(container);
+                
                 $("<h2>",{
                     text : "Navigation"
                 }).appendTo(container);
@@ -399,7 +437,8 @@
                 }
                 
                 tocItem = $("<li>", {
-                    id : "osci_toc_node_" + node.nid
+                    id : "osci_toc_node_" + node.nid,
+                    data : node
                 }).append(
                     $("<a>", {
                         text : node.title,
@@ -459,6 +498,22 @@
                            }
                        }
                     })
+                ).hover(
+                    function(e){
+                        var data = $(this).data();
+                            
+                        if (data.plate_image.thumbnail_165w_url) {
+                            $("#osci_navigation_ref_image img").trigger({
+                                type : "osci_nav_ref_image_alter",
+                                osci_nav_hover_image : data.plate_image.thumbnail_165w_url
+                            });
+                        }
+                    },
+                    function(e){
+                        $("#osci_navigation_ref_image img").trigger({
+                            type : "osci_nav_ref_image_alter"
+                        });
+                    }
                 );
                 
                 if (rootNid == node.parent.nid) {

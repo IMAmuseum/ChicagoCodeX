@@ -13,6 +13,7 @@
     $(document).ready(function() {
         $('.figureContent a').fancybox();
 
+        $("#osci_navigation_ref_image a").fancybox();
         /***************************************
          * Hot key popup image
          */
@@ -32,10 +33,12 @@
             if (e.keyCode == keyCode && e.ctrlKey === true && checkKey === false) {
                 checkKey = true;
                 $('.field-name-field-primary-image a').click();
+                $("#osci_navigation_ref_image a").click();
                 e.preventDefault();
             } else if (e.keyCode == keyCode && checkKey === true) {
                 checkKey = false;
                 $('#fancybox-close').click();
+                $("#osci_navigation_ref_image a").click();
                 e.preventDefault();
             }
         });

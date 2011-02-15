@@ -191,6 +191,10 @@ body.page-node-reader {
     transition: transform 0.2s cubic-bezier(0, 0, 0.25, 1); 
 }
 
+ul#osci_navigation_toc {
+    border-top: 1px solid #888;
+}
+
 ul#osci_navigation_toc li {
     position: relative;
     width: 100%;
@@ -233,8 +237,8 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
     text-transform: uppercase;
     font-size: 10px;
     color: #CCC;
-    border-bottom: 1px solid #888;
     margin: 10px 0 0;
+    border: none;
 }
 
 #osci_table_of_contents_wrapper .osci_table_of_contents_handle {
@@ -243,14 +247,29 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
     -moz-transform: rotate(90deg);
     display: block;
     position: absolute;
-    left: 189px;
+    left: 164px;
     top: 50%;
-    background: #cccccc;
-    padding: 4px 10px;
+    margin-top: -43px;
     color: #222;
     z-index: 1001;
     font-size: 12px;
     line-height: 1;
+    background: transparent url("../images/bg-tab-bottom.png");
+    width: 86px;
+    height: 17px;
+    text-align: center;
+}
+
+#osci_navigation_ref_image {
+    text-align: center;   
+    height: 180px;
+}
+
+#osci_navigation_ref_image img {
+    border: 5px solid #FFF;   
+    -moz-box-shadow: 0 2px 6px #808080;
+    -webkit-box-shadow: 0 2px 6px #808080;
+    box-shadow: 0 2px 6px #808080;
 }
 
 .page-text:hover {
@@ -273,13 +292,16 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
     display: block;
     position: absolute;
     left: 50%;
-    bottom: 300px;
-    background: #cccccc;
-    padding: 4px 10px;
+    margin-left: -43px;
+    bottom: 299px;
     color: #222;
     z-index: 1001;
     font-size: 12px;
     line-height: 1;
+    background: transparent url("../images/bg-tab-bottom.png");
+    width: 86px;
+    height: 17px;
+    text-align: center;
 }
 
 #osci_more_tabs {
@@ -339,4 +361,64 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
 
 #osci_more_tabs div.osci_pager_content {
     display: none;   
+}
+
+#osci_more_wrapper ul.osci_pager {
+    position: absolute;
+    width: 100%;
+    bottom: 10px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#osci_more_wrapper ul.osci_pager li {
+    overflow : hidden;   
+}
+
+#osci_more_wrapper ul.osci_pager li.osci_pager_item {
+    width: 16px; 
+}
+
+#osci_more_wrapper ul.osci_pager li a.osci_pager_nav_first {
+    background: url("../images/btn-paginate-first.png") no-repeat;   
+    width: 26px;
+    height: 16px;
+    display: inline-block;
+    text-indent: -1000px;
+    opacity: .3;
+    cursor: pointer;
+}
+
+#osci_more_wrapper ul.osci_pager li a.osci_pager_nav_prev {
+    background: url("../images/btn-paginate-prev.png") no-repeat;   
+    width: 13px;
+    height: 16px;
+    display: inline-block;
+    text-indent: -1000px;
+    opacity: .3;
+    cursor: pointer;
+}
+
+#osci_more_wrapper ul.osci_pager li a.osci_pager_nav_next {
+    background: url("../images/btn-paginate-next.png") no-repeat;   
+    width: 13px;
+    height: 16px;
+    display: inline-block;
+    text-indent: -1000px;
+    opacity: .3;
+    cursor: pointer;
+}
+
+#osci_more_wrapper ul.osci_pager li a.osci_pager_nav_last {
+    background: url("../images/btn-paginate-last.png") no-repeat;   
+    width: 26px;
+    height: 16px;
+    display: inline-block;
+    text-indent: -1000px;
+    opacity: .3;
+    cursor: pointer;
+}
+
+#osci_more_wrapper ul.osci_pager li.active {
+    font-weight: bold;   
 }
