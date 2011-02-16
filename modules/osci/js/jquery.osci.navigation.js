@@ -33,8 +33,13 @@
             toc = _get_table_of_contents(base.options.nid, base.options.bid);
             base.navigation.toc = toc.data;
             
-            $(document).bind("osci_layout_complete",function(){
-                _reset_navigation();
+            $(document).bind({
+                osci_layout_complete : function() {
+                    _reset_navigation();
+                },
+                osci_navigation : function(e) {
+                    _navigateTo(e.osci_to, e.osci_value);
+                }
             });
             
             $(window).bind("popstate",function(e){
@@ -49,16 +54,12 @@
             
             $("#" + base.options.prevLinkId).click(function (e){
                 e.preventDefault();
-                _navigateTo({
-                    operation : "prev"
-                });
+                _navigateTo("prev");
             });
             
             $("#" + base.options.nextLinkId).click(function (e){
                 e.preventDefault();
-                _navigateTo({
-                    operation : "next"
-                });
+                _navigateTo("next");
             });
             
             $(document).keydown(function(e){
@@ -121,9 +122,12 @@
             
             data = $(content.data);
             footnotes = $("#field_osci_footnotes", data).remove();
-            
+
             more = $("#osci_more_wrapper").data("osci.more");
-            more.add_content("footnotes", $(".footnote", footnotes), true);
+            more.add_content("footnotes", $(".footnote", footnotes), true, 1);
+            
+            figures = $("#field_osci_figures", data);
+            more.add_content("figures", $(".figureThumbnail", figures).remove(), true);
             
             $("#" + base.options.readerId).osci_layout(data, {
                 cacheId : base.navigation.nid,
@@ -155,7 +159,7 @@
             _update_title();
             _update_reference_image();
             _create_section_navigation_bar();
-            _navigateTo(base.navigation.to);
+            _navigateTo(base.navigation.to.operation, base.navigation.to.value);
         };
         
         function _update_reference_image()
@@ -241,11 +245,11 @@
             }
         }
         
-        function _navigateTo(to)
+        function _navigateTo(to, value)
         {
             var totalColumns, newPage, tocData, newOffset;
 
-            switch(to.operation) {
+            switch(to) {
                 case "next":
                     base.navigation.currentPage++;
                     if (base.navigation.currentPage >= base.navigation.pageCount) {
@@ -275,31 +279,37 @@
                     break;
 
                 case "page":
-                    if (to.value === "first") {
+                    if (value === "first") {
                         base.navigation.currentPage = 0;
-                    } else if (to.value === "last") {
+                    } else if (value === "last") {
                         base.navigation.currentPage = base.navigation.pageCount - 1;
-                    } else if (to.value > base.navigation.pageCount || to.value < 1) {
+                    } else if (value > base.navigation.pageCount || value < 1) {
                         return;
                     } else {
-                        base.navigation.currentPage = to.value - 1;
+                        base.navigation.currentPage = value - 1;
                     }
                     break;
 
                 case "column":
                     totalColumns = base.navigation.layoutData.columnsPerPage * base.navigation.pageCount;
-                    if (to.value > totalColumns || to.value < 1) {
+                    if (value > totalColumns || value < 1) {
                         return;
                     }
 
-                    newPage = Math.ceil(to.value / base.navigation.layoutData.columnsPerPage);
-                    _navigateTo({operation:"page",value:newPage});
+                    newPage = Math.ceil(value / base.navigation.layoutData.columnsPerPage);
+                    _navigateTo("page", newPage);
                     return;
                     break;
                     
                 case "paragraph":
-                    newPage = $("p.osci_paragraph_" + to.value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
-                    _navigateTo({operation:"page",value:newPage});
+                    newPage = $("p.osci_paragraph_" + value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
+                    _navigateTo("page", newPage);
+                    return;
+                    break;
+                    
+                case "selector":
+                    newPage = $(value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
+                    _navigateTo("page", newPage);
                     return;
                     break;
             }
@@ -368,7 +378,7 @@
                         
                         $this.siblings().removeClass("active");
                         $this.addClass("active");
-                        _navigateTo({operation : "page", value : page});
+                        _navigateTo("page", page);
                     }
                 }).appendTo(navBar);
                 

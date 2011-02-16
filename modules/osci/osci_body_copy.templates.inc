@@ -10,7 +10,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     foreach($data as $k => $v) {
         $vars['data'] .= 'data-'.$k.'="'.$v.'" ';
     }
-    
+
     $vars['type'] = $node->type;
     $vars['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $figure['format']);
     if ($node->type == 'image') {
@@ -26,8 +26,18 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     	{
     		$vars['content'] = _osci_iip_create_iip_div($node, $figure['id']);
     	}
+
+    	$vars['thumbnail'] = theme_image_style(array(
+    	    'style_name' => "osci_thumbnail_100w",
+			'path' => $node->field_image['und'][0]['uri'],
+    	    'alt' => $node->title,
+			'attributes' => array(
+    	        'data-figure_id' => $figure['id'],
+    	        'data-figure_number' => $figure['figCount']
+    	    )
+		));
     }
     else {
-	    	
+
     }
 }

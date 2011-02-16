@@ -3,6 +3,11 @@
     <div class="figureContent">
         <?php print $content; ?>
     </div>
+    <?php if (isset($thumbnail)) { ?>
+    <div class="figureThumbnail">
+        <?php print $thumbnail; ?>
+    </div>
+    <?php } ?>
     <figcaption>
         <span class="figure_number">Fig <?php print isset($figure['figCount']) ? $figure['figCount'] : $figure['id']; ?></span>
         <?php print $caption; ?>

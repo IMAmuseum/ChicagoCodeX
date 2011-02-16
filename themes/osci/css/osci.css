@@ -3,6 +3,10 @@ body.page-node-reader {
     padding: 0;
 }
 
+.ui-widget {
+    font-size: 100%;
+}
+
 .superscript { 
     position: relative; 
     top: -0.5em; 
@@ -87,7 +91,6 @@ body.page-node-reader {
     right: 50px;
 	background: transparent url('../images/btn-prev.png') no-repeat left top;
 	overflow:hidden;display:block;text-indent:999px;
-	
 }
 
 #osci_nav_next {
@@ -421,4 +424,28 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
 
 #osci_more_wrapper ul.osci_pager li.active {
     font-weight: bold;   
+}
+
+#osci_more_wrapper .osci_pager_display_item {
+    height: 211px;
+    overflow: hidden;
+}
+
+#osci_more_wrapper div.figureThumbnail { 
+    margin: 0 20px 0 0;
+    display: inline-block;
+    width: 100px;
+}
+
+#osci_tab_figures {
+    text-align: center;   
+}
+
+#osci_tab_figures img:hover {
+    cursor: pointer;
+}
+
+#osci_tab_footnotes span.footnote_number:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }

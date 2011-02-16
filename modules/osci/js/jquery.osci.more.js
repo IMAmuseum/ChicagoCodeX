@@ -76,7 +76,7 @@
         base.add_content = function(tabName, data, paginate, perPage)
         {
             var tabNum, tabId = "osci_tab_" + tabName, tab, total, i, pager, item, maxPagesDisplay = 5, totalPages,
-                tabs = $("#" + base.options.tab_container_id, base.$el);
+                tabs = $("#" + base.options.tab_container_id, base.$el), tabWidth, calcWidth;
 
             if (base.tab_map[tabName] !== undefined) {
                 tabNum = base.tab_map[tabName];
@@ -101,10 +101,26 @@
             if (data.length) {
                 if (paginate === true) {   
                     total = data.length;
+                    tab.append($("<div>",{"class" : "osci_pager_display_item"}).append(data).overscroll());
                     
                     if (perPage === undefined) {
-                        perPage = 1;
+                        tabWidth = tab.width();
+                        calcWidth = 0;
+                        perPage = 0;
+                        data.each(function(i, elem) {
+                            var $elem = $(elem),
+                                elemWidth = $elem.outerWidth(true);
+                            
+                            calcWidth = calcWidth + elemWidth;
+                            if (calcWidth <= tabWidth) {
+                                perPage = perPage + 1;
+                            } else {
+                                return false;
+                            }
+                        });
                     }
+                    
+                    data.hide();
                     
                     totalPages = Math.ceil(total / perPage);
                     maxPagesDisplay = Math.min(maxPagesDisplay, totalPages);
@@ -243,16 +259,14 @@
                         $(".osci_pager_display_item", container).children().hide().slice(startItem, endItem).show();
                     });
                     
-                    tab.empty()
-                       .data({
+                    tab.data({
                            osci_pager_total_items : total,
                            osci_pager_total_pages : totalPages,
                            osci_pager_per_page : perPage,
                            osci_pager_current_page : 1,
                            osci_pager_max_pages_display : maxPagesDisplay
                        })
-                       .append(pager)
-                       .append($("<div>",{"class" : "osci_pager_display_item"}).append(data.hide()));
+                       .append(pager);
                     
                     $("a.osci_pager_nav_first", "#" + tabId).click();
                 } else {

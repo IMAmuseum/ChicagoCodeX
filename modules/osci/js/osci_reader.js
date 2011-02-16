@@ -14,7 +14,7 @@
             cacheTime : Drupal.settings.osci_navigation.cache_time
         });
         
-        $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live('click',function(e){
+        $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
             var $this = $(this);
 
@@ -22,6 +22,38 @@
                 type : "osci_more_goto",
                 tab_name : "footnotes",
                 id : $this.attr("href")
+            });
+        });
+        
+        $("span.footnote_number", "#osci_more_wrapper").live("click", function(e){
+            e.preventDefault();
+            var id = $(this).parent().attr("id");
+            
+            $(document).trigger({
+                type : "osci_navigation",
+                osci_to : "selector",
+                osci_value : "a[href='#" + id + "']"
+            });
+            
+            $("#osci_more_wrapper").trigger({
+                type : "osci_more_toggle",
+                osci_more_close : true
+            });
+        });
+        
+        $("div.figureThumbnail > img", "#osci_more_wrapper").live("click", function(e){
+            e.preventDefault();
+            var id = $(this).data("figure_id");
+            
+            $(document).trigger({
+                type : "osci_navigation",
+                osci_to : "selector",
+                osci_value : "#" + id
+            });
+            
+            $("#osci_more_wrapper").trigger({
+                type : "osci_more_toggle",
+                osci_more_close : true
             });
         });
         
