@@ -6,10 +6,11 @@
     <?php if (isset($thumbnail)) { ?>
     <div class="figureThumbnail">
         <?php print $thumbnail; ?>
+        <span class="figure_number">Fig. <?php print isset($figure['figCount']) ? $figure['figCount'] : $figure['id']; ?></span>
     </div>
     <?php } ?>
     <figcaption>
-        <span class="figure_number">Fig <?php print isset($figure['figCount']) ? $figure['figCount'] : $figure['id']; ?></span>
+        <span class="figure_number">Fig. <?php print isset($figure['figCount']) ? $figure['figCount'] : $figure['id']; ?></span>
         <?php print $caption; ?>
     </figcaption>
 </figure>

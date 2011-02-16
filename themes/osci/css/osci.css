@@ -434,18 +434,27 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
 #osci_more_wrapper div.figureThumbnail { 
     margin: 0 20px 0 0;
     display: inline-block;
-    width: 100px;
+    width: 165px;
 }
 
 #osci_tab_figures {
     text-align: center;   
 }
 
-#osci_tab_figures img:hover {
+#osci_tab_figures div.figureThumbnail:hover {
     cursor: pointer;
 }
 
 #osci_tab_footnotes span.footnote_number:hover {
     cursor: pointer;
     text-decoration: underline;
+}
+
+#osci_tab_footnotes span.footnote_number {
+    float: left;
+    font-size: 200%;
+    padding: 0 10px 10px 0;
+    display: block;
+    vertical-align: top;
+    line-height: 1;
 }

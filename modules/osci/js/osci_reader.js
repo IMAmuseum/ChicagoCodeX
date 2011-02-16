@@ -41,9 +41,9 @@
             });
         });
         
-        $("div.figureThumbnail > img", "#osci_more_wrapper").live("click", function(e){
+        $("div.figureThumbnail", "#osci_more_wrapper").live("click", function(e){
             e.preventDefault();
-            var id = $(this).data("figure_id");
+            var id = $("img", this).data("figure_id");
             
             $(document).trigger({
                 type : "osci_navigation",

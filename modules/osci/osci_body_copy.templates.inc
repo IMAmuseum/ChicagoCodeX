@@ -28,7 +28,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     	}
 
     	$vars['thumbnail'] = theme_image_style(array(
-    	    'style_name' => "osci_thumbnail_100w",
+    	    'style_name' => "osci_thumbnail_165w",
 			'path' => $node->field_image['und'][0]['uri'],
     	    'alt' => $node->title,
 			'attributes' => array(
