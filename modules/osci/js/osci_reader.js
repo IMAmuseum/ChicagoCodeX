@@ -2,6 +2,17 @@
     $(document).ready(function() {
         $("#osci_more_wrapper").osci_more();
         
+        $.osci.layout.defaultOptions = {
+            minColumnWidth : Drupal.settings.osci_layout.min_column_width,
+            maxColumnWidth : Drupal.settings.osci_layout.max_column_width,
+            gutterWidth : Drupal.settings.osci_layout.gutter_width,
+            innerPageGutter : Drupal.settings.osci_layout.inner_page_gutter,
+            outerPageGutter : Drupal.settings.osci_layout.outer_page_gutter,
+            viewerId : Drupal.settings.osci_layout.viewer_id,
+            minLinesPerColumn : Drupal.settings.osci_layout.min_lines_per_column,
+            layoutCacheTime : Drupal.settings.osci_layout.cache_time
+        };
+        
         $.osci.navigation({
             readerId : Drupal.settings.osci_navigation.reader_id,
             headerId : Drupal.settings.osci_navigation.header_id,
@@ -11,7 +22,10 @@
             contentEndpoint : Drupal.settings.osci_navigation.content_endpoint,
             prevLinkId : Drupal.settings.osci_navigation.prev_link_id,
             nextLinkId : Drupal.settings.osci_navigation.next_link_id,
-            cacheTime : Drupal.settings.osci_navigation.cache_time
+            cacheTime : Drupal.settings.osci_navigation.cache_time,
+            bid : parseInt(Drupal.settings.osci.bid, 10),
+            nid : parseInt(Drupal.settings.osci.nid, 10),
+            mlid : parseInt(Drupal.settings.osci.mlid, 10)
         });
         
         $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
@@ -38,6 +52,17 @@
             $("#osci_more_wrapper").trigger({
                 type : "osci_more_toggle",
                 osci_more_close : true
+            });
+        });
+        
+        $("a.figure-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
+            e.preventDefault();
+            var $this = $(this);
+
+            $(document).trigger({
+                type : "osci_navigation",
+                osci_to : "selector",
+                osci_value : $this.attr("href")
             });
         });
         

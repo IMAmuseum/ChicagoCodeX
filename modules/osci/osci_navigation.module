@@ -435,6 +435,24 @@ function _osci_navigation_load_additional_toc_data(&$toc)
     foreach($toc as $tocId => $data) {
         $nid = (int)$data['nid'];
 
+        $node = node_load($nid);
+        $view = node_view($node, "body_copy");
+        $subSections = array();
+        foreach($view as $k => $v) {
+            if (is_array($v) && isset($v['#weight'])) {
+                $subSections[$v['#weight']] = array(
+                    'title' => $v['#title'],
+                    'field' => $v['#field_name'],
+                    'nid' => $nid
+                );
+            }
+        }
+
+        if ($subSections) {
+            ksort($subSections);
+            $data['sub_sections'] = array_values($subSections);
+        }
+
         if (isset($imageData[$nid])) {
             $data['plate_image'] = $imageData[$nid];
         } else {

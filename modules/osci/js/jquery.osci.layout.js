@@ -59,7 +59,7 @@
             cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
             
             //No cache process content for layout
-            if (cache == null) {
+            if (cache === null) {
                 //Load content into prerender div
                 base.prerender.append(base.data);
                 
@@ -95,12 +95,12 @@
                     currentElement = $(elements[i]).clone();
     
                     //Don't render figure elements, these are handled in the element where they are referenced
-                    if (currentElement.text() == 'Figures') {
+                    if (currentElement.text() === 'Figures') {
                         break;
                     }
     
                     //If no page is defined or the page is full create a new page
-                    if (page == undefined || page.data("process") == 'done') {
+                    if (page === undefined || page.data("process") === 'done') {
                         //If a previous page is defined and content overflowed the page set the starting offset
                         if (page !== undefined) {
                             contentOffset = page.data("contentNextOffset");
@@ -122,7 +122,7 @@
                     }
     
                     //Restart page processing if necessary (if a figure was processed)
-                    if (page.data("process") == "restart") {
+                    if (page.data("process") === "restart") {
                         //Reset the page data
                         _reset_page(page);
                         //Backup the counter to the first element processed on this page
@@ -133,7 +133,7 @@
                         heightRemain = page.data("column_data")[page.data("current_column")].heightRemain;
                         page.data("contentNextOffset", heightRemain);
                         
-                        if (page.data("current_column") == (base.options.columnsPerPage - 1) && heightRemain <= 0) {
+                        if (parseInt(page.data("current_column"), 10) === (base.options.columnsPerPage - 1) && heightRemain <= 0) {
                             page.data("process", "done");
                         }
                     }
@@ -162,12 +162,12 @@
         {
             var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, 
                 lineHeight, colHeight, overflow = false, paragraphIdentifier, figureProcessed = false, columnContentCount, isP = true,
-                numLines, visibleLines;
+                numLines, visibleLines, figureLinks;
 
             isP = content.is("p");
             
             //Determine which column to put content into
-            pageColumnData = page.data("column_data")
+            pageColumnData = page.data("column_data");
             pageColumnDataCount = pageColumnData.length;
             for (var i = 0; i < pageColumnDataCount; i++) {
                 //If there is height remaining in the column, get it
@@ -192,7 +192,7 @@
             }
 
             //if no column found page is full
-            if (column == undefined) {
+            if (column === undefined) {
                 page.data("process", "done");
                 return true;
             }
@@ -243,10 +243,10 @@
             // Position Paragraph Identifiers in the gutter
             paragraphIdentifier = $("span.osci_paragraph_identifier", content).remove();
             if (paragraphIdentifier.length) {
-                if ($("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id"), page).length == 0) {
+                if ($("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id"), page).length === 0) {
                     paragraphIdentifier.appendTo(page).css({
                         "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2)) + "px",
-                        "margin-top" : content.position().top + parseInt(column.css("margin-top")) + "px"
+                        "margin-top" : content.position().top + parseInt(column.css("margin-top"), 10) + "px"
                     });
                 }
             }
@@ -310,19 +310,19 @@
 
             //Split out the positioning queues
             verticalPosition = position.substr(0,1);
-            horizontalPosition = (position.length == 2) ? position.substr(1,1) : position.substr(0,1); 
+            horizontalPosition = (position.length === 2) ? position.substr(1,1) : position.substr(0,1); 
 
             //Add the split position data back onto the figure element
             figure.data("vertical_position", verticalPosition);
             figure.data("horizontal_position", horizontalPosition);
 
             //If a percentage based width hint is specified, convert to number of columns to cover
-            if (typeof(columns) == 'string' && columns.indexOf("%") > 0) {
-                columns = Math.ceil((parseInt(columns) / 100) * base.options.columnsPerPage);
+            if (typeof(columns) === 'string' && columns.indexOf("%") > 0) {
+                columns = Math.ceil((parseInt(columns, 10) / 100) * base.options.columnsPerPage);
             }
 
             //Calculate maximum width for a figure
-            if (columns > base.options.columnsPerPage || position == 'p') {
+            if (columns > base.options.columnsPerPage || position === 'p') {
                 width = base.options.innerPageWidth;
                 columns = base.options.columnsPerPage;
             } else {
@@ -438,7 +438,7 @@
             if (gutterCheck > base.options.gutterWidth) {
                 base.options.columnWidth = (base.options.innerPageWidth - (base.options.gutterWidth * (perPage - 1))) / perPage;
             }
-        };
+        }
 
         //Calculate the height information to remove any vertical scrolling
         function _updateHeights()
@@ -452,7 +452,7 @@
             viewerHeight = base.$el.height();
             base.$el.children(":not(#" + base.viewer.attr("id") + ")").each(function(i, elem){
                 var $elem = $(elem);
-                if ($elem.css("position") != "absolute") {
+                if ($elem.css("position") !== "absolute") {
                     viewerHeight -= $elem.outerHeight();
                 }
             });
@@ -512,11 +512,11 @@
             };
 
             //Set base column data
-            colDataArray = []
+            colDataArray = [];
             for (var i = 0; i < base.options.columnsPerPage; i++) {
                 colDataArray[i] = {height : base.options.innerPageHeight, topOffset : base.options.innerPageGutter[0], heightRemain : base.options.innerPageHeight};
             }
-            data["column_data"] = colDataArray;
+            data.column_data = colDataArray;
 
             //Create and return the page div
             return $("<div>",{
@@ -534,9 +534,9 @@
         //Reset page data for processing
         function _reset_page(page)
         {
-            var data, figures, columnCoverage, height, topOffset, pageNum = page.data("page"), lineHeight, minHeight;
+            var data, figures, columnCoverage, height, topOffset, pageNum = page.data("page"), lineHeight, minHeight, colDataArray;
 
-            lineHeight = parseInt(page.css("line-height"));
+            lineHeight = parseInt(page.css("line-height"), 10);
             minHeight = lineHeight * base.options.minLinesPerColumn;
 
             data = {
@@ -552,7 +552,7 @@
             figures = $("figure", page);
 
             //Loop for number of columns per page to setup layout data
-            colDataArray = []
+            colDataArray = [];
             for (var i = 0; i < base.options.columnsPerPage; i++) {
                 height = base.options.innerPageHeight;
                 topOffset = base.options.innerPageGutter[0];
@@ -597,7 +597,7 @@
             }
             
             //reset the page data with the new values
-            data["column_data"] = colDataArray;
+            data.column_data = colDataArray;
             page.data(data);
         }
 

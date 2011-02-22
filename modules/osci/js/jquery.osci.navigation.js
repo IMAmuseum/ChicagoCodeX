@@ -16,17 +16,13 @@
             
             base.options = $.extend({}, $.osci.navigation.defaultOptions, options);
             
-            base.options.bid = (base.options.bid) ? base.options.bid : parseInt(Drupal.settings.osci.bid);
-            base.options.nid = (base.options.nid) ? base.options.nid : parseInt(Drupal.settings.osci.nid);
-            base.options.mlid = (base.options.mlid) ? base.options.mlid : parseInt(Drupal.settings.osci.mlid);
-            
             base.navigation = {
                 nid : base.options.nid,
                 mlid : base.options.mlid,
                 currentPage : 0,
                 pageCount : 0,
                 to : {operation : "page", value : "first"}
-            }
+            };
             
             _update_history(true);
             
@@ -78,7 +74,9 @@
             //Not sure if this fits here but prevents this getting assigned more than once in the layout module
             if (!window.resizeTimer) {
                 $(window).resize(function(){
-                    if (window.resizeTimer) clearTimeout(window.resizeTimer);
+                    if (window.resizeTimer) {
+                        clearTimeout(window.resizeTimer);
+                    }
                     window.resizeTimer = setTimeout(_osci_resize, 100);
                 });
             }
@@ -95,7 +93,7 @@
                 type : "json",
                 expire : base.options.cacheTime
             });
-        };
+        }
         
         function _osci_resize()
         {
@@ -114,7 +112,7 @@
                 changeState = true;
             }
             
-            var footnotes, data, more
+            var footnotes, data, more, figures,
                 content = $.osci.storage.getUrl({
                     url :  base.options.contentEndpoint.replace("{$nid}", base.navigation.nid),
                     expire : base.options.cacheTime
@@ -130,21 +128,13 @@
             more.add_content("figures", $(".figureThumbnail", figures).remove(), true);
             
             $("#" + base.options.readerId).osci_layout(data, {
-                cacheId : base.navigation.nid,
-                minColumnWidth : Drupal.settings.osci_layout.min_column_width,
-                maxColumnWidth : Drupal.settings.osci_layout.max_column_width,
-                gutterWidth : Drupal.settings.osci_layout.gutter_width,
-                innerPageGutter : Drupal.settings.osci_layout.inner_page_gutter,
-                outerPageGutter : Drupal.settings.osci_layout.outer_page_gutter,
-                viewerId : Drupal.settings.osci_layout.viewer_id,
-                minLinesPerColumn : Drupal.settings.osci_layout.min_lines_per_column,
-                layoutCacheTime : Drupal.settings.osci_layout.cache_time
+                cacheId : base.navigation.nid
             });
             
             if (changeState) {
                 _update_history();
             }
-        };
+        }
         
         function _reset_navigation()
         {
@@ -154,13 +144,13 @@
             base.navigation.currentPage = 0;
             base.navigation.pageCount = layoutData.options.pageCount;
             base.navigation.layoutData = layoutData.options;
-            base.navigation.length = parseInt(base.navigation.toc["nid_" + base.navigation.nid].length);
+            base.navigation.length = parseInt(base.navigation.toc["nid_" + base.navigation.nid].length, 10);
 
             _update_title();
             _update_reference_image();
             _create_section_navigation_bar();
             _navigateTo(base.navigation.to.operation, base.navigation.to.value);
-        };
+        }
         
         function _update_reference_image()
         {
@@ -215,7 +205,7 @@
             
             titleLength = titleParts.length;
             for (var i = 0; i < titleLength; i++) {
-                if (i == titleLength - 1) {
+                if (i === titleLength - 1) {
                     bookTitle = titleParts[i];
                 } else {
                     if (subTitle.length) {
@@ -247,7 +237,7 @@
         
         function _navigateTo(to, value)
         {
-            var totalColumns, newPage, tocData, newOffset;
+            var totalColumns, newPage, tocData, newOffset, identifier;
 
             switch(to) {
                 case "next":
@@ -297,19 +287,43 @@
                     }
 
                     newPage = Math.ceil(value / base.navigation.layoutData.columnsPerPage);
-                    _navigateTo("page", newPage);
+                    if (newPage !== undefined) {
+                        _navigateTo("page", newPage);
+                    }
                     return;
                     break;
                     
                 case "paragraph":
                     newPage = $("p.osci_paragraph_" + value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
-                    _navigateTo("page", newPage);
+                    if (newPage !== undefined) {
+                        _navigateTo("page", newPage);
+                    }
                     return;
                     break;
                     
                 case "selector":
                     newPage = $(value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
-                    _navigateTo("page", newPage);
+                    if (newPage !== undefined) {
+                        _navigateTo("page", newPage);
+                    }
+                    return;
+                    break;
+                    
+                case "node":
+                    if (value.indexOf("#")) {
+                        value = value.split("#");
+                        identifier = "#" + value[1];
+                        value = parseInt(value[0], 10);
+                    }
+                    
+                    if (base.navigation.nid !== value) {
+                        base.navigation.nid = value;
+                        _load_section(true);
+                    }
+
+                    if (identifier !== undefined) {
+                        _navigateTo("selector", identifier);
+                    }
                     return;
                     break;
             }
@@ -322,12 +336,12 @@
 
             $("#" + base.options.sectionNavId).trigger("osci_update_navigation_section", base.navigation.currentPage);
 
-            jQuery(".osci_page", "#osci_viewer").css({
+            $(".osci_page", "#osci_viewer").css({
                 "-webkit-transform" : "translate(" + newOffset + "px, 0)",
                 "-moz-transform" : "translate(" + newOffset + "px, 0)",
                 "transform" : "translate(" + newOffset + "px, 0)"
             });
-        };
+        }
         
         function _create_section_navigation_bar()
         {
@@ -393,7 +407,7 @@
         
         function _create_table_of_contents()
         {
-            var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu;
+            var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, j, subItem, subItemCount;
 
             toc = $("#osci_navigation_toc", container);
             if (!toc.length) {
@@ -440,7 +454,7 @@
                 });
             }
             toc.empty();
-            
+
             for (i in base.navigation.toc) {
                 node = base.navigation.toc[i];
                 
@@ -449,77 +463,113 @@
                     continue;
                 }
                 
-                tocItem = $("<li>", {
-                    id : "osci_toc_node_" + node.nid,
-                    data : node
-                }).append(
-                    $("<a>", {
-                        text : node.title,
-                        href : "#",
-                        data : {
-                            nid : node.nid
-                        },
-                        click : function(e) {
-                            e.preventDefault();
-                            
-                            var $this = $(this),
-                                expander = $this.next(),
-                                parent = $this.parents("ul");
+                tocItem = _create_menu_item(node);
+                                
+                if (rootNid === node.parent.nid) {
+                    toc.append(tocItem);
+                } else {
+                    subMenu = $("#osci_toc_node_" + node.parent.nid + "_submenu", toc);
+                    if (!(subMenu.length)) {
+                        subMenu = _create_sub_menu(node.parent.nid);
+                    }
+                    
+                    subMenu.append(tocItem);
+                }
+                
+                if (node.sub_sections && node.sub_sections.length) {
+                    subMenu = $("#osci_toc_node_" + node.nid + "_submenu", toc);
+                    if (!(subMenu.length)) {
+                        subMenu = _create_sub_menu(node.nid);
+                    }
+                    
+                    subItemCount = node.sub_sections.length;
+                    for (j = 0; j < subItemCount; j++) {
+                        subMenu.append(_create_menu_item(node.sub_sections[j]));
+                    }
+                }
+            }
+            
+            $("a.osci_toc_arrow", toc).each(function(i, elem){
+                var $this = $(elem);
+                if (!$this.siblings("ul").length) {
+                    $this.remove();
+                }
+            });
+            
+            //container.trigger("osci_nav_toggle");
+            
+            toc.data("full_height", toc.height());
+            
+            $("ul", toc).each(function(i, elem){
+                var $elem = $(elem);
+                $elem.data("full_height", $elem.height());
+                //$elem.overscroll({showThumbs: false}).trigger("osci_toc_update_heights");
+            });
+        }
+        
+        function _create_menu_item(node)
+        {
+            var tocItem, id = node.nid, link = node.nid;
+            
+            if (node.field) {
+                id = node.nid + "_" + node.field;
+                link = node.nid + "#" + node.field;
+            }
+            
+            tocItem = $("<li>", {
+                id : "osci_toc_node_" + id,
+                data : node
+            }).append(
+                $("<a>", {
+                    text : node.title,
+                    href : "#",
+                    data : {
+                        nid : link
+                    },
+                    click : function(e) {
+                        e.preventDefault();
+                        
+                        var $this = $(this),
+                            expander = $this.next(),
+                            parent = $this.parents("ul");
 
-                            if (parent.data("dragging")) {
-                                return;
-                            }
-
-                            if (!expander.hasClass("expanded")) {
-                                expander.click();
-                            }
-                            
-                            base.navigation.nid = $(this).data("nid");
-                            _load_section(true);
+                        if (parent.data("dragging")) {
+                            return;
                         }
-                    })
-                ).append(
-                    $("<a>", {
-                       "class" : "osci_toc_arrow",
-                       href : "#",
-                       text : "+",
-                       click : function (e) {
-                           e.preventDefault();
-                           
-                           var checkElement,
-                               $this = $(this),
-                               parent = $this.parents("ul");
-                           
-                           if (parent.data("dragging")) {
-                               return;
-                           }
-                           
-                           checkElement = $this.siblings("ul");
-                           
-                           if (checkElement.length) {
-                               if (!checkElement.is(":visible")) {
-                                   $("ul", toc).slideUp("normal");
-                                   $(".expanded", toc).removeClass("expanded");
-                                   checkElement.slideDown("normal");
-                               } else {
-                                   checkElement.slideUp("normal");
-                               }
-                               $this.toggleClass("expanded");
-                           } else {
-                               $this.toggleClass("expanded");
-                               $this.prev().click();
-                           }
-                       }
-                    })
-                ).hover(
+
+                        if (!expander.hasClass("expanded")) {
+                            expander.click();
+                        }
+                        
+                        _navigateTo("node", $(this).data("nid"));
+                    }
+                }).hover(
                     function(e){
-                        var data = $(this).data();
+                        var $this = $(this),
+                            data = $this.parent("li").data(),
+                            parents;
                             
                         if (data.plate_image && data.plate_image.thumbnail_165w_url) {
                             $("#osci_navigation_ref_image img").trigger({
                                 type : "osci_nav_ref_image_alter",
                                 osci_nav_hover_image : data.plate_image.thumbnail_165w_url
                             });
+                        } else {
+                            parents = $this.parents("li");
+
+                            if (parents && parents.length) {
+                                parents.each(function(i, elem){
+                                    data = $(elem).data();
+
+                                    if (data.plate_image && data.plate_image.thumbnail_165w_url) {
+                                        $("#osci_navigation_ref_image img").trigger({
+                                            type : "osci_nav_ref_image_alter",
+                                            osci_nav_hover_image : data.plate_image.thumbnail_165w_url
+                                        });
+                                        return false;
+                                    }
+                                });
+                            }
                         }
                     },
                     function(e){
@@ -527,47 +577,68 @@
                             type : "osci_nav_ref_image_alter"
                         });
                     }
-                );
-                
-                if (rootNid == node.parent.nid) {
-                    toc.append(tocItem);
-                } else {
-                    subMenu = $("#osci_toc_node_" + node.parent.nid + "_submenu", toc);
-                    if (!(subMenu.length)) {
-                        subMenu = $("<ul>", {
-                            id : "osci_toc_node_" + node.parent.nid + "_submenu"
-                        }).appendTo($("#osci_toc_node_" + node.parent.nid)).hide().bind("osci_toc_update_heights", function(){
-                            var $this = $(this),
-                                container = $("#" + base.options.tocId),
-                                toc = $("#osci_navigation_toc", container),
-                                maxHeight = $(window).height() - toc.position().top - parseInt(container.css("padding-bottom")) - toc.data("full_height"),
-                                fullHeight = $this.data("full_height");
+                )
+            ).append(
+                $("<a>", {
+                   "class" : "osci_toc_arrow",
+                   href : "#",
+                   text : "+",
+                   click : function (e) {
+                       e.preventDefault();
+                       
+                       var checkElement,
+                           $this = $(this),
+                           parent = $this.parents("ul:first"),
+                           toc = $("#" + base.options.tocId + " > ul");
+                       
+                       if (parent.data("dragging")) {
+                           return;
+                       }
 
-                            if ($this.height() > maxHeight) {
-                                $this.height(maxHeight + "px");
-                            } else if ($this.height() < maxHeight) {
-                                if (fullHeight > maxHeight) {
-                                    $this.height(maxHeight + "px");
-                                } else {
-                                    $this.height(fullHeight + "px");
-                                }
-                            }
-                        });
+                       checkElement = $this.siblings("ul");
+
+                       $("ul", parent).slideUp("normal");
+                       $(".expanded", parent).removeClass("expanded").text("+");
+                       
+                       if (checkElement.length) {
+                           if (!checkElement.is(":visible")) {
+                               checkElement.slideDown("normal");
+                               $this.text("-").addClass("expanded");
+                           } else {
+                               checkElement.slideUp("normal");
+                               $this.text("+");
+                           }
+                       }
+                   }
+                })
+            );
+            
+            return tocItem;
+        }
+        
+        function _create_sub_menu(nid)
+        {
+            var subMenu = $("<ul>", {
+                id : "osci_toc_node_" + nid + "_submenu"
+            }).appendTo($("#osci_toc_node_" + nid)).hide().bind("osci_toc_update_heights", function(){
+                var $this = $(this),
+                    container = $("#" + base.options.tocId),
+                    toc = $("#osci_navigation_toc", container),
+                    maxHeight = $(window).height() - toc.position().top - parseInt(container.css("padding-bottom"), 10) - toc.data("full_height"),
+                    fullHeight = $this.data("full_height");
+
+                if ($this.height() > maxHeight) {
+                    $this.height(maxHeight + "px");
+                } else if ($this.height() < maxHeight) {
+                    if (fullHeight > maxHeight) {
+                        $this.height(maxHeight + "px");
+                    } else {
+                        $this.height(fullHeight + "px");
                     }
-                    
-                    subMenu.append(tocItem);
                 }
-            }
-            
-            container.trigger("osci_nav_toggle");
-            
-            toc.data("full_height", toc.height());
-            
-            $("ul", toc).each(function(i, elem){
-                var $elem = $(elem);
-                $elem.data("full_height", $elem.height());
-                $elem.overscroll({showThumbs: false}).trigger("osci_toc_update_heights");
             });
+            
+            return subMenu;
         }
 
         base.init();
@@ -600,37 +671,6 @@ jQuery(document).ready(function() {
         swipeLeft : function () { $("a.next","#osci_navigation").click(); },
         swipeRight : function () { $("a.prev","#osci_navigation").click(); }
     });
-
-    jQuery("a.footnote-link, a.figure-link","#osci_viewer").live('click',function(e){
-        e.preventDefault();
-        var $this = jQuery(this);
-
-        navigateTo({
-	    operation : 'page',
-            value : jQuery($this.attr("href")).parents(".osci_page").data("page")
-        });
-
-        jQuery($this.attr("href")).effect("pulsate", { times : 3 }, 1000);
-    });
-
-    jQuery(document).keydown(function(e){
-        var keyCode = e.keyCode || e.which;
-
-        switch(keyCode) {
-            case 37:
-                jQuery("a.prev").click();
-                break;
-            case 39:
-                jQuery("a.next").click();
-                break;
-        }
-    });
-
-    var url = document.URL;
-    url = url.replace("reader","bodycopy");
-
-    var content = jQuery.osci.getUrl({ url: url, clear : true });
-    jQuery("#osci_reader_content").osci_layout(content.data, {});
 
 });
 */
