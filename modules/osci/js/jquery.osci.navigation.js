@@ -496,7 +496,7 @@
                 }
             });
             
-            //container.trigger("osci_nav_toggle");
+            container.trigger("osci_nav_toggle");
             
             toc.data("full_height", toc.height());
             
