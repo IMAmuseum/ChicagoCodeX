@@ -194,6 +194,11 @@ body.page-node-reader {
     transition: transform 0.2s cubic-bezier(0, 0, 0.25, 1); 
 }
 
+#osci_navigation_toc_wrapper {
+    overflow: hidden;
+    height: 300px;   
+}
+
 ul#osci_navigation_toc {
     border-top: 1px solid #888;
 }

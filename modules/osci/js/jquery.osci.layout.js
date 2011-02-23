@@ -54,6 +54,7 @@
             
             //Clear viewer div so we can insert new layout
             base.viewer.empty();
+            base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
             
             //Check to see if layout has been cached in localstorage
             cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
@@ -107,7 +108,7 @@
                         }
                         
                         //Get a new page and append it to the viewer
-                        page = _newPage().appendTo(base.viewer);
+                        page = _newPage().appendTo(base.viewer.pages);
                         page.data("contentStartOffset", contentOffset);
                         pageElementCount = 0;
                     }

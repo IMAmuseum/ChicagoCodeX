@@ -15,4 +15,401 @@
  *
  * Date: Thursday, February 17th 2011
  */
-(function(l,n,f,c){c=f.fn.overscroll=function(a){return this.each(function(){c.init(f(this),a)})};f.extend(c,{events:{wheel:"mousewheel DOMMouseScroll",start:"select mousedown touchstart",drag:"mousemove touchmove",end:"mouseup mouseleave touchend",ignored:"dragstart drag"},div:"<div/>",noop:function(){return false},constants:{driftFrequency:40,driftSequences:22,driftDecay:1.15,timeout:400,captureThreshold:3,wheelDelta:20,scrollDelta:15,thumbThickness:8,thumbOpacity:0.7,boundingBox:1E6},checkIosDevice:function(){if(c.isIOS=== undefined){var a=["iPhone","iPad","iPod"],b;for(b=0;b<a.length;b++)if(navigator.platform.indexOf(a[b])>=0)return c.isIOS=true;return c.isIOS=false}return c.isIOS},init:function(a,b,d){d={sizing:c.getSizing(a)};b=f.extend({showThumbs:true,wheelDirection:"vertical",cursor:"move",wheelDelta:c.constants.wheelDelta,scrollDelta:c.constants.scrollDelta,direction:"multi",cancelOn:"",onDriftEnd:f.noop},b||{});b.scrollDelta=n.abs(b.scrollDelta);b.wheelDelta=n.abs(b.wheelDelta);a.css({position:"relative",overflow:"hidden", cursor:b.cursor}).bind(c.events.wheel,d,c.wheel).bind(c.events.start,d,c.start).bind(c.events.end,d,c.stop).bind(c.events.ignored,c.noop);if(b.showThumbs){d.thumbs={};if(d.sizing.container.scrollWidth>0&&b.direction!=="vertical"){d.thumbs.horizontal=f(c.div).css(c.getThumbCss(d.sizing.thumbs.horizontal)).fadeTo(0,0);a.prepend(d.thumbs.horizontal)}if(d.sizing.container.scrollHeight>0&&b.direction!=="horizontal"){d.thumbs.vertical=f(c.div).css(c.getThumbCss(d.sizing.thumbs.vertical)).fadeTo(0,0);a.prepend(d.thumbs.vertical)}}d.target= a;d.options=b},toggleThumbs:function(a,b){if(a.thumbs)if(b){a.thumbs.vertical&&a.thumbs.vertical.stop(true,true).fadeTo("fast",c.constants.thumbOpacity);a.thumbs.horizontal&&a.thumbs.horizontal.stop(true,true).fadeTo("fast",c.constants.thumbOpacity)}else{a.thumbs.vertical&&a.thumbs.vertical.fadeTo("fast",0);a.thumbs.horizontal&&a.thumbs.horizontal.fadeTo("fast",0)}},setPosition:function(a,b,d){b.x=a.pageX;b.y=a.pageY;b.index=d;return b},wheel:function(a,b){c.clearInterval();if(a.wheelDelta)b=a.wheelDelta/ (l.opera?-120:120);if(a.detail)b=-a.detail/3;if(!a.data.wheelCapture){a.data.wheelCapture={timeout:null};c.toggleThumbs(a.data,true);a.data.target.stop(true,true).data("dragging",true)}b*=a.data.options.wheelDelta;if(a.data.options.wheelDirection==="horizontal")this.scrollLeft-=b;else this.scrollTop-=b;c.moveThumbs(a,this.scrollLeft,this.scrollTop);a.data.wheelCapture.timeout&&clearTimeout(a.data.wheelCapture.timeout);a.data.wheelCapture.timeout=setTimeout(function(){a.data.wheelCapture=undefined; c.toggleThumbs(a.data,false);a.data.target.data("dragging",false);a.data.options.onDriftEnd.call(a.data.target,a.data)},c.constants.timeout);return false},moveThumbs:function(a,b,d,g,e,h,i){if(a.data.options.showThumbs){g=a.data.thumbs;e=a.data.sizing;if(g.horizontal){h=b*(1+e.container.width/e.container.scrollWidth);i=d+e.thumbs.horizontal.top;g.horizontal.css("margin",i+"px 0 0 "+h+"px")}if(g.vertical){h=b+e.thumbs.vertical.left;i=d*(1+e.container.height/e.container.scrollHeight);g.vertical.css("margin", i+"px 0 0 "+h+"px")}}},start:function(a){c.clearInterval();if(!f(a.target).is(a.data.options.cancelOn)){c.normalizeEvent(a);a.data.target.bind(c.events.drag,a.data,c.drag).stop(true,true).data("dragging",false);a.data.position=c.setPosition(a,{});a.data.capture=c.setPosition(a,{},2);return false}},drag:function(a){c.normalizeEvent(a);a.data.target.data("dragging")||c.toggleThumbs(a.data,true);if(a.data.options.direction!=="vertical")this.scrollLeft-=a.pageX-a.data.position.x;if(a.data.options.direction!== "horizontal")this.scrollTop-=a.pageY-a.data.position.y;c.moveThumbs(a,this.scrollLeft,this.scrollTop);c.setPosition(a,a.data.position);if(--a.data.capture.index<=0){a.data.target.data("dragging",true);c.setPosition(a,a.data.capture,c.constants.captureThreshold)}return true},normalizeEvent:function(a){if(c.checkIosDevice()){var b=a.originalEvent.changedTouches[0];a.pageX=b.pageX;a.pageY=b.pageY}},stop:function(a){if(a.data.position){a.data.target.unbind(c.events.drag,c.drag);a.data.target.data("dragging")? c.drift(this,a,function(b){b.target.data("dragging",false);b.options.onDriftEnd.call(b.target,b);c.toggleThumbs(b,false)}):c.toggleThumbs(a.data,false);a.data.capture=a.data.position=undefined}return!a.data.target.data("dragging")},clearInterval:function(){c.driftInterval&&l.clearInterval(c.driftInterval)},setInterval:function(a){c.driftInterval=a},drift:function(a,b,d){c.normalizeEvent(b);var g=b.data.options.scrollDelta*(b.pageX-b.data.capture.x),e=b.data.options.scrollDelta*(b.pageY-b.data.capture.y), h=a.scrollLeft,i=a.scrollTop,j=g/c.constants.driftSequences,k=e/c.constants.driftSequences,o=c.constants.driftDecay;if(b.data.options.direction!=="vertical")h-=g;if(b.data.options.direction!=="horizontal")i-=e;c.setInterval(l.setInterval(function(){var m=true;if(k>1&&a.scrollTop>i||k<-1&&a.scrollTop<i){m=false;a.scrollTop-=k;k/=o}if(j>1&&a.scrollLeft>h||j<-1&&a.scrollLeft<h){m=false;a.scrollLeft-=j;j/=o}c.moveThumbs(b,a.scrollLeft,a.scrollTop);if(m){c.clearInterval();d.call(null,b.data)}},c.constants.driftFrequency))}, getSizing:function(a,b){b={};b.container={width:a.width(),height:a.height()};a.scrollLeft(c.constants.boundingBox).scrollTop(c.constants.boundingBox);b.container.scrollWidth=a.scrollLeft();b.container.scrollHeight=a.scrollTop();a.scrollTop(0).scrollLeft(0);b.thumbs={horizontal:{width:b.container.width*b.container.width/b.container.scrollWidth,height:c.constants.thumbThickness,corner:c.constants.thumbThickness/2,left:0,top:b.container.height-c.constants.thumbThickness},vertical:{width:c.constants.thumbThickness, height:b.container.height*b.container.height/b.container.scrollHeight,corner:c.constants.thumbThickness/2,left:b.container.width-c.constants.thumbThickness,top:0}};b.container.width-=b.thumbs.horizontal.width;b.container.height-=b.thumbs.vertical.height;return b},getThumbCss:function(a){return{position:"absolute","background-color":"black",width:a.width+"px",height:a.height+"px",margin:a.top+"px 0 0 "+a.left+"px","-moz-border-radius":a.corner+"px","-webkit-border-radius":a.corner+"px","border-radius":a.corner+ "px"}}})})(window,Math,jQuery);
+
+/*jslint onevar: true, strict: true */
+/*global window, jQuery */
+"use strict"; 
+
+(function(w, m, $, o){
+
+	// create overscroll
+	o = $.fn.overscroll = function(options) {
+		return this.each(function(){
+			o.init($(this), options);
+		});
+	};
+	
+	$.extend(o, {
+		
+		// events handled by overscroll
+		events: {
+			wheel: "mousewheel DOMMouseScroll",
+			start: "select mousedown touchstart",
+			drag: "mousemove touchmove",
+			end: "mouseup mouseleave touchend",
+			ignored: "dragstart drag"
+		},
+		
+		// to save a couple bits
+		div: "<div/>",
+		noop: function(){return false;},
+		
+		// constants used to tune scroll-ability and thumbs
+		constants: {
+            driftFrequency: 40, // 20 FPS
+			driftSequences: 22,
+            driftDecay: 1.15,
+			timeout: 400,
+			captureThreshold: 3,
+			wheelDelta: 20,
+			scrollDelta: 15,
+			thumbThickness: 8,
+			thumbOpacity: 0.7,
+			boundingBox: 1000000
+		},
+
+        checkIosDevice: function() {
+            if (o.isIOS === undefined) {
+                var devices = ["iPhone", "iPad", "iPod"], i;
+                for (i=0; i<devices.length; i++) {
+                    if (navigator.platform.indexOf(devices[i]) >= 0) {
+                        return (o.isIOS = true);
+                    }
+                }
+                return (o.isIOS = false);
+            }
+            return o.isIOS;
+        },
+		
+		// main initialization function
+		init: function(target, options, data) {
+			
+			data = { sizing: o.getSizing(target) };
+			
+			options = $.extend({
+				showThumbs: true,
+				wheelDirection: 'vertical',
+                cursor: 'move',
+				wheelDelta: o.constants.wheelDelta,
+				scrollDelta: o.constants.scrollDelta,
+				direction: 'multi',
+				cancelOn: '',
+				onDriftEnd: $.noop
+			}, (options || {}));
+			
+			options.scrollDelta = m.abs(options.scrollDelta);
+			options.wheelDelta = m.abs(options.wheelDelta);
+			
+			target.css({
+			    'position': 'relative',
+                'overflow': 'hidden',
+                'cursor': options.cursor
+            })
+            .bind(o.events.wheel, data, o.wheel)
+		    .bind(o.events.start, data, o.start)
+			.bind(o.events.end, data, o.stop)
+			.bind(o.events.ignored, o.noop); // disable proprietary drag handlers
+				
+			if(options.showThumbs) {
+				
+				data.thumbs = {};
+								
+				if(data.sizing.container.scrollWidth > 0 && options.direction !== 'vertical') {
+					data.thumbs.horizontal = $(o.div).css(o.getThumbCss(data.sizing.thumbs.horizontal)).fadeTo(0, 0);
+					target.prepend(data.thumbs.horizontal);	
+				}
+
+				if(data.sizing.container.scrollHeight > 0 && options.direction !== 'horizontal') {
+					data.thumbs.vertical = $(o.div).css(o.getThumbCss(data.sizing.thumbs.vertical)).fadeTo(0, 0);
+					target.prepend(data.thumbs.vertical);				
+				}
+
+			}
+			
+			data.target = target;
+			data.options = options;
+				
+		},
+		
+		// toggles the drag mode of the target
+		toggleThumbs: function(data, dragging) {
+	        if(data.thumbs) {
+                if(dragging) {
+                    if(data.thumbs.vertical) {
+                        data.thumbs.vertical.stop(true, true).fadeTo("fast", o.constants.thumbOpacity);
+                    }
+                    if(data.thumbs.horizontal) {
+                        data.thumbs.horizontal.stop(true, true).fadeTo("fast", o.constants.thumbOpacity);
+                    }
+                } else {
+                    if(data.thumbs.vertical) {
+                        data.thumbs.vertical.fadeTo("fast", 0);
+                    }
+                    if(data.thumbs.horizontal) {
+                        data.thumbs.horizontal.fadeTo("fast", 0);
+                    }
+                }
+		    }
+		},
+		
+		// sets a position object
+		setPosition: function(event, position, index) {
+		    position.x = event.pageX;
+		    position.y = event.pageY;
+		    position.index = index;
+		    return position;
+		},
+		
+		// handles mouse wheel scroll events
+		wheel: function(event, delta) {
+
+            o.clearInterval();
+
+			if ( event.wheelDelta ) { 
+		        delta = event.wheelDelta/ (w.opera ? -120 : 120);
+		    }
+		    
+		    if ( event.detail ) { 
+		        delta = -event.detail/3; 
+		    }
+		    
+		    if(!event.data.wheelCapture) {
+		        event.data.wheelCapture = { timeout: null };
+		        o.toggleThumbs(event.data, true);
+		        event.data.target.stop(true, true).data('dragging', true);
+		    }
+		    
+		    delta *= event.data.options.wheelDelta;
+		    
+		    if(event.data.options.wheelDirection === 'horizontal') {
+		        this.scrollLeft -= delta;
+		    } else {
+		        this.scrollTop -= delta;
+		    }
+
+            o.moveThumbs(event, this.scrollLeft, this.scrollTop);
+		    
+		    if(event.data.wheelCapture.timeout) {
+		        clearTimeout(event.data.wheelCapture.timeout);
+		    }
+		    
+		    event.data.wheelCapture.timeout = setTimeout(function(d){
+		        event.data.wheelCapture = undefined;
+		        o.toggleThumbs(event.data, false);
+		        event.data.target.data('dragging', false);
+		        event.data.options.onDriftEnd.call(event.data.target, event.data);
+		    }, o.constants.timeout);
+		
+			return false;
+			
+		},
+		
+		// handles a scroll event
+		moveThumbs: function(event, left, top, thumbs, sizing, ml, mt) {
+
+            if (event.data.options.showThumbs) {
+
+                thumbs = event.data.thumbs;
+                sizing = event.data.sizing;
+
+                if (thumbs.horizontal) {
+                    ml = left * (1 + sizing.container.width / sizing.container.scrollWidth);
+                    mt = top + sizing.thumbs.horizontal.top;
+                    thumbs.horizontal.css("margin", mt + "px 0 0 " + ml + "px");
+                }
+
+                if (thumbs.vertical) {
+                    ml = left + sizing.thumbs.vertical.left;
+                    mt = top * (1 + sizing.container.height / sizing.container.scrollHeight);
+                    thumbs.vertical.css("margin", mt + "px 0 0 " + ml + "px");
+                }
+
+            }
+        
+        },
+		
+		// starts the drag operation and binds the mouse move handler
+		start: function(event) {
+
+            o.clearInterval();
+            
+
+            if (!$(event.target).is(event.data.options.cancelOn)) {               
+                o.normalizeEvent(event);
+                event.data.target.bind(o.events.drag, event.data, o.drag).stop(true, true).data('dragging', false);
+                event.data.position = o.setPosition(event, {});
+                event.data.capture = o.setPosition(event, {}, 2);
+                return false;
+            }
+			
+		},
+		
+		// updates the current scroll location during a mouse move
+		drag: function(event, ml, mt, left, top) {
+
+            o.normalizeEvent(event);
+
+            if (!event.data.target.data('dragging')) {
+                 o.toggleThumbs(event.data, true);
+            }
+
+			if (event.data.options.direction !== 'vertical') {
+			   this.scrollLeft -= (event.pageX - event.data.position.x);
+			}
+
+			if (event.data.options.direction !== 'horizontal') {
+			   this.scrollTop -= (event.pageY - event.data.position.y);
+			}
+
+            o.moveThumbs(event, this.scrollLeft, this.scrollTop);
+			
+			o.setPosition(event, event.data.position);
+			
+			if (--event.data.capture.index <= 0 ) {
+			    event.data.target.data('dragging', true);
+			    o.setPosition(event, event.data.capture, o.constants.captureThreshold);
+			}
+
+			return true;
+		
+		},
+
+        normalizeEvent: function(event) {
+            if (o.checkIosDevice()) {
+                var iosEvent = event.originalEvent.changedTouches[0];
+                event.pageX = iosEvent.pageX;
+                event.pageY = iosEvent.pageY;
+            }
+        },
+		
+		// ends the drag operation and unbinds the mouse move handler
+		stop: function(event, dx, dy, d) {
+
+			if(event.data.position) {
+
+				event.data.target.unbind(o.events.drag, o.drag);
+				
+				if(event.data.target.data('dragging')) {
+				 
+				    o.drift(this, event, function(data){
+                        data.target.data('dragging', false);
+                        data.options.onDriftEnd.call(data.target, data);
+                        o.toggleThumbs(data, false);
+                    });
+
+				} else {
+				     o.toggleThumbs(event.data, false);
+				}
+                
+                event.data.capture = event.data.position = undefined;
+                
+			}
+			
+			return !event.data.target.data('dragging');
+		},
+
+        clearInterval: function() {
+            if (o.driftInterval) { w.clearInterval(o.driftInterval); }
+        },
+
+        setInterval: function(interval) {
+            o.driftInterval = interval;
+        },
+
+        // sends the overscrolled element into a drift
+        drift: function(target, event, callback) {
+
+            o.normalizeEvent(event);
+
+            var dx = event.data.options.scrollDelta * (event.pageX - event.data.capture.x),
+                dy = event.data.options.scrollDelta * (event.pageY - event.data.capture.y),
+                scrollLeft = target.scrollLeft, scrollTop = target.scrollTop,
+                xMod = dx/o.constants.driftSequences,
+                yMod = dy/o.constants.driftSequences,
+                decay = o.constants.driftDecay;
+
+            if(event.data.options.direction !== 'vertical') {
+                scrollLeft -= dx;
+            }
+
+            if(event.data.options.direction !== 'horizontal') {
+                scrollTop -= dy;
+            }
+
+            o.setInterval(w.setInterval(function() {
+
+                var done = true, min = 1, max = -1;
+
+                if (yMod > min && target.scrollTop > scrollTop ||
+                    yMod < max && target.scrollTop < scrollTop) {
+                    done = false;
+                    target.scrollTop -= yMod;
+                    yMod /= decay;
+                }
+
+                if (xMod > min && target.scrollLeft > scrollLeft ||
+                    xMod < max && target.scrollLeft < scrollLeft) {
+                    done = false;
+                    target.scrollLeft -= xMod;
+                    xMod /= decay;
+                }
+
+                o.moveThumbs(event, target.scrollLeft, target.scrollTop);
+
+                if (done) {
+                    o.clearInterval();
+                    callback.call(null, event.data);
+                }
+
+            }, o.constants.driftFrequency));
+
+        },
+		
+		// gets sizing for the container and thumbs
+		getSizing: function(container, sizing) {
+		
+			sizing = { };
+			
+			sizing.container = {
+				width: container.width(),
+				height: container.height()
+			};
+			
+			container.scrollLeft(o.constants.boundingBox).scrollTop(o.constants.boundingBox);
+			sizing.container.scrollWidth = container.scrollLeft();
+			sizing.container.scrollHeight = container.scrollTop();							
+			container.scrollTop(0).scrollLeft(0);
+					
+			sizing.thumbs = {
+				horizontal: {
+					width: sizing.container.width * sizing.container.width / sizing.container.scrollWidth,
+					height: o.constants.thumbThickness,
+					corner: o.constants.thumbThickness / 2,
+					left: 0,
+					top: sizing.container.height - o.constants.thumbThickness
+				},
+				vertical: {
+					width: o.constants.thumbThickness,
+					height: sizing.container.height * sizing.container.height / sizing.container.scrollHeight,
+					corner: o.constants.thumbThickness / 2,
+					left: sizing.container.width - o.constants.thumbThickness,
+					top: 0
+				}
+			};
+			
+			sizing.container.width -= sizing.thumbs.horizontal.width;
+			sizing.container.height -= sizing.thumbs.vertical.height;
+			
+			return sizing;
+			
+		},
+		
+		// gets the CSS object for a thumb
+		getThumbCss: function(size) {
+		
+			return {
+				position: "absolute",
+				"background-color": "black",
+				width: size.width + "px",
+				height: size.height + "px",
+				"margin": size.top + "px 0 0 " + size.left + "px",
+				"-moz-border-radius": size.corner + "px",
+				"-webkit-border-radius":  size.corner + "px", 
+				"border-radius":  size.corner + "px"
+			};
+			
+		}
+		
+	});
+
+})(window, Math, jQuery);

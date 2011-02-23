@@ -100,7 +100,7 @@
             var firstParagraph = $("p.osci_paragraph:first", "div.osci_page_" + (base.navigation.currentPage + 1));
             base.navigation.to = { operation : "paragraph", value : firstParagraph.data("paragraph_id")};
             
-            $("ul", "#" + base.options.tocId).trigger("osci_toc_update_heights");
+            //$("ul", "#" + base.options.tocId).trigger("osci_toc_update_heights");
             
             $.osci.storage.clearCache("osci_layout_cache:");
             _load_section(false);
@@ -237,7 +237,7 @@
         
         function _navigateTo(to, value)
         {
-            var totalColumns, newPage, tocData, newOffset, identifier;
+            var totalColumns, newPage, tocData, newOffset, identifier, tocContainer;
 
             switch(to) {
                 case "next":
@@ -329,14 +329,22 @@
             }
 
             newOffset = 0;
+            
             if (base.navigation.currentPage > 0) {
                 newOffset = -1 * ((base.navigation.currentPage * base.navigation.layoutData.pageWidth) + 
                     ((base.navigation.layoutData.outerPageGutter[1] + base.navigation.layoutData.outerPageGutter[3]) * (base.navigation.currentPage)));
             }
 
+            if (!base.options.tocOverlay) {
+                tocContainer = $("#" + base.options.tocId);
+                if (tocContainer.hasClass("open") && tocContainer.outerWidth() > base.navigation.layoutData.outerPageGutter[3]) {
+                    newOffset += tocContainer.outerWidth() - base.navigation.layoutData.outerPageGutter[3];
+                }
+            }
+
             $("#" + base.options.sectionNavId).trigger("osci_update_navigation_section", base.navigation.currentPage);
 
-            $(".osci_page", "#osci_viewer").css({
+            $("#osci_pages", "#osci_viewer").css({
                 "-webkit-transform" : "translate(" + newOffset + "px, 0)",
                 "-moz-transform" : "translate(" + newOffset + "px, 0)",
                 "transform" : "translate(" + newOffset + "px, 0)"
@@ -347,10 +355,14 @@
         {
             var container = $("#" + base.options.sectionNavId),
                 parts = base.navigation.pageCount,
-                partWidth = Math.round((1 / base.navigation.pageCount)  * 100),
-                addPixels = Math.abs(Math.round(100 - (parts * partWidth))),
+//                partWidth = Math.round((1 / base.navigation.pageCount)  * 100),
+//                addPixels = Math.abs(Math.round(100 - (parts * partWidth))),
+//                navBar, i, classes = "", heightRemain = 0, li, finalWidth,
+//                addSubPixels = (100 - (parts * partWidth)) > 0 ? 1 : -1;
+                partWidth = Math.floor(container.width() / parts),
+                addPixels = Math.abs(Math.round(container.width() - (parts * partWidth))),
                 navBar, i, classes = "", heightRemain = 0, li, finalWidth,
-                addSubPixels = (100 - (parts * partWidth)) > 0 ? 1 : -1;
+                addSubPixels = (container.width() - (parts * partWidth)) > 0 ? 1 : -1;
            
             navBar = $("#osci_navigation_section_list", container);
             if (!navBar.length) {
@@ -379,7 +391,7 @@
                 }
                 
                 li = $("<li>",{
-                    css : { width : finalWidth + "%" },
+                    css : { width : finalWidth + "px" },
                     data : { navigateTo : i },
                     "class" : classes,
                     click : function (e) {
@@ -407,7 +419,7 @@
         
         function _create_table_of_contents()
         {
-            var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, j, subItem, subItemCount;
+            var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, j, subItem, subItemCount, wrap;
 
             toc = $("#osci_navigation_toc", container);
             if (!toc.length) {
@@ -426,7 +438,7 @@
                 toc = $("<ul>", {
                     id : "osci_navigation_toc",
                     width : "100%"
-                }).appendTo(container);
+                }).appendTo(container).wrap($("<div>",{id : "osci_navigation_toc_wrapper"}));
                 
                 $(container).bind("osci_nav_toggle", function(e){
                     var $this = $(this);
@@ -437,6 +449,7 @@
                             "-moz-transform" : "translate(-" + $this.outerWidth() + "px, 0)",
                             "transform" : "translate(-" + $this.outerWidth() + "px, 0)"
                         });
+                        
                         $this.removeClass("open");
                     } else {
                         $this.css({
@@ -444,7 +457,12 @@
                             "-moz-transform" : "translate(0px, 0)",
                             "transform" : "translate(0px, 0)"
                         });
+
                         $this.addClass("open");
+                    }
+                    
+                    if (!base.options.tocOverlay) {
+                        _navigateTo("page", base.navigation.currentPage + 1);
                     }
                 }).addClass("open");
   
@@ -454,6 +472,7 @@
                 });
             }
             toc.empty();
+            wrap = toc.parent();
 
             for (i in base.navigation.toc) {
                 node = base.navigation.toc[i];
@@ -498,13 +517,16 @@
             
             container.trigger("osci_nav_toggle");
             
-            toc.data("full_height", toc.height());
+//            toc.data("full_height", toc.height());
             
-            $("ul", toc).each(function(i, elem){
-                var $elem = $(elem);
-                $elem.data("full_height", $elem.height());
-                //$elem.overscroll({showThumbs: false}).trigger("osci_toc_update_heights");
-            });
+//            $("ul", toc).each(function(i, elem){
+//                var $elem = $(elem);
+//                $elem.data("full_height", $elem.height());
+//                //$elem.overscroll({showThumbs: false}).trigger("osci_toc_update_heights");
+//            });
+         
+              wrap.height(($(window).height() - wrap.position().top - 40) + "px").overscroll({direction : "vertical", showThumbs : true});
+              $("ul", toc).hide();
         }
         
         function _create_menu_item(node)
@@ -531,9 +553,9 @@
                         
                         var $this = $(this),
                             expander = $this.next(),
-                            parent = $this.parents("ul");
+                            container = $this.parents("#osci_navigation_toc_wrapper");
 
-                        if (parent.data("dragging")) {
+                        if (container.data("dragging")) {
                             return;
                         }
 
@@ -589,9 +611,10 @@
                        var checkElement,
                            $this = $(this),
                            parent = $this.parents("ul:first"),
+                           container = $this.parents("#osci_navigation_toc_wrapper"),
                            toc = $("#" + base.options.tocId + " > ul");
                        
-                       if (parent.data("dragging")) {
+                       if (container.data("dragging")) {
                            return;
                        }
 
@@ -620,23 +643,25 @@
         {
             var subMenu = $("<ul>", {
                 id : "osci_toc_node_" + nid + "_submenu"
-            }).appendTo($("#osci_toc_node_" + nid)).hide().bind("osci_toc_update_heights", function(){
-                var $this = $(this),
-                    container = $("#" + base.options.tocId),
-                    toc = $("#osci_navigation_toc", container),
-                    maxHeight = $(window).height() - toc.position().top - parseInt(container.css("padding-bottom"), 10) - toc.data("full_height"),
-                    fullHeight = $this.data("full_height");
-
-                if ($this.height() > maxHeight) {
-                    $this.height(maxHeight + "px");
-                } else if ($this.height() < maxHeight) {
-                    if (fullHeight > maxHeight) {
-                        $this.height(maxHeight + "px");
-                    } else {
-                        $this.height(fullHeight + "px");
-                    }
-                }
-            });
+//            }).appendTo($("#osci_toc_node_" + nid)).hide().bind("osci_toc_update_heights", function(){
+//                var $this = $(this),
+//                    container = $("#" + base.options.tocId),
+//                    toc = $("#osci_navigation_toc", container),
+//                    maxHeight = $(window).height() - toc.position().top - parseInt(container.css("padding-bottom"), 10) - toc.data("full_height"),
+//                    fullHeight = $this.data("full_height");
+//
+//                if ($this.height() > maxHeight) {
+//                    $this.height(maxHeight + "px");
+//                } else if ($this.height() < maxHeight) {
+//                    if (fullHeight > maxHeight) {
+//                        $this.height(maxHeight + "px");
+//                    } else {
+//                        $this.height(fullHeight + "px");
+//                    }
+//                }
+//            });
+            }).appendTo($("#osci_toc_node_" + nid)).hide();
+//            }).appendTo($("#osci_toc_node_" + nid));
             
             return subMenu;
         }
@@ -648,6 +673,7 @@
         readerId : "osci_viewer_wrapper",
         headerId : "osci_header",
         tocId : "osci_table_of_contents_wrapper",
+        tocOverlay : false,
         navId : "osci_navigation_wrapper",
         apiEndpoint : "http://osci.localhost/api/navigation/",
         contentEndpoint : "http://osci.localhost/node/{$nid}/bodycopy",
