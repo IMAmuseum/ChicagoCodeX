@@ -74,6 +74,8 @@
                     $('#osci-citation-dialog').dialog('open');
                 });
             });
+            
+            
         };
         
         function highlightTxt(obj) {
@@ -111,7 +113,7 @@
     };
 
     $.osci.citation.defaultOptions = {
-        test : "test"
+        citation_panel_id : "osci_citation_panel_wrapper"
     };
 
 })(jQuery);

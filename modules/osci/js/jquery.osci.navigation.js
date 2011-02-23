@@ -34,7 +34,7 @@
                     _reset_navigation();
                 },
                 osci_navigation : function(e) {
-                    _navigateTo(e.osci_to, e.osci_value);
+                    base.navigateTo(e.osci_to, e.osci_value);
                 }
             });
             
@@ -50,12 +50,12 @@
             
             $("#" + base.options.prevLinkId).click(function (e){
                 e.preventDefault();
-                _navigateTo("prev");
+                base.navigateTo("prev");
             });
             
             $("#" + base.options.nextLinkId).click(function (e){
                 e.preventDefault();
-                _navigateTo("next");
+                base.navigateTo("next");
             });
             
             $(document).keydown(function(e){
@@ -149,7 +149,7 @@
             _update_title();
             _update_reference_image();
             _create_section_navigation_bar();
-            _navigateTo(base.navigation.to.operation, base.navigation.to.value);
+            base.navigateTo(base.navigation.to.operation, base.navigation.to.value);
         }
         
         function _update_reference_image()
@@ -235,7 +235,7 @@
             }
         }
         
-        function _navigateTo(to, value)
+        base.navigateTo = function(to, value)
         {
             var totalColumns, newPage, tocData, newOffset, identifier, tocContainer;
 
@@ -288,7 +288,7 @@
 
                     newPage = Math.ceil(value / base.navigation.layoutData.columnsPerPage);
                     if (newPage !== undefined) {
-                        _navigateTo("page", newPage);
+                        base.navigateTo("page", newPage);
                     }
                     return;
                     break;
@@ -296,7 +296,7 @@
                 case "paragraph":
                     newPage = $("p.osci_paragraph_" + value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
                     if (newPage !== undefined) {
-                        _navigateTo("page", newPage);
+                        base.navigateTo("page", newPage);
                     }
                     return;
                     break;
@@ -304,7 +304,7 @@
                 case "selector":
                     newPage = $(value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
                     if (newPage !== undefined) {
-                        _navigateTo("page", newPage);
+                        base.navigateTo("page", newPage);
                     }
                     return;
                     break;
@@ -322,7 +322,7 @@
                     }
 
                     if (identifier !== undefined) {
-                        _navigateTo("selector", identifier);
+                        base.navigateTo("selector", identifier);
                     }
                     return;
                     break;
@@ -349,7 +349,7 @@
                 "-moz-transform" : "translate(" + newOffset + "px, 0)",
                 "transform" : "translate(" + newOffset + "px, 0)"
             });
-        }
+        };
         
         function _create_section_navigation_bar()
         {
@@ -404,7 +404,7 @@
                         
                         $this.siblings().removeClass("active");
                         $this.addClass("active");
-                        _navigateTo("page", page);
+                        base.navigateTo("page", page);
                     }
                 }).appendTo(navBar);
                 
@@ -462,7 +462,7 @@
                     }
                     
                     if (!base.options.tocOverlay) {
-                        _navigateTo("page", base.navigation.currentPage + 1);
+                        base.navigateTo("page", base.navigation.currentPage + 1);
                     }
                 }).addClass("open");
   
@@ -563,7 +563,7 @@
                             expander.click();
                         }
                         
-                        _navigateTo("node", $(this).data("nid"));
+                        base.navigateTo("node", $(this).data("nid"));
                     }
                 }).hover(
                     function(e){
