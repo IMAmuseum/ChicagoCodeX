@@ -85,7 +85,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var svg = po.svg('svg');
 	map.container(div[0].appendChild(svg));
 	// map.tileSize({x: 256, y: 256});
-	map.zoomRange([0, zoom_max-1]);
+	map.zoomRange([zoom_level, zoom_max-1]);
 	map.zoom(zoom_level);
 
 	// Set the map extents to our image
