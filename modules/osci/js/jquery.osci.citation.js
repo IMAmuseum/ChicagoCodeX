@@ -13,7 +13,7 @@
             base.options = $.extend({}, $.osci.citation.defaultOptions, options);
 
             $(document).bind("osci_layout_complete", function(e) {
-                console.log("test");
+
                 $('#osci-citation-dialog').dialog({ 
                     title:      'Add a citation', 
                     autoOpen:   false,
