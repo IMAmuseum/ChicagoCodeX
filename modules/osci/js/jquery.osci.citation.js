@@ -11,7 +11,7 @@
         base.init = function()
         {
             base.options = $.extend({}, $.osci.citation.defaultOptions, options);
-            console.log("test1");
+
             $(document).bind("osci_layout_complete", function(e) {
                 console.log("test");
                 $('#osci-citation-dialog').dialog({ 
