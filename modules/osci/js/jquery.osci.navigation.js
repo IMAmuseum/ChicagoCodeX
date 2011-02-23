@@ -6,7 +6,7 @@
 
     $.osci.navigation = function(options)
     {
-        var base = this;
+        var base = this.navigation;
  
         base.init = function()
         {

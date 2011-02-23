@@ -13,6 +13,8 @@
             layoutCacheTime : Drupal.settings.osci_layout.cache_time
         };
         
+        $.osci.citation();
+        
         $.osci.navigation({
             readerId : Drupal.settings.osci_navigation.reader_id,
             headerId : Drupal.settings.osci_navigation.header_id,
