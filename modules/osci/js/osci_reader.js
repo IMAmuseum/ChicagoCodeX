@@ -13,7 +13,10 @@
             layoutCacheTime : Drupal.settings.osci_layout.cache_time
         };
         
-        $.osci.citation();
+        $.osci.citation({
+            citationPanelId : "osci_citation_panel_wrapper",
+            panelPixelsClosed : 20
+        });
         
         $.osci.navigation({
             readerId : Drupal.settings.osci_navigation.reader_id,
@@ -27,7 +30,16 @@
             cacheTime : Drupal.settings.osci_navigation.cache_time,
             bid : parseInt(Drupal.settings.osci.bid, 10),
             nid : parseInt(Drupal.settings.osci.nid, 10),
-            mlid : parseInt(Drupal.settings.osci.mlid, 10)
+            mlid : parseInt(Drupal.settings.osci.mlid, 10),
+            tocToggleElements : {
+                open : [
+                    {selector : "#osci_more_wrapper", event : "osci_more_toggle", eventData : {osci_more_close : true}},
+                    {selector : "#osci_citation_panel_wrapper", event : "osci_citation_toggle", eventData : {osci_citation_close : true}}
+                ],
+                close : [
+                    {selector : "#osci_citation_panel_wrapper", event : "osci_citation_toggle", eventData : {osci_citation_open : true}}
+                ]
+            }
         });
         
         $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){

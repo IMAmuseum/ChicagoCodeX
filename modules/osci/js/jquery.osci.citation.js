@@ -11,6 +11,7 @@
         base.init = function()
         {
             base.options = $.extend({}, $.osci.citation.defaultOptions, options);
+            base.panel = $("#" + base.options.citationPanelId);
 
             $(document).bind("osci_layout_complete", function(e) {
 
@@ -75,7 +76,27 @@
                 });
             });
             
-            
+            base.panel.bind("osci_citation_toggle", function(e) {
+                var $this = $(this);
+
+                if (($this.hasClass("open") && !e.osci_citation_open) || e.osci_citation_close) {
+                    $this.css({
+                        "-webkit-transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
+                        "-moz-transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
+                        "transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)"
+                    });
+                    
+                    $this.removeClass("open");
+                } else {
+                    $this.css({
+                        "-webkit-transform" : "translate(0px, 0)",
+                        "-moz-transform" : "translate(0px, 0)",
+                        "transform" : "translate(0px, 0)"
+                    });
+
+                    $this.addClass("open");
+                }
+            }).addClass("open");
         };
         
         function highlightTxt(obj) {
@@ -113,7 +134,8 @@
     };
 
     $.osci.citation.defaultOptions = {
-        citation_panel_id : "osci_citation_panel_wrapper"
+        citationPanelId : "osci_citation_panel_wrapper",
+        panelPixelsClosed : 20
     };
 
 })(jQuery);

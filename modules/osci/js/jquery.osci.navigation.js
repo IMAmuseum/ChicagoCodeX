@@ -155,32 +155,39 @@
         function _update_reference_image()
         {
             var nid = base.navigation.nid,
-                tocContainer = $("#" + base.options.tocId),
-                tocData = $("#osci_toc_node_" + nid, tocContainer).data(),
-                navImageWrapper = $("#osci_navigation_ref_image", tocContainer),
+                tocData = $("#osci_toc_node_" + nid).data(),
+                navImageWrapper = $(".osci_reference_image"),
                 largeUrl = "#", thumbUrl = "";
             
-            if (!navImageWrapper.children().length) {
-                navImageWrapper.append($("<a>", {
-                    html : $("<img>").bind("osci_nav_ref_image_alter", function(e){
-                        var $this = $(this);
-                        
-                        if (e.osci_nav_hover_image) {
-                            $this.attr("src", e.osci_nav_hover_image);
-                        } else {
-                            $this.attr("src", $this.data("default_src"));
-                        }
-                    })
-                }));
-            }
             
-            if (tocData.plate_image && tocData.plate_image.full_image_url && tocData.plate_image.thumbnail_165w_url) {
-                largeUrl = tocData.plate_image.full_image_url;
-                thumbUrl = tocData.plate_image.thumbnail_165w_url;
+            if (navImageWrapper.length) {
+                navImageWrapper.each(function(i, elem) {
+                    var $elem = $(elem),
+                        imagePreset = $elem.data("image_preset");
+                    
+                    if (!$elem.children().length) {
+                        $elem.append($("<a>", {
+                            html : $("<img>").bind("osci_reference_image_alter", function(e){
+                                var $this = $(this);
+                                
+                                if (e.osci_nav_hover_image) {
+                                    $this.attr("src", e.osci_nav_hover_image);
+                                } else {
+                                    $this.attr("src", $this.data("default_src"));
+                                }
+                            })
+                        }));
+                    }
+                    
+                    if (tocData.plate_image && tocData.plate_image.full_image_url && tocData.plate_image[imagePreset]) {
+                        largeUrl = tocData.plate_image.full_image_url;
+                        thumbUrl = tocData.plate_image[imagePreset];
+                        
+                        $("a", $elem).attr("href", largeUrl);
+                        $("img", $elem).attr("src", thumbUrl).data("default_src", thumbUrl);
+                    }
+                });
             }
-                
-            $("a", navImageWrapper).attr("href", largeUrl);
-            $("img", navImageWrapper).attr("src", thumbUrl).data("default_src", thumbUrl);
         }
         
         function _update_title()
@@ -428,7 +435,10 @@
                 }).appendTo(container);
                 
                 $("<div>", {
-                    id : "osci_navigation_ref_image"
+                    "class" : "osci_reference_image",
+                    data : {
+                        image_preset : base.options.referenceImagePreset
+                    }
                 }).appendTo(container);
                 
                 $("<h2>",{
@@ -441,7 +451,7 @@
                 }).appendTo(container).wrap($("<div>",{id : "osci_navigation_toc_wrapper"}));
                 
                 $(container).bind("osci_nav_toggle", function(e){
-                    var $this = $(this);
+                    var $this = $(this), i, eventLen;
 
                     if (($this.hasClass("open") && !e.osci_nav_open) || e.osci_nav_close) {
                         $this.css({
@@ -450,6 +460,18 @@
                             "transform" : "translate(-" + $this.outerWidth() + "px, 0)"
                         });
                         
+                        if (base.options.tocToggleElements.close && base.options.tocToggleElements.close.length) {
+                            eventLen = base.options.tocToggleElements.close.length;
+                            for (i = 0; i < eventLen; i++) {
+                                $(base.options.tocToggleElements.close[i].selector).trigger(
+                                    $.extend(
+                                        {type : base.options.tocToggleElements.close[i].event},
+                                        base.options.tocToggleElements.close[i].eventData
+                                    )
+                                );
+                            }
+                        }
+                        
                         $this.removeClass("open");
                     } else {
                         $this.css({
@@ -457,6 +479,18 @@
                             "-moz-transform" : "translate(0px, 0)",
                             "transform" : "translate(0px, 0)"
                         });
+                        
+                        if (base.options.tocToggleElements.open && base.options.tocToggleElements.open.length) {
+                            eventLen = base.options.tocToggleElements.open.length;
+                            for (i = 0; i < eventLen; i++) {
+                                $(base.options.tocToggleElements.open[i].selector).trigger(
+                                    $.extend(
+                                        {type : base.options.tocToggleElements.open[i].event},
+                                        base.options.tocToggleElements.open[i].eventData
+                                    )
+                                );
+                            }
+                        }
 
                         $this.addClass("open");
                     }
@@ -572,8 +606,8 @@
                             parents;
                             
                         if (data.plate_image && data.plate_image.thumbnail_165w_url) {
-                            $("#osci_navigation_ref_image img").trigger({
-                                type : "osci_nav_ref_image_alter",
+                            $(".osci_reference_image img", "#" + base.options.tocId).trigger({
+                                type : "osci_reference_image_alter",
                                 osci_nav_hover_image : data.plate_image.thumbnail_165w_url
                             });
                         } else {
@@ -584,8 +618,8 @@
                                     data = $(elem).data();
 
                                     if (data.plate_image && data.plate_image.thumbnail_165w_url) {
-                                        $("#osci_navigation_ref_image img").trigger({
-                                            type : "osci_nav_ref_image_alter",
+                                        $(".osci_reference_image img", "#" + base.options.tocId).trigger({
+                                            type : "osci_reference_image_alter",
                                             osci_nav_hover_image : data.plate_image.thumbnail_165w_url
                                         });
                                         return false;
@@ -595,8 +629,8 @@
                         }
                     },
                     function(e){
-                        $("#osci_navigation_ref_image img").trigger({
-                            type : "osci_nav_ref_image_alter"
+                        $(".osci_reference_image img", "#" + base.options.tocId).trigger({
+                            type : "osci_reference_image_alter"
                         });
                     }
                 )
@@ -674,6 +708,11 @@
         headerId : "osci_header",
         tocId : "osci_table_of_contents_wrapper",
         tocOverlay : false,
+        tocToggleElements : {
+            open : [],
+            close : []
+        },
+        referenceImagePreset : "thumbnail_165w_url",
         navId : "osci_navigation_wrapper",
         apiEndpoint : "http://osci.localhost/api/navigation/",
         contentEndpoint : "http://osci.localhost/node/{$nid}/bodycopy",

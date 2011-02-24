@@ -88,7 +88,7 @@ body.page-node-reader {
     width: 16px;
 	height:20px;
     top: 0;
-    right: 50px;
+    right: 70px;
 	background: transparent url('../images/btn-prev.png') no-repeat left top;
 	overflow:hidden;display:block;text-indent:999px;
 }
@@ -97,7 +97,7 @@ body.page-node-reader {
 	width: 16px;
 	height:20px;
     position: absolute;
-    right: 20px;
+    right: 40px;
     top: 0;
     text-align: right;
 	background: transparent url('../images/btn-next.png') no-repeat left top;
@@ -106,8 +106,8 @@ body.page-node-reader {
 
 #osci_navigation_tools {
     position: absolute;
-    left: 100px;
-    right: 100px;
+    left: 130px;
+    right: 130px;
     height: 10px; 
     top: 0;
 }
@@ -290,12 +290,12 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     text-align: center;
 }
 
-#osci_navigation_ref_image {
+.osci_reference_image {
     text-align: center;   
     height: 180px;
 }
 
-#osci_navigation_ref_image img {
+.osci_reference_image img {
     border: 5px solid #FFF;   
     -moz-box-shadow: 0 2px 6px #808080;
     -webkit-box-shadow: 0 2px 6px #808080;
@@ -488,14 +488,27 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 
 #osci_citation_panel_wrapper {
     position: absolute;
-    width: 110px;
+    width: 130px;
     top: 0;
     right: 0;   
     bottom: 0;
     padding: 0;
-    margin: 26px 0 80px 0;
+    margin: 26px 0 60px 0;
     height: auto;
     -webkit-transition: -webkit-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
     -moz-transition: -moz-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
     transition: transform 0.2s cubic-bezier(0, 0, 0.25, 1); 
+}
+
+#osci_citation_panel_wrapper .osci_reference_image {
+    text-align: center;   
+    height: 120px;
+    margin: 40px 0 0 0;
+}
+
+#osci_citation_panel_wrapper .osci_reference_image img {
+    border: 2px solid #FFF;   
+    -moz-box-shadow: 0 2px 6px #808080;
+    -webkit-box-shadow: 0 2px 6px #808080;
+    box-shadow: 0 2px 6px #808080;
 }

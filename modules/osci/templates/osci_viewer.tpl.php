@@ -8,7 +8,9 @@
         <a href="#" class="osci_table_of_contents_handle">Nav</a>
     </div>
     <div id="osci_viewer"></div>
-    <div id="osci_citation_panel_wrapper"></div>
+    <div id="osci_citation_panel_wrapper">
+        <div class="osci_reference_image everpresent" data-image_preset="thumbnail_100w_url"></div>
+    </div>
     <div id="osci_navigation_wrapper">
         <div id="osci_navigation">
             <div id="osci_navigation_tools">
