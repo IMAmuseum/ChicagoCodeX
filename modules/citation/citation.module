@@ -1,18 +1,57 @@
 <?php
 
+/**
+ * Implementation of hook_entity_info
+ */
+function citation_entity_info() {
+    $entity = array();
+
+    $entity['citation'] = array(
+        'label'             => t('Citation'),
+        'controller class'  => 'CitationEntityController',
+        'base table'        => 'citation',
+        'fieldable'         => TRUE,
+        'entity keys'       => array(
+            'id' => 'cid',
+        ),
+        'view modes'        => array(
+            'full' => array(
+                'label'             => t('Full Citation'),
+                'custom settings'   => FALSE,
+            ),
+        ),
+    );
+}
+
+function citation_save($entity) {
+    if (empty($entity->cid)) {
+        return entity_get_controller('citation')->insert($entity);
+    } else {
+        return entity_get_controller('citation')->update($entity);
+    }
+}
+
+function citation_load($cid) {
+    return entity_get_controller('citation')->load($cid);
+}
+
+function citation_delete($cid) {
+    return entity_get_controller('citation')->delete($cid);
+}
+
+function citation_view($entity) {
+    return entity_get_controller('citation')->view($entity);
+}
+
+function citation_access($entity) {
+    return entity_get_controller('citation')->view($entity);
+}
+
 function citation_init() {
     drupal_add_library('system', 'ui.dialog');
     drupal_add_css(drupal_get_path('module', 'citation').'/css/citation.css');
     drupal_add_js(drupal_get_path('module', 'citation').'/js/jquery.osci.citation.js');
 }
-/*
-function citation_node_view($node, $view_mode, $langcode) {
-    drupal_add_library('system', 'ui.dialog');
-    drupal_add_css(drupal_get_path('module', 'citation').'/css/citation.css');
-    drupal_add_js(drupal_get_path('module', 'citation').'/js/citation.js');
-    //$node->content['citation_dialog'] = drupal_get_form('citation_dialog');
-}
-*/
 
 function citation_dialog($form, &$form_state) {
     $form = array();

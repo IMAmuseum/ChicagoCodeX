@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function citation_schema() {
+    $schema = array();
+
+    $schema['citation'] = array(
+        'description' => 'The base table for orders.',
+        'fields' => array(
+            'cid' => array(
+                'description' => 'The primary identifier for an order.',
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'body' => array(
+                'description'   => 'The citation body text',
+                'type'          => 'varchar',
+                'length'        => 255,
+            ),
+            'word_count' => array(
+                'description'   => 'The number of words into the current paragraph',
+                'type'          => 'int',
+                'default'       => 0,
+            ),
+            'letter_count' => array(
+                'description'   => 'The number of letters into the current paragraph',
+                'type'          => 'int',
+                'default'       => 0,
+            ),
+            'paragraph_count' => array(
+                'description'   => 'The number of the paragraph that holds our citation',
+                'type'          => 'int',
+                'default'       => 0,
+            ),
+        ),
+    );
+
+    return $schema;
+}
