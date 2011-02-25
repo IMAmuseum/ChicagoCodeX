@@ -5,27 +5,24 @@
  */
 class CitationEntityController extends DrupalDefaultEntityController {
 
-    public function insert() {
+    public function save($citation) {
+        $primary_key = (!empty($citation->cid)) 'cid' : null;
+        drupal_write_record('citation', $citation, $primary_key);
+    }
+
+    public function load($cid) {
 
     }
 
-    public function update($entity) {
+    public function view($citation) {
 
     }
 
-    public function load($entity) {
+    public function delete($cid) {
 
     }
 
-    public function view($entity) {
-
-    }
-
-    public function delete($entity) {
-
-    }
-
-    public function access($entity) {
+    public function access($citation) {
 
     }
 }

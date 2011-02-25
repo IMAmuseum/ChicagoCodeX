@@ -4,9 +4,9 @@
  * Implementation of hook_entity_info
  */
 function citation_entity_info() {
-    $entity = array();
+    $citation = array();
 
-    $entity['citation'] = array(
+    $citation['citation'] = array(
         'label'             => t('Citation'),
         'controller class'  => 'CitationEntityController',
         'base table'        => 'citation',
@@ -21,14 +21,12 @@ function citation_entity_info() {
             ),
         ),
     );
+
+    return $citation;
 }
 
-function citation_save($entity) {
-    if (empty($entity->cid)) {
-        return entity_get_controller('citation')->insert($entity);
-    } else {
-        return entity_get_controller('citation')->update($entity);
-    }
+function citation_save($citation) {
+    return entity_get_controller('citation')->save($citation);
 }
 
 function citation_load($cid) {
@@ -39,12 +37,12 @@ function citation_delete($cid) {
     return entity_get_controller('citation')->delete($cid);
 }
 
-function citation_view($entity) {
-    return entity_get_controller('citation')->view($entity);
+function citation_view($citation) {
+    return entity_get_controller('citation')->view($citation);
 }
 
-function citation_access($entity) {
-    return entity_get_controller('citation')->view($entity);
+function citation_access($citation) {
+    return entity_get_controller('citation')->view($citation);
 }
 
 function citation_init() {

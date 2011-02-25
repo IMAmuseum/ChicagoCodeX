@@ -36,6 +36,7 @@ function citation_schema() {
                 'default'       => 0,
             ),
         ),
+        'primary key' => array('cid'),
     );
 
     return $schema;
