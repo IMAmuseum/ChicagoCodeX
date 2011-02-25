@@ -479,7 +479,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#title'        => $id . ' <span>(' . $figId . ')</span>',
             '#type'         => 'fieldset',
             '#attributes'   => array('class' => array($class)),
-            '#prefix'       => '<div id="' . $figId . '" data-figprefix="' . $fieldName . '_fig_' . $nid . '_">',
+            '#prefix'       => '<div id="' . $figId . '" data-figprefix="' . $fieldName . '_fig_' . $nid . '_" class="figure-wrapper">',
             '#suffix'      => '</div>',
             '#weight'       => $id,
             '#tree'         => true,

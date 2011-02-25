@@ -55,11 +55,13 @@ function osci_filters_wysiwyg_plugin($editor, $version) {
                 'osci_filters' => array(
                     'path'      => drupal_get_path('module', 'osci_filters').'/js/osci_filters',
                     'buttons'   => array(
-                        'footnote' => t('OSCI - Footnote'),
+                        'footnote'  => t('OSCI - Footnote'),
+                        'figure'    => t('OSCI - Figure'),
                     ),
                     'load'      => TRUE,
                 ),
             );
+            break;
     }
 }
 

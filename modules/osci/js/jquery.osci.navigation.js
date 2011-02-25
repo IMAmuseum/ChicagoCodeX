@@ -236,7 +236,7 @@
                     window.history.pushState(
                         {nid : base.navigation.nid},
                         document.title, 
-                        "/node/" + base.navigation.nid + "/reader"
+                        "/osci/node/" + base.navigation.nid + "/reader"
                     );
                 }
             }

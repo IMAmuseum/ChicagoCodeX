@@ -8,6 +8,15 @@ CKEDITOR.plugins.add('osci_filters', {
             icon: Drupal.settings.osci_filters.modulePath + '/images/footnote_edit.png',
             command: 'footnote'
         });
+
+        // Figure
+        CKEDITOR.dialog.add('figure', Drupal.settings.osci_filters.modulePath + '/js/dialogs/figure.js');
+        editor.addCommand('figure', new CKEDITOR.dialogCommand('figure'));
+        editor.ui.addButton('figure', {
+            label: 'Figure Reference',
+            icon: Drupal.settings.osci_filters.modulePath + '/images/figure_edit.png',
+            command: 'figure'
+        });
     }
 });
 
