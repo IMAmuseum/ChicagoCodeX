@@ -1,6 +1,91 @@
 <?php
 
 /**
+ * Implementation of hook_perm
+ */
+
+function citation_permission() {
+    return array(
+        'view own citations' => array(
+            'title' => t('View own citations'),
+        ),
+        'create citation' => array(
+            'title' => t('Create Citations'),
+        ),
+        'administer citations' => array(
+            'title' => t('Administer citations'),
+        ),
+    );
+    
+}
+
+function citation_menu() {
+    $items = array();
+
+    $items['admin/structure/citation/manage'] = array(
+        'title'             => t('Citation Admin'),
+        'description'       => t('Administer citations'),
+        'page callback'     => 'citation_admin',
+        'access arguments'  => array('administer citations'),
+    );
+
+    $items['citation/add'] = array(
+        'title'             => t('Add a new citation'),
+        'page callback'     => 'citation_add',
+        'access callback'   => 'citation_access',
+        'access arguments'  => array('create', 1),
+    );
+
+    $items['citation/%citation'] = array(
+        'title callback'    => 'citation_page_title',
+        'title arguments'   => array(1),
+        'page callback'     => 'citation_page_view',
+        'page arguments'    => array(1),
+        'access callback'   => 'citation_access',
+        'access arguments'  => array('view', 1),
+        'type'              => MENU_CALLBACK,
+    );
+
+    $items['citation/%citation/view'] = array(
+        'title' => 'View',
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+        'weight' => -10,
+    );
+
+    $items['citation/%citation/edit'] = array(
+        'title'             => t('Edit'), 
+        'page callback'     => 'drupal_get_form',
+        'page arguments'    => array('citation_form', 1),
+        'access callback'   => 'citation_access',
+        'access arguments'  => array('create', 1),
+        'type'              => MENU_LOCAL_TASK,
+    );
+
+    return $items;
+}
+
+function citation_admin() {
+    return t('Choose "manage fields" or "manage display" to begin');
+}
+
+/** 
+ * implementation of hook_theme
+ */
+function citation_theme() {
+    $items = array();
+
+    $items['citation'] = array(
+        'variables' => array(
+            'citation'  => NULL, 
+            'view_mode' => 'full',
+        ),
+        'file'  => 'citation.templates.inc',
+    );
+
+    return $items;
+}
+
+/**
  * Implementation of hook_entity_info
  */
 function citation_entity_info() {
@@ -11,6 +96,7 @@ function citation_entity_info() {
         'controller class'  => 'CitationEntityController',
         'base table'        => 'citation',
         'fieldable'         => TRUE,
+        'uri_callback'      => 'citation_uri',
         'entity keys'       => array(
             'id' => 'cid',
         ),
@@ -20,31 +106,147 @@ function citation_entity_info() {
                 'custom settings'   => FALSE,
             ),
         ),
+        'bundles' => array(
+            'citation' => array(
+                'label' => t('Citation'),
+                'admin' => array(
+                    'path' => 'admin/structure/citation/manage',
+                    'access arguments'  => array('administer citations'),
+                ),
+            ),
+        ),
     );
 
     return $citation;
 }
 
+function citation_uri($citation) {
+    return array(
+        'path' => 'citation/' . $citation->cid,
+    );
+}
+
+function citation_page_title($cid) {
+    return $cid;
+}
+
+function citation_access($cid) {
+    return entity_get_controller('citation')->access($cid);
+}
+/** 
+ * Save a citation
+ * @param $citation
+ * The citation object to save
+ *
+ * @return Returns the saved citation object
+ */
 function citation_save($citation) {
     return entity_get_controller('citation')->save($citation);
 }
 
-function citation_load($cid) {
-    return entity_get_controller('citation')->load($cid);
+/** 
+ * Load a citation
+ *
+ * @param $cid
+ * The citation id to load
+ *
+ * @param $condition
+ * Obtional sql cinditions to include
+ *
+ * @param $reset
+ * Set to true to invalidate the object cache
+ *
+ * @return the citation object
+ */
+function citation_load($cid, $conditions = array(), $reset = FALSE) {
+    $cid = (is_numeric($cid)) ? array($cid) : $cid;
+    return entity_load('citation', $cid, $conditions, $reset);
 }
 
 function citation_delete($cid) {
     return entity_get_controller('citation')->delete($cid);
 }
 
-function citation_view($citation) {
-    return entity_get_controller('citation')->view($citation);
+function citation_view($citation, $view_mode = 'full') {
+    $citation = entity_get_controller('citation')->view($citation, $view_mode);
+    return $citation;
 }
 
-function citation_access($citation) {
-    return entity_get_controller('citation')->view($citation);
+function citation_page_view($citation) {
+    return entity_get_controller('citation')->build($citation);
 }
 
+function citation_form($form, &$form_state, $citation = null) {
+    global $user;
+
+    if (!$citation) {
+        $citation = (object) array(
+            'body'              => '',
+            'word_count'        => '',
+            'letter_count'      => '',
+            'paragraph_count'   => '',
+        );
+    } else {
+        $citation = end($citation);
+    }
+
+    $form['body'] = array(
+        '#title'            => t('Notes'),
+        '#type'             => 'textarea',
+        '#default_value'    => $citation->body
+    );
+
+    $form['uid'] = array(
+        '#type'  => 'hidden',
+        '#value' => $user->uid,
+    );
+
+    $form['word_count'] = array(
+        '#type'  => 'hidden',
+        '#value' => $citation->word_count,
+    );
+
+    $form['letter_count'] = array(
+        '#type'  => 'hidden',
+        '#value' => $citation->letter_count,
+    );
+
+    $form['paragraph_count'] = array(
+        '#type'  => 'hidden',
+        '#value' => $citation->paragraph_count,
+    );
+
+    $form['submit'] = array(
+        '#type'  => 'submit',
+        '#value' => t('Save'),
+    );
+
+    field_attach_form('citation', $citation, $form, $form_state);
+
+    return $form;
+}
+
+function citation_form_validate($form, &$form_state) {
+    $citation = (object) $form_state['values'];
+    field_attach_form_validate('citation', $citation, $form, $form_state);
+}
+
+function citation_form_submit($form, &$form_state) {
+    $citation = (object)$form_state['values'];
+    field_attach_submit('citation', $citation, $form, $form_state);
+    if ($citation = citation_save($citation)) {
+        $form_state['redirect'] = 'citation/'.$citation->cid;
+        drupal_set_message('Successfully saved citation');
+    }
+}
+
+function citation_add() {
+    return drupal_get_form('citation_form');
+}
+
+/**
+ * Implementation of hook_init
+ */
 function citation_init() {
     drupal_add_library('system', 'ui.dialog');
     drupal_add_css(drupal_get_path('module', 'citation').'/css/citation.css');
