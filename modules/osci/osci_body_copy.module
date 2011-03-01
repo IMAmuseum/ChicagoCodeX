@@ -30,6 +30,10 @@ function osci_body_copy_theme()
             'render element'    => 'element',
             'template'          => 'templates/osci_body_copy_field_html5'
         ),
+        'body_copy_field_print' => array(
+            'render element'    => 'element',
+            'template'          => 'templates/osci_body_copy_field_print'
+        ),
         'body_copy_footnote' => array(
             'template'  => 'templates/osci_body_copy_footnote',
             'variables' => array(
@@ -55,6 +59,14 @@ function osci_body_copy_theme()
                 'body_copy_format'  => null,
             )
         ),
+        'body_copy_figure_print' => array(
+            'template'  => 'templates/osci_body_copy_figure_print',
+            'file'      => 'osci_body_copy.templates.inc',
+            'variables' => array(
+                'figure'            => array(),
+                'body_copy_format'  => null,
+            )
+        ),
         'body_copy_figures' => array(
             'template' => 'templates/osci_body_copy_figures',
             'variables' => array(
@@ -62,6 +74,141 @@ function osci_body_copy_theme()
             )
         )
     );
+}
+
+function book_export_pdf($nid) {
+    if (user_access('access printer-friendly version')) {
+        $export_data = array();
+        $node = node_load($nid);
+        if (isset($node->book)) {
+            $tree = book_menu_subtree_data($node->book);
+            $contents = book_export_traverse($tree, 'book_node_export_pdf');
+        }
+
+        $html = theme('book_export_html', array('title' => $node->title, 'contents' => $contents, 'depth' => $node->book['depth']));
+return $html;
+//        require_once("includes/dompdf/dompdf_config.inc.php");
+//
+//        $dompdf = new DOMPDF();
+//        $dompdf->set_base_path(realpath('./'));
+//        $dompdf->load_html($html);
+//
+//        $dompdf->render();
+//        $dompdf->stream("sample.pdf");
+    } else {
+        drupal_access_denied();
+    }
+}
+
+function book_node_export_pdf($node, $children = '') {
+    $node->rendered = osci_body_copy_render_layout_print($node->nid);
+
+    return theme('book_node_export_html', array('node' => $node, 'children' => $children));
+}
+
+function osci_body_copy_sort_elements($elements)
+{
+    $bodyCopyElements = array();
+    foreach($elements as $k => $v) {
+        if (strpos($k, 'field_osci_') === 0) {
+            $elements[$k]['#theme'] = 'body_copy_field_html5';
+        }
+        if (is_array($v) && isset($v['#field_type']) && $v['#field_type'] === 'osci_body_copy') {
+            $bodyCopyElements[$k] = $v['#weight'];
+        }
+    }
+    asort($bodyCopyElements);
+
+    return $bodyCopyElements;
+}
+
+function osci_body_copy_render_layout_print($nid)
+{
+    $node = node_load($nid);
+    $elements = node_view($node, 'body_copy');
+    $footnotes = array();
+    $footnoteOrder = array();
+    $footnoteCount = 0;
+    $figures = array();
+    $figureCount = 0;
+
+    $bodyCopyElements = osci_body_copy_sort_elements($elements);
+
+    foreach ($bodyCopyElements as $k => $weight) {
+        $v = $elements[$k];
+        $elements[$k]['#theme'] = 'body_copy_field_print';
+
+        $markup = $v[0]['#markup'];
+        if (strlen($markup)) {
+            $dom = new domDocument;
+            $dom->loadHTML($v[0]['#markup']);
+            $xpath = new DOMXpath($dom);
+            $figures = $v[0]['osci_figures'];
+
+            $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' figure-link ')]");
+            if (!is_null($links)) {
+                dpm($markup);
+                foreach($links as $link) {
+                    $fId = $link->nodeValue;
+                    $originalLinkHtml = $dom->saveXML($link);
+                    $parent = $link->parentNode;
+                    $origParentHtml = $dom->saveXml($parent);
+
+                    $link->nodeValue = 'Fig. ' .  ++$figureCount . '';
+                    $linkHtml = $dom->saveXML($link);
+                    $newParentHtml = str_replace($originalLinkHtml, $linkHtml, $origParentHtml);
+
+                    $figure = $figures[$fId];
+                    $figure['figCount'] = $figureCount;
+                    $figureHtml = theme('body_copy_figure_print', array('figure' => $figure));
+                    $markup = str_replace($origParentHtml, $figureHtml . $newParentHtml, $markup);
+                }
+            }
+
+            $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' footnote-link ')]");
+            if (!is_null($links)) {
+                foreach($links as $link) {
+                    $fnId = $link->nodeValue;
+                    $originalLinkHtml = $dom->saveXML($link);
+
+                    $link->nodeValue = ++$footnoteCount;
+                    $linkHtml = $dom->saveXML($link);
+                    $markup = str_replace($originalLinkHtml, $linkHtml, $markup);
+
+                    $footnoteOrder[$footnoteCount] = $fnId;
+                }
+            }
+
+            $elements[$k][0]['#markup'] = $markup;
+        }
+
+        $footnotes += $v[0]['osci_footnotes'];
+    }
+
+    if (count($footnotes)) {
+        $finalFootnotes = array();
+        foreach($footnoteOrder as $k => $fnId) {
+            if (isset($footnotes[$fnId])) {
+                $finalFootnotes[$k] = array_merge($footnotes[$fnId], array('fnCount' => $k));
+            }
+        }
+
+        $elements['field_osci_footnotes'] = array(
+            '#theme'            => 'body_copy_field_print',
+            '#title'            => 'Footnotes',
+            '#weight'           => 999,
+            '#label_display'    => 'inline',
+            '#field_type'       => 'osci_body_copy',
+            '#field_name'       => 'field_osci_footnotes',
+            '#attributes'        => array('class' => array('osci_column_break')),
+            0 => array(
+                '#markup' => theme('body_copy_footnotes', array('footnotes' => $finalFootnotes))
+            ),
+        );
+    }
+
+    unset($elements['#theme']);
+    return render($elements);
 }
 
 function osci_body_copy_render_layout($nid)
@@ -75,16 +222,7 @@ function osci_body_copy_render_layout($nid)
     $figureOrder = array();
     $figureCount = 0;
 
-    $bodyCopyElemetns = array();
-    foreach($elements as $k => $v) {
-        if (strpos($k, 'field_osci_') === 0) {
-            $elements[$k]['#theme'] = 'body_copy_field_html5';
-        }
-        if (is_array($v) && isset($v['#field_type']) && $v['#field_type'] === 'osci_body_copy') {
-            $bodyCopyElements[$k] = $v['#weight'];
-        }
-    }
-    asort($bodyCopyElements);
+    $bodyCopyElements = osci_body_copy_sort_elements($elements);
 
     foreach ($bodyCopyElements as $k => $weight) {
         $v = $elements[$k];
@@ -156,7 +294,6 @@ function osci_body_copy_render_layout($nid)
         foreach($figureOrder as $k => $fId) {
             if (isset($figures[$fId])) {
                 $finalFigures[$k] = array_merge($figures[$fId], array('figCount' => $k));
-                $finalFigures[$k]['caption'] = $finalFigures[$k]['caption'];
             }
         }
 

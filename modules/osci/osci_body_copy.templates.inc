@@ -14,13 +14,24 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $vars['type'] = $node->type;
     $vars['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $figure['format']);
     if ($node->type == 'image') {
-    	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]))
+    	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]) || $vars['osci_static_image'])
     	{
     		// ptiff is empty, use the image field for display
-    		$vars['content'] = l(theme_image(array(
-    			'path' => $node->field_image['und'][0]['uri'],
-    			'attributes' => ''
-    		)), file_create_url($node->field_image['und'][0]['uri']), array('html' => true));
+    		if (isset($vars['osci_image_cache'])) {
+    		    $image = theme_image_style(array(
+            	    'style_name' => $vars['osci_image_cache'],
+        			'path' => $node->field_image['und'][0]['uri'],
+            	    'alt' => $node->title,
+        			'attributes' => ''
+        		));
+    		} else {
+    		    $image = theme_image(array(
+        			'path' => $node->field_image['und'][0]['uri'],
+        			'attributes' => ''
+        		));
+    		}
+
+    		$vars['content'] = l($image, file_create_url($node->field_image['und'][0]['uri']), array('html' => true));
     	}
     	elseif (isset($node->field_ptiff['und'][0]))
     	{
@@ -40,4 +51,10 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     else {
 
     }
+}
+
+function osci_body_copy_preprocess_body_copy_figure_print(&$vars) {
+    $vars['osci_static_image'] = true;
+    $vars['osci_image_cache'] = "osci_print";
+    osci_body_copy_preprocess_body_copy_figure($vars);
 }

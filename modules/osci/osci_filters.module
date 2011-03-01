@@ -88,8 +88,8 @@ function _filter_footnote($text, $filter, $format) {
  * Regex replace callback
  */
 function _process_footnote($text) {
-    if (empty($text[1])) return $text[0]; 
-    return '<a href="#'.$text[1].'" class="superscript footnote-link">'.$text[1].'</a>'; 
+    if (empty($text[1])) return $text[0];
+    return '<a href="#'.$text[1].'" class="superscript footnote-link">'.$text[1].'</a>';
 }
 
 /**
@@ -111,7 +111,7 @@ function _filter_figure($text, $filter, $format) {
 }
 
 function _process_figure($text) {
-    if (empty($text[1])) return $text[0];   
+    if (empty($text[1])) return $text[0];
     static $count;
     $count++;
 
