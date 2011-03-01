@@ -59,7 +59,9 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var center_lat = div.attr('data-center-lat');
 	var center_lon = div.attr('data-center-lon');
 	var svg_path = div.attr('data-svg');
+	var ptiff_overlay = div.attr('data-overlay');
 	var tile_size = 256;
+	var overlay_opacity = '0';
 	
 	
 	// Calculate best zoom level to start at based on div parent's size.
@@ -99,9 +101,47 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var tl = 'tile_loader_'+figure_id+' = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://osci.localhost/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
 	eval(tl);
 	image.url(window['tile_loader_'+figure_id]);
+	image.id('image');
 	map.add(image);
 	
-	
+	// If we have an overlay, place that on top
+	if (ptiff_overlay) {
+		var overlay = po.image();
+		var tlo = 'tile_loader_'+figure_id+'_overlay = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff_overlay+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://osci.localhost/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+		eval(tlo);
+		overlay.url(window['tile_loader_'+figure_id+'_overlay']);
+		overlay.id('overlay');
+		map.add(overlay);
+		
+		// create a slider control
+		var slider_div = $('<div>')
+			.attr('class', 'iip_slider_div')
+			.css('position', 'absolute')
+			.css('bottom', 0)
+			.css('left', '5%')
+			.css('width', '90%')
+			.css('background-color', '#000')
+			.css('opacity', '0.75')
+			.css('border-top-left-radius', '5px')
+			.css('border-top-right-radius', '5px');
+		
+		var slider = $('<input>')
+			.attr('class', 'iip_slider')
+			.attr('type', 'range')
+			.attr('min', '1')
+			.attr('max', '100')
+			.attr('value', overlay_opacity)
+			.css('margin', '3px 5%')
+			.css('width', '90%')
+			.appendTo(slider_div);
+			
+		slider.change(function(event) {
+			overlay_opacity = (event.target.value / 100);
+			$('#overlay').attr('opacity' , overlay_opacity);
+		});
+		$('#overlay').attr('opacity', overlay_opacity);
+		div.append(slider_div);	
+	}
 	
 	// Set up our control visibility toggles for mouse events
 	div.mouseover(function() {
@@ -109,13 +149,14 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		$('g.compass', div).css("visibility", "visible");
 		reset_btn.style("visibility", "visible");
 		fs.style("visibility", "visible");
-	
+		slider_div.css('visibility', 'visible');
 	});
 	div.mouseout(function() {
 		// Hide controls
 		$('g.compass', div).css("visibility", "hidden");
 		reset_btn.style("visibility", "hidden");
 		fs.style("visibility", "hidden");
+		slider_div.css('visibility', 'hidden');
 	});
 	
 	/*
