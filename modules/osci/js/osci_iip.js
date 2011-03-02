@@ -150,14 +150,18 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		$('g.compass', div).css("visibility", "visible");
 		reset_btn.style("visibility", "visible");
 		fs.style("visibility", "visible");
-		slider_div.css('visibility', 'visible');
+		if (ptiff_overlay) {
+			slider_div.css('visibility', 'visible');
+		}
 	});
 	div.mouseout(function() {
 		// Hide controls
 		$('g.compass', div).css("visibility", "hidden");
 		reset_btn.style("visibility", "hidden");
 		fs.style("visibility", "hidden");
-		slider_div.css('visibility', 'hidden');
+		if (ptiff_overlay) {
+			slider_div.css('visibility', 'hidden');
+		}
 	});
 	
 	/*
