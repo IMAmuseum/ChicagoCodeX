@@ -80,6 +80,7 @@ function book_export_pdf($nid) {
     if (user_access('access printer-friendly version')) {
         $export_data = array();
         $node = node_load($nid);
+        dpm($node);
         if (isset($node->book)) {
             $tree = book_menu_subtree_data($node->book);
             $contents = book_export_traverse($tree, 'book_node_export_pdf');
@@ -94,7 +95,16 @@ function book_export_pdf($nid) {
         $dompdf->load_html($html);
 
         $dompdf->render();
-        $dompdf->stream("sample.pdf");
+
+
+        $filename = strtolower($node->title);
+	    $filename = str_replace(
+	        array("#"," ", "'", "\"", "__", "&", "/", "\\", "?", "-"),
+	        array("_", "_", "", "", "_", "and", "_", "_", "", "_"),
+	        $filename
+	    );
+
+        $dompdf->stream($filename . ".pdf");
     } else {
         drupal_access_denied();
     }
