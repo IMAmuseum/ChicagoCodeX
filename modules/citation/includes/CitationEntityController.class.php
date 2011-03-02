@@ -5,15 +5,22 @@
  */
 class CitationEntityController extends DrupalDefaultEntityController {
 
-    public function access($op, $cid) {
-        // TODO: implement
+    public function access($op, $citation) {
+        global $user;
+        $citation = end($citation);
+        if (!is_object($citation)) return FALSE;
+
         if (user_access('administer citations')) return TRUE;
         switch($op) {
             case 'view':
+                if (user_access('view own citations') && $user->uid == $citation->uid) return TRUE;
+                break;
             case 'edit':
             case 'create':
+                if (user_access('create citation')) return TRUE;
+                break;
         }
-        return TRUE;
+        return FALSE;
     }
 
     public function save($citation) {
@@ -37,7 +44,6 @@ class CitationEntityController extends DrupalDefaultEntityController {
             watchdog_exception('citation', $e);
             throw $e;
         }
-        
     }
 
     public function view($citations, $view_mode = 'full') {
@@ -55,7 +61,6 @@ class CitationEntityController extends DrupalDefaultEntityController {
                 '#theme'        => 'citation',
                 '#citation'     => $citations[$cid],
                 '#view_mode'    => $view_mode,
-                '#children'     => field_attach_view('citation', $citation, $view_mode),
             );
 
         }
@@ -67,8 +72,7 @@ class CitationEntityController extends DrupalDefaultEntityController {
         $output = '';
 
         foreach($citations as $cid => $citation) {
-dpm($citation->content);
-             $output .= drupal_render($citation->content);
+            $output .= drupal_render($citation->content);
         }
         
         return $output;

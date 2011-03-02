@@ -19,6 +19,19 @@ function citation_permission() {
     
 }
 
+/**
+ * Implementation of hook_init
+ */
+function citation_init() {
+    drupal_add_css(drupal_get_path('module', 'citation').'/css/citation.css');
+    drupal_add_library('system', 'drupal.ajax');
+    drupal_add_js(drupal_get_path('module', 'citation').'/js/jquery.tmpl.js');
+    drupal_add_js(drupal_get_path('module', 'citation').'/js/jquery.osci.citation.js');
+}
+
+/**
+ * Implementation of hook_menu
+ */
 function citation_menu() {
     $items = array();
 
@@ -59,6 +72,27 @@ function citation_menu() {
         'access callback'   => 'citation_access',
         'access arguments'  => array('create', 1),
         'type'              => MENU_LOCAL_TASK,
+    );
+
+    $items['ajax/citation/user'] = array(
+        'page callback'     => 'user_citations_ajax',
+        'access arguments'  => array(TRUE),
+        'type'              => MENU_CALLBACK,
+        'file'              => 'citation.ajax.inc',
+    );
+
+    $items['ajax/citation/highlight'] = array(
+        'page callback'     => 'citations_highlight',
+        'access arguments'   => array('TRUE'),
+        'type'              => MENU_CALLBACK,
+        'file'              => 'citation.ajax.inc',
+    );
+
+    $items['ajax/citation/note'] = array(
+        'page callback'     => 'citations_note',
+        'access arguments'   => array('TRUE'),
+        'type'              => MENU_CALLBACK,
+        'file'              => 'citation.ajax.inc',
     );
 
     return $items;
@@ -130,8 +164,8 @@ function citation_page_title($cid) {
     return $cid;
 }
 
-function citation_access($cid) {
-    return entity_get_controller('citation')->access($cid);
+function citation_access($op, $cid) {
+    return entity_get_controller('citation')->access($op, $cid);
 }
 /** 
  * Save a citation
@@ -244,31 +278,15 @@ function citation_add() {
     return drupal_get_form('citation_form');
 }
 
-/**
- * Implementation of hook_init
- */
-function citation_init() {
-    drupal_add_library('system', 'ui.dialog');
-    drupal_add_css(drupal_get_path('module', 'citation').'/css/citation.css');
-    drupal_add_js(drupal_get_path('module', 'citation').'/js/jquery.osci.citation.js');
-}
+function user_citations() {
+    global $user;
+    $query = db_select('citation', 'c')
+        ->fields('c', array('cid', 'body', 'word_count', 'letter_count', 'paragraph_count'))
+        ->condition('uid', $user->uid)
+        ->execute();
+    foreach($query as $row) {
+        $rows[] = (array)$row; 
+    }
+    return $rows;
 
-function citation_dialog($form, &$form_state) {
-    $form = array();
-
-    $form['#field_type'] = 'osci_body_copy';
-    $form['#prefix'] = '<div id="osci-citation-dialog">';
-    $form['#suffix'] = '</div>';
-
-    $form['citation'] = array(
-        '#type'     => 'textarea',
-        '#title'    => t('Citation'),
-    );
-
-    $form['submit'] = array(
-        '#type'     => 'submit',
-        '#value'    => t('Save'),
-    );
-
-    return $form;
 }

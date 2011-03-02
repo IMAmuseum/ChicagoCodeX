@@ -7,6 +7,7 @@
     $.osci.citation = function(options)
     {
         var base = this.citation;
+        var selection = '';
 
         base.init = function()
         {
@@ -15,15 +16,11 @@
 
             $(document).bind("osci_layout_complete", function(e) {
 
-                $('#osci-citation-dialog').dialog({ 
-                    title:      'Add a citation', 
-                    autoOpen:   false,
-                    modal:      true,
-                    draggable:  false,
-                    close: function() {
-                        $('ul.selection-toolbar').remove();
-                    }
-                });
+                base.addCitations();
+
+                /*************************************************
+                 * Dialog interaction
+                 */
 
                 $('#osci_viewer p.osci_paragraph').hover(
                     function() {
@@ -38,42 +35,32 @@
                     }
                 );
 
-                $('#osci_viewer p.osci_paragraph').click(function() {
-                    if (getSelection() !== '') {
-                        return;
-                    }
-
-                    //var id = $(this).data('paragraph_id');
-                    //$('span.osci_paragraph_' + id).append('<div class="osci-citation-dialog"><a href="#note">Add Note</a></div>');
-
-                });
-
                 $('#osci_viewer p.osci_paragraph').mouseup(function() {
-                    $('.osci-citation-dialog').remove();
+                    var selection = base.getSelected();
+                    $('ul.selection-toolbar').remove();
+            
+                    $.osci.citation.selection = selection;
+                    $(this).prepend('<ul class="selection-toolbar"><li><a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/citation/highlight">Highlight</a></li><li><a class="use-modal" href="' + Drupal.settings.basePath + 'ajax/citation/note">Note</a></li></ul>');
+                    Drupal.AJAX.attach();
 
-                    var selection = getSelected();
                     if (selection === '') { 
                         $('ul.selection-toolbar').remove();
                         return;
                     }
 
-                    // build dialog and open
-                    $('#edit-citation--2').html(selection);
-
-                    //selection = '';
-                    //$('#osci-citation-dialog').dialog('open');
-                    $(this).prepend('<ul class="selection-toolbar"><li><a href="#highlight">Highlight</a></li><li><a href="#note">Note</a></li></ul>');
-                    
                 });
 
-                $('a[href="#highlight"]').live('click', function() {
-                    highlightTxt($(this).parents('.osci_paragraph'));
+                /*
+                $('a[href=$"osci/citation/highlight"]').live('click', function(e) {
+                    e.preventDefault();
+                    base.highlightTxt($(this).parents('.osci_paragraph'));
                 });
                 
-                $('a[href="#note"]').live('click', function() {
-                    $('#edit-citation').html(getSelected());
-                    $('#osci-citation-dialog').dialog('open');
+                $('a[href=$"osci/citation/note"]').live('click', function(e) {
+                    e.preventDefault();
+                    $('#edit-citation').html(base.getSelected());
                 });
+                */
             });
             
             base.panel.bind("osci_citation_toggle", function(e) {
@@ -99,8 +86,22 @@
             }).addClass("open");
         };
         
-        function highlightTxt(obj) {
-            var selection = getSelected(),
+        base.addCitations = function() {
+            var citationLinkMarkup = '<div id="citation-${cid}" class="citationTitle">${body}</div>';
+            $.template('citationLink', citationLinkMarkup);
+
+            $.ajax({
+                url: Drupal.settings.basePath + 'ajax/citation/user',
+                dataType: 'json',
+                success: function(data) {
+                    $.tmpl('citationLink', data).appendTo(base.panel);
+                }
+            });
+
+        }
+
+        base.highlightTxt = function(obj) {
+            var selection = base.getSelected(),
                 txt = $(obj),
                 len = txt.html().length,
                 start = txt.html().indexOf(selection),
@@ -114,7 +115,7 @@
         }
 
         /* attempt to find a text selection */ 
-        function getSelected() { 
+        base.getSelected = function() { 
             var selection = false;
             if (window.getSelection) { 
                 selection = window.getSelection(); 
