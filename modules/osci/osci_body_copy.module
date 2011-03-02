@@ -86,15 +86,15 @@ function book_export_pdf($nid) {
         }
 
         $html = theme('book_export_html', array('title' => $node->title, 'contents' => $contents, 'depth' => $node->book['depth']));
-return $html;
-//        require_once("includes/dompdf/dompdf_config.inc.php");
-//
-//        $dompdf = new DOMPDF();
-//        $dompdf->set_base_path(realpath('./'));
-//        $dompdf->load_html($html);
-//
-//        $dompdf->render();
-//        $dompdf->stream("sample.pdf");
+//return $html;
+        require_once("includes/dompdf/dompdf_config.inc.php");
+
+        $dompdf = new DOMPDF();
+        $dompdf->set_base_path(realpath('./'));
+        $dompdf->load_html($html);
+
+        $dompdf->render();
+        $dompdf->stream("sample.pdf");
     } else {
         drupal_access_denied();
     }
@@ -141,27 +141,26 @@ function osci_body_copy_render_layout_print($nid)
         $markup = $v[0]['#markup'];
         if (strlen($markup)) {
             $dom = new domDocument;
-            $dom->loadHTML($v[0]['#markup']);
+            $dom->loadHTML("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body id=\"temp_body\">" . $v[0]['#markup'] . "</body></html>");
             $xpath = new DOMXpath($dom);
             $figures = $v[0]['osci_figures'];
 
             $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' figure-link ')]");
             if (!is_null($links)) {
-                dpm($markup);
                 foreach($links as $link) {
                     $fId = $link->nodeValue;
-                    $originalLinkHtml = $dom->saveXML($link);
                     $parent = $link->parentNode;
-                    $origParentHtml = $dom->saveXml($parent);
 
                     $link->nodeValue = 'Fig. ' .  ++$figureCount . '';
                     $linkHtml = $dom->saveXML($link);
-                    $newParentHtml = str_replace($originalLinkHtml, $linkHtml, $origParentHtml);
 
                     $figure = $figures[$fId];
                     $figure['figCount'] = $figureCount;
                     $figureHtml = theme('body_copy_figure_print', array('figure' => $figure));
-                    $markup = str_replace($origParentHtml, $figureHtml . $newParentHtml, $markup);
+                    $frag = $dom->createDocumentFragment(); // create fragment
+                    $frag->appendXML($figureHtml);
+
+                    $parent->parentNode->insertBefore($frag, $parent);
                 }
             }
 
@@ -169,16 +168,15 @@ function osci_body_copy_render_layout_print($nid)
             if (!is_null($links)) {
                 foreach($links as $link) {
                     $fnId = $link->nodeValue;
-                    $originalLinkHtml = $dom->saveXML($link);
 
                     $link->nodeValue = ++$footnoteCount;
                     $linkHtml = $dom->saveXML($link);
-                    $markup = str_replace($originalLinkHtml, $linkHtml, $markup);
 
                     $footnoteOrder[$footnoteCount] = $fnId;
                 }
             }
 
+            $markup = substr(substr($dom->saveXml($dom->getElementById("temp_body")), 21), 0, -7);
             $elements[$k][0]['#markup'] = $markup;
         }
 
