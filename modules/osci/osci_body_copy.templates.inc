@@ -58,3 +58,19 @@ function osci_body_copy_preprocess_body_copy_figure_print(&$vars) {
     $vars['osci_image_cache'] = "osci_print";
     osci_body_copy_preprocess_body_copy_figure($vars);
 }
+
+function template_preprocess_osci_book_export_pdf(&$variables) {
+    global $base_url, $language;
+
+    $variables['title'] = check_plain($variables['title']);
+    $variables['base_url'] = $base_url;
+    $variables['language'] = $language;
+    $variables['language_rtl'] = ($language->direction == LANGUAGE_RTL);
+    $variables['head'] = drupal_get_html_head();
+}
+
+function template_preprocess_osci_book_node_export_pdf(&$variables) {
+    $variables['depth'] = $variables['node']->book['depth'];
+    $variables['title'] = check_plain($variables['node']->title);
+    $variables['content'] = $variables['node']->rendered;
+}

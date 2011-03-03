@@ -1,0 +1,43 @@
+h1 {
+    border-bottom: 1px solid #CCC;
+}
+
+.figure {
+    margin: 10px 0;
+}
+
+.figureContent {
+    text-align: center;   
+    margin: 0 0 2px 0;
+}
+
+.figureCaption {
+    background: #CCC;   
+    padding: 4px;
+}
+
+.figureCaption p {
+    display: inline;   
+}
+
+.figureCaption .figure_number {
+    font-weight: bold;
+}
+
+.superscript {
+    vertical-align: super;
+    font-size: 80%;
+}
+
+.footnote p {
+    display: inline;   
+}
+
+.footnote {
+    margin: 0 0 20px 0;   
+}
+
+.footnote .footnote_number {
+    font-weight: bold;
+    font-size: 110%;   
+}

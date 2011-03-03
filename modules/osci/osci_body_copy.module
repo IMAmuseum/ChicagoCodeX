@@ -72,7 +72,17 @@ function osci_body_copy_theme()
             'variables' => array(
                 'figures' => array()
             )
-        )
+        ),
+        'osci_book_export_pdf' => array(
+          'variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
+          'template' => 'templates/osci_book_export_pdf',
+          'file'      => 'osci_body_copy.templates.inc',
+        ),
+        'osci_book_node_export_pdf' => array(
+          'variables' => array('node' => NULL, 'children' => NULL),
+          'template' => 'templates/osci_book_node_export_pdf',
+          'file'      => 'osci_body_copy.templates.inc',
+        ),
     );
 }
 
@@ -80,13 +90,13 @@ function book_export_pdf($nid) {
     if (user_access('access printer-friendly version')) {
         $export_data = array();
         $node = node_load($nid);
-        dpm($node);
+
         if (isset($node->book)) {
             $tree = book_menu_subtree_data($node->book);
             $contents = book_export_traverse($tree, 'book_node_export_pdf');
         }
 
-        $html = theme('book_export_html', array('title' => $node->title, 'contents' => $contents, 'depth' => $node->book['depth']));
+        $html = theme('osci_book_export_pdf', array('title' => $node->title, 'contents' => $contents, 'depth' => $node->book['depth']));
 //return $html;
         require_once("includes/dompdf/dompdf_config.inc.php");
 
@@ -113,7 +123,7 @@ function book_export_pdf($nid) {
 function book_node_export_pdf($node, $children = '') {
     $node->rendered = osci_body_copy_render_layout_print($node->nid);
 
-    return theme('book_node_export_html', array('node' => $node, 'children' => $children));
+    return theme('osci_book_node_export_pdf', array('node' => $node, 'children' => $children));
 }
 
 function osci_body_copy_sort_elements($elements)
@@ -167,7 +177,7 @@ function osci_body_copy_render_layout_print($nid)
                     $figure = $figures[$fId];
                     $figure['figCount'] = $figureCount;
                     $figureHtml = theme('body_copy_figure_print', array('figure' => $figure));
-                    $frag = $dom->createDocumentFragment(); // create fragment
+                    $frag = $dom->createDocumentFragment();
                     $frag->appendXML($figureHtml);
 
                     $parent->parentNode->insertBefore($frag, $parent);

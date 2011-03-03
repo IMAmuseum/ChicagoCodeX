@@ -1,4 +1,4 @@
-<div id="<?php print $figure['id']; ?>" <?php print $data; ?> class="<?php print $type; ?>">
+<div id="<?php print $figure['id']; ?>" <?php print $data; ?> class="<?php print $type; ?> figure">
     <a name="<?php print $figure['id']; ?>"></a>
     <div class="figureContent">
         <?php print $content; ?>
