@@ -24,6 +24,7 @@ function citation_permission() {
  */
 function citation_init() {
     drupal_add_css(drupal_get_path('module', 'citation').'/css/citation.css');
+    drupal_add_library('system', 'jquery.form');
     drupal_add_library('system', 'drupal.ajax');
     drupal_add_js(drupal_get_path('module', 'citation').'/js/jquery.tmpl.js');
     drupal_add_js(drupal_get_path('module', 'citation').'/js/jquery.osci.citation.js');

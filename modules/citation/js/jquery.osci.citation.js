@@ -37,11 +37,12 @@
 
                 $('#osci_viewer p.osci_paragraph').mouseup(function() {
                     var selection = base.getSelected();
+                    //TODO: rethink this part
+                    var markup = '<ul class="selection-toolbar"><li><a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/citation/highlight">Highlight</a></li><li><a class="use-modal" href="' + Drupal.settings.basePath + 'ajax/citation/note">Note</a></li></ul>';
                     $('ul.selection-toolbar').remove();
             
                     $.osci.citation.selection = selection;
-                    $(this).prepend('<ul class="selection-toolbar"><li><a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/citation/highlight">Highlight</a></li><li><a class="use-modal" href="' + Drupal.settings.basePath + 'ajax/citation/note">Note</a></li></ul>');
-                    Drupal.AJAX.attach();
+                    $(this).prepend(markup);
 
                     if (selection === '') { 
                         $('ul.selection-toolbar').remove();
@@ -138,5 +139,4 @@
         citationPanelId : "osci_citation_panel_wrapper",
         panelPixelsClosed : 20
     };
-
 })(jQuery);
