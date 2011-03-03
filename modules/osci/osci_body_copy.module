@@ -587,8 +587,10 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
 
     $footnotes = array('footnote_blank' => '');
     $loadnotes = (isset($items[$delta]['footnotes']) && !is_array($items[$delta]['footnotes'])) ? unserialize($items[$delta]['footnotes']) : array();
-    $footnotes += $loadnotes ? $loadnotes : array();
-
+    if ($loadnotes) {
+        $footnotes = array_merge($footnotes, $loadnotes);
+    }
+dpm($footnotes);
     $bodyCopy['footnotes']['add_another'] = array(
         '#markup' => '<a href="#" class="footnote-add-another">Add Footnote</a>',
         '#weight' => -1,
@@ -612,7 +614,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#attributes' => array('class' => array($class)),
             '#prefix' => '<div id="' . $fnId . '" class="footnote-wrapper" data-fnprefix="' . $fieldName . '_fn_' . $nid . '_">',
             '#suffix' => '</div>',
-            '#weight' => $id,
+            '#weight' => ($id == 'footnote_blank') ? -1 : $id
         );
 
         $fnList[] = '<li><a href="#' . $fnId . '">' . $id . '</a></li>';
@@ -645,7 +647,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#attributes'   => array('class' => array($class)),
             '#prefix'       => '<div id="' . $figId . '" data-figprefix="' . $fieldName . '_fig_' . $nid . '_" class="figure-wrapper">',
             '#suffix'      => '</div>',
-            '#weight'       => $id,
+            '#weight'       => ($id == 'figure_blank') ? -1 : $id,
             '#tree'         => true,
             'figure_id'     => array(
                 '#markup'   => '<div class="figure_identifier">' . $id . ' <span>(' . $figId . ')</span> </div>'

@@ -42,7 +42,10 @@
             selectorText = $(this).attr('class').split('-');
 
             newElement = $('div[id$="' + selectorText[0] + '_blank"]', container).clone().show();
-            $(".autocomplete-processed", newElement).removeClass("autocomplete-processed");
+            
+            if (selectorText[0] === "figure") {
+                $(".autocomplete-processed", newElement).removeClass("autocomplete-processed");
+            }
             newHtml = newElement.wrap("<span />").parent().html();
             newHtml = newHtml.replace(new RegExp(selectorText[0] + "_blank", 'gi'), count);
             newHtml = newHtml.replace(new RegExp(selectorText[0] + "-blank", 'gi'), count);
@@ -50,7 +53,9 @@
 
             container.append(newHtml);
 
-            Drupal.behaviors.autocomplete.attach(newIdSelector, null); 
+            if (selectorText[0] === "figure") {
+                Drupal.behaviors.autocomplete.attach(newIdSelector, null); 
+            }
 
             container.tabs("add", newIdSelector, count);
             hiddenCountElem.val(count);
