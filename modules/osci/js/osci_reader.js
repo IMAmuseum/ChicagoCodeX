@@ -39,7 +39,8 @@
                 close : [
                     {selector : "#osci_citation_panel_wrapper", event : "osci_citation_toggle", eventData : {osci_citation_open : true}}
                 ]
-            }
+            },
+            tocOverlay : false
         });
         
         $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){

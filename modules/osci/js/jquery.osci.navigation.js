@@ -345,7 +345,7 @@
             if (!base.options.tocOverlay) {
                 tocContainer = $("#" + base.options.tocId);
                 if (tocContainer.hasClass("open") && tocContainer.outerWidth() > base.navigation.layoutData.outerPageGutter[3]) {
-                    newOffset += tocContainer.outerWidth() - base.navigation.layoutData.outerPageGutter[3];
+                    newOffset += tocContainer.outerWidth() - base.navigation.layoutData.outerPageGutter[3] + base.navigation.layoutData.innerPageGutter[3];
                 }
             }
 
@@ -362,10 +362,6 @@
         {
             var container = $("#" + base.options.sectionNavId),
                 parts = base.navigation.pageCount,
-//                partWidth = Math.round((1 / base.navigation.pageCount)  * 100),
-//                addPixels = Math.abs(Math.round(100 - (parts * partWidth))),
-//                navBar, i, classes = "", heightRemain = 0, li, finalWidth,
-//                addSubPixels = (100 - (parts * partWidth)) > 0 ? 1 : -1;
                 partWidth = Math.floor(container.width() / parts),
                 addPixels = Math.abs(Math.round(container.width() - (parts * partWidth))),
                 navBar, i, classes = "", heightRemain = 0, li, finalWidth,
@@ -569,7 +565,7 @@
             
             if (node.field) {
                 id = node.nid + "_" + node.field;
-                link = node.nid + "#" + node.field;
+                link = node.nid + "#" + node.field + "_anchor";
             }
             
             tocItem = $("<li>", {
@@ -596,7 +592,7 @@
                         if (!expander.hasClass("expanded")) {
                             expander.click();
                         }
-                        
+                        console.log($(this).data("nid"));
                         base.navigateTo("node", $(this).data("nid"));
                     }
                 }).hover(

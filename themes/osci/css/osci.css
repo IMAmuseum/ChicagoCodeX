@@ -464,6 +464,10 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     width: 165px;
 }
 
+#osci_more_wrapper div.figureThumbnail span {
+    display: block;   
+}
+
 #osci_tab_figures {
     text-align: center;   
 }
