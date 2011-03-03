@@ -20,6 +20,15 @@ function osci_body_copy_menu()
         'type'              => MENU_CALLBACK,
     );
 
+    $items['node/%/pdf'] = array(
+        'title' => 'Pdf',
+        'description' => 'Create a pdf of this book',
+        'page callback' => 'book_export_pdf',
+        'page arguments' => array(1),
+        'access arguments' => array('access content'),
+        'type' => MENU_LOCAL_TASK
+    );
+
     return $items;
 }
 
