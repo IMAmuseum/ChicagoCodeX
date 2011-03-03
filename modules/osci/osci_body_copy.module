@@ -590,7 +590,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
     if ($loadnotes) {
         $footnotes = array_merge($footnotes, $loadnotes);
     }
-dpm($footnotes);
+
     $bodyCopy['footnotes']['add_another'] = array(
         '#markup' => '<a href="#" class="footnote-add-another">Add Footnote</a>',
         '#weight' => -1,
