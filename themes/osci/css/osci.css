@@ -110,7 +110,7 @@ body.page-node-reader {
     left: 130px;
     right: 130px;
     height: 10px; 
-    top: 0;
+    top: -10px;
 }
 
 #osci_navigation_section_list {
