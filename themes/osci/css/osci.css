@@ -497,7 +497,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 #osci_tab_footnotes span.footnote_number {
     float: left;
     font-size: 200%;
-    padding: 0 10px 10px 0;
+    padding: 0 20px 20px 0;
     display: block;
     vertical-align: top;
     line-height: 1;
@@ -539,6 +539,6 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     box-shadow: 0 2px 6px #A3A3A3;
 	
 }
-.footnote { padding: 5-px; 
-	line-height:1.4em;
+.footnote { padding: 50px; 
+	line-height:1.6em;
 }
