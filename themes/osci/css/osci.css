@@ -292,6 +292,9 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     width: 99px;
     height: 25px;
     text-align: center;
+	overflow:hidden;
+	padding-top:6px;
+	font-family:Arial, Helvetica, sans-serif;
 }
 
 .osci_reference_image {
@@ -325,9 +328,9 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 #osci_more_wrapper .osci_more_handle {
     display: block;
     position: absolute;
-    /*left: 50%;*/
-	right:50px;
-    margin-left: -43px;
+    /*left: 50%;
+	margin-left: -43px;*/
+    left:100px;
     bottom: 299px;
     color: #222;
     z-index: 1001;
@@ -337,6 +340,9 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     width: 99px;
     height: 25px;
     text-align: center;
+	overflow:hidden;
+	padding-top:6px;
+	font-family:Arial, Helvetica, sans-serif;
 }
 
 #osci_more_tabs {
