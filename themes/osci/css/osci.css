@@ -369,7 +369,9 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     text-transform: uppercase;
     font-size: 80%;
 }
-
+#osci_more_tabs ul li.ui-state-default,  #osci_more_tabs ul li.ui-state-default a {
+	background:none;border:none;
+}
 #osci_more_tabs ul li.ui-state-active {
     border-bottom: 1px solid #f8f8f8;   
     margin: 0 10px -1px 0;
