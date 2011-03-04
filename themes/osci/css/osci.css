@@ -329,9 +329,9 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 #osci_more_wrapper .osci_more_handle {
     display: block;
     position: absolute;
-    left: 50%;
-	margin-left: -43px;
-    /*left:240px;*/
+    /*left: 50%;
+	margin-left: -43px;*/
+    left:20px;
     bottom: 294px;
     color: #222;
     z-index: 1001;
