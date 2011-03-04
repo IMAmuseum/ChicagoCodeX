@@ -52,10 +52,11 @@ body.page-node-reader {
     border: 0px; 
     margin: 0;
     position: absolute;
-    top: 28px;
+    top: 32px;
     left: 0;
     text-align: center;
     color: #B8B8B8;
+	font-weight:normal!important;
 }
 
 #osci_header_controls {
