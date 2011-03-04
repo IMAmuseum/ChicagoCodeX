@@ -282,8 +282,8 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     position: absolute;
     left: 164px;
     /*top: 50%;*/
-	top:50px;
-    margin-top: -43px;
+	top:100px;
+    /*margin-top: -43px;*/
     color: #222;
     z-index: 1001;
     font-size: 12px;
