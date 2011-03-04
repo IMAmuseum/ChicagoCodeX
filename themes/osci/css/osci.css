@@ -198,7 +198,7 @@ body.page-node-reader {
     overflow: hidden;
     height: 300px;
 	font-family:Arial, Helvetica, sans-serif;
-	font-size:1em;
+	font-size:.85em;
 }
 
 ul#osci_navigation_toc {
@@ -230,7 +230,7 @@ ul#osci_navigation_toc li ul li ul li a {
 ul#osci_navigation_toc li a {
     display: block;
     border-bottom: 1px solid #888;
-    padding: 4px 25px 4px 4px;
+    padding: 8px 25px 8px 4px;
     color: #222;
 }
 
