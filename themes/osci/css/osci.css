@@ -521,8 +521,8 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 /* new steez */
 #osci_viewer .osci_page {
 	
-	-moz-box-shadow: 0 2px 6px #808080;
-    -webkit-box-shadow: 0 2px 6px #808080;
-    box-shadow: 0 2px 6px #808080;
+	-moz-box-shadow: 0 2px 6px ##A3A3A3;
+    -webkit-box-shadow: 0 2px 6px ##A3A3A3;
+    box-shadow: 0 2px 6px ##A3A3A3;
 	
 }
