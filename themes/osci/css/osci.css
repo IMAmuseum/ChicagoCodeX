@@ -539,3 +539,6 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     box-shadow: 0 2px 6px #A3A3A3;
 	
 }
+.footnote { padding: 5-px; 
+	line-height:1.4em;
+}
