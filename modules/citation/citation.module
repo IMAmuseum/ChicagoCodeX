@@ -46,8 +46,7 @@ function citation_menu() {
     $items['citation/add'] = array(
         'title'             => t('Add a new citation'),
         'page callback'     => 'citation_add',
-        'access callback'   => 'citation_access',
-        'access arguments'  => array('create', 1),
+        'access arguments'  => array('create citation'),
     );
 
     $items['citation/%citation'] = array(
@@ -231,23 +230,32 @@ function citation_form($form, &$form_state, $citation = null) {
         '#default_value'    => $citation->body
     );
 
+    $form['original_text'] = array(
+        '#type'         => 'textarea',
+    );
+
     $form['uid'] = array(
         '#type'  => 'hidden',
         '#value' => $user->uid,
     );
 
+    $form['nid'] = array(
+        '#type'  => 'textfield',
+        '#value' => $citation->nid,
+    );
+
     $form['word_count'] = array(
-        '#type'  => 'hidden',
+        '#type'  => 'textfield',
         '#value' => $citation->word_count,
     );
 
     $form['letter_count'] = array(
-        '#type'  => 'hidden',
+        '#type'  => 'textfield',
         '#value' => $citation->letter_count,
     );
 
     $form['paragraph_count'] = array(
-        '#type'  => 'hidden',
+        '#type'  => 'textfield',
         '#value' => $citation->paragraph_count,
     );
 
@@ -275,8 +283,62 @@ function citation_form_submit($form, &$form_state) {
     }
 }
 
+function citation_preprocess_osci_viewer(&$vars) {
+    ctools_include('modal');
+    ctools_modal_add_js();
+    drupal_add_js(array(
+        'fixed-modal' => array(
+            'modalSize' => array(
+                'type'      => 'fixed',
+                'width'     => 400,
+                'height'    => 300,
+            ),
+        ),
+    ), 'setting');
+
+    $items = array(
+        l('Highlight', $_GET['q'], 
+            array(
+                'fragment' => 'citation-highlight', 
+                'attributes' => array(
+                    'class' => array('citation-highlight'),
+                )
+            )
+        ),
+        l('Note', 'citation/add', 
+            array(
+                'attributes' => array(
+                    'class' => array('ctools-use-modal', 'citation-note', 'fixed-modal'),
+                )
+            )
+        ),
+    );
+
+    $vars['citations'] = theme('item_list', 
+        array(
+            'items' => $items, 
+            'attributes' => array(
+                'class' => 'selection-toolbar'
+            )
+        )
+    );
+}
+
 function citation_add() {
-    return drupal_get_form('citation_form');
+    ctools_include('ajax');
+    ctools_include('modal');
+    $form_state = array(
+        'ajax'  => TRUE,
+        'title' => 'Create a note',
+    );
+
+    $output = ctools_modal_form_wrapper('citation_form', $form_state);
+dpm($output);
+    if (empty($output)) {
+        $output[] = ctools_modal_command_dismiss();
+    }
+    print ajax_render($output);
+    exit;
 }
 
 function user_citations() {

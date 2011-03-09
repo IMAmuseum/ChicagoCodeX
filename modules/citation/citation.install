@@ -15,6 +15,11 @@ function citation_schema() {
                 'unsigned' => TRUE,
                 'not null' => TRUE,
             ),
+            'nid' => array(
+                'description'   => 'The node id that the citation is located',
+                'type'          => 'int',
+                'default'       => 0,   
+            ),
             'uid' => array(
                 'description'   => 'The author uid',
                 'type'          => 'int',
@@ -24,6 +29,10 @@ function citation_schema() {
                 'description'   => 'The citation body text',
                 'type'          => 'varchar',
                 'length'        => 255,
+            ),
+            'original_text' => array(
+                'description'   => 'The original text to cite',
+                'type'          => 'text',
             ),
             'word_count' => array(
                 'description'   => 'The number of words into the current paragraph',

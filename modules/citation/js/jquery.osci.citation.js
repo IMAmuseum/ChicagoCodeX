@@ -22,6 +22,22 @@
                  * Dialog interaction
                  */
 
+                $('ul.selection-toolbar').hide();
+
+                $('a.citation-highlight').live('click', function(e) {
+                    e.preventDefault();
+                    base.highlightTxt($(this).parents('.osci_paragraph'));
+                });
+
+                $(document).bind('CToolsAttachBehaviors', function(e, modal) {
+                    // TODO: update 
+                    $('#edit-original-text').html($.osci.citation.selection);
+                    $('#edit-nid').val(10);
+                    $('#edit-word-count').val(10);
+                    $('#edit-letter-count').val(10);
+                    $('#edit-paragraph-count').val(10);
+                });
+
                 $('#osci_viewer p.osci_paragraph').hover(
                     function() {
                         var id = $(this).data('paragraph_id');
@@ -36,32 +52,16 @@
                 );
 
                 $('#osci_viewer p.osci_paragraph').mouseup(function() {
-                    var selection = base.getSelected();
-                    //TODO: rethink this part
-                    var markup = '<ul class="selection-toolbar"><li><a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/citation/highlight">Highlight</a></li><li><a class="use-modal" href="' + Drupal.settings.basePath + 'ajax/citation/note">Note</a></li></ul>';
-                    $('ul.selection-toolbar').remove();
-            
-                    $.osci.citation.selection = selection;
-                    $(this).prepend(markup);
+                    $.osci.citation.selection = base.getSelected();
+                    $('ul.selection-toolbar').hide();
 
-                    if (selection === '') { 
-                        $('ul.selection-toolbar').remove();
-                        return;
-                    }
+                    if ($.osci.citation.selection === '') return; 
+
+                    $('ul.selection-toolbar').show();
+                    $(this).prepend($('ul.selection-toolbar'));
 
                 });
 
-                /*
-                $('a[href=$"osci/citation/highlight"]').live('click', function(e) {
-                    e.preventDefault();
-                    base.highlightTxt($(this).parents('.osci_paragraph'));
-                });
-                
-                $('a[href=$"osci/citation/note"]').live('click', function(e) {
-                    e.preventDefault();
-                    $('#edit-citation').html(base.getSelected());
-                });
-                */
             });
             
             base.panel.bind("osci_citation_toggle", function(e) {
@@ -92,7 +92,7 @@
             $.template('citationLink', citationLinkMarkup);
 
             $.ajax({
-                url: Drupal.settings.basePath + 'ajax/citation/user',
+                url: base.userCitationCallback,
                 dataType: 'json',
                 success: function(data) {
                     $.tmpl('citationLink', data).appendTo(base.panel);
@@ -101,18 +101,17 @@
 
         }
 
-        base.highlightTxt = function(obj) {
-            var selection = base.getSelected(),
-                txt = $(obj),
+        base.highlightTxt = function(txt) {
+            var selection = $.osci.citation.selection,
                 len = txt.html().length,
                 start = txt.html().indexOf(selection),
                 end = start + selection.length,
                 replacementTxt;
             
-            $(selection).find('span').remove();
+            //$(selection).find('span').remove();
             replacementTxt = '<span class="highlighter">' + selection + '</span>';
             txt.html(txt.html().substring(0, start) + replacementTxt + txt.html().substring(end, len));
-            $('ul.selection-toolbar').remove();
+            $('ul.selection-toolbar').hide();
         }
 
         /* attempt to find a text selection */ 
@@ -137,6 +136,8 @@
 
     $.osci.citation.defaultOptions = {
         citationPanelId : "osci_citation_panel_wrapper",
-        panelPixelsClosed : 20
+        panelPixelsClosed : 20,
+        citationCallback : '/ajax/citation/add',
+        userCitationCallback : '/ajax/citation/user'
     };
 })(jQuery);
