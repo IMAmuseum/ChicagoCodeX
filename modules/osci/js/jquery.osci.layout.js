@@ -44,7 +44,8 @@
         base.render = function()
         {
             var i = 0, elements, totalElements = 0, page, currentElement, pageElementCount, 
-                figureLinks, overflow, contentOffset = 0, cache = null, heightRemain = 0;
+                figureLinks, overflow, contentOffset = 0, cache = null, heightRemain = 0, 
+                figureCarryover, figureCarryoverCount, figureCarryoverI = 0;
 
             //Trigger event so we know layout is begining
             $(document).trigger("osci_layout_start");
@@ -83,12 +84,12 @@
                 totalElements = elements.length;
     
                 //Add the paragraph numbering
-                elements.filter("p").each(function(i, elem){
+                elements.filter("p").each(function(j, elem){
                     $(elem).prepend($("<span>",{
-                        html : i + 1,
-                        "class" : "osci_paragraph_identifier osci_paragraph_" + (i + 1),
-                        "data-paragraph_id" : i + 1 
-                    })).addClass("osci_paragraph_" + (i + 1) + " osci_paragraph").attr("data-paragraph_id", i + 1);
+                        html : j + 1,
+                        "class" : "osci_paragraph_identifier osci_paragraph_" + (j + 1),
+                        "data-paragraph_id" : j + 1 
+                    })).addClass("osci_paragraph_" + (j + 1) + " osci_paragraph").attr("data-paragraph_id", j + 1);
                 });
     
                 //Loop over the elements to add them to the layout
@@ -105,12 +106,25 @@
                         //If a previous page is defined and content overflowed the page set the starting offset
                         if (page !== undefined) {
                             contentOffset = page.data("contentNextOffset");
+                            figureCarryover = page.data("figure_carryover");
                         }
                         
                         //Get a new page and append it to the viewer
                         page = _newPage().appendTo(base.viewer.pages);
-                        page.data("contentStartOffset", contentOffset);
+                        page.data({
+                            contentStartOffset : contentOffset,
+                            current_column : 0
+                        });
                         pageElementCount = 0;
+                        
+                        //Add any figures that were carried over from the previous page
+                        if (figureCarryover !== undefined && figureCarryover.length) {
+                            figureCarryoverCount = figureCarryover.length;
+                            for (figureCarryoverI = 0; figureCarryoverI < figureCarryoverCount; figureCarryoverI++) {
+                                _process_figure(figureCarryover[figureCarryoverI], page);
+                            }
+                            _reset_page(page);
+                        }
                     }
                     
                     //Add element to the page
@@ -229,8 +243,11 @@
                     linkLocation = $l.position().top;
                     if (linkLocation >= 0 && linkLocation <= pageColumnData[pageColumnNumber].height) {
                         //process the figure
-                        _process_figure($l, page);
-                        figureProcessed = true;
+                        figureProcessed = _process_figure($l, page);
+                        //if a figure was processed exit the loop
+                        if (figureProcessed) {
+                            return false;
+                        }
                     }
                 });
 
@@ -289,8 +306,12 @@
         function _process_figure(figureLink, page)
         {
             var figure, aspect, columns, position, verticalPosition, horizontalPosition, column, addLeftPadding = 0,
-                offsetLeft, offsetTop, width, height, captionHeight, columnCoverage = [], colStart, colEnd;
+                offsetLeft, offsetTop, width, height, captionHeight, columnCoverage = [], colStart, colEnd, pageFigures,
+                figureOffset, figureX, figureY, placed = false, placementAttempts = 0;
 
+            //Get the figures currently on the page to check if current figure can fit
+            pageFigures = $("figure", page);
+            
             //Add a class to the figure link (in current content and the prerendered content) so it is only processed once
             $("a[href=" + figureLink.attr("href") + "]", base.prerender).addClass("processed");
             figureLink.addClass("processed");
@@ -298,24 +319,15 @@
             //get the actual figure
             figure = base.figures.filter(figureLink.attr("href"));
 
-            //give it a class for processing status
-            figure.addClass("processed").appendTo(page);
-
-            //Get the current column
-            column = page.data("current_column");
+            //add it to the page
+            figure.appendTo(page);
             
             //Get figure layout hint data from data attributes on the figure element
             columns = figure.data("columns");
             position = figure.data("position");
             aspect = figure.data("aspect");
-
-            //Split out the positioning queues
-            verticalPosition = position.substr(0,1);
-            horizontalPosition = (position.length === 2) ? position.substr(1,1) : position.substr(0,1); 
-
-            //Add the split position data back onto the figure element
-            figure.data("vertical_position", verticalPosition);
-            figure.data("horizontal_position", horizontalPosition);
+            verticalPosition = figure.data("vertical_position");
+            horizontalPosition = figure.data("horizontal_position");
 
             //If a percentage based width hint is specified, convert to number of columns to cover
             if (typeof(columns) === 'string' && columns.indexOf("%") > 0) {
@@ -355,53 +367,121 @@
             if (width < (base.options.columnWidth * columns)) {
                 addLeftPadding = Math.floor(((base.options.columnWidth * columns) - width) / 2);
             }
-
-            //Detemine the left offset base on the layout hint
+            
+            //Detemine the start column based on the layout hint
             switch (horizontalPosition) {
                 //right
                 case 'r':
-                    offsetLeft = ((base.options.columnsPerPage - columns) * base.options.columnWidth) + (((base.options.columnsPerPage - 1) - (columns - 1)) * base.options.gutterWidth) + base.options.innerPageGutter[3] + addLeftPadding;
+                    column = base.options.columnsPerPage - 1;
                     break;
                 //left & fullpage
                 case 'l':
                 case 'p':
-                    offsetLeft = base.options.innerPageGutter[3] + addLeftPadding;
+                    column = 0;
                     break;
                 //In the current column
                 default:
-                    if ((column + columns) > base.options.columnsPerPage) {
-                        column -= (column + columns) - base.options.columnsPerPage;
-                    }
-                    offsetLeft = base.options.innerPageGutter[3] + (column * base.options.columnWidth) + (column * base.options.gutterWidth) + addLeftPadding;
+                    column = page.data("current_column");
             }
-            figure.css("margin-left", offsetLeft);
-
-            //Determine the top offset based on the layout hint
-            switch (verticalPosition) {
-                //top & fullpage
-                case 't':
-                case 'p':
-                    offsetTop = base.options.innerPageGutter[0];
-                    break;
-                //bottom
-                case 'b':
-                    offsetTop = base.options.innerPageHeight - height + base.options.innerPageGutter[0];
-                    break;
-            }
-            figure.css("margin-top", offsetTop);
-
-            //Determine which columns this figure will occupy and add it to the figure data
-            for (var i = 0; i < base.options.columnsPerPage; i++) {
-                colStart = (base.options.columnWidth * i) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
-                colEnd = (base.options.columnWidth * (i + 1)) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
-
-                if (offsetLeft <= colEnd && (offsetLeft + width) >= colStart) {
-                    columnCoverage[i] = true;
-                } else {
-                    columnCoverage[i] = false;
+            
+            while (!placed && placementAttempts < base.options.columnsPerPage) {
+                
+                //Detemine the left offset start column and width of the figure
+                if ((column + columns) > base.options.columnsPerPage) {
+                    column -= (column + columns) - base.options.columnsPerPage;
                 }
+                offsetLeft = base.options.innerPageGutter[3] + (column * base.options.columnWidth) + (column * base.options.gutterWidth) + addLeftPadding;
+                figure.css("left", offsetLeft + "px");
+    
+                //Determine the top offset based on the layout hint
+                switch (verticalPosition) {
+                    //top & fullpage
+                    case 't':
+                    case 'p':
+                        offsetTop = base.options.innerPageGutter[0];
+                        break;
+                    //bottom
+                    case 'b':
+                        offsetTop = base.options.innerPageHeight - height + base.options.innerPageGutter[0];
+                        break;
+                }
+                figure.css("top", offsetTop + "px");
+    
+                //Determine which columns this figure will occupy and add it to the figure data
+                for (var i = 0; i < base.options.columnsPerPage; i++) {
+                    colStart = (base.options.columnWidth * i) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
+                    colEnd = (base.options.columnWidth * (i + 1)) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
+    
+                    if (offsetLeft <= colEnd && (offsetLeft + width) >= colStart) {
+                        columnCoverage[i] = true;
+                    } else {
+                        columnCoverage[i] = false;
+                    }
+                }
+                figure.data("column_coverage", columnCoverage).addClass("processed");
+    
+                //check if current placement overlaps any other figures
+                placed = true;
+                if (pageFigures.length) {
+                    figureOffset = figure.offset();
+                    figureX = [figureOffset.left, figureOffset.left + figure.outerWidth()];
+                    figureY = [figureOffset.top, figureOffset.top + figure.outerHeight()];
+                    pageFigures.each(function(i, elem) {
+                        var pageData, $elem = $(elem),
+                            position = $elem.offset(),
+                            elemX = [position.left, position.left + $elem.outerWidth()],
+                            elemY = [position.top, position.top + $elem.outerHeight()];
+                        
+                        if (figureX[0] < elemX[1] && figureX[1] > elemX[0] &&
+                            figureY[0] < elemY[1] && figureY[1] > elemY[0]
+                        ) {
+                            placed = false;
+                            //adjust the start column to see if the figure can be placed on the page
+                            switch (horizontalPosition) {
+                                //right
+                                case 'r':
+                                    column--;
+                                    if (column < 0) {
+                                        placementAttempts = base.options.columnsPerPage;
+                                    }
+                                    break;
+                                //left & fullpage
+                                case 'l':
+                                case 'p':
+                                    column++;
+                                    if (column >= base.options.columnsPerPage) {
+                                        placementAttempts = base.options.columnsPerPage;
+                                    }
+                                    break;
+                                //no horizontal position
+                                default:
+                                    column++;
+                                    if ((column + columns) > base.options.columnsPerPage) {
+                                        column = 0;
+                                    }
+                            }
+                            return false;
+                        }
+                    });
+                }
+
+                placementAttempts++;
             }
-            figure.data("column_coverage", columnCoverage);
+            
+            //figure was not placed on page... carryover
+            if (!placed) {
+                figure.detach();
+                pageData = page.data();
+                if (pageData.figure_carryover !== undefined) {
+                    pageData.figure_carryover.push(figureLink);
+                } else {
+                    pageData.figure_carryover = [figureLink];
+                }
+                page.data(pageData);
+                return false;
+            }
+            
+            return true;
         }
 
         //Calculate the constraints of the viewer area
@@ -581,7 +661,7 @@
                                 case 't':
                                 //fullpage
                                 case 'p':
-                                    topOffset += $fig.height() + base.options.innerPageGutter[0];
+                                    topOffset = topOffset + $fig.height() + base.options.innerPageGutter[0];
                                     break;
                                 //bottom
                                 case 'b':

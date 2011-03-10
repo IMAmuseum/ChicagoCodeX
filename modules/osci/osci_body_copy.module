@@ -258,35 +258,34 @@ function osci_body_copy_render_layout($nid)
         $markup = $v[0]['#markup'];
         if (strlen($markup)) {
             $dom = new domDocument;
-            $dom->loadHTML($v[0]['#markup']);
+            $dom->loadHTML("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body id=\"temp_body\">" . $v[0]['#markup'] . "</body></html>");
             $xpath = new DOMXpath($dom);
+
+            $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' figure-link ')]");
+            if (!is_null($links)) {
+                foreach($links as $link) {
+                    $fId = $link->nodeValue;
+
+                    $link->nodeValue = 'Fig. ' .  ++$figureCount . '';
+                    $linkHtml = $dom->saveXML($link);
+
+                    $figureOrder[$figureCount] = $fId;
+                }
+            }
 
             $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' footnote-link ')]");
             if (!is_null($links)) {
                 foreach($links as $link) {
                     $fnId = $link->nodeValue;
-                    $originalLinkHtml = $dom->saveXML($link);
 
                     $link->nodeValue = ++$footnoteCount;
                     $linkHtml = $dom->saveXML($link);
-                    $markup = str_replace($originalLinkHtml, $linkHtml, $markup);
 
                     $footnoteOrder[$footnoteCount] = $fnId;
                 }
             }
-            $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' figure-link ')]");
-            if (!is_null($links)) {
-                foreach($links as $link) {
-                    $fId = $link->nodeValue;
-                    $originalLinkHtml = $dom->saveXML($link);
 
-                    $link->nodeValue = 'Fig. ' .  ++$figureCount . '';
-                    $linkHtml = $dom->saveXML($link);
-                    $markup = str_replace($originalLinkHtml, $linkHtml, $markup);
-
-                    $figureOrder[$figureCount] = $fId;
-                }
-            }
+            $markup = substr(substr($dom->saveXml($dom->getElementById("temp_body")), 21), 0, -7);
             $elements[$k][0]['#markup'] = $markup;
         }
 
