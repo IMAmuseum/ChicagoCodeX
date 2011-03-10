@@ -8,6 +8,8 @@
     {
         var base = this.citation;
         var selection = '';
+        var activeParagraph = 0;
+        var toolbar = {};
 
         base.init = function()
         {
@@ -21,21 +23,27 @@
                 /*************************************************
                  * Dialog interaction
                  */
-
-                $('ul.selection-toolbar').hide();
+                $.osci.citation.toolbar = $('ul.selection-toolbar').detach();
+                //$.osci.citation.toolbar = $('ul.selection-toolbar').detach();
 
                 $('a.citation-highlight').live('click', function(e) {
                     e.preventDefault();
-                    base.highlightTxt($(this).parents('.osci_paragraph'));
+                    var data = base.highlightTxt($(this).parents('.osci_paragraph'), $.osci.citation.selection);
+                    var wordCount = $.osci.citation.activeParagraph.html().substring(0, data.start).split(' ').length;
                 });
 
                 $(document).bind('CToolsAttachBehaviors', function(e, modal) {
                     // TODO: update 
-                    $('#edit-original-text').html($.osci.citation.selection);
-                    $('#edit-nid').val(10);
-                    $('#edit-word-count').val(10);
-                    $('#edit-letter-count').val(10);
-                    $('#edit-paragraph-count').val(10);
+                    var data = base.highlightTxt($.osci.citation.activeParagraph, $.osci.citation.selection);
+                    var wordCount = $.osci.citation.activeParagraph.html().substring(0, data.start).split(' ').length;
+
+                    $("input[name='original_text']").val($.osci.citation.selection);
+                    $("input[name='nid']").val(Drupal.settings.osci.nid);
+                    $("input[name='word_count']").val(wordCount);
+                    $("#edit-testing").val(wordCount);
+                    $("input[name='letter_count']").val(data.start);
+                    $("input[name='paragraph_count']").val($.osci.citation.activeParagraph.data('paragraph_id'));
+                    $("#edit-paragraph-count").val($.osci.citation.activeParagraph.data('paragraph_id'));
                 });
 
                 $('#osci_viewer p.osci_paragraph').hover(
@@ -51,14 +59,15 @@
                     }
                 );
 
-                $('#osci_viewer p.osci_paragraph').mouseup(function() {
+                $('#osci_viewer .osci_paragraph').mouseup(function() {
                     $.osci.citation.selection = base.getSelected();
-                    $('ul.selection-toolbar').hide();
+                    $.osci.citation.activeParagraph = $(this);
+                    $.osci.citation.toolbar.detach();
 
                     if ($.osci.citation.selection === '') return; 
 
-                    $('ul.selection-toolbar').show();
-                    $(this).prepend($('ul.selection-toolbar'));
+                    //var toolbar = $('ul.selection-toolbar').show();
+                    $.osci.citation.toolbar.appendTo(this); 
 
                 });
 
@@ -92,26 +101,32 @@
             $.template('citationLink', citationLinkMarkup);
 
             $.ajax({
-                url: base.userCitationCallback,
+                url: base.options.userCitationCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
                     $.tmpl('citationLink', data).appendTo(base.panel);
+                    //todo 
+                    for (var i = 0; i < data.length; i++) {
+                        var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_count);
+                        base.highlightTxt(activeParagraph, data[i].original_text);
+                    }
                 }
             });
 
         }
 
-        base.highlightTxt = function(txt) {
-            var selection = $.osci.citation.selection,
-                len = txt.html().length,
-                start = txt.html().indexOf(selection),
-                end = start + selection.length,
-                replacementTxt;
+        base.highlightTxt = function(txt, selection) {
+            $.osci.citation.toolbar.detach();
+            var data = {
+                length: txt.html().length,
+                start:  txt.html().indexOf(selection),
+                end:    txt.html().indexOf(selection) + selection.length,
+            }
             
-            //$(selection).find('span').remove();
-            replacementTxt = '<span class="highlighter">' + selection + '</span>';
-            txt.html(txt.html().substring(0, start) + replacementTxt + txt.html().substring(end, len));
-            $('ul.selection-toolbar').hide();
+            var replacementTxt = '<span class="highlighter">' + selection + '</span>';
+            txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
+
+            return data;
         }
 
         /* attempt to find a text selection */ 
@@ -131,6 +146,10 @@
             return selection; 
         }
 
+        base.stripTags = function(txt) {
+            return txt.replace(/<\/?[^>]+(>|$)/g, '');
+        }
+
         base.init();
     };
 
@@ -138,6 +157,6 @@
         citationPanelId : "osci_citation_panel_wrapper",
         panelPixelsClosed : 20,
         citationCallback : '/ajax/citation/add',
-        userCitationCallback : '/ajax/citation/user'
+        userCitationCallback : '/ajax/citation'
     };
 })(jQuery);

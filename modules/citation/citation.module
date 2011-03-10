@@ -74,8 +74,9 @@ function citation_menu() {
         'type'              => MENU_LOCAL_TASK,
     );
 
-    $items['ajax/citation/user'] = array(
+    $items['ajax/citation/%node'] = array(
         'page callback'     => 'user_citations_ajax',
+        'page arguments'    => array(2),
         'access arguments'  => array(TRUE),
         'type'              => MENU_CALLBACK,
         'file'              => 'citation.ajax.inc',
@@ -231,7 +232,7 @@ function citation_form($form, &$form_state, $citation = null) {
     );
 
     $form['original_text'] = array(
-        '#type'         => 'textarea',
+        '#type'     => 'hidden',
     );
 
     $form['uid'] = array(
@@ -240,23 +241,19 @@ function citation_form($form, &$form_state, $citation = null) {
     );
 
     $form['nid'] = array(
-        '#type'  => 'textfield',
-        '#value' => $citation->nid,
+        '#type'  => 'hidden',
     );
 
     $form['word_count'] = array(
-        '#type'  => 'textfield',
-        '#value' => $citation->word_count,
+        '#type'  => 'hidden',
     );
 
     $form['letter_count'] = array(
-        '#type'  => 'textfield',
-        '#value' => $citation->letter_count,
+        '#type'  => 'hidden',
     );
 
     $form['paragraph_count'] = array(
-        '#type'  => 'textfield',
-        '#value' => $citation->paragraph_count,
+        '#type'  => 'hidden',
     );
 
     $form['submit'] = array(
@@ -327,25 +324,27 @@ function citation_preprocess_osci_viewer(&$vars) {
 function citation_add() {
     ctools_include('ajax');
     ctools_include('modal');
+
     $form_state = array(
         'ajax'  => TRUE,
         'title' => 'Create a note',
     );
 
     $output = ctools_modal_form_wrapper('citation_form', $form_state);
-dpm($output);
     if (empty($output)) {
         $output[] = ctools_modal_command_dismiss();
     }
+
     print ajax_render($output);
     exit;
 }
 
-function user_citations() {
+function user_citations($node) {
     global $user;
     $query = db_select('citation', 'c')
-        ->fields('c', array('cid', 'body', 'word_count', 'letter_count', 'paragraph_count'))
+        ->fields('c', array('cid', 'body', 'word_count', 'letter_count', 'paragraph_count', 'original_text'))
         ->condition('uid', $user->uid)
+        ->condition('nid', $node->nid)
         ->execute();
     foreach($query as $row) {
         $rows[] = (array)$row; 
