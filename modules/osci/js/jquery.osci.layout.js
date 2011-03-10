@@ -307,7 +307,7 @@
         {
             var figure, aspect, columns, position, verticalPosition, horizontalPosition, column, addLeftPadding = 0,
                 offsetLeft, offsetTop, width, height, captionHeight, columnCoverage = [], colStart, colEnd, pageFigures,
-                figureOffset, figureX, figureY, placed = false, placementAttempts = 0;
+                figureOffset, figureX, figureY, placed = false, placementAttempts = 0, pageData;
 
             //Get the figures currently on the page to check if current figure can fit
             pageFigures = $("figure", page);
@@ -427,7 +427,7 @@
                     figureX = [figureOffset.left, figureOffset.left + figure.outerWidth()];
                     figureY = [figureOffset.top, figureOffset.top + figure.outerHeight()];
                     pageFigures.each(function(i, elem) {
-                        var pageData, $elem = $(elem),
+                        var $elem = $(elem),
                             position = $elem.offset(),
                             elemX = [position.left, position.left + $elem.outerWidth()],
                             elemY = [position.top, position.top + $elem.outerHeight()];
