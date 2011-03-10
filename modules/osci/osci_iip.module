@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 function osci_iip_menu() {
@@ -23,46 +23,46 @@ function osci_iip_demo() {
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
 	$return .= '<p>&nbsp;</p>';
-   
+
     $node = node_load(73);
 	$return .= "<h2>ShapePaths</h2>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
 	$return .= '<p>&nbsp;</p>';
-	
+
 	$node = node_load(74);
 	$return .= "<h2>SplinePaths</h2>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
 	$return .= '<p>&nbsp;</p>';
-	
+
 	$node = node_load(75);
 	$return .= "<h2>Tiger!!!</h2>";
     $return .= '<div style="width:640px; height:480px;">';
 	$return .= _osci_iip_create_iip_div($node, $node->nid);
 	$return .= '</div>';
 	$return .= '<p>&nbsp;</p>';
-	
+
 	// make it live!
 	$return .= '<script type="text/javascript">(function($) { $(document).ready(function()	{ $(".iipmap").each(function(){ iipmap($(this)); }); }); }) (jQuery);</script>';
     return $return;
 }
 
-function osci_iip_node_insert($node) {	
+function osci_iip_node_insert($node) {
 	// must set is_new to false or subsequent save attempts fail
 	$node->is_new = FALSE;
-	
+
 	if ($node->type == 'image') {
-		// For an image - If the aspect ratio isn't set, and a ptiff or image 
+		// For an image - If the aspect ratio isn't set, and a ptiff or image
 		// was supplied, get our aspect ratio
-		if(!isset($node->field_aspect_ratio['und'][0]['value']) 
-			&& (isset($node->field_ptiff['und'][0]) || isset($node->field_image['und'][0]))) 
+		if(!isset($node->field_aspect_ratio['und'][0]['value'])
+			&& (isset($node->field_ptiff['und'][0]) || isset($node->field_image['und'][0])))
 		{
 			_osci_iip_save_aspect_ratio($node);
 		}
-		
+
 		// if no image was uploaded, but ptiff was supplied, get image
 		if (empty($node->field_image['und']) && !empty($node->field_ptiff['und'])) {
 			_osci_iip_get_image($node);
@@ -72,19 +72,19 @@ function osci_iip_node_insert($node) {
 
 function osci_iip_node_update($node) {
 	// For an image - If the user supplied a PTIFF path, but no image, let's get a thumbnail
-	if ($node->type == 'image' 
-		&& empty($node->field_image['und']) 
+	if ($node->type == 'image'
+		&& empty($node->field_image['und'])
 		&& !empty($node->field_ptiff['und']))
 	{
-		_osci_iip_get_image($node);	
+		_osci_iip_get_image($node);
 	}
-	// For an image - If the aspect ratio isn't set, and a ptiff or image 
+	// For an image - If the aspect ratio isn't set, and a ptiff or image
 	// was supplied, get our aspect ratio
-	if ($node->type == 'image' 
-		&& !isset($node->field_aspect_ratio['und'][0]['value']) 
-		&& (isset($node->field_ptiff['und'][0]) || isset($node->field_image['und'][0]))) 
+	if ($node->type == 'image'
+		&& !isset($node->field_aspect_ratio['und'][0]['value'])
+		&& (isset($node->field_ptiff['und'][0]) || isset($node->field_image['und'][0])))
 	{
-		_osci_iip_save_aspect_ratio($node);		
+		_osci_iip_save_aspect_ratio($node);
 	}
 }
 
@@ -92,12 +92,12 @@ function osci_iip_node_update($node) {
 function _osci_iip_save_aspect_ratio($node) {
 	// Retrieve and store aspect ratio - called in node_insert and node_update
 	// x:1(y) where x is the stored value and y is the constant 1
-		
+
 	// If a ptiff is defined, it trumps all other methods
 	if (isset($node->field_ptiff['und'][0]))
 	{
 		$attr = _osci_iip_get_image_attr($node);
-		if($attr) 
+		if($attr)
 		{
 			$ar = ($attr['iw'] / $attr['ih']);
 			$node->field_aspect_ratio['und'][0]['value'] = round($ar, 4);
@@ -116,9 +116,9 @@ function _osci_iip_save_aspect_ratio($node) {
 		$file = file_load($node->field_image['und'][0]['fid']);
 		$attr = image_get_info($file->uri);
 	}
-	
+
 	// If we obtained attributes, calculate aspect ratio and save
-	if(isset($attr)) 
+	if(isset($attr))
 	{
 		$ar = ($attr['width'] / $attr['height']);
 		$node->field_aspect_ratio['und'][0]['value'] = round($ar, 4);
@@ -135,7 +135,7 @@ function _osci_iip_get_image($node) {
 	$output = curl_exec($curl);
 	// Save the file with the new Drupal 7 File API
 	$fo = file_save_data($output, "public://iip_thumbs/iip_image_node_".$node->nid.".jpg", FILE_EXISTS_REPLACE);
-	if ($fo) 
+	if ($fo)
 	{
 		$node->field_image['und'][0]['fid'] = $fo->fid;
 		node_save($node);
@@ -159,10 +159,10 @@ function _osci_iip_get_image_attr($node) {
 		$ih = $matches[2];
 		preg_match('/Resolution-number:(\d+)/', $res, $matches);
 		$zl = $matches[1];
-		
+
 		// Craft our return response
 		$ret = array(
-			'iw' => $iw, 
+			'iw' => $iw,
 			'ih' => $ih,
 			'zl' => $zl,
 		);
@@ -173,18 +173,18 @@ function _osci_iip_get_image_attr($node) {
 
 function _osci_iip_create_iip_div($node, $figure_id) {
 	$attr = _osci_iip_get_image_attr($node);
-	
-	if (count($node->field_svg_file)) { 
+
+	if (count($node->field_svg_file)) {
 		$field_svg = file_create_url($node->field_svg_file['und'][0]['uri']);
 	}
 	else { $field_svg = ""; }
-	
+
 	if ($node->field_ptiff_overlay['und'][0]['value']) {
 		$field_overlay = $node->field_ptiff_overlay['und'][0]['value'];
 	}
 	else { $field_overlay = ""; }
-	
-	$ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
+
+	$ret = '<div id="map_'.$figure_id.'" class="iipmap" tabindex="500" data-node="'.$node->nid.'" ';
 	$ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zlm="'.$attr['zl'].'" ';
 	$ret .= 'data-ptiff="'.$node->field_ptiff['und'][0]['value'].'" data-figure-id="'.$figure_id.'" ';
 	$ret .= 'data-svg="'.$field_svg.'" data-overlay="'.$field_overlay.'" ';

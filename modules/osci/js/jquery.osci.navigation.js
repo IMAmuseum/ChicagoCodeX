@@ -58,7 +58,7 @@
                 base.navigateTo("next");
             });
             
-            $(document).keydown(function(e){
+            $(window).keydown(function(e){
                 var keyCode = e.keyCode || e.which;
 
                 switch(keyCode) {

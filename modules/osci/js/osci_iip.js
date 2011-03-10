@@ -289,8 +289,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr('data-center-lon', orig_center.lon)
 			.attr('data-svg', svg_path)
 			.attr('data-overlay', ptiff_overlay);
+
 		iipmap(newdiv);
-	
 	}
 	
 	
