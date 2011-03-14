@@ -31,3 +31,13 @@ ul.selection-toolbar li {
 ul.selection-toolbar li a {
     padding: 5px !important;
 }
+
+div.citation {
+    position: relative;
+    top: 0px;
+    left: -310px;
+    padding: 10px;
+    border: 1px solid #666;
+    width: 300px;
+    background-color: #FC3;
+}

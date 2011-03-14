@@ -8,6 +8,7 @@ function theme_citation(&$vars) {
     foreach($children as $theme) {
         $output .= drupal_render($citation->content[$theme]);
     }
-
+    
+    $output = '<div class="citation">' . $output . '</div>';
     return $output;
 }

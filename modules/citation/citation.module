@@ -43,12 +43,6 @@ function citation_menu() {
         'access arguments'  => array('administer citations'),
     );
 
-    $items['citation/add'] = array(
-        'title'             => t('Add a new citation'),
-        'page callback'     => 'citation_add',
-        'access arguments'  => array('create citation'),
-    );
-
     $items['citation/%citation'] = array(
         'title callback'    => 'citation_page_title',
         'title arguments'   => array(1),
@@ -72,6 +66,21 @@ function citation_menu() {
         'access callback'   => 'citation_access',
         'access arguments'  => array('create', 1),
         'type'              => MENU_LOCAL_TASK,
+    );
+
+    $items['ajax/citation/add'] = array(
+        'title'             => t('Add a new citation'),
+        'page callback'     => 'citation_ajax_add',
+        'access arguments'  => array('create citation'),
+        'file'              => 'citation.ajax.inc',
+    );
+
+    $items['ajax/citation/load/%'] = array(
+        'page callback'     => 'citation_ajax_load',
+        'page arguments'    => array(3),
+        'access arguments'  => array(TRUE),
+        'type'              => MENU_CALLBACK,
+        'file'              => 'citation.ajax.inc',
     );
 
     $items['ajax/citation/%node'] = array(
@@ -195,7 +204,9 @@ function citation_save($citation) {
  */
 function citation_load($cid, $conditions = array(), $reset = FALSE) {
     $cid = (is_numeric($cid)) ? array($cid) : $cid;
-    return entity_load('citation', $cid, $conditions, $reset);
+    $citations = entity_load('citation', $cid, $conditions, $reset);
+
+    return $citations;
 }
 
 function citation_delete($cid) {
@@ -302,7 +313,7 @@ function citation_preprocess_osci_viewer(&$vars) {
                 )
             )
         ),
-        l('Note', 'citation/add', 
+        l('Note', 'ajax/citation/add', 
             array(
                 'attributes' => array(
                     'class' => array('ctools-use-modal', 'citation-note', 'fixed-modal'),
@@ -319,24 +330,6 @@ function citation_preprocess_osci_viewer(&$vars) {
             )
         )
     );
-}
-
-function citation_add() {
-    ctools_include('ajax');
-    ctools_include('modal');
-
-    $form_state = array(
-        'ajax'  => TRUE,
-        'title' => 'Create a note',
-    );
-
-    $output = ctools_modal_form_wrapper('citation_form', $form_state);
-    if (empty($output)) {
-        $output[] = ctools_modal_command_dismiss();
-    }
-
-    print ajax_render($output);
-    exit;
 }
 
 function user_citations($node) {

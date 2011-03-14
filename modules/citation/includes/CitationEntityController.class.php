@@ -7,7 +7,7 @@ class CitationEntityController extends DrupalDefaultEntityController {
 
     public function access($op, $citation) {
         global $user;
-        $citation = end($citation);
+        $citation = (is_array($citation)) ? end($citation) : $citation;
         if (!is_object($citation)) return FALSE;
 
         if (user_access('administer citations')) return TRUE;
@@ -50,7 +50,7 @@ class CitationEntityController extends DrupalDefaultEntityController {
         global $user;
 
         foreach ($citations as $cid => $citation) {
-            if (!$this->access($cid)) continue;
+            if (!$this->access('view', $citation)) continue;
 
             $citations[$cid]->content = array();
 

@@ -3,10 +3,10 @@
 /**
  * Implements hook_schema().
  */
-function citation_schema() {
+function note_schema() {
     $schema = array();
 
-    $schema['citation'] = array(
+    $schema['note'] = array(
         'description' => 'The base table for orders.',
         'fields' => array(
             'cid' => array(
@@ -16,7 +16,7 @@ function citation_schema() {
                 'not null' => TRUE,
             ),
             'nid' => array(
-                'description'   => 'The node id that the citation is located',
+                'description'   => 'The node id that the note is located',
                 'type'          => 'int',
                 'default'       => 0,   
             ),
@@ -26,7 +26,7 @@ function citation_schema() {
                 'default'       => 0,
             ), 
             'body' => array(
-                'description'   => 'The citation body text',
+                'description'   => 'The note body text',
                 'type'          => 'varchar',
                 'length'        => 255,
             ),
@@ -45,7 +45,7 @@ function citation_schema() {
                 'default'       => 0,
             ),
             'paragraph_count' => array(
-                'description'   => 'The number of the paragraph that holds our citation',
+                'description'   => 'The number of the paragraph that holds our note',
                 'type'          => 'int',
                 'default'       => 0,
             ),
