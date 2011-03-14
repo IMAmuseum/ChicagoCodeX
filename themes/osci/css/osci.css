@@ -414,7 +414,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 #osci_more_wrapper ul.osci_pager {
     position: absolute;
     width: 100%;
-    bottom: 10px;
+    top: 30px;
     margin: 0 auto;
     text-align: center;
 }
@@ -474,6 +474,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 #osci_more_wrapper .osci_pager_display_item {
     height: 211px;
     overflow: hidden;
+	margin-top:50px;
 }
 
 #osci_more_wrapper div.figureThumbnail { 
