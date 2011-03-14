@@ -484,6 +484,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     margin: 0 20px 0 0;
     display: inline-block;
     width: 165px;
+	box-align: center;
 }
 
 #osci_more_wrapper div.figureThumbnail span {
