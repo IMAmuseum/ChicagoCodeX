@@ -479,7 +479,9 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     overflow: hidden;
 	margin-top:35px;
 }
-
+#osci_more_wrapper {
+	display:box;
+}
 #osci_more_wrapper div.figureThumbnail { 
     margin: 0 20px 0 0;
     display: inline-block;
