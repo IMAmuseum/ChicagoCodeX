@@ -357,11 +357,12 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     height: 100%;
     overflow: hidden;
     position: relative;
+	font-family:Arial, Helvetica, sans-serif;
 }
 
 #osci_more_tabs ul li {
     display: inline-block;    
-    padding: 4px 6px 2px;
+    padding: 10px 6px 8px 6px;
     margin: 0 10px 0 0;
 }
 
