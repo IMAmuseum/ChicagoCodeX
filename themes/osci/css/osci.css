@@ -92,6 +92,7 @@ body.page-node-reader {
     right: 70px;
 	background: transparent url('../images/btn-prev.png') no-repeat left top;
 	overflow:hidden;display:block;text-indent:999px;
+	opacity: 0.3;
 }
 
 #osci_nav_next {
@@ -103,6 +104,10 @@ body.page-node-reader {
     text-align: right;
 	background: transparent url('../images/btn-next.png') no-repeat left top;
 	overflow:hidden;display:block;text-indent:999px;
+	opacity: 0.3;
+}
+#osci_nav_next:hover, #osci_nav_prev:hover {
+	opacity: 0.8;
 }
 
 #osci_navigation_tools {
