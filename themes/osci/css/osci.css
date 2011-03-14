@@ -362,7 +362,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 
 #osci_more_tabs ul li {
     display: inline-block;    
-    padding: 10px 15px 8px 15px;
+    padding: 8px 15px 8px 15px;
     margin: 0 10px 0 0;
 }
 
@@ -391,7 +391,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     border-radius: 0;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
-    padding: 4px 10px 0;
+    padding: 6px 10px 0 0;
 }
 
 #osci_more_tabs div.ui-tabs-panel {
@@ -479,14 +479,12 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     overflow: hidden;
 	margin-top:35px;
 }
-#osci_more_wrapper {
-	display:box;
-}
+
 #osci_more_wrapper div.figureThumbnail { 
     margin: 0 20px 0 0;
     display: inline-block;
     width: 165px;
-	box-align: center;
+	
 }
 
 #osci_more_wrapper div.figureThumbnail span {
