@@ -382,7 +382,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 
 #osci_more_tabs ul li.ui-state-active a {
     background: #FFF;  
-	background: url('../images/bg-btm-tabs.png') repeat left top; 
+	/*background: url('../images/bg-btm-tabs.png') repeat left top;*/
 }
 
 #osci_more_tabs ul.ui-tabs-nav {
@@ -398,7 +398,8 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     border-radius: 0;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
-    background: url('../images/bg-btm-tabs.png') repeat left top;
+    /*background: url('../images/bg-btm-tabs.png') repeat left top;*/
+	background-color:#fff;
     height: 249px;
     border: 0;
     padding: 10px;
