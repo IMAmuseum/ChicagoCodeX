@@ -2,7 +2,7 @@
     background-color: #FFCC33;
 }
 
-div#osci-citation-dialog {
+div#osci-note-dialog {
     display: none;
 }
 
@@ -11,7 +11,7 @@ div#osci-citation-dialog {
     cursor: pointer;
 }
 
-.osci-citation-dialog {
+.osci-note-dialog {
     background-color: #fff;
     border: 1px;
     padding: 10px;
@@ -32,7 +32,7 @@ ul.selection-toolbar li a {
     padding: 5px !important;
 }
 
-div.citation {
+div.note {
     position: relative;
     top: 0px;
     left: -310px;
