@@ -547,3 +547,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 	padding: 40px !important; 
 	line-height:1.6em;
 }
+
+#osci_viewer {
+	background: url('../images/bg-body.png') repeat left top;
+}
