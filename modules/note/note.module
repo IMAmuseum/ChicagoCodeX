@@ -142,7 +142,7 @@ function note_entity_info() {
         'fieldable'         => TRUE,
         'uri_callback'      => 'note_uri',
         'entity keys'       => array(
-            'id' => 'cid',
+            'id' => 'onid',
         ),
         'view modes'        => array(
             'full' => array(
@@ -166,16 +166,16 @@ function note_entity_info() {
 
 function note_uri($note) {
     return array(
-        'path' => 'note/' . $note->cid,
+        'path' => 'note/' . $note->onid,
     );
 }
 
-function note_page_title($cid) {
-    return $cid;
+function note_page_title($onid) {
+    return $onid;
 }
 
-function note_access($op, $cid) {
-    return entity_get_controller('note')->access($op, $cid);
+function note_access($op, $onid) {
+    return entity_get_controller('note')->access($op, $onid);
 }
 /** 
  * Save a note
@@ -191,7 +191,7 @@ function note_save($note) {
 /** 
  * Load a note
  *
- * @param $cid
+ * @param $onid
  * The note id to load
  *
  * @param $condition
@@ -202,15 +202,15 @@ function note_save($note) {
  *
  * @return the note object
  */
-function note_load($cid, $conditions = array(), $reset = FALSE) {
-    $cid = (is_numeric($cid)) ? array($cid) : $cid;
-    $notes = entity_load('note', $cid, $conditions, $reset);
+function note_load($onid, $conditions = array(), $reset = FALSE) {
+    $onid = (is_numeric($onid)) ? array($onid) : $onid;
+    $notes = entity_load('note', $onid, $conditions, $reset);
 
     return $notes;
 }
 
-function note_delete($cid) {
-    return entity_get_controller('note')->delete($cid);
+function note_delete($onid) {
+    return entity_get_controller('note')->delete($onid);
 }
 
 function note_view($note, $view_mode = 'full') {
@@ -286,7 +286,7 @@ function note_form_submit($form, &$form_state) {
     $note = (object)$form_state['values'];
     field_attach_submit('note', $note, $form, $form_state);
     if ($note = note_save($note)) {
-        $form_state['redirect'] = 'note/'.$note->cid;
+        $form_state['redirect'] = 'note/'.$note->onid;
         drupal_set_message('Successfully saved note');
     }
 }
@@ -335,7 +335,7 @@ function note_preprocess_osci_viewer(&$vars) {
 function user_notes($node) {
     global $user;
     $query = db_select('note', 'c')
-        ->fields('c', array('cid', 'body', 'word_count', 'letter_count', 'paragraph_count', 'original_text'))
+        ->fields('c', array('onid', 'body', 'word_count', 'letter_count', 'paragraph_count', 'original_text'))
         ->condition('uid', $user->uid)
         ->condition('nid', $node->nid)
         ->execute();

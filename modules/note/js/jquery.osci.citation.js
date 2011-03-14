@@ -95,8 +95,8 @@
         };
         
         base.addNotes = function() {
-            var noteLinkMarkup = '<div id="note-${cid}" class="noteTitle">' +
-                '<a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/note/load/${cid}">${body}</a></div>';
+            var noteLinkMarkup = '<div id="note-${onid}" class="noteTitle">' +
+                '<a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/note/load/${onid}">${body}</a></div>';
 
             $.template('noteLink', noteLinkMarkup);
 

@@ -22,15 +22,15 @@ function note_ajax_add() {
 }
 
 
-function note_ajax_load($cid) {
+function note_ajax_load($onid) {
     ctools_include('modal');
     
-    $note = note_load($cid);
+    $note = note_load($onid);
     $note = note_view($note);
 
-    $content = drupal_render($note[$cid]->content);
+    $content = drupal_render($note[$onid]->content);
     $output[] = ajax_command_remove('.note');
-    $output[] = ajax_command_prepend('#note-' . $cid, $content);
+    $output[] = ajax_command_prepend('#note-' . $onid, $content);
 
     print ajax_render($output); 
     exit;

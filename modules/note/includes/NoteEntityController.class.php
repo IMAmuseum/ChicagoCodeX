@@ -29,8 +29,8 @@ class NoteEntityController extends DrupalDefaultEntityController {
         field_attach_presave('note', $note);
 
         try {
-            if ($note->cid) {
-                drupal_write_record('note', $note, 'cid');
+            if ($note->onid) {
+                drupal_write_record('note', $note, 'onid');
                 field_attach_update('note', $note);
             } else {
                 drupal_write_record('note', $note);
@@ -49,17 +49,17 @@ class NoteEntityController extends DrupalDefaultEntityController {
     public function view($notes, $view_mode = 'full') {
         global $user;
 
-        foreach ($notes as $cid => $note) {
+        foreach ($notes as $onid => $note) {
             if (!$this->access('view', $note)) continue;
 
-            $notes[$cid]->content = array();
+            $notes[$onid]->content = array();
 
-            field_attach_prepare_view('note', array($cid => $note), $view_mode);
-            entity_prepare_view('note', array($cid => $note));
-            $notes[$cid]->content += field_attach_view('note', $note, $view_mode);
-            $notes[$cid]->content += array(
+            field_attach_prepare_view('note', array($onid => $note), $view_mode);
+            entity_prepare_view('note', array($onid => $note));
+            $notes[$onid]->content += field_attach_view('note', $note, $view_mode);
+            $notes[$onid]->content += array(
                 '#theme'        => 'note',
-                '#note'     => $notes[$cid],
+                '#note'     => $notes[$onid],
                 '#view_mode'    => $view_mode,
             );
 
@@ -71,21 +71,21 @@ class NoteEntityController extends DrupalDefaultEntityController {
         $notes = $this->view($notes);
         $output = '';
 
-        foreach($notes as $cid => $note) {
+        foreach($notes as $onid => $note) {
             $output .= drupal_render($note->content);
         }
         
         return $output;
     }
 
-    public function delete($cid) {
-        $note = note_load($cid);
+    public function delete($onid) {
+        $note = note_load($onid);
 
         if ($note) {
             $transaction = db_transaction();
 
             try {
-                db_delete('note')->condition('cid', $cid, 'IN')->execute();
+                db_delete('note')->condition('onid', $onid, 'IN')->execute();
                 field_attach_delete('note', $note);
             }
             catch (Exception $e) {

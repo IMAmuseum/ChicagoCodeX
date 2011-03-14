@@ -9,8 +9,8 @@ function note_schema() {
     $schema['note'] = array(
         'description' => 'The base table for orders.',
         'fields' => array(
-            'cid' => array(
-                'description' => 'The primary identifier for an order.',
+            'onid' => array(
+                'description' => 'The primary identifier for a note. The OSCI Note ID',
                 'type' => 'serial',
                 'unsigned' => TRUE,
                 'not null' => TRUE,
@@ -50,7 +50,7 @@ function note_schema() {
                 'default'       => 0,
             ),
         ),
-        'primary key' => array('cid'),
+        'primary key' => array('onid'),
     );
 
     return $schema;
