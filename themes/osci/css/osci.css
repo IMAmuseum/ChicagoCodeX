@@ -392,6 +392,10 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     padding: 6px 10px 0 0;
+	
+	-moz-box-shadow: 0 1px 1px #666;
+    -webkit-box-shadow: 0 1px 1px #666;
+    box-shadow: 0 1px 1px #666;
 }
 
 #osci_more_tabs div.ui-tabs-panel {
