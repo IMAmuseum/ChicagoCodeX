@@ -106,6 +106,8 @@
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
+                    if (data == null) return;
+
                     $.tmpl('noteLink', data).appendTo(base.panel);
 
                     for (var i = 0; i < data.length; i++) {
