@@ -4,13 +4,13 @@
         <?php print $content; ?>
     </div>
     <?php if (isset($thumbnail)) { ?>
-    <div class="figureThumbnail">
+    <div class="figureThumbnail" data-figure_id="<?php print $figure['id']; ?>">
         <?php print $thumbnail; ?>
-        <span class="figure_number">Fig. <?php print isset($figure['figCount']) ? $figure['figCount'] : $figure['id']; ?></span>
+        <span class="figure_number"><?php print isset($figure['number_template']) ? $figure['number_template'] : $figure['id']; ?></span>
     </div>
     <?php } ?>
     <figcaption>
-        <span class="figure_number">Fig. <?php print isset($figure['figCount']) ? $figure['figCount'] : $figure['id']; ?></span>
+        <span class="figure_number"><?php print isset($figure['number_template']) ? $figure['number_template'] : $figure['id']; ?></span>
         <?php print $caption; ?>
     </figcaption>
 </figure>

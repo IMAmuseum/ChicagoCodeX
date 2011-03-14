@@ -24,25 +24,21 @@
                 var $this = $(this);
 
                 if (($this.hasClass("open") && !e.osci_more_open) || e.osci_more_close) {
-                    $this.css({
-                        "-webkit-transform" : "translate(0, " + $this.outerHeight() + "px)",
-                        "-moz-transform" : "translate(0, " + $this.outerHeight() + "px)",
-                        "transform" : "translate(0, " + $this.outerHeight() + "px)",
-                    });
+                    if (base.options.moreToggleCallback !== undefined) {
+                        base.options.moreToggleCallback($this, "close");
+                    }
                     $this.removeClass("open");
                 } else {
-                    $this.css({
-                        "-webkit-transform" : "translate(0, 0)",
-                        "-moz-transform" : "translate(0, 0)",
-                        "transform" : "translate(0, 0)"
-                    });
+                    if (base.options.moreToggleCallback !== undefined) {
+                        base.options.moreToggleCallback($this, "open");
+                    }
                     $this.addClass("open");
                 }
             }).addClass("open");
             
             base.$el.bind("osci_more_goto", function(e){
                 var $this = $(this), tabNum, tabData, tab, itemNumber, gotoPage,
-                    tabs = $("#" + base.options.tab_container_id, base.$el);
+                    tabs = $("#" + base.options.tabContainerId, base.$el);
                 
                 if (base.tab_map[e.tab_name] !== undefined) {
                     tabNum = base.tab_map[e.tab_name];
@@ -52,10 +48,9 @@
                     tab = $("div.ui-tabs-panel:not(.ui-tabs-hide)", $this);
                     tabData = tab.data();
                     
-                    console.log(tabData);
-                    itemNumber = $(e.id, tab).index();
-                    
-                    gotoPage = itemNumber * tabData.osci_pager_per_page;
+                    itemNumber = $(e.selector, tab).index();
+
+                    gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page);
                     $("li.osci_pager_item:eq(" + gotoPage + ")", tab).children().click();
                     
                     $this.trigger({ type : "osci_more_toggle", osci_more_open : true});
@@ -68,7 +63,7 @@
             }).click();
             
             tabs = $("<div>", {
-                id : base.options.tab_container_id
+                id : base.options.tabContainerId
             }).append('<ul><li class="placeholder_tab"><a href="#osci_more_tab_1">placeholder</a></li></ul><div id="osci_more_tab_1"></div>').appendTo(base.$el).tabs();
             tabs.tabs("remove", 0);
         };
@@ -76,7 +71,7 @@
         base.add_content = function(tabName, data, paginate, perPage)
         {
             var tabNum, tabId = "osci_tab_" + tabName, tab, total, i, pager, item, maxPagesDisplay = 5, totalPages,
-                tabs = $("#" + base.options.tab_container_id, base.$el), tabWidth, calcWidth;
+                tabs = $("#" + base.options.tabContainerId, base.$el), tabWidth, calcWidth;
 
             if (base.tab_map[tabName] !== undefined) {
                 tabNum = base.tab_map[tabName];
@@ -260,13 +255,13 @@
                     });
                     
                     tab.data({
-                           osci_pager_total_items : total,
-                           osci_pager_total_pages : totalPages,
-                           osci_pager_per_page : perPage,
-                           osci_pager_current_page : 1,
-                           osci_pager_max_pages_display : maxPagesDisplay
-                       })
-                       .append(pager);
+                       osci_pager_total_items : total,
+                       osci_pager_total_pages : totalPages,
+                       osci_pager_per_page : perPage,
+                       osci_pager_current_page : 1,
+                       osci_pager_max_pages_display : maxPagesDisplay
+                   })
+                   .append(pager);
                     
                     $("a.osci_pager_nav_first", "#" + tabId).click();
                 } else {
@@ -279,8 +274,9 @@
     };
 
     $.osci.more.defaultOptions = {
-        tab_container_id : "osci_more_tabs",
-        default_tabs : ["footnotes"]
+        tabContainerId : "osci_more_tabs",
+        defaultTabs : ["footnotes"],
+        moreToggleCallback : undefined
     };
 
     $.fn.osci_more = function( options )

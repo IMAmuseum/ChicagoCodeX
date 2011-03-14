@@ -161,6 +161,7 @@ function osci_body_copy_render_layout_print($nid)
     $figures = array();
     $figureCount = 0;
 
+    $catalogNumber = ($node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
     $bodyCopyElements = osci_body_copy_sort_elements($elements);
 
     foreach ($bodyCopyElements as $k => $weight) {
@@ -180,7 +181,14 @@ function osci_body_copy_render_layout_print($nid)
                     $fId = $link->nodeValue;
                     $parent = $link->parentNode;
 
-                    $link->nodeValue = 'Fig. ' .  ++$figureCount . '';
+                    $numberTemplate = ($v[0]['osci_figures'][$fId]['number_template']) ? $v[0]['osci_figures'][$fId]['number_template'] : "Fig. cat#.fig#";
+                    $numberTemplate = str_replace(
+                        array('cat#', 'fig#'),
+                        array($catalogNumber, ++$figureCount),
+                        $numberTemplate
+                    );
+                    $v[0]['osci_figures'][$fId]['number_template'] = $numberTemplate;
+                    $link->nodeValue = $numberTemplate;
                     $linkHtml = $dom->saveXML($link);
 
                     $figure = $figures[$fId];
@@ -249,6 +257,7 @@ function osci_body_copy_render_layout($nid)
     $figureOrder = array();
     $figureCount = 0;
 
+    $catalogNumber = ($node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
     $bodyCopyElements = osci_body_copy_sort_elements($elements);
 
     foreach ($bodyCopyElements as $k => $weight) {
@@ -266,7 +275,14 @@ function osci_body_copy_render_layout($nid)
                 foreach($links as $link) {
                     $fId = $link->nodeValue;
 
-                    $link->nodeValue = 'Fig. ' .  ++$figureCount . '';
+                    $numberTemplate = ($v[0]['osci_figures'][$fId]['number_template']) ? $v[0]['osci_figures'][$fId]['number_template'] : "Fig. cat#.fig#";
+                    $numberTemplate = str_replace(
+                        array('cat#', 'fig#'),
+                        array($catalogNumber, ++$figureCount),
+                        $numberTemplate
+                    );
+                    $v[0]['osci_figures'][$fId]['number_template'] = $numberTemplate;
+                    $link->nodeValue = $numberTemplate;
                     $linkHtml = $dom->saveXML($link);
 
                     $figureOrder[$figureCount] = $fId;
@@ -658,6 +674,12 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
                 '#autocomplete_path'    => 'ajax/figure',
                 '#default_value'        => isset($figure['figure_reference']) ? $figure['figure_reference'] : '',
             ),
+            'number_template' => array(
+            	'#title'            => t('Number Template'),
+                '#description'      => t('The template to use for generating the figure number. (cat# will be replaced with the catalog number, fig# will be replaced with the figure number)'),
+                '#type'             => 'textfield',
+                '#default_value'    => isset($figure['number_template']) ? $figure['number_template'] : 'Fig. cat#.fig#',
+            ),
             'caption' => array(
                 '#title'            => t('Caption'),
                 '#description'      => t('The caption text to associate with this figure'),
@@ -677,7 +699,8 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
                     'tr'    => 'top right',
                     'bl'    => 'bottom left',
                     'br'    => 'bottom right',
-                    'p'     => 'full page'
+                    'p'     => 'full page',
+                    'n'     => 'none'
                 )
             ),
             'columns' => array(

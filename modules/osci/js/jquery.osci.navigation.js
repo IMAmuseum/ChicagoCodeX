@@ -43,7 +43,7 @@
                     if (base.navigation.nid !== e.originalEvent.state.nid) {
                         base.navigation.nid = e.originalEvent.state.nid;
                         base.navigation.to = {operation : "page", value : "first"};
-                        _load_section();
+                        base.options.loadFunction(base.navigation);
                     }
                 }
             });
@@ -82,7 +82,7 @@
             }
             
             _create_table_of_contents();
-            _load_section();
+            base.options.loadFunction(base.navigation);
         };    
         
         function _get_table_of_contents(nid, bid)
@@ -103,37 +103,7 @@
             //$("ul", "#" + base.options.tocId).trigger("osci_toc_update_heights");
             
             $.osci.storage.clearCache("osci_layout_cache:");
-            _load_section(false);
-        }
-        
-        function _load_section(changeState)
-        {
-            if (changeState === undefined) {
-                changeState = true;
-            }
-            
-            var footnotes, data, more, figures,
-                content = $.osci.storage.getUrl({
-                    url :  base.options.contentEndpoint.replace("{$nid}", base.navigation.nid),
-                    expire : base.options.cacheTime
-                });
-            
-            data = $(content.data);
-            footnotes = $("#field_osci_footnotes", data).remove();
-
-            more = $("#osci_more_wrapper").data("osci.more");
-            more.add_content("footnotes", $(".footnote", footnotes), true, 1);
-            
-            figures = $("#field_osci_figures", data);
-            more.add_content("figures", $(".figureThumbnail", figures).remove(), true);
-            
-            $("#" + base.options.readerId).osci_layout(data, {
-                cacheId : base.navigation.nid
-            });
-            
-            if (changeState) {
-                _update_history();
-            }
+            base.options.loadFunction(base.navigation);
         }
         
         function _reset_navigation()
@@ -256,7 +226,8 @@
                             base.navigation.to = {operation : "page", value : "first"};
                         }
 
-                        _load_section();
+                        base.options.loadFunction(base.navigation);
+                        _update_history();
                         return;
                     }
                     break;
@@ -269,7 +240,8 @@
                             base.navigation.to = {operation : "page", value : "last"};
                         }
 
-                        _load_section();
+                        base.options.loadFunction(base.navigation);
+                        _update_history();
                         return;
                     }
                     base.navigation.currentPage--;
@@ -325,7 +297,8 @@
                     
                     if (base.navigation.nid !== value) {
                         base.navigation.nid = value;
-                        _load_section(true);
+                        base.options.loadFunction(base.navigation);
+                        _update_history();
                     }
 
                     if (identifier !== undefined) {
@@ -450,44 +423,14 @@
                     var $this = $(this), i, eventLen;
 
                     if (($this.hasClass("open") && !e.osci_nav_open) || e.osci_nav_close) {
-                        $this.css({
-                            "-webkit-transform" : "translate(-" + $this.outerWidth() + "px, 0)",
-                            "-moz-transform" : "translate(-" + $this.outerWidth() + "px, 0)",
-                            "transform" : "translate(-" + $this.outerWidth() + "px, 0)"
-                        });
-                        
-                        if (base.options.tocToggleElements.close && base.options.tocToggleElements.close.length) {
-                            eventLen = base.options.tocToggleElements.close.length;
-                            for (i = 0; i < eventLen; i++) {
-                                $(base.options.tocToggleElements.close[i].selector).trigger(
-                                    $.extend(
-                                        {type : base.options.tocToggleElements.close[i].event},
-                                        base.options.tocToggleElements.close[i].eventData
-                                    )
-                                );
-                            }
+                        if (base.options.tocToggleCallback !== undefined) {
+                            base.options.tocToggleCallback($this, "close");
                         }
-                        
                         $this.removeClass("open");
                     } else {
-                        $this.css({
-                            "-webkit-transform" : "translate(0px, 0)",
-                            "-moz-transform" : "translate(0px, 0)",
-                            "transform" : "translate(0px, 0)"
-                        });
-                        
-                        if (base.options.tocToggleElements.open && base.options.tocToggleElements.open.length) {
-                            eventLen = base.options.tocToggleElements.open.length;
-                            for (i = 0; i < eventLen; i++) {
-                                $(base.options.tocToggleElements.open[i].selector).trigger(
-                                    $.extend(
-                                        {type : base.options.tocToggleElements.open[i].event},
-                                        base.options.tocToggleElements.open[i].eventData
-                                    )
-                                );
-                            }
+                        if (base.options.tocToggleCallback !== undefined) {
+                            base.options.tocToggleCallback($this, "open");
                         }
-
                         $this.addClass("open");
                     }
                     
@@ -704,21 +647,18 @@
         headerId : "osci_header",
         tocId : "osci_table_of_contents_wrapper",
         tocOverlay : false,
-        tocToggleElements : {
-            open : [],
-            close : []
-        },
         referenceImagePreset : "thumbnail_165w_url",
         navId : "osci_navigation_wrapper",
         apiEndpoint : "http://osci.localhost/api/navigation/",
-        contentEndpoint : "http://osci.localhost/node/{$nid}/bodycopy",
         sectionNavId : "osci_navigation_section",
         bid : 0,
         nid : 0,
         mlid : 0,
         prevLinkId : "osci_nav_prev",
         nextLinkId : "osci_nav_next",
-        cacheTime : 86400
+        cacheTime : 86400,
+        tocToggleCallback : undefined,
+        loadFunction : undefined
     };
 
 })(jQuery);

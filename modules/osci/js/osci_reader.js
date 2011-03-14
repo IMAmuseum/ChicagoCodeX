@@ -1,6 +1,26 @@
 (function($) {
     $(document).ready(function() {
-        $("#osci_more_wrapper").osci_more();
+        $("#osci_more_wrapper").osci_more({
+            moreToggleCallback : function(more, state)
+            {
+                switch (state) {
+                    case "open":
+                        more.css({
+                            "-webkit-transform" : "translate(0, 0)",
+                            "-moz-transform" : "translate(0, 0)",
+                            "transform" : "translate(0, 0)"
+                        });
+                        break;
+                    case "close":
+                        more.css({
+                            "-webkit-transform" : "translate(0, " + more.outerHeight() + "px)",
+                            "-moz-transform" : "translate(0, " + more.outerHeight() + "px)",
+                            "transform" : "translate(0, " + more.outerHeight() + "px)",
+                        });
+                        break;
+                }
+            }
+        });
         
         $.osci.layout.defaultOptions = {
             minColumnWidth : Drupal.settings.osci_layout.min_column_width,
@@ -24,23 +44,68 @@
             navId : Drupal.settings.osci_navigation.nav_id,
             tocId : Drupal.settings.osci_navigation.toc_id,
             apiEndpoint : Drupal.settings.osci_navigation.api_endpoint,
-            contentEndpoint : Drupal.settings.osci_navigation.content_endpoint,
             prevLinkId : Drupal.settings.osci_navigation.prev_link_id,
             nextLinkId : Drupal.settings.osci_navigation.next_link_id,
             cacheTime : Drupal.settings.osci_navigation.cache_time,
             bid : parseInt(Drupal.settings.osci.bid, 10),
             nid : parseInt(Drupal.settings.osci.nid, 10),
             mlid : parseInt(Drupal.settings.osci.mlid, 10),
-            tocToggleElements : {
-                open : [
-                    {selector : "#osci_more_wrapper", event : "osci_more_toggle", eventData : {osci_more_close : true}},
-                    {selector : "#osci_citation_panel_wrapper", event : "osci_citation_toggle", eventData : {osci_citation_close : true}}
-                ],
-                close : [
-                    {selector : "#osci_citation_panel_wrapper", event : "osci_citation_toggle", eventData : {osci_citation_open : true}}
-                ]
+            tocOverlay : false,
+            tocToggleCallback : function (toc, state)
+            {
+                switch (state) {
+                    case "open":
+                        toc.css({
+                            "-webkit-transform" : "translate(0px, 0)",
+                            "-moz-transform" : "translate(0px, 0)",
+                            "transform" : "translate(0px, 0)"
+                        });
+                        
+                        $("#osci_more_wrapper").trigger({
+                            type : "osci_more_toggle",
+                            osci_more_close : true
+                        });
+                        $("#osci_citation_panel_wrapper").trigger({
+                            type : "osci_citation_toggle",
+                            osci_citation_close : true
+                        });
+                        break;
+                    case "close":
+                        toc.css({
+                            "-webkit-transform" : "translate(-" + toc.outerWidth() + "px, 0)",
+                            "-moz-transform" : "translate(-" + toc.outerWidth() + "px, 0)",
+                            "transform" : "translate(-" + toc.outerWidth() + "px, 0)"
+                        });
+                        
+                        $("#osci_citation_panel_wrapper").trigger({
+                            type : "osci_citation_toggle",
+                            osci_citation_open : true
+                        });
+                        break;
+                }
             },
-            tocOverlay : false
+            loadFunction : function (navData)
+            {
+                var footnotes, data, more, figures,
+                    endpoint = Drupal.settings.osci_navigation.content_endpoint,
+                    content = $.osci.storage.getUrl({
+                        url :  endpoint.replace("{$nid}", navData.nid),
+                        expire : Drupal.settings.osci_navigation.cache_time
+                    });
+                
+                data = $(content.data);
+                footnotes = $("#field_osci_footnotes", data).remove();
+
+                more = $("#osci_more_wrapper").data("osci.more");
+                more.add_content("footnotes", $(".footnote", footnotes), true, 1);
+                
+                figures = $("#field_osci_figures", data);
+                more.add_content("figures", $(".figureThumbnail", figures).remove(), true);
+                
+                $("#" + Drupal.settings.osci_navigation.reader_id).osci_layout(data, {
+                    cacheId : navData.nid
+                });
+            }
         });
         
         $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
@@ -50,7 +115,7 @@
             $("#osci_more_wrapper").trigger({
                 type : "osci_more_goto",
                 tab_name : "footnotes",
-                id : $this.attr("href")
+                selector : $this.attr("href")
             });
         });
         
@@ -72,13 +137,24 @@
         
         $("a.figure-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
-            var $this = $(this);
+            var $this = $(this),
+                visible;
 
-            $(document).trigger({
-                type : "osci_navigation",
-                osci_to : "selector",
-                osci_value : $this.attr("href")
-            });
+            visible = $($this.attr("href") + ":visible", "#osci_pages");
+            
+            if (visible.length) {
+                $(document).trigger({
+                    type : "osci_navigation",
+                    osci_to : "selector",
+                    osci_value : $this.attr("href")
+                });
+            } else {
+                $("#osci_more_wrapper").trigger({
+                    type : "osci_more_goto",
+                    tab_name : "figures",
+                    selector : "div[data-figure_id=" + $this.attr("href").substr(1) + "]"
+                });
+            }
         });
         
         $("div.figureThumbnail", "#osci_more_wrapper").live("click", function(e){
