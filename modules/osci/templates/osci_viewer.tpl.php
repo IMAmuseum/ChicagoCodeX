@@ -10,6 +10,7 @@
     <div id="osci_viewer"></div>
     <div id="osci_citation_panel_wrapper">
         <div class="osci_reference_image everpresent" data-image_preset="thumbnail_100w_url"></div>
+        <?php print $citations; ?>
     </div>
     <div id="osci_navigation_wrapper">
         <div id="osci_navigation">

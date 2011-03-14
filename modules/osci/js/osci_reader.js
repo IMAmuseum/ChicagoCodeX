@@ -33,9 +33,13 @@
             layoutCacheTime : Drupal.settings.osci_layout.cache_time
         };
         
+        //$('#osci_citation_panel_wrapper').overscroll();
+
         $.osci.citation({
             citationPanelId : "osci_citation_panel_wrapper",
-            panelPixelsClosed : 20
+            panelPixelsClosed : 20,
+            userCitationCallback : Drupal.settings.basePath + 'ajax/citation',
+            citationCallback : Drupal.settings.basePath + 'ajax/citation/add',
         });
         
         $.osci.navigation({
