@@ -538,10 +538,16 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 /* new steez */
 #osci_viewer .osci_page {
 	background-color:#fff;
-	-moz-box-shadow: 0 2px 6px #A3A3A3;
-    -webkit-box-shadow: 0 2px 6px #A3A3A3;
-    box-shadow: 0 2px 6px #A3A3A3;
+	-moz-box-shadow: 0 2px 6px #666;
+    -webkit-box-shadow: 0 2px 6px #666;
+    box-shadow: 0 2px 6px #666;
 	
+}
+#osci_more_wrapper div.figureThumbnail {
+	-moz-box-shadow: 0 2px 6px #666;
+    -webkit-box-shadow: 0 2px 6px #666;
+    box-shadow: 0 2px 6px #666;
+	border:5px solid #fff;
 }
 .footnote { 
 	padding: 40px !important; 
