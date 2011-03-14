@@ -474,7 +474,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 #osci_more_wrapper .osci_pager_display_item {
     height: 211px;
     overflow: hidden;
-	margin-top:50px;
+	margin-top:40px;
 }
 
 #osci_more_wrapper div.figureThumbnail { 
