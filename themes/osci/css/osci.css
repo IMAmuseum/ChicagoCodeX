@@ -552,11 +552,10 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 	background-color:#fff;
 	
 	position:relative;
-	text-align:left;
+	font-family:Arial, Helvetica, sans-serif;
 }
 div.figureThumbnail .figure_number {
-	position:absolute;
-	left:0px	
+	
 }
 .footnote { 
 	padding: 40px !important; 
