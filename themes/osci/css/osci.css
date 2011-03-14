@@ -555,7 +555,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
 	font-family:Arial, Helvetica, sans-serif;
 }
 div.figureThumbnail .figure_number {
-	
+	text-align:left;
 }
 .footnote { 
 	padding: 40px !important; 
