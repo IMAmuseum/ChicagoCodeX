@@ -33,13 +33,14 @@
             layoutCacheTime : Drupal.settings.osci_layout.cache_time
         };
         
-        //$('#osci_citation_panel_wrapper').overscroll();
+        //$('#osci_note_panel_wrapper').overscroll();
 
-        $.osci.citation({
-            citationPanelId : "osci_citation_panel_wrapper",
+        $.osci.note({
+            notePanelId : "osci_note_panel_wrapper",
             panelPixelsClosed : 20,
-            userCitationCallback : Drupal.settings.basePath + 'ajax/citation',
-            citationCallback : Drupal.settings.basePath + 'ajax/citation/add',
+            userNoteCallback : Drupal.settings.basePath + 'ajax/note',
+            noteAddCallback : Drupal.settings.basePath + 'ajax/note/add',
+            noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save',
         });
         
         $.osci.navigation({
@@ -69,9 +70,9 @@
                             type : "osci_more_toggle",
                             osci_more_close : true
                         });
-                        $("#osci_citation_panel_wrapper").trigger({
-                            type : "osci_citation_toggle",
-                            osci_citation_close : true
+                        $("#osci_note_panel_wrapper").trigger({
+                            type : "osci_note_toggle",
+                            osci_note_close : true
                         });
                         break;
                     case "close":
@@ -81,9 +82,9 @@
                             "transform" : "translate(-" + toc.outerWidth() + "px, 0)"
                         });
                         
-                        $("#osci_citation_panel_wrapper").trigger({
-                            type : "osci_citation_toggle",
-                            osci_citation_open : true
+                        $("#osci_note_panel_wrapper").trigger({
+                            type : "osci_note_toggle",
+                            osci_note_open : true
                         });
                         break;
                 }
