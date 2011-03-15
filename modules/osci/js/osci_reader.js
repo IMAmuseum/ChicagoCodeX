@@ -105,7 +105,45 @@
                 more.add_content("footnotes", $(".footnote", footnotes), true, 1);
                 
                 figures = $("#field_osci_figures", data);
-                more.add_content("figures", $(".figureThumbnail", figures).remove(), true);
+                more.add_content("figures", $(".figureThumbnail", figures).remove(), true, undefined, function(tab){
+                    $(".figureThumbnail", tab).each(function(i, elem){
+                        var $elem = $(elem);
+                        $("<a>", {
+                            text : "goto",
+                            href : "#",
+                            click : function(e) {
+                                e.preventDefault();
+                                var id = $("img", $(this).parent()).data("figure_id");
+                                
+                                $(document).trigger({
+                                    type : "osci_navigation",
+                                    osci_to : "selector",
+                                    osci_value : "#" + id
+                                });
+                                
+                                $("#osci_more_wrapper").trigger({
+                                    type : "osci_more_toggle",
+                                    osci_more_close : true
+                                });
+                            },
+                            "class" : "figure_goto"
+                        }).appendTo($elem);
+                        
+                        $("<a>", {
+                            text : "fullscreen",
+                            href : "#",
+                            click : function(e) {
+                                e.preventDefault();
+                                var id = $("img", $(this).parent()).data("figure_id");
+                                
+                                $("#" + id, "#osci_pages").trigger({
+                                    type : "osci_figure_fullscreen"
+                                });
+                            },
+                            "class" : "figure_fullscreen"
+                        }).appendTo($elem);
+                    });
+                });
                 
                 $("#" + Drupal.settings.osci_navigation.reader_id).osci_layout(data, {
                     cacheId : navData.nid
@@ -162,22 +200,6 @@
             }
         });
         
-        $("div.figureThumbnail", "#osci_more_wrapper").live("click", function(e){
-            e.preventDefault();
-            var id = $("img", this).data("figure_id");
-            
-            $(document).trigger({
-                type : "osci_navigation",
-                osci_to : "selector",
-                osci_value : "#" + id
-            });
-            
-            $("#osci_more_wrapper").trigger({
-                type : "osci_more_toggle",
-                osci_more_close : true
-            });
-        });
-        
         $("#" + Drupal.settings.osci_layout.viewer_id).click(function(e){
             $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
                 type : "osci_nav_toggle",
@@ -189,9 +211,6 @@
                 osci_more_close : true
             });
         });
-
-
-        
 
         $(".osci_reference_image a", "#osci_table_of_contents_wrapper").fancybox();
         
@@ -228,12 +247,17 @@
      * Figure Image Handling
      */
     $(document).bind("osci_layout_complete", function(e) {
-        $('figure.image > .figureContent > a', "#osci_pages").fancybox();
+        var figureImages = $("figure.image", "#osci_pages");
         
-        $('figure.image > .figureContent img').each(function() {
+        $('.figureContent > a', figureImages).fancybox();
+        
+        $('.figureContent img', figureImages).each(function() {
             $(this).width($(this).parents('.figureContent').width());
             $(this).height($(this).parents('.figureContent').height());
         });
 
+        figureImages.bind("osci_figure_fullscreen", function(e) {
+            $('.figureContent > a', this).click();
+        });
     });
 })(jQuery);

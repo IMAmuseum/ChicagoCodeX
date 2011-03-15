@@ -68,7 +68,7 @@
             tabs.tabs("remove", 0);
         };
         
-        base.add_content = function(tabName, data, paginate, perPage)
+        base.add_content = function(tabName, data, paginate, perPage, callback)
         {
             var tabNum, tabId = "osci_tab_" + tabName, tab, total, i, pager, item, maxPagesDisplay = 5, totalPages,
                 tabs = $("#" + base.options.tabContainerId, base.$el), tabWidth, calcWidth;
@@ -266,6 +266,10 @@
                     $("a.osci_pager_nav_first", "#" + tabId).click();
                 } else {
                     tab.html(data);
+                }
+                
+                if ($.isFunction(callback)) {
+                    callback(tab);
                 }
             }
         }
