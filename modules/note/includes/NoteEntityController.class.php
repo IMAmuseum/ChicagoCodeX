@@ -24,8 +24,12 @@ class NoteEntityController extends DrupalDefaultEntityController {
     }
 
     public function save($note) {
-        $transaction = db_transaction();
+        global $user;
         $note = (object)$note;
+        if (!$note->uid) $note->uid = $user->uid;
+
+        $transaction = db_transaction();
+
         field_attach_presave('note', $note);
 
         try {

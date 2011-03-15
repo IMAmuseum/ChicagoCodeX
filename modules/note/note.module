@@ -131,6 +131,7 @@ function note_theme() {
             'note'  => NULL, 
             'view_mode' => 'full',
         ),
+        'template'  => 'note',
         'file'  => 'note.templates.inc',
     );
 

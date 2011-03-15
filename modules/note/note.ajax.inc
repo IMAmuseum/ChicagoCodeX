@@ -22,7 +22,6 @@ function note_ajax_add() {
 }
 
 function note_ajax_save($onid = null) {
-    //TODO: save note
     note_save($_POST);
 }
 
@@ -34,7 +33,7 @@ function note_ajax_load($onid) {
 
     $content = drupal_render($note[$onid]->content);
     $output[] = ajax_command_remove('.note');
-    $output[] = ajax_command_prepend('#note-' . $onid, $content);
+    $output[] = ajax_command_prepend('#note-link-' . $onid, $content);
 
     print ajax_render($output); 
     exit;

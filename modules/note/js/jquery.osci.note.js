@@ -15,25 +15,40 @@
         {
             base.options = $.extend({}, $.osci.note.defaultOptions, options);
             base.panel = $("#" + base.options.notePanelId);
+            var noteLinkMarkup = '<div id="note-link-${onid}" class="noteTitle">' +
+                '<a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/note/load/${onid}">${body}</a></div>';
+
+            $.template('noteLink', noteLinkMarkup);
 
             $(document).bind("osci_layout_complete", function(e) {
 
                 base.addNotes();
 
-                //TODO: get this working
-                $('.highlighter').hover(function() {
-console.log('hi');
+                /************************************************
+                 * Highlight/Note hover handling
+                 */
+
+                $('p').delegate('span.highlight-note', 'hover', function(e) {
                     var onid = $(this).data('onid');
-                    $('#note-' + onid).addClass('note-link-hover');
-                }, function() {
-                    $('#note-' + onid).removeClass('note-link-hover');
+                    $('#note-link-' + onid).toggleClass('note-link-hover');
+                    if (e.type == 'mouseenter') {
+                        $('#note-link-' + onid + ' a').click();
+                    }
+                });
+
+                $('p').delegate('span.highlight', 'hover', function() {
+                    $(this).toggleClass('highlight-hover');
                 });
 
                 /*************************************************
                  * Dialog interaction
                  */
+
                 $.osci.note.toolbar = $('ul.selection-toolbar').detach();
 
+                /**
+                 * Save a highlight
+                 */
                 $('a.note-highlight').live('click', function(e) {
                     e.preventDefault();
 
@@ -53,9 +68,11 @@ console.log('hi');
                         data: data,
                         success: base.addNotes(),
                     });
-                    //TODO: save note via ajax
                 });
 
+                /**
+                 * Update form fields when submitting a note
+                 */
                 $(document).bind('CToolsAttachBehaviors', function(e, modal) {
                     var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
                     var wordCount = $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length;
@@ -67,6 +84,9 @@ console.log('hi');
                     $("input[name='paragraph_count']").val($.osci.note.activeParagraph.data('paragraph_id'));
                 });
 
+                /**
+                 * Paragraph hover styles
+                 */
                 $('#osci_viewer p.osci_paragraph').hover(
                     function() {
                         var id = $(this).data('paragraph_id');
@@ -80,6 +100,9 @@ console.log('hi');
                     }
                 );
 
+                /**
+                 * Handle selection dialog
+                 */
                 $('#osci_viewer .osci_paragraph').mouseup(function() {
                     $.osci.note.selection = base.getSelected();
                     $.osci.note.activeParagraph = $(this);
@@ -90,6 +113,15 @@ console.log('hi');
                     //var toolbar = $('ul.selection-toolbar').show();
                     $.osci.note.toolbar.appendTo(this); 
 
+                });
+
+                /*************************************
+                 * handle note dialog
+                 */
+
+                $('.note-close-link').live('click', function(e) {
+                    e.preventDefault();
+                    $(this).parents('.note').remove();
                 });
 
             });
@@ -118,10 +150,6 @@ console.log('hi');
         };
         
         base.addNotes = function() {
-            var noteLinkMarkup = '<div id="note-${onid}" class="noteTitle">' +
-                '<a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/note/load/${onid}">${body}</a></div>';
-
-            $.template('noteLink', noteLinkMarkup);
 
             $('.noteTitle').remove();
 
@@ -148,8 +176,10 @@ console.log('hi');
         base.highlightTxt = function(txt, note) {
             $.osci.note.toolbar.detach();
     
+            //TODO work in note data settings
             var data = base.getSelectionData(txt, note.original_text);
-            var replacementTxt = '<span data-onid="' + note.onid + '" class="highlighter">' + note.original_text + '</span>';
+            var class = (note.body !== null) ? 'highlight-note' : 'highlight';
+            var replacementTxt = '<span data-onid="' + note.onid + '" class="' + class + '">' + note.original_text + '</span>';
             txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
 
             return data;

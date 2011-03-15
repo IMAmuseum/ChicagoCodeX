@@ -1,5 +1,10 @@
-.highlighter {
+.highlight-hover,
+.highlight-note {
     background-color: #FFCC33;
+}
+
+.highlight {
+    border-bottom: 2px dashed #FFCC33;
 }
 
 div#osci-note-dialog {
@@ -40,4 +45,13 @@ div.note {
     border: 1px solid #666;
     width: 300px;
     background-color: #FC3;
+}
+
+div.note div.links {
+    float: right;
+}
+
+div.note div.links ul,
+div.note div.links ul li {
+    display: inline;
 }
