@@ -45,7 +45,7 @@
         {
             var i = 0, elements, totalElements = 0, page, currentElement, pageElementCount, 
                 figureLinks, overflow, contentOffset = 0, cache = null, heightRemain = 0, 
-                figureCarryover, figureCarryoverCount, figureCarryoverI = 0;
+                figureCarryover, figureCarryoverCount, figureCarryoverI = 0, plateFigure;
 
             //Trigger event so we know layout is begining
             $(document).trigger("osci_layout_start");
@@ -55,13 +55,14 @@
             
             //Clear viewer div so we can insert new layout
             base.viewer.empty();
-            base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
             
             //Check to see if layout has been cached in localstorage
             cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
             
             //No cache process content for layout
             if (cache === null) {
+                base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
+                
                 //Load content into prerender div
                 base.prerender.append(base.data);
                 
@@ -92,6 +93,12 @@
                     })).addClass("osci_paragraph_" + (j + 1) + " osci_paragraph").attr("data-paragraph_id", j + 1);
                 });
     
+                //Add the plate figure if found
+                plateFigure = base.figures.filter("#osci_plate_fig");
+                if (plateFigure.length) {
+                    figureCarryover = ["#osci_plate_fig"];
+                }
+                
                 //Loop over the elements to add them to the layout
                 while (i < totalElements) {
                     currentElement = $(elements[i]).clone();
@@ -243,15 +250,20 @@
                     linkLocation = $l.position().top;
                     if (linkLocation >= 0 && linkLocation <= pageColumnData[pageColumnNumber].height) {
                         //process the figure
-                        figureProcessed = _process_figure($l, page);
-                        //if a figure was processed exit the loop
+                        figureProcessed = _process_figure($l.attr("href"), page);
+
+                        //Add a class to the figure link (in current content and the prerendered content) so it is only processed once
+                        $("a[href=" + $l.attr("href") + "]", base.prerender).addClass("processed");
+                        $l.addClass("processed");
+                        
+                        //if a figure was processed and not carried over exit the loop
                         if (figureProcessed) {
                             return false;
                         }
                     }
                 });
 
-                //If a figure has been processed, start the current page processing over
+                //If a figure has been processed and not carried over, start the current page processing over
                 if (figureProcessed) {
                     page.data("process", "restart");
                     return true;
@@ -303,21 +315,18 @@
         }
 
         //process a figure
-        function _process_figure(figureLink, page)
+        function _process_figure(figureId, page)
         {
             var figure, aspect, columns, position, verticalPosition, horizontalPosition, column, addLeftPadding = 0,
                 offsetLeft, offsetTop, width, height, captionHeight, columnCoverage = [], colStart, colEnd, pageFigures,
-                figureOffset, figureX, figureY, placed = false, placementAttempts = 0, pageData;
+                figureOffset, figureX, figureY, placed = false, placementAttempts = 0, pageData, i, checkWidth,
+                availableWidth;
 
             //Get the figures currently on the page to check if current figure can fit
             pageFigures = $("figure", page);
-            
-            //Add a class to the figure link (in current content and the prerendered content) so it is only processed once
-            $("a[href=" + figureLink.attr("href") + "]", base.prerender).addClass("processed");
-            figureLink.addClass("processed");
 
             //get the actual figure
-            figure = base.figures.filter(figureLink.attr("href"));
+            figure = base.figures.filter(figureId);
 
             //Get figure layout hint data from data attributes on the figure element
             columns = figure.data("columns");
@@ -336,7 +345,7 @@
                 if (typeof(columns) === 'string' && columns.indexOf("%") > 0) {
                     columns = Math.ceil((parseInt(columns, 10) / 100) * base.options.columnsPerPage);
                 }
-    
+
                 //Calculate maximum width for a figure
                 if (columns > base.options.columnsPerPage || position === 'p') {
                     width = base.options.innerPageWidth;
@@ -345,7 +354,7 @@
                     width = (columns * base.options.columnWidth) + (base.options.gutterWidth * (columns - 1));
                 }
                 figure.css("width", width + "px");
-    
+                
                 //Get the height of the caption
                 captionHeight = $("figcaption", figure).height();
                 
@@ -356,21 +365,23 @@
                 if (height > base.options.innerPageHeight) {
                     height = base.options.innerPageHeight;
     
+                    //set new width and the new column coverage number
                     width = (height - captionHeight) * aspect;
-                    columns = Math.ceil(width / base.options.columnWidth);
+                    columns = Math.ceil((width + base.options.gutterWidth) / (base.options.gutterWidth + base.options.columnWidth));
                 }
                 figure.css({ height :  height + "px", width : width + "px"});
-    
+
                 //Set the size of the figure content div inside the actual figure element
                 $(".figureContent", figure).css({
                     width : width,
                     height : height - captionHeight
                 });
-                
-                if (width < (base.options.columnWidth * columns)) {
-                    addLeftPadding = Math.floor(((base.options.columnWidth * columns) - width) / 2);
+
+                availableWidth = (base.options.columnWidth * columns) + ((columns - 1) * base.options.gutterWidth);
+                if (width < availableWidth) {
+                    addLeftPadding = Math.floor((availableWidth - width) / 2);
                 }
-                
+
                 //Detemine the start column based on the layout hint
                 switch (horizontalPosition) {
                     //right
@@ -386,16 +397,17 @@
                     default:
                         column = page.data("current_column");
                 }
-                
+
                 while (!placed && placementAttempts < base.options.columnsPerPage) {
                     
                     //Detemine the left offset start column and width of the figure
                     if ((column + columns) > base.options.columnsPerPage) {
                         column -= (column + columns) - base.options.columnsPerPage;
                     }
+
                     offsetLeft = base.options.innerPageGutter[3] + (column * base.options.columnWidth) + (column * base.options.gutterWidth) + addLeftPadding;
                     figure.css("left", offsetLeft + "px");
-        
+
                     //Determine the top offset based on the layout hint
                     switch (verticalPosition) {
                         //top & fullpage
@@ -476,9 +488,9 @@
                     figure.detach();
                     pageData = page.data();
                     if (pageData.figure_carryover !== undefined) {
-                        pageData.figure_carryover.push(figureLink);
+                        pageData.figure_carryover.push(figureId);
                     } else {
-                        pageData.figure_carryover = [figureLink];
+                        pageData.figure_carryover = [figureId];
                     }
                     page.data(pageData);
                     return false;
@@ -569,13 +581,14 @@
             //create the column
             return $("<div>", {
                 "class" : "column column_" + colNumber,
-                data : {column : colNumber},
+//                data : {column : colNumber},
                 css : {
                     width : base.options.columnWidth + "px",
                     "margin-left" : leftOffset + "px",
                     "margin-top" : topOffset + "px",
-                    height : height
-                } 
+                    height : height,
+                },
+                "data-column" : colNumber
             });
         }
 
@@ -612,7 +625,8 @@
                     left : ((base.options.pageCount - 1) * base.options.pageWidth) + leftGutterOffset + "px",
                     top : base.options.outerPageGutter[0] + "px",
                     height : base.options.pageHeight + "px"
-                }
+                },
+                "data-page" : base.options.pageCount
             });
         }
 

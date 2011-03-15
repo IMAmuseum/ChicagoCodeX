@@ -257,6 +257,13 @@ function osci_body_copy_render_layout($nid)
     $figureOrder = array();
     $figureCount = 0;
 
+    $plateNid = null;
+    if (isset($elements['field_osci_plate_image'])) {
+        $plateNid = ($elements['field_osci_plate_image']['#items'][0]['nid']) ? $elements['field_osci_plate_image']['#items'][0]['nid'] : null;
+        $plateCaption = $node->field_osci_navigation_title['und'][0]['value'];
+        unset($elements['field_osci_plate_image']);
+    }
+
     $catalogNumber = ($node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
     $bodyCopyElements = osci_body_copy_sort_elements($elements);
 
@@ -333,6 +340,21 @@ function osci_body_copy_render_layout($nid)
 
     if (count($figures)) {
         $finalFigures = array();
+
+        if ($plateNid) {
+            $plateId = 'osci_plate_fig';
+            $finalFigures[$plateId] = array(
+                'figure_reference' => $plateNid,
+                'number_template' => '',
+                'caption' => $plateCaption,
+                'position' => 't',
+                'columns' => '55%',
+                'id' => $plateId,
+                'format' => 'footnote',
+                'figCount' => 0
+            );
+        }
+
         foreach($figureOrder as $k => $fId) {
             if (isset($figures[$fId])) {
                 $finalFigures[$k] = array_merge($figures[$fId], array('figCount' => $k));

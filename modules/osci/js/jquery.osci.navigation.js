@@ -206,7 +206,7 @@
                     window.history.pushState(
                         {nid : base.navigation.nid},
                         document.title, 
-                        "/osci/node/" + base.navigation.nid + "/reader"
+                        "/node/" + base.navigation.nid + "/reader"
                     );
                 }
             }
@@ -535,7 +535,7 @@
                         if (!expander.hasClass("expanded")) {
                             expander.click();
                         }
-                        console.log($(this).data("nid"));
+
                         base.navigateTo("node", $(this).data("nid"));
                     }
                 }).hover(
