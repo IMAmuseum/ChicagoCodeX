@@ -292,6 +292,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 
 		iipmap(newdiv);
 	}
+    // bind the our make_fullscreen() to an event on the figure.
+    // this provides a way to trigger it from outside this js.
+    var figure = div.parents('figure');
+    figure.bind('osci_figure_fullscreen', make_fullscreen);
 	
 	
 	/*
