@@ -1,5 +1,23 @@
 (function($) {
     $(document).ready(function() {
+        /****************************************
+         * Figure Image Handling
+         */
+        $(document).bind("osci_layout_complete", function(e) {
+            var figureImages = $("figure.image", "#osci_pages");
+
+            $('.figureContent > a', figureImages).fancybox();
+            
+            $('.figureContent img', figureImages).each(function() {
+                $(this).width($(this).parents('.figureContent').width());
+                $(this).height($(this).parents('.figureContent').height());
+            });
+
+            figureImages.bind("osci_figure_fullscreen", function(e) {
+                $('.figureContent > a', this).click();
+            });
+        });
+        
         $("#osci_more_wrapper").osci_more({
             moreToggleCallback : function(more, state)
             {
@@ -242,24 +260,6 @@
                 $('#fancybox-close').click();
                 e.preventDefault();
             }
-        });
-        
-        /****************************************
-         * Figure Image Handling
-         */
-        $(document).bind("osci_layout_complete", function(e) {
-            var figureImages = $("figure.image", "#osci_pages");
-
-            $('.figureContent > a', figureImages).fancybox();
-            
-            $('.figureContent img', figureImages).each(function() {
-                $(this).width($(this).parents('.figureContent').width());
-                $(this).height($(this).parents('.figureContent').height());
-            });
-
-            figureImages.bind("osci_figure_fullscreen", function(e) {
-                $('.figureContent > a', this).click();
-            });
         });
     });
 })(jQuery);
