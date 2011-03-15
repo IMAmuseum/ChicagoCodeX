@@ -126,6 +126,7 @@
                                     osci_more_close : true
                                 });
                             },
+                            title : "goto figure in context",
                             "class" : "figure_goto"
                         }).appendTo($elem);
                         
@@ -140,6 +141,7 @@
                                     type : "osci_figure_fullscreen"
                                 });
                             },
+                            title : "view fullscreen",
                             "class" : "figure_fullscreen"
                         }).appendTo($elem);
                     });
