@@ -327,7 +327,7 @@
             horizontalPosition = figure.data("horizontal_position");
 
             if (position === 'n') {
-                figure.remove();
+                figure.appendTo(page).hide();
             } else {
                 //add it to the page
                 figure.appendTo(page);
@@ -634,7 +634,7 @@
             $("span.osci_paragraph_identifier", page).remove();
 
             //Grab all of the figures currently on the page
-            figures = $("figure", page);
+            figures = $("figure:visible", page);
 
             //Loop for number of columns per page to setup layout data
             colDataArray = [];

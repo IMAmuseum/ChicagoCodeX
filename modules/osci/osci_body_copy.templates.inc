@@ -43,6 +43,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         	}
         	elseif (isset($node->field_ptiff['und'][0]))
         	{
+        	    $vars['type'] = "iip_image";
         		$vars['content'] = _osci_iip_create_iip_div($node, $figure['id']);
         	}
 

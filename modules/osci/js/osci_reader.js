@@ -189,5 +189,51 @@
                 osci_more_close : true
             });
         });
+
+
+        
+
+        $(".osci_reference_image a", "#osci_table_of_contents_wrapper").fancybox();
+        
+        /***************************************
+         * Hot key popup image
+         */
+
+        var keyCode = 70,
+            checkKey = false,
+            everpresent = $(".everpresent a", "#osci_note_panel_wrapper"),
+            titleLink = '<a target="_blank" href="' + everpresent.attr('href') + '">Open in new window</a>';
+        
+        everpresent.fancybox({ 
+            speedIn: 100, 
+            speedOut: 100, 
+            scroll: 'no',
+            title: titleLink 
+        });
+
+        $(document).keydown(function(e) {
+            if (e.keyCode == keyCode && e.ctrlKey === true && checkKey === false) {
+                checkKey = true;
+                $(".everpresent a").click();
+                e.preventDefault();
+            } else if (e.keyCode == keyCode && e.ctrlKey === true && checkKey === true) {
+                checkKey = false;
+                $('#fancybox-close').click();
+                e.preventDefault();
+            }
+        });
+    });
+    
+    /****************************************
+     * Figure Image Handling
+     */
+    $(document).bind("osci_layout_complete", function(e) {
+        $('figure.image > .figureContent > a', "#osci_pages").fancybox();
+        
+        $('figure.image > .figureContent img').each(function() {
+            $(this).width($(this).parents('.figureContent').width());
+            $(this).height($(this).parents('.figureContent').height());
+        });
+
     });
 })(jQuery);
