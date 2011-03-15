@@ -20,6 +20,15 @@
 
                 base.addNotes();
 
+                //TODO: get this working
+                $('.highlighter').hover(function() {
+console.log('hi');
+                    var onid = $(this).data('onid');
+                    $('#note-' + onid).addClass('note-link-hover');
+                }, function() {
+                    $('#note-' + onid).removeClass('note-link-hover');
+                });
+
                 /*************************************************
                  * Dialog interaction
                  */
@@ -27,13 +36,28 @@
 
                 $('a.note-highlight').live('click', function(e) {
                     e.preventDefault();
-                    var data = base.highlightTxt($(this).parents('.osci_paragraph'), $.osci.note.selection);
-                    var wordCount = $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length;
+
+                    var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
+                    var data = {
+                        original_text:      $.osci.note.selection,
+                        nid:                Drupal.settings.osci.nid,
+                        word_count:         $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length,
+                        letter_count:       data.start,
+                        paragraph_count:    $.osci.note.activeParagraph.data('paragraph_id'),
+                    }
+
+                    $.ajax({
+                        type: 'post',
+                        dataType: 'json',
+                        url: base.options.noteSaveCallback,
+                        data: data,
+                        success: base.addNotes(),
+                    });
+                    //TODO: save note via ajax
                 });
 
                 $(document).bind('CToolsAttachBehaviors', function(e, modal) {
-                    // TODO: update 
-                    var data = base.highlightTxt($.osci.note.activeParagraph, $.osci.note.selection);
+                    var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
                     var wordCount = $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length;
 
                     $("input[name='original_text']").val($.osci.note.selection);
@@ -41,7 +65,6 @@
                     $("input[name='word_count']").val(wordCount);
                     $("input[name='letter_count']").val(data.start);
                     $("input[name='paragraph_count']").val($.osci.note.activeParagraph.data('paragraph_id'));
-                    $("#edit-paragraph-count").val($.osci.note.activeParagraph.data('paragraph_id'));
                 });
 
                 $('#osci_viewer p.osci_paragraph').hover(
@@ -112,7 +135,7 @@
 
                     for (var i = 0; i < data.length; i++) {
                         var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_count);
-                        base.highlightTxt(activeParagraph, data[i].original_text);
+                        base.highlightTxt(activeParagraph, data[i]);
                     }
 
                     Drupal.detachBehaviors();
@@ -122,16 +145,22 @@
 
         }
 
-        base.highlightTxt = function(txt, selection) {
+        base.highlightTxt = function(txt, note) {
             $.osci.note.toolbar.detach();
+    
+            var data = base.getSelectionData(txt, note.original_text);
+            var replacementTxt = '<span data-onid="' + note.onid + '" class="highlighter">' + note.original_text + '</span>';
+            txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
+
+            return data;
+        }
+
+        base.getSelectionData = function(txt, selection) {
             var data = {
                 length: txt.html().length,
                 start:  txt.html().indexOf(selection),
                 end:    txt.html().indexOf(selection) + selection.length,
             }
-            
-            var replacementTxt = '<span class="highlighter">' + selection + '</span>';
-            txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
 
             return data;
         }
@@ -163,7 +192,7 @@
     $.osci.note.defaultOptions = {
         notePanelId : "osci_note_panel_wrapper",
         panelPixelsClosed : 20,
-        noteCallback : '/ajax/note/add',
-        userNoteCallback : '/ajax/note'
+        userNoteCallback : '/ajax/note',
+        noteSaveCallback : '/ajax/note/save'
     };
 })(jQuery);

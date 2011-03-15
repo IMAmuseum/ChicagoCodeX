@@ -83,6 +83,14 @@ function note_menu() {
         'file'              => 'note.ajax.inc',
     );
 
+    $items['ajax/note/save'] = array(
+        'page callback'     => 'note_ajax_save',
+        'page arguments'    => array(3),
+        'access arguments'  => array(TRUE),
+        'type'              => MENU_CALLBACK,
+        'file'              => 'note.ajax.inc',
+    );
+
     $items['ajax/note/%node'] = array(
         'page callback'     => 'user_notes_ajax',
         'page arguments'    => array(2),

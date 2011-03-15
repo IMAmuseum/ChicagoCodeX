@@ -21,6 +21,10 @@ function note_ajax_add() {
     exit;
 }
 
+function note_ajax_save($onid = null) {
+    //TODO: save note
+    note_save($_POST);
+}
 
 function note_ajax_load($onid) {
     ctools_include('modal');
