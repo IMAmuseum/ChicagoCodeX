@@ -598,3 +598,17 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 #osci_viewer {
 	background: url('../images/bg-body.png') repeat left top;
 }
+
+
+/* notes */
+#osci_note_panel_wrapper {
+	
+}
+#osci_note_panel_wrapper .noteTitle {
+	position:relative;	
+}
+#osci_note_panel_wrapper .noteTitle .note {
+	position:absolute;
+	top:0px;
+	right:300px;
+}
