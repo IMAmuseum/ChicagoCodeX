@@ -581,11 +581,11 @@ a.figure_goto, a.figure_fullscreen {
 }
 a.figure_goto {
 	background: url('../images/icon-goto.png') no-repeat left top;
-	position:absolute;right:22px;bottom:0px;
+	position:absolute;right:22px;top:8px;
 }
 a.figure_fullscreen {
 	background: url('../images/icon-fullscreen.png') no-repeat left top;
-	position:absolute;right:0px;bottom:0px;
+	position:absolute;right:0px;top:8px;
 }
 a.figure_goto:hover, a.figure_fullscreen:hover {
 	opacity:1.0;	
