@@ -605,7 +605,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 	
 }
 #osci_note_panel_wrapper .noteTitle {
-	position:relative;	
+	/*position:relative;*/
 }
 #osci_note_panel_wrapper .noteTitle .note {
 	/*position:absolute;

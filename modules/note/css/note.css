@@ -38,12 +38,11 @@ ul.selection-toolbar li a {
 }
 
 div.note {
-    /*position: relative;*/
-	position:absolute;
+    position: relative;
     top: 0px;
-    right: 10px;
-    padding: 10px;
-    /*border: 1px solid #666;*/
+    left: -300px;
+    /*padding: 10px;
+    border: 1px solid #666;*/
     width: 300px;
     background-color: #FFB51A;
 }
