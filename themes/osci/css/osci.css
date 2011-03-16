@@ -613,9 +613,10 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 	right:300px;
 }
 .noteTitle a.ajax-processed {
-	margin-left:10px;
+	margin-left:10px !important;
 	background-color:#FFB51A;
 	font-size:12px;
-	padding:5px;
+	padding:5px!important;
 	display:block;	
+	margin-bottom:5px!important;
 }
