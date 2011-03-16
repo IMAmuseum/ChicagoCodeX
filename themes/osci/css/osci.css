@@ -576,13 +576,19 @@ div.figureThumbnail .figure_number {
 }
 a.figure_goto, a.figure_fullscreen {
 	height:16px;width:16px;display:block;overflow:hidden;
-	text-indent:999px;	
+	text-indent:999px;
+	opacity: 0.6;
 }
 a.figure_goto {
 	background: url('../images/icon-goto.png') no-repeat left top;
+	position:absolute;right:22px;bottom:0px;
 }
 a.figure_fullscreen {
 	background: url('../images/icon-fullscreen.png') no-repeat left top;
+	position:absolute;right:0px;bottom:0px;
+}
+a.figure_goto:hover, a.figure_fullscreen:hover {
+	opacity:1.0;	
 }
 .footnote { 
 	padding: 40px !important; 
