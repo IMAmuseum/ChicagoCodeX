@@ -16,7 +16,7 @@
             
             base.options = $.extend({}, $.osci.navigation.defaultOptions, options);
             
-            base.navigation = {
+            base.data = {
                 nid : base.options.nid,
                 mlid : base.options.mlid,
                 currentPage : 0,
@@ -24,10 +24,8 @@
                 to : {operation : "page", value : "first"}
             };
             
-            _update_history(true);
-            
             toc = _get_table_of_contents(base.options.nid, base.options.bid);
-            base.navigation.toc = toc.data;
+            base.data.toc = toc.data;
             
             $(document).bind({
                 osci_layout_complete : function() {
@@ -40,10 +38,10 @@
             
             $(window).bind("popstate",function(e){
                 if (e.originalEvent.state !== null && e.originalEvent.state.nid) {
-                    if (base.navigation.nid !== e.originalEvent.state.nid) {
-                        base.navigation.nid = e.originalEvent.state.nid;
-                        base.navigation.to = {operation : "page", value : "first"};
-                        base.options.loadFunction(base.navigation);
+                    if (base.data.nid !== e.originalEvent.state.nid) {
+                        base.data.nid = e.originalEvent.state.nid;
+                        base.data.to = {operation : "page", value : "first"};
+                        base.loadContent();
                     }
                 }
             });
@@ -82,8 +80,19 @@
             }
             
             _create_table_of_contents();
-            base.options.loadFunction(base.navigation);
-        };    
+            base.loadContent(true);
+        };   
+        
+        base.loadContent = function(updateHistory)
+        {
+            if ($.isFunction($.osci.navigation.options.loadFunction)) {
+                $.osci.navigation.options.loadFunction($.osci.navigation.data);
+            }
+            
+            if (updateHistory) {
+                $.osci.navigation.updateHistory($.osci.navigation.data.nid);
+            }
+        };
         
         function _get_table_of_contents(nid, bid)
         {
@@ -97,13 +106,13 @@
         
         function _osci_resize()
         {
-            var firstParagraph = $("p.osci_paragraph:first", "div.osci_page_" + (base.navigation.currentPage + 1));
-            base.navigation.to = { operation : "paragraph", value : firstParagraph.data("paragraph_id")};
+            var firstParagraph = $("p.osci_paragraph:first", "div.osci_page_" + (base.data.currentPage + 1));
+            base.data.to = { operation : "paragraph", value : firstParagraph.data("paragraph_id")};
             
             //$("ul", "#" + base.options.tocId).trigger("osci_toc_update_heights");
             
             $.osci.storage.clearCache("osci_layout_cache:");
-            base.options.loadFunction(base.navigation);
+            base.loadContent();
         }
         
         function _reset_navigation()
@@ -111,20 +120,21 @@
             var paragraphData, page,
                 layoutData = $("#" + base.options.readerId).data("osci.layout");
 
-            base.navigation.currentPage = 0;
-            base.navigation.pageCount = layoutData.options.pageCount;
-            base.navigation.layoutData = layoutData.options;
-            base.navigation.length = parseInt(base.navigation.toc["nid_" + base.navigation.nid].length, 10);
+            base.data.currentPage = 0;
+            base.data.pageCount = layoutData.options.pageCount;
+            base.data.layoutData = layoutData.options;
+            base.data.length = parseInt(base.data.toc["nid_" + base.data.nid].length, 10);
 
             _update_title();
             _update_reference_image();
             _create_section_navigation_bar();
-            base.navigateTo(base.navigation.to.operation, base.navigation.to.value);
+            $("#" + base.options.tocId).trigger({type:"osci_toc_update"});
+            base.navigateTo(base.data.to.operation, base.data.to.value);
         }
         
         function _update_reference_image()
         {
-            var nid = base.navigation.nid,
+            var nid = base.data.nid,
                 tocData = $("#osci_toc_node_" + nid).data(),
                 navImageWrapper = $(".osci_reference_image"),
                 largeUrl = "#", thumbUrl = "";
@@ -165,16 +175,16 @@
             var hasParent = true,
                 header = $("#" + base.options.headerId),
                 titleParts = [],
-                nid = base.navigation.nid,
+                nid = base.data.nid,
                 titleLength = 0,
                 bookTitle = "",
                 subTitle = "";
             
             while (hasParent) {
-                titleParts.push(base.navigation.toc["nid_" + nid].title);
+                titleParts.push(base.data.toc["nid_" + nid].title);
                 
-                if (base.navigation.toc["nid_" + nid].parent.nid) {
-                    nid = base.navigation.toc["nid_" + nid].parent.nid;
+                if (base.data.toc["nid_" + nid].parent.nid) {
+                    nid = base.data.toc["nid_" + nid].parent.nid;
                 } else {
                     hasParent = false;
                 }
@@ -197,20 +207,24 @@
             $("h2.osci_book_section_title").text(subTitle);
         }
         
-        function _update_history(replace)
+        base.updateHistory = function (nid, replace)
         {
+            var tocData;
+            
             if (window.history && window.history.pushState) {
                 if (replace) {
-                    window.history.replaceState({nid:base.navigation.nid}, document.title);
+                    window.history.replaceState({"nid":nid}, document.title);
                 } else {
+                    tocData = base.data.toc["nid_" + nid]
+                    
                     window.history.pushState(
-                        {nid : base.navigation.nid},
+                        {"nid" : nid},
                         document.title, 
-                        "/node/" + base.navigation.nid + "/reader"
+                        tocData.href
                     );
                 }
             }
-        }
+        };
         
         base.navigateTo = function(to, value)
         {
@@ -218,54 +232,52 @@
 
             switch(to) {
                 case "next":
-                    base.navigation.currentPage++;
-                    if (base.navigation.currentPage >= base.navigation.pageCount) {
-                        tocData = base.navigation.toc["nid_" + base.navigation.nid].next;
+                    base.data.currentPage++;
+                    if (base.data.currentPage >= base.data.pageCount) {
+                        tocData = base.data.toc["nid_" + base.data.nid].next;
                         if (tocData.nid) {
-                            base.navigation.nid = tocData.nid;
-                            base.navigation.to = {operation : "page", value : "first"};
+                            base.data.nid = tocData.nid;
+                            base.data.to = {operation : "page", value : "first"};
                         }
 
-                        base.options.loadFunction(base.navigation);
-                        _update_history();
+                        base.loadContent(true);
                         return;
                     }
                     break;
 
                 case "prev":
-                    if (base.navigation.currentPage < 1) {
-                        tocData = base.navigation.toc["nid_" + base.navigation.nid].prev;
+                    base.data.currentPage--;
+                    if (base.data.currentPage < 0) {
+                        tocData = base.data.toc["nid_" + base.data.nid].prev;
                         if (tocData.nid) {
-                            base.navigation.nid = tocData.nid;
-                            base.navigation.to = {operation : "page", value : "last"};
+                            base.data.nid = tocData.nid;
+                            base.data.to = {operation : "page", value : "last"};
                         }
 
-                        base.options.loadFunction(base.navigation);
-                        _update_history();
+                        base.loadContent(true);
                         return;
                     }
-                    base.navigation.currentPage--;
                     break;
 
                 case "page":
                     if (value === "first") {
-                        base.navigation.currentPage = 0;
+                        base.data.currentPage = 0;
                     } else if (value === "last") {
-                        base.navigation.currentPage = base.navigation.pageCount - 1;
-                    } else if (value > base.navigation.pageCount || value < 1) {
+                        base.data.currentPage = base.data.pageCount - 1;
+                    } else if (value > base.data.pageCount || value < 1) {
                         return;
                     } else {
-                        base.navigation.currentPage = value - 1;
+                        base.data.currentPage = value - 1;
                     }
                     break;
 
                 case "column":
-                    totalColumns = base.navigation.layoutData.columnsPerPage * base.navigation.pageCount;
+                    totalColumns = base.data.layoutData.columnsPerPage * base.data.pageCount;
                     if (value > totalColumns || value < 1) {
                         return;
                     }
 
-                    newPage = Math.ceil(value / base.navigation.layoutData.columnsPerPage);
+                    newPage = Math.ceil(value / base.data.layoutData.columnsPerPage);
                     if (newPage !== undefined) {
                         base.navigateTo("page", newPage);
                     }
@@ -273,7 +285,7 @@
                     break;
                     
                 case "paragraph":
-                    newPage = $("p.osci_paragraph_" + value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
+                    newPage = $("p.osci_paragraph_" + value + ":first","#" + base.data.layoutData.viewerId).parents(".osci_page").data("page");
                     if (newPage !== undefined) {
                         base.navigateTo("page", newPage);
                     }
@@ -281,7 +293,7 @@
                     break;
                     
                 case "selector":
-                    newPage = $(value + ":first","#" + base.navigation.layoutData.viewerId).parents(".osci_page").data("page");
+                    newPage = $(value + ":first","#" + base.data.layoutData.viewerId).parents(".osci_page").data("page");
                     if (newPage !== undefined) {
                         base.navigateTo("page", newPage);
                     }
@@ -295,10 +307,9 @@
                         value = parseInt(value[0], 10);
                     }
                     
-                    if (base.navigation.nid !== value) {
-                        base.navigation.nid = value;
-                        base.options.loadFunction(base.navigation);
-                        _update_history();
+                    if (base.data.nid !== value) {
+                        base.data.nid = value;
+                        base.loadContent(true);
                     }
 
                     if (identifier !== undefined) {
@@ -310,19 +321,19 @@
 
             newOffset = 0;
             
-            if (base.navigation.currentPage > 0) {
-                newOffset = -1 * ((base.navigation.currentPage * base.navigation.layoutData.pageWidth) + 
-                    ((base.navigation.layoutData.outerPageGutter[1] + base.navigation.layoutData.outerPageGutter[3]) * (base.navigation.currentPage)));
+            if (base.data.currentPage > 0) {
+                newOffset = -1 * ((base.data.currentPage * base.data.layoutData.pageWidth) + 
+                    ((base.data.layoutData.outerPageGutter[1] + base.data.layoutData.outerPageGutter[3]) * (base.data.currentPage)));
             }
 
             if (!base.options.tocOverlay) {
                 tocContainer = $("#" + base.options.tocId);
-                if (tocContainer.hasClass("open") && tocContainer.outerWidth() > base.navigation.layoutData.outerPageGutter[3]) {
-                    newOffset += tocContainer.outerWidth() - base.navigation.layoutData.outerPageGutter[3] + base.navigation.layoutData.innerPageGutter[3];
+                if (tocContainer.hasClass("open") && tocContainer.outerWidth() > base.data.layoutData.outerPageGutter[3]) {
+                    newOffset += tocContainer.outerWidth() - base.data.layoutData.outerPageGutter[3] + base.data.layoutData.innerPageGutter[3];
                 }
             }
 
-            $("#" + base.options.sectionNavId).trigger("osci_update_navigation_section", base.navigation.currentPage);
+            $("#" + base.options.sectionNavId).trigger("osci_update_navigation_section", base.data.currentPage);
 
             $("#osci_pages", "#osci_viewer").css({
                 "-webkit-transform" : "translate(" + newOffset + "px, 0)",
@@ -334,7 +345,7 @@
         function _create_section_navigation_bar()
         {
             var container = $("#" + base.options.sectionNavId),
-                parts = base.navigation.pageCount,
+                parts = base.data.pageCount,
                 partWidth = Math.floor(container.width() / parts),
                 addPixels = Math.abs(Math.round(container.width() - (parts * partWidth))),
                 navBar, i, classes = "", heightRemain = 0, li, finalWidth,
@@ -419,23 +430,34 @@
                     width : "100%"
                 }).appendTo(container).wrap($("<div>",{id : "osci_navigation_toc_wrapper"}));
                 
-                $(container).bind("osci_nav_toggle", function(e){
-                    var $this = $(this), i, eventLen;
+                container.bind({
+                    "osci_nav_toggle" : function(e){
+                        var $this = $(this), i, eventLen;
 
-                    if (($this.hasClass("open") && !e.osci_nav_open) || e.osci_nav_close) {
-                        if (base.options.tocToggleCallback !== undefined) {
-                            base.options.tocToggleCallback($this, "close");
+                        if (($this.hasClass("open") && !e.osci_nav_open) || e.osci_nav_close) {
+                            if (base.options.tocToggleCallback !== undefined) {
+                                base.options.tocToggleCallback($this, "close");
+                            }
+                            $this.removeClass("open");
+                        } else {
+                            if (base.options.tocToggleCallback !== undefined) {
+                                base.options.tocToggleCallback($this, "open");
+                            }
+                            $this.addClass("open");
                         }
-                        $this.removeClass("open");
-                    } else {
-                        if (base.options.tocToggleCallback !== undefined) {
-                            base.options.tocToggleCallback($this, "open");
+                        
+                        if (!base.options.tocOverlay) {
+                            base.navigateTo("page", base.data.currentPage + 1);
                         }
-                        $this.addClass("open");
-                    }
-                    
-                    if (!base.options.tocOverlay) {
-                        base.navigateTo("page", base.navigation.currentPage + 1);
+                    }, 
+                    "osci_toc_update" : function(e){
+                        var toc = $("#osci_navigation_toc", this),
+                            activeLi = $("#osci_toc_node_" + base.data.nid, toc);
+                        
+                        $("li", toc).removeClass("active");
+                        
+                        activeLi.addClass("active");
+                        activeLi.parents("li").addClass("active");
                     }
                 }).addClass("open");
   
@@ -447,8 +469,8 @@
             toc.empty();
             wrap = toc.parent();
 
-            for (i in base.navigation.toc) {
-                node = base.navigation.toc[i];
+            for (i in base.data.toc) {
+                node = base.data.toc[i];
                 
                 if (!node.parent.nid) {
                     rootNid = node.nid;
@@ -510,7 +532,7 @@
                 id = node.nid + "_" + node.field;
                 link = node.nid + "#" + node.field + "_anchor";
             }
-            
+
             tocItem = $("<li>", {
                 id : "osci_toc_node_" + id,
                 data : node

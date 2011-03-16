@@ -110,9 +110,9 @@
             loadFunction : function (navData)
             {
                 var footnotes, data, more, figures,
-                    endpoint = Drupal.settings.osci_navigation.content_endpoint,
+                    endpoint = Drupal.settings.osci_navigation.content_endpoint.replace("{$nid}", navData.nid),
                     content = $.osci.storage.getUrl({
-                        url :  endpoint.replace("{$nid}", navData.nid),
+                        url :  endpoint,
                         expire : Drupal.settings.osci_navigation.cache_time
                     });
                 

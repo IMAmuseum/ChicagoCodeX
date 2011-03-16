@@ -310,7 +310,7 @@ function _osci_navigation_clean_toc_iterate($toc)
                 if ($v['mlid']) {
                     if ($prev = book_prev($v)) {
                         $prevPage = array(
-                            'href' => url($prev['href']),
+                            'href' => url($prev['href'] . '/reader'),
                             'title' => check_plain($prev['title']),
                             'mlid' => $prev['mlid'],
                             'bodycopy' => url($prev['href'] . '/bodycopy'),
@@ -321,7 +321,7 @@ function _osci_navigation_clean_toc_iterate($toc)
 
                     if ($v['plid'] && $parent = book_link_load($v['plid'])) {
                         $parentPage = array(
-                            'href' => url($parent['href']),
+                            'href' => url($parent['href'] . '/reader'),
                             'title' => check_plain($parent['title']),
                             'mlid' => $parent['mlid'],
                             'bodycopy' => url($parent['href'] . '/bodycopy'),
@@ -332,7 +332,7 @@ function _osci_navigation_clean_toc_iterate($toc)
 
                     if ($next = book_next($v)) {
                         $nextPage = array(
-                            'href' => url($next['href']),
+                            'href' => url($next['href'] . '/reader'),
                             'title' => check_plain($next['title']),
                             'mlid' => $next['mlid'],
                             'bodycopy' => url($next['href'] . '/bodycopy'),
@@ -345,7 +345,7 @@ function _osci_navigation_clean_toc_iterate($toc)
                 $cleanToc[$id] = array(
                     'nid'      => $nid,
                     'title'    => $v['title'],
-                    'href'     => url($v['href']),
+                    'href'     => url($v['href'] . '/reader'),
                     'bodycopy' => url($v['href'] . '/bodycopy'),
                     'mlid'     => $v['mlid'],
                     'next'     => $nextPage,
@@ -439,9 +439,14 @@ function _osci_navigation_load_additional_toc_data(&$toc)
 
         $node = node_load($nid);
         $view = node_view($node, "body_copy");
+
+        if (isset($node->field_osci_navigation_title['und'][0]['value'])) {
+            $toc[$tocId]['title'] = check_markup($node->field_osci_navigation_title['und'][0]['value'], $node->field_osci_navigation_title['und'][0]['format']);
+        }
+
         $subSections = array();
         foreach($view as $k => $v) {
-            if (is_array($v) && isset($v['#weight'])) {
+            if (is_array($v) && isset($v['#weight']) && $k !== 'field_osci_plate_image') {
                 $subSections[$v['#weight']] = array(
                     'title' => $v['#title'],
                     'field' => $v['#field_name'],
