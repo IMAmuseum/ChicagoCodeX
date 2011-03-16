@@ -184,7 +184,7 @@
         {
             var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, 
                 lineHeight, colHeight, overflow = false, paragraphIdentifier, figureProcessed = false, columnContentCount, isP = true,
-                numLines, visibleLines, figureLinks;
+                numLines, visibleLines, figureLinks, contentHeight, i;
 
             isP = content.is("p");
             
@@ -203,10 +203,16 @@
                         //create the column
                         column = _newColumn(page).appendTo(page);
                         //if not first column, use offset from previous column. first column, use offset from previous page
-                        if (pageColumnNumber > 0) {
-                            offset = pageColumnData[(pageColumnNumber-1)].heightRemain;
-                        } else {
-                            offset = page.data("contentStartOffset");
+                        for(i = (pageColumnNumber - 1); i >= -1; i--) {
+                            if (i === -1) {
+                                offset = page.data("contentStartOffset");
+                                break;
+                            }
+                            
+                            if (pageColumnData[i].height > 0) {
+                                offset = pageColumnData[i].heightRemain;
+                                break;
+                            }
                         }
                     }
                     break;
@@ -221,7 +227,8 @@
 
             //Add content to the column
             column.append(content);
-            
+            contentHeight = content.outerHeight(true);
+
             lineHeight = parseFloat(content.css("line-height"));
 
             //If all of the content is overflowing the column remove it and move to next column
@@ -234,8 +241,8 @@
             
             //If offset defined (should always be negative) add it to the height of the content to get the correct top margin
             if (offset < 0) {
-                offset = content.outerHeight() + offset;
-                
+                offset = contentHeight + offset;
+
                 //Set the top margin
                 content.css("margin-top", "-" + offset + "px");
             }
@@ -282,17 +289,17 @@
             }
 
             //Update how much vertical height remains in the column
-            heightRemain = pageColumnData[pageColumnNumber].heightRemain - content.outerHeight() + offset;
-
+            heightRemain = pageColumnData[pageColumnNumber].heightRemain - content.outerHeight(true);
             if (heightRemain > 0 && heightRemain < lineHeight) {
+                heightRemain = 0;
+            } else if (heightRemain < 0 && heightRemain >= (parseInt(content.css("margin-bottom"), 10) * -1)) {
                 heightRemain = 0;
             }
             
             //If we have negative height remaining, the content must be repeated in the next column
             if (heightRemain < 0) {
-                
                 //Adjust the column height so partial lines of text are removed
-                numLines = content.height() / lineHeight;
+                numLines = contentHeight / lineHeight;
                 visibleLines = Math.floor((pageColumnData[pageColumnNumber].height - (content.offset().top - column.offset().top)) / lineHeight);
                 colHeight = pageColumnData[pageColumnNumber].height - ((pageColumnData[pageColumnNumber].height - (content.offset().top - column.offset().top)) % lineHeight);
                 column.height(colHeight + "px");
@@ -310,7 +317,7 @@
             
             pageColumnData[pageColumnNumber].heightRemain = heightRemain;
             page.data("column_data", pageColumnData);
-            
+           
             return overflow;
         }
 
@@ -550,7 +557,7 @@
             base.$el.children(":not(#" + base.viewer.attr("id") + ")").each(function(i, elem){
                 var $elem = $(elem);
                 if ($elem.css("position") !== "absolute") {
-                    viewerHeight -= $elem.outerHeight();
+                    viewerHeight -= $elem.outerHeight(true);
                 }
             });
             
