@@ -38,9 +38,9 @@ ul.selection-toolbar li a {
 }
 
 div.note {
-    /*position: relative;
+    position: relative;
     top: 0px;
-    left: -310px;*/
+    left: -310px;
     padding: 10px;
     border: 1px solid #666;
     width: 300px;
