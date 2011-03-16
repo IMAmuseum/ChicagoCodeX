@@ -610,14 +610,15 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 #osci_note_panel_wrapper .noteTitle .note {
 	position:absolute;
 	top:0px;
-	right:300px;
+	right:0px;
 }
 .noteTitle a.ajax-processed {
 	margin-left:10px !important;
 	margin-right:5px!important;
 	background-color:#FFB51A;
-	font-size:12px;
+	font-size:11px;
 	padding:5px!important;
 	display:block;	
 	margin-bottom:5px!important;
+	color:#000!important;
 }
