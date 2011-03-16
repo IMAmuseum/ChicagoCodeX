@@ -610,7 +610,8 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 #osci_note_panel_wrapper .noteTitle .note {
 	position:absolute;
 	top:0px!important;
-	right:10px !important;
+	/*right:10px !important;*/
+	left:310px!important;
 	
 }
 .noteTitle a.ajax-processed {
