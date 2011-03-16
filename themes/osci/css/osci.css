@@ -611,7 +611,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 	position:absolute;
 	top:0px;
 	right:10px !important;
-	left:auto!important;
+	
 }
 .noteTitle a.ajax-processed {
 	margin-left:10px !important;
