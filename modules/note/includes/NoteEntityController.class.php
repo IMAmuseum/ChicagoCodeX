@@ -33,7 +33,7 @@ class NoteEntityController extends DrupalDefaultEntityController {
         field_attach_presave('note', $note);
 
         try {
-            if ($note->onid) {
+            if (isset($note->onid)) {
                 drupal_write_record('note', $note, 'onid');
                 field_attach_update('note', $note);
             } else {
@@ -89,7 +89,7 @@ class NoteEntityController extends DrupalDefaultEntityController {
             $transaction = db_transaction();
 
             try {
-                db_delete('note')->condition('onid', $onid, 'IN')->execute();
+                db_delete('note')->condition('onid', $onid)->execute();
                 field_attach_delete('note', $note);
             }
             catch (Exception $e) {

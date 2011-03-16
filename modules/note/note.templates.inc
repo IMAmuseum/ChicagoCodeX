@@ -10,18 +10,22 @@ function note_preprocess_note(&$vars) {
     }
     
     $links = array(
-        l('Edit', 'ajax/note/' . $note->onid . '/edit', 
+        l('Edit', 'ajax/note/edit/' . $note->onid, 
             array(
                 'attributes' => array(
-                    'class' => array('note-edit-link'),
+                    'class' => array(
+                        'note-edit-link',
+                        'ctools-use-modal',
+                    ),
                 ),
             )
         ),
-        l('Delete', 'ajax/note/' . $note->onid . '/delete', 
+        l('Delete', 'ajax/note/delete/' . $note->onid, 
             array(
                 'attributes' => array(
                     'class' => array(
                         'note-delete-link',
+                        'use-ajax',
                     ),
                 ),
             )

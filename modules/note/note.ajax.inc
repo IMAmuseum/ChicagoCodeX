@@ -2,10 +2,15 @@
 
 function note_ajax_add() {
     ctools_include('modal');
+    $args = func_get_args();
+    if ($args[0]) {
+        $note = note_load($args[0]);
+    }
 
     $form_state = array(
         'ajax'  => TRUE,
         'title' => 'Create a note',
+        'note'  => $note[$args[0]],
     );
 
     $output = ctools_modal_form_wrapper('note_form', $form_state);
@@ -13,6 +18,7 @@ function note_ajax_add() {
     if ($form_state['executed']) {
         $output = array();
         $script = '<script type="text/javascript">$.osci.note.addNotes();</script>';
+        $output[] = ajax_command_remove('.note');
         $output[] = ajax_command_append('head', $script);
         $output[] = ctools_modal_command_dismiss();
     }
@@ -33,10 +39,23 @@ function note_ajax_load($onid) {
 
     $content = drupal_render($note[$onid]->content);
     $output[] = ajax_command_remove('.note');
-    $output[] = ajax_command_prepend('#note-link-' . $onid, $content);
+    $output[] = ajax_command_after('#note-link-' . $onid, $content);
 
     print ajax_render($output); 
     exit;
+}
+
+function note_ajax_delete($onid) {
+    if (!is_numeric($onid)) return;
+
+    ctools_include('modal');
+    note_delete($onid);
+
+    $script = '<script type="text/javascript">$.osci.note.addNotes();</script>';
+    $output[] = ajax_command_remove('.note');
+    $output[] = ajax_command_append('head', $script);
+
+    print ajax_render($output);
 }
 
 function user_notes_ajax($node) {

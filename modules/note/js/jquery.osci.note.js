@@ -28,12 +28,14 @@
                  * Highlight/Note hover handling
                  */
 
-                $('p').delegate('span.highlight-note', 'hover', function(e) {
+                $('p').delegate('span.highlight-note', 'hover', function() {
                     var onid = $(this).data('onid');
                     $('#note-link-' + onid).toggleClass('note-link-hover');
-                    if (e.type == 'mouseenter') {
-                        $('#note-link-' + onid + ' a').click();
-                    }
+                });
+
+                $('p').delegate('span.highlight-note', 'click', function() {
+                    var onid = $(this).data('onid');
+                    $('#note-link-' + onid + ' a').click();
                 });
 
                 $('p').delegate('span.highlight', 'hover', function() {
@@ -178,8 +180,8 @@
     
             //TODO work in note data settings
             var data = base.getSelectionData(txt, note.original_text);
-            var class = (note.body !== null) ? 'highlight-note' : 'highlight';
-            var replacementTxt = '<span data-onid="' + note.onid + '" class="' + class + '">' + note.original_text + '</span>';
+            var highlightClass = (note.body !== null) ? 'highlight-note' : 'highlight';
+            var replacementTxt = '<span id="span-note-' + note.onid + '" data-onid="' + note.onid + '" class="' + highlightClass + '">' + note.original_text + '</span>';
             txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
 
             return data;

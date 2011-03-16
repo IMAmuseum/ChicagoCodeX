@@ -75,6 +75,14 @@ function note_menu() {
         'file'              => 'note.ajax.inc',
     );
 
+    $items['ajax/note/edit/%'] = array(
+        'title'             => t('Edit note'),
+        'page callback'     => 'note_ajax_add',
+        'page arguments'    => array(3),
+        'access arguments'  => array('create note'),
+        'file'              => 'note.ajax.inc',
+    );
+
     $items['ajax/note/load/%'] = array(
         'page callback'     => 'note_ajax_load',
         'page arguments'    => array(3),
@@ -85,6 +93,14 @@ function note_menu() {
 
     $items['ajax/note/save'] = array(
         'page callback'     => 'note_ajax_save',
+        'page arguments'    => array(3),
+        'access arguments'  => array(TRUE),
+        'type'              => MENU_CALLBACK,
+        'file'              => 'note.ajax.inc',
+    );
+
+    $items['ajax/note/delete/%'] = array(
+        'page callback'     => 'note_ajax_delete',
         'page arguments'    => array(3),
         'access arguments'  => array(TRUE),
         'type'              => MENU_CALLBACK,
@@ -231,19 +247,10 @@ function note_page_view($note) {
     return entity_get_controller('note')->build($note);
 }
 
-function note_form($form, &$form_state, $note = null) {
-    global $user;
+function note_form($form, &$form_state) {
 
-    if (!$note) {
-        $note = (object) array(
-            'body'              => '',
-            'word_count'        => '',
-            'letter_count'      => '',
-            'paragraph_count'   => '',
-        );
-    } else {
-        $note = end($note);
-    }
+    global $user;
+    $note = $form_state['note'];
 
     $form['body'] = array(
         '#title'            => t('Notes'),
@@ -251,13 +258,13 @@ function note_form($form, &$form_state, $note = null) {
         '#default_value'    => $note->body
     );
 
-    $form['original_text'] = array(
-        '#type'     => 'hidden',
-    );
-
     $form['uid'] = array(
         '#type'  => 'hidden',
         '#value' => $user->uid,
+    );
+
+    $form['original_text'] = array(
+        '#type'  => 'hidden',
     );
 
     $form['nid'] = array(
@@ -281,6 +288,19 @@ function note_form($form, &$form_state, $note = null) {
         '#value' => t('Save'),
     );
 
+    if (is_object($note)) {
+        $form['onid'] = array(
+            '#type'  => 'hidden',
+            '#value' => $note->onid,
+        );
+
+        $form['paragraph_count']['#value']  = $note->paragraph_count;
+        $form['original_text']['#value']    = $note->original_text;
+        $form['letter_count']['#value']     = $note->letter_count;
+        $form['word_count']['#value']       = $note->word_count;
+        $form['nid']['#value']              = $note->nid;
+    }
+
     field_attach_form('note', $note, $form, $form_state);
 
     return $form;
@@ -293,6 +313,7 @@ function note_form_validate($form, &$form_state) {
 
 function note_form_submit($form, &$form_state) {
     $note = (object)$form_state['values'];
+
     field_attach_submit('note', $note, $form, $form_state);
     if ($note = note_save($note)) {
         $form_state['redirect'] = 'note/'.$note->onid;
