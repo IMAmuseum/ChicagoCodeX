@@ -256,7 +256,7 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
     background: url("../images/bg-nav-arrow.png") no-repeat 4px 10px;
     text-indent: -100px;
     overflow: hidden;
-    opacity: .3;
+    opacity: .3!important;
     -webkit-transition: -webkit-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
     -moz-transition: -moz-transform 0.2s cubic-bezier(0, 0, 0.25, 1);
     transition: transform 0.2s cubic-bezier(0, 0, 0.25, 1); 
