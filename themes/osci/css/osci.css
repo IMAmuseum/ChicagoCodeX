@@ -1,7 +1,7 @@
 body.page-node-reader {
     margin: 0;
     padding: 0;
-	background: url('../images/bg-body.png') repeat left top;
+	background: url('../images/bg-body.png') repeat left top !important;
 }
 
 .ui-widget {
