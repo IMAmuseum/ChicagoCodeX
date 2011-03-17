@@ -675,6 +675,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 }
 
 /* loading animation */
+.noteTitle { position:relative; }
 .noteTitle .throbber {
 	position:absolute;
 	top:5px;right:5px;	
