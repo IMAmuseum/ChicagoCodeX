@@ -15,8 +15,9 @@
         {
             base.options = $.extend({}, $.osci.note.defaultOptions, options);
             base.panel = $("#" + base.options.notePanelId);
-            var noteLinkMarkup = '<div id="note-link-${onid}" class="noteTitle">' +
-                '<a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/note/load/${onid}">${body}</a></div>';
+            var noteLinkMarkup = '{{if body}}<div id="note-link-${onid}" class="noteTitle">' +
+                '<a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/note/load/${onid}">${body}</a>' +
+                '</div>{{/if}}';
 
             $.template('noteLink', noteLinkMarkup);
 
@@ -112,7 +113,6 @@
 
                     if ($.osci.note.selection === '') return; 
 
-                    //var toolbar = $('ul.selection-toolbar').show();
                     $.osci.note.toolbar.appendTo(this); 
 
                 });
@@ -179,10 +179,12 @@
             $.osci.note.toolbar.detach();
     
             //TODO work in note data settings
-            var data = base.getSelectionData(txt, note.original_text);
-            var highlightClass = (note.body !== null) ? 'highlight-note' : 'highlight';
-            var replacementTxt = '<span id="span-note-' + note.onid + '" data-onid="' + note.onid + '" class="' + highlightClass + '">' + note.original_text + '</span>';
-            txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
+            if (!$('span#span-note-' + note.onid).length) {
+                var data = base.getSelectionData(txt, note.original_text);
+                var highlightClass = (note.body !== null) ? 'highlight-note' : 'highlight';
+                var replacementTxt = '<span id="span-note-' + note.onid + '" data-onid="' + note.onid + '" class="' + highlightClass + '">' + note.original_text + '</span>';
+                txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
+            }
 
             return data;
         }

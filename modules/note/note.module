@@ -372,6 +372,7 @@ function user_notes($node) {
     foreach($query as $row) {
         $rows[] = (array)$row; 
     }
+
     return $rows;
 
 }
