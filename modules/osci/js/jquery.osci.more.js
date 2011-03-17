@@ -50,7 +50,11 @@
                     
                     itemNumber = $(e.selector, tab).index();
 
-                    gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page);
+                    if (tabData.osci_pager_per_page > 1) {
+                        gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page) - 1;
+                    } else {
+                        gotoPage = itemNumber;
+                    }
                     $("li.osci_pager_item:eq(" + gotoPage + ")", tab).children().click();
                     
                     $this.trigger({ type : "osci_more_toggle", osci_more_open : true});
