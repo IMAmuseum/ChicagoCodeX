@@ -39,8 +39,17 @@
                     $('#note-link-' + onid + ' a').click();
                 });
 
-                $('p').delegate('span.highlight', 'hover', function() {
+                $('p').delegate('span.highlight', 'hover', function(e) {
                     $(this).toggleClass('highlight-hover');
+                    if (e.type == 'mouseenter') {
+                        var onid = $(this).data('onid');
+                        var link = '<a href="' + Drupal.settings.basePath + 'ajax/note/delete/' + onid +'" class="note-delete-link use-ajax">Delete</a>';
+                        $(this).prepend(link);
+                        Drupal.detachBehaviors();
+                        Drupal.attachBehaviors();
+                    } else {
+                        $(this).find('.note-delete-link').remove();
+                    }
                 });
 
                 /*************************************************
@@ -128,6 +137,10 @@
                     $(this).parents('.note').remove();
                 });
 
+                $('.highlight .note-delete-link').live('click', function(e) {
+                    e.preventDefault();
+                    $(this).remove();
+                });
             });
             
             base.panel.bind("osci_note_toggle", function(e) {

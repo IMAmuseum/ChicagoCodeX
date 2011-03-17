@@ -3,6 +3,17 @@
     background-color: #FFCC33;
 }
 
+span.highlight {
+    position: relative;
+}
+
+.highlight-hover .note-delete-link {
+    position: absolute;
+    display: inline;
+    top: -20px;
+    left: 0px;
+}
+
 .highlight {
     border-bottom: 2px dashed #FFCC33;
 }
