@@ -281,6 +281,7 @@ ul#osci_navigation_toc ul li.active a.osci_toc_arrow,
 ul#osci_navigation_toc li.active a.osci_toc_arrow{
     opacity: 1.0;
 }
+ul#osci_navigation_toc li.active li.active a
 ul#osci_navigation_toc ul li.active li a,
 ul#osci_navigation_toc li a {
 	text-decoration:none!important;	
