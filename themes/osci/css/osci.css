@@ -615,6 +615,9 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 	left:310px!important;*/
 	
 }
+#osci_note_panel_wrapper .note {
+	margin-bottom:-35px!important;	
+}
 .noteTitle a.ajax-processed {
 	margin-left:10px !important;
 	margin-right:10px!important;
@@ -678,6 +681,6 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 .noteTitle { position:relative; }
 .noteTitle .throbber {
 	position:absolute;
-	top:5px;right:10px;
+	top:5px;right:15px;
 	background: url('../images/loader.gif') no-repeat left top !important;
 }
