@@ -629,3 +629,23 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 .noteTitle a.ajax-processed:hover {
 	opacity:1.0;	
 }
+
+/* note link icon buttons */
+a.note-edit-link, a.note-delete-link, a.note-close-link {
+	width:16px;height:16px;display:block;overflow:hidden;text-indent:999px;
+	opacity:0.7;
+}
+a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
+	opacity:1.0;
+}
+.note-edit-link {
+	background: url('../images/icon-edit.png') no-repeat left top;
+	margin-right:5px;
+}
+.note-delete-link {
+	background: url('../images/icon-delete.png') no-repeat left top;
+	margin-right:5px;
+}
+.note-close-link {
+	background: url('../images/icon-close.png') no-repeat left top;
+}
