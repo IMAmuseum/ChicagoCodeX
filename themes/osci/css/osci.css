@@ -657,4 +657,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	top:5px;
 	right:21px;
 }
+.note-content {
+	padding-10px;	
+}
 
