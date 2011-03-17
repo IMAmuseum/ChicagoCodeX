@@ -272,8 +272,12 @@ ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     -moz-transform: rotate(90deg);
 }
 
-ul#osci_navigation_toc ul li.active a {
+ul#osci_navigation_toc ul li.active a,
+ul#osci_navigation_toc ul li.active a li.active a {
 	text-decoration:underline;	
+}
+ul#osci_navigation_toc ul li.active a li a {
+	text-decoration:none!important;	
 }
 
 #osci_table_of_contents_wrapper H2 {
