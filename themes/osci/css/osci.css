@@ -616,7 +616,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 	
 }
 #osci_note_panel_wrapper .note {
-	margin-bottom:-35px!important;	
+	margin-bottom:-40px!important;	
 }
 .noteTitle a.ajax-processed {
 	margin-left:10px !important;
@@ -629,7 +629,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 	color:#000!important;
 	font-family:Arial, Helvetica, sans-serif!important;
 	opacity:0.5;
-	height:25px;overflow:hidden;
+	height:30px;overflow:hidden;
 }
 .noteTitle a.ajax-processed:hover {
 	opacity:1.0;	
