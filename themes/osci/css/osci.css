@@ -640,12 +640,21 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 }
 .note-edit-link {
 	background: url('../images/icon-edit.png') no-repeat left top;
-	margin-right:5px;
+	position:absolute;
+	top:5px;
+	right:63px
+	
 }
 .note-delete-link {
 	background: url('../images/icon-delete.png') no-repeat left top;
-	margin-right:5px;
+	position:absolute;
+	top:5px;
+	right:42px;
 }
 .note-close-link {
 	background: url('../images/icon-close.png') no-repeat left top;
+	position:absolute;
+	top:5px;
+	right:21px;
 }
+
