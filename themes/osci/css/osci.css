@@ -642,7 +642,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	background: url('../images/icon-edit.png') no-repeat left top;
 	position:absolute;
 	top:5px;
-	right:37px
+	right:42px
 	
 }
 .note-delete-link {
