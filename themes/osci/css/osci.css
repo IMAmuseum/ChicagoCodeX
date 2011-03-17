@@ -263,13 +263,17 @@ ul#osci_navigation_toc li a.osci_toc_arrow {
 }
 
 ul#osci_navigation_toc li a.osci_toc_arrow:hover {
-    opacity: .5;
+    opacity: .6;
 }
 
 ul#osci_navigation_toc li a.osci_toc_arrow.expanded {
     transform: rotate(90deg); 
     -webkit-transform: rotate(90deg); 
     -moz-transform: rotate(90deg);
+}
+
+ul#osci_navigation_toc ul li.active a {
+	text-decoration:underline;	
 }
 
 #osci_table_of_contents_wrapper H2 {
