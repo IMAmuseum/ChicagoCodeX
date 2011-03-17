@@ -315,7 +315,7 @@ function note_form_submit($form, &$form_state) {
     $note = (object)$form_state['values'];
 
     field_attach_submit('note', $note, $form, $form_state);
-    if ($note = note_save($note)) {
+    if ($note = note_save($note) && !$form_state['ajax']) {
         $form_state['redirect'] = 'note/'.$note->onid;
         drupal_set_message('Successfully saved note');
     }
@@ -365,7 +365,7 @@ function note_preprocess_osci_viewer(&$vars) {
 function user_notes($node) {
     global $user;
     $query = db_select('note', 'c')
-        ->fields('c', array('onid', 'body', 'word_count', 'letter_count', 'paragraph_count', 'original_text'))
+        ->fields('c', array('nid', 'onid', 'body', 'word_count', 'letter_count', 'paragraph_count', 'original_text'))
         ->condition('uid', $user->uid)
         ->condition('nid', $node->nid)
         ->execute();

@@ -29,6 +29,8 @@ function note_ajax_add() {
 
 function note_ajax_save($onid = null) {
     note_save($_POST);
+    $node = node_load($_POST['nid']); 
+    return drupal_json_output(user_notes($node));
 }
 
 function note_ajax_load($onid) {
@@ -51,7 +53,11 @@ function note_ajax_delete($onid) {
     ctools_include('modal');
     note_delete($onid);
 
-    $script = '<script type="text/javascript">$.osci.note.addNotes();</script>';
+    $script = '<script type="text/javascript">
+            var highlightSpan = $("span#span-note-'.$onid.'");
+            highlightSpan.replaceWith(highlightSpan.html());
+            $.osci.note.addNotes();
+        </script>';
     $output[] = ajax_command_remove('.note');
     $output[] = ajax_command_append('head', $script);
 
@@ -61,13 +67,4 @@ function note_ajax_delete($onid) {
 function user_notes_ajax($node) {
     if (!user_access('view own notes')) return;
     return drupal_json_output(user_notes($node));
-}
-
-function note_highlight() {
-    return drupal_json_output(array('success'));
-}
-
-function note_note() {
-    return drupal_json_output(array());
-
 }

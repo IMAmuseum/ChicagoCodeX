@@ -69,7 +69,9 @@
                         dataType: 'json',
                         url: base.options.noteSaveCallback,
                         data: data,
-                        success: base.addNotes(),
+                        success: function(data) {
+                            base.processNotes(data);
+                        } 
                     });
                 });
 
@@ -152,26 +154,28 @@
         };
         
         base.addNotes = function() {
-
-            $('.noteTitle').remove();
-
             $.ajax({
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
-                    if (data == null) return;
-
-                    $.tmpl('noteLink', data).appendTo(base.panel);
-
-                    for (var i = 0; i < data.length; i++) {
-                        var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_count);
-                        base.highlightTxt(activeParagraph, data[i]);
-                    }
-
-                    Drupal.detachBehaviors();
-                    Drupal.attachBehaviors();
-                }
+                    base.processNotes(data);
+                } 
             });
+        }
+
+        base.processNotes = function(data) {
+            if (data == null) return;
+
+            $('.noteTitle').remove();
+            $.tmpl('noteLink', data).appendTo(base.panel);
+
+            for (var i = 0; i < data.length; i++) {
+                var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_count);
+                base.highlightTxt(activeParagraph, data[i]);
+            }
+
+            Drupal.detachBehaviors();
+            Drupal.attachBehaviors();
 
         }
 
