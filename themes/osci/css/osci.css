@@ -3,9 +3,7 @@ body.page-node-reader {
     padding: 0;
 	
 }
-#page {
-	background: url('../images/bg-body.png') repeat left top !important;	
-}
+
 .ui-widget {
     font-size: 100%;
 }
@@ -599,7 +597,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 }
 
 #osci_viewer {
-	
+	background: url('../images/bg-body.png') repeat left top !important;
 }
 
 
