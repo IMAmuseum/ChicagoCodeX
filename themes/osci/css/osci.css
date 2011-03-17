@@ -661,7 +661,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	padding:10px!important;	
 }
 
-#osci_note_panel_wrapper {
+#osci_note_panel_wrapper .field-name-field-taxonomy-tags {
 	padding:0px 50px 10px 10px!important;	
 }
 .note h3.field-label {
