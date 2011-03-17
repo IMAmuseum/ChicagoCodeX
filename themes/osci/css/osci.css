@@ -678,5 +678,6 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 .noteTitle { position:relative; }
 .noteTitle .throbber {
 	position:absolute;
-	top:5px;right:5px;	
+	top:5px;right:10px;
+	background: url('../images/loader.gif') no-repeat left top !important;
 }
