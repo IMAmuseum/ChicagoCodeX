@@ -664,7 +664,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 #osci_note_panel_wrapper {
 	padding:0px 50px 10px 10px!important;	
 }
-#osci_note_panel_wrapper h3.field-label {
+.note h3.field-label {
 	font-weight:normal;
 	text-transform:uppercase;
 	padding-bottom:5px;margin-bottom:5px;
