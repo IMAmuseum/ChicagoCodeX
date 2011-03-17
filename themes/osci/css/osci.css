@@ -673,3 +673,9 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	padding-bottom:5px;margin-bottom:5px;
 	background: url('../images/bg-bevel.png') repeat-x left bottom;
 }
+
+/* loading animation */
+.noteTitle .throbber {
+	position:absolute;
+	top:5px;right:5px;	
+}
