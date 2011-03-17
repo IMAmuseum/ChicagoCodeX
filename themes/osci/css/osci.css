@@ -3,7 +3,7 @@ body.page-node-reader {
     padding: 0;
 	
 }
-#page-wrapper {
+#page {
 	background: url('../images/bg-body.png') repeat left top !important;	
 }
 .ui-widget {
