@@ -657,6 +657,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	top:5px;
 	right:5px;
 }
+/* */
 .note-content {
 	padding:10px!important;	
 }
@@ -668,5 +669,5 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	font-weight:normal;
 	text-transform:uppercase;
 	padding-bottom:5px;margin-bottom:5px;
-	border-bottom:1px solid #999;
+	background: url('../images/bg-bevel.png') repeat-x left bottom;
 }
