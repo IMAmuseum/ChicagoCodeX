@@ -624,4 +624,8 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 	margin-bottom:5px!important;
 	color:#000!important;
 	font-family:Arial, Helvetica, sans-serif!important;
+	opacity:0.5;
+}
+.noteTitle a.ajax-processed:hover {
+	opacity:1.0;	
 }
