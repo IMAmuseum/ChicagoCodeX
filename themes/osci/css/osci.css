@@ -616,7 +616,11 @@ a.figure_goto:hover, a.figure_fullscreen:hover {
 	
 }
 #osci_note_panel_wrapper .note {
-	margin-bottom:-40px!important;	
+	margin-bottom:-40px!important;
+	-moz-box-shadow: 0 1px 3px #000;
+    -webkit-box-shadow: 0 1px 3px #000;
+    box-shadow: 0 1px 3px #000;
+	
 }
 .noteTitle a.ajax-processed {
 	margin-left:10px !important;
