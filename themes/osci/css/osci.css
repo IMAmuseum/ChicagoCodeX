@@ -570,11 +570,16 @@ ul#osci_navigation_toc li a {
 
 
 /* new steez */
+#h1, #h2, #h3, #h4, #h5 { text-align:left!important; }
 
 #osci_viewer h3 {
 	font-size:20px!important;
 	/*padding-top:1.2em!important;*/
 	border-bottom:1px solid #ccc!important;
+}
+#osci_viewer span.osci_paragraph_identifier {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;	
 }
 #osci_viewer h4 {
 	font-size:16px!important;
@@ -730,5 +735,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	color:#666;
     font-size: 12px;
 }
-
+.field_osci_tombstone {
+	text-align:left!important;	
+}
 
