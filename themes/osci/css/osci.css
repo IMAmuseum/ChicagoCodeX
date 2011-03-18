@@ -573,7 +573,7 @@ ul#osci_navigation_toc li a {
 
 
 /* new steez */
-#h1, #h2, #h3, #h4, #h5 { text-align:left!important; }
+h1, h2, h3, h4, h5 { text-align:left!important; }
 
 #osci_viewer h3 {
 	font-size:20px!important;
