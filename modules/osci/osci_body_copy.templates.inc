@@ -20,7 +20,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
 
     $vars['type'] = $node->type;
     $vars['caption'] = (empty($figure['caption'])) ? '' : check_markup($figure['caption'], $figure['format']);
-    $title = isset($vars['number_template']) ? $vars['number_template'] : $vars['id'];
+    $title = isset($vars['number_template']) ? $vars['number_template'] : '';
     $title .= $vars['caption'];
 
     switch ($node->type) {
