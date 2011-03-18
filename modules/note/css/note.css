@@ -15,7 +15,8 @@ span.highlight {
 }
 
 .highlight {
-    border-bottom: 2px dashed #FFCC33;
+    /*border-bottom: 2px dashed #FFCC33;*/
+	background: url('../images/bg-highlight.png') repeat-x left bottom;
 }
 
 div#osci-note-dialog {
