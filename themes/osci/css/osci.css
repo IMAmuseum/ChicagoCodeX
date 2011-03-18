@@ -284,6 +284,9 @@ text-decoration:underline!important;
 ul#osci_navigation_toc a.osci_toc_arrow.active {
     opacity: 1!important;
 }
+ul#osci_navigation_toc a.active {
+	font-weight:bold;	
+}
 /*ul#osci_navigation_toc li.active li.active a
 ul#osci_navigation_toc ul li.active li a,
 ul#osci_navigation_toc li a {
@@ -740,3 +743,6 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	text-align:left!important;	
 }
 
+#osci_plate_fig figcaption span.figure_number {
+	display: none;
+}
