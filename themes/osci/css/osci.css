@@ -369,7 +369,7 @@ ul#osci_navigation_toc li a {
 	overflow:hidden;
 	padding-top:6px;
 	font-family:Arial, Helvetica, sans-serif;
-	text-transform:uppercase;
+	/*text-transform:uppercase;*/
 }
 
 #osci_more_tabs {
