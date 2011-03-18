@@ -706,3 +706,8 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	top:5px;right:15px;
 	background: url('../images/loader.gif') no-repeat left top !important;
 }
+
+.field_osci_technical_analysis, .field_osci_technical_summary {
+    font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace;
+    font-size: 12px;
+}
