@@ -35,7 +35,7 @@ body.page-node-reader {
     position:relative;
 }
 #osci_header h2.osci_book_section_title {
-	z-index:;
+	z-index:50;
 	text-align:center!important;
 }
 
