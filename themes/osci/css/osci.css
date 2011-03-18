@@ -572,13 +572,13 @@ ul#osci_navigation_toc li a {
 /* new steez */
 
 #osci_viewer h3 {
-	font-size:1.8em;
+	font-size:20px;
 }
-#osci_viewer h5 {
-	font-size:1.6em;
+#osci_viewer h4 {
+	font-size:16px;
 }
-#osci_viewer h5 {
-	font-size:1.4em;
+#osci_viewer h3 {
+	font-size:14pxem;
 }
 
 #osci_viewer .osci_page {
