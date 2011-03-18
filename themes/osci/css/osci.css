@@ -746,3 +746,17 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 #osci_plate_fig figcaption span.figure_number {
 	display: none;
 }
+
+
+
+/* fancy box */
+.fancybox-title-float {
+	position: absolute;
+	left: 0;
+	bottom: 5px;
+	height: 32px;
+}
+.fancybox-title-float .tbody, .fancybox-title-float {
+	background:none!important;
+	border:none!important;	
+}
