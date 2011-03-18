@@ -35,7 +35,8 @@ body.page-node-reader {
     position:relative;
 }
 #osci_header h2.osci_book_section_title {
-	z-index:50;	
+	z-index:;
+	text-align:center!important;
 }
 
 #osci_header h1 {
@@ -151,14 +152,14 @@ body.page-node-reader {
 
 #osci_navigation_section_list li:hover {
     background: #666 url("../images/bg-osci-navbar-tick.png") repeat-y right;
-    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -moz-linear-gradient(100% 100% 90deg, #505050, #666);
-    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
+    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -moz-linear-gradient(100% 100% 90deg, #, #666);
+    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#));
 }
 
 #osci_navigation_section_list li.active {
     background: #666 url("../images/bg-osci-navbar-tick.png") repeat-y right;
-    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -moz-linear-gradient(100% 100% 90deg, #505050, #666);
-    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
+    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -moz-linear-gradient(100% 100% 90deg, #, #666);
+    background: url("../images/bg-osci-navbar-tick.png") repeat-y right, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#));
 }
 
 #osci_navigation_section_list li.last {
@@ -173,14 +174,14 @@ body.page-node-reader {
 
 #osci_navigation_section_list li.active.last {
     background: #666;
-    background: -moz-linear-gradient(100% 100% 90deg, #505050, #666);
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
+    background: -moz-linear-gradient(100% 100% 90deg, #, #666);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#));
 }
 
 #osci_navigation_section_list li.last:hover {
     background: #666;
-    background: -moz-linear-gradient(100% 100% 90deg, #505050, #666);
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#505050));
+    background: -moz-linear-gradient(100% 100% 90deg, #, #666);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#));
 }
 
 #osci_table_of_contents_wrapper {
@@ -308,7 +309,7 @@ ul#osci_navigation_toc li a {
     display: block;
     position: absolute;
     left: 160px;
-    /*top: 50%;*/
+    /*top: %;*/
 	top:100px;
     /*margin-top: -43px;*/
     color: #222;
@@ -357,7 +358,7 @@ ul#osci_navigation_toc li a {
 #osci_more_wrapper .osci_more_handle {
     display: block;
     position: absolute;
-    /*left: 50%;
+    /*left: %;
 	margin-left: -43px;*/
     left:20px;
     bottom: 294px;
@@ -714,7 +715,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 }
 
 #osci_note_panel_wrapper .field-name-field-taxonomy-tags {
-	padding:0px 50px 10px 10px!important;	
+	padding:0px px 10px 10px!important;	
 }
 .note h3.field-label {
 	font-weight:normal;
@@ -749,7 +750,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 
 .superscript.footnote-link {
 	font-family:Arial, Helvetica, sans-serif !important;
-	font-size:12px!important;
+	font-size:11px!important;
 	padding-left:5px!important;
 }
 
@@ -760,7 +761,15 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	bottom: 5px;
 	height: 32px;
 }
+#fancybox-title-float-left, #fancybox-title-float-left {
+	display:none!important;	
+}
+#fancybox-title-float-main {
+	background-color: #fff;
+	background-image: none;		
+}
 .fancybox-title-float tbody, .fancybox-title-float tr {
 	background:none!important;
 	border:none!important;	
+	
 }
