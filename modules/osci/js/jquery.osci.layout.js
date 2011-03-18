@@ -15,30 +15,67 @@
 
         base.init = function()
         {
-            //base.data = $("section > *:not(section, header), header > *", data);
+            var pCount = 0;
             
-            //Get the data from the HTML body copy output we only want section content
-            base.data = $("section > *:not(section, header)", data);
+            //Trigger event so we know layout is begining
+            $(document).trigger("osci_layout_start");
             
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
-            base.viewer = $("#" + base.options.viewerId);
+            base.viewer = $("#" + base.options.viewerId).empty();
             
-            //Create a div to load the content into prior to rendering. This is necessary for determining heights.
-            base.prerender = $("#osci_reader_content");
-            if (!base.prerender.length) {
-                base.prerender = $("<div>", {id : "osci_reader_content"});
-                base.$el.append(base.prerender);
+            //Check to see if layout has been cached in localstorage
+            cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
+            
+            //No cache process content for layout
+            if (cache === null) {
+                //Get the data from the HTML body copy output we only want section content
+                base.data = $("section > *:not(section, header)", data);
+                
+                //add field name as a class to each child of a section
+                base.data.each(function(i, elem) {
+                    var isP, $elem = $(elem), parentId; 
+                    
+                    parentId = $elem.parents("section[id]").attr("id");
+                    if (parentId) {
+                        $elem.addClass(parentId);
+                    }
+                    
+                    //Add the paragraph numbering
+                    isP = $elem.is("p");
+                    if (isP) {
+                        pCount++;
+                        $elem.prepend($("<span>",{
+                            html : pCount,
+                            "class" : "osci_paragraph_identifier osci_paragraph_" + pCount,
+                            "data-paragraph_id" : pCount
+                        })).addClass("osci_paragraph_" + pCount + " osci_paragraph").attr("data-paragraph_id", pCount);
+                    }
+                });
+                
+                //Create a div to load the content into prior to rendering. This is necessary for determining heights.
+                base.prerender = $("#osci_reader_content");
+                if (!base.prerender.length) {
+                    base.prerender = $("<div>", {id : "osci_reader_content"});
+                    base.$el.append(base.prerender);
+                }
+                
+                // Moved to the navigation module so that it does not get triggerd multiple times after more than one node has been loaded
+                // if (!window.resizeTimer) {
+                //     $(window).resize(function(){
+                //         if (window.resizeTimer) clearTimeout(window.resizeTimer);
+                //         window.resizeTimer = setTimeout(base.render, 100);
+                //     });
+                // }
+    
+                base.render();
+            } else {
+                //Cache found load layout from localstorage
+                base.options = cache.data.options;
+                base.viewer.append(cache.data.content);
             }
             
-            // Moved to the navigation module so that it does not get triggerd multiple times after more than one node has been loaded
-            // if (!window.resizeTimer) {
-            //     $(window).resize(function(){
-            //         if (window.resizeTimer) clearTimeout(window.resizeTimer);
-            //         window.resizeTimer = setTimeout(base.render, 100);
-            //     });
-            // }
-
-            base.render();
+            //Trigger event to let other features know layout is complete
+            $(document).trigger("osci_layout_complete");
         };
 
         base.render = function()
@@ -47,136 +84,108 @@
                 figureLinks, overflow, contentOffset = 0, cache = null, heightRemain = 0, 
                 figureCarryover, figureCarryoverCount, figureCarryoverI = 0, plateFigure;
 
-            //Trigger event so we know layout is begining
-            $(document).trigger("osci_layout_start");
-            
             //Calculate height information
             _updateHeights();
             
-            //Clear viewer div so we can insert new layout
-            base.viewer.empty();
+            base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
             
-            //Check to see if layout has been cached in localstorage
-            cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
+            //Load content into prerender div
+            base.prerender.append(base.data);
             
-            //No cache process content for layout
-            if (cache === null) {
-                base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
-                
-                //Load content into prerender div
-                base.prerender.append(base.data);
-                
-                //Collect the figures from the content
-                base.figures = $("figure", base.prerender).remove();
-                
-                //Set some more data points
-                base.options.viewHeight = base.viewer.height();
-                base.options.viewWidth  = base.viewer.width();
-                base.options.columnCount = 1;
-                base.options.pageCount = 0;
-    
-                //Calculate the constraints of the viewer area
-                _calcViewerInfo();
-    
-                //Set the width of the prerender div to a single column so heights can be calculated
-                base.prerender.css("width", base.options.columnWidth + "px");
-    
-                elements = base.prerender.children();
-                totalElements = elements.length;
-    
-                //Add the paragraph numbering
-                elements.filter("p").each(function(j, elem){
-                    $(elem).prepend($("<span>",{
-                        html : j + 1,
-                        "class" : "osci_paragraph_identifier osci_paragraph_" + (j + 1),
-                        "data-paragraph_id" : j + 1 
-                    })).addClass("osci_paragraph_" + (j + 1) + " osci_paragraph").attr("data-paragraph_id", j + 1);
-                });
-    
-                //Add the plate figure if found
-                plateFigure = base.figures.filter("#osci_plate_fig");
-                if (plateFigure.length) {
-                    figureCarryover = ["#osci_plate_fig"];
-                }
-                
-                //Loop over the elements to add them to the layout
-                while (i < totalElements) {
-                    currentElement = $(elements[i]).clone();
-    
-                    //Don't render figure elements, these are handled in the element where they are referenced
-                    if (currentElement.text() === 'Figures') {
-                        break;
-                    }
-    
-                    //If no page is defined or the page is full create a new page
-                    if (page === undefined || page.data("process") === 'done') {
-                        //If a previous page is defined and content overflowed the page set the starting offset
-                        if (page !== undefined) {
-                            contentOffset = page.data("contentNextOffset");
-                            figureCarryover = page.data("figure_carryover");
-                        }
-                        
-                        //Get a new page and append it to the viewer
-                        page = _newPage().appendTo(base.viewer.pages);
-                        page.data({
-                            contentStartOffset : contentOffset,
-                            current_column : 0
-                        });
-                        pageElementCount = 0;
-                        
-                        //Add any figures that were carried over from the previous page
-                        if (figureCarryover !== undefined && figureCarryover.length) {
-                            figureCarryoverCount = figureCarryover.length;
-                            for (figureCarryoverI = 0; figureCarryoverI < figureCarryoverCount; figureCarryoverI++) {
-                                _process_figure(figureCarryover[figureCarryoverI], page);
-                            }
-                            _reset_page(page);
-                        }
-                    }
-                    
-                    //Add element to the page
-                    overflow = _addPageContent(currentElement, page);
-                    
-                    //If there was no overflow continue to the next element
-                    if (!overflow) {
-                        i++;
-                        pageElementCount++;
-                    }
-    
-                    //Restart page processing if necessary (if a figure was processed)
-                    if (page.data("process") === "restart") {
-                        //Reset the page data
-                        _reset_page(page);
-                        //Backup the counter to the first element processed on this page
-                        i = i - pageElementCount;
-                        pageElementCount = 0;
-                    } else {
-                        //Determine if we are at the end of a page
-                        heightRemain = page.data("column_data")[page.data("current_column")].heightRemain;
-                        page.data("contentNextOffset", heightRemain);
-                        
-                        if (parseInt(page.data("current_column"), 10) === (base.options.columnsPerPage - 1) && heightRemain <= 0) {
-                            page.data("process", "done");
-                        }
-                    }
+            //Collect the figures from the content
+            base.figures = $("figure", base.prerender).remove();
+            
+            //Set some more data points
+            base.options.viewHeight = base.viewer.height();
+            base.options.viewWidth  = base.viewer.width();
+            base.options.columnCount = 1;
+            base.options.pageCount = 0;
+
+            //Calculate the constraints of the viewer area
+            _calcViewerInfo();
+
+            //Set the width of the prerender div to a single column so heights can be calculated
+            base.prerender.css("width", base.options.columnWidth + "px");
+
+            elements = base.prerender.children();
+            totalElements = elements.length;
+
+            //Add the plate figure if found
+            plateFigure = base.figures.filter("#osci_plate_fig");
+            if (plateFigure.length) {
+                figureCarryover = ["#osci_plate_fig"];
+            }
+            
+            //Loop over the elements to add them to the layout
+            while (i < totalElements) {
+                currentElement = $(elements[i]).clone();
+
+                //Don't render figure elements, these are handled in the element where they are referenced
+                if (currentElement.text() === 'Figures') {
+                    break;
                 }
 
-                //Remove prerendered data
-                base.prerender.empty();
-    
-                //Store the layout in localstorage for faster load times
-                $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
-            } else {
-                //Cache found load layout from localstorage
-                base.options = cache.data.options;
-                base.viewer.append(cache.data.content);
+                //If no page is defined or the page is full create a new page
+                if (page === undefined || page.data("process") === 'done') {
+                    //If a previous page is defined and content overflowed the page set the starting offset
+                    if (page !== undefined) {
+                        contentOffset = page.data("contentNextOffset");
+                        figureCarryover = page.data("figure_carryover");
+                    }
+                    
+                    //Get a new page and append it to the viewer
+                    page = _newPage().appendTo(base.viewer.pages);
+                    page.data({
+                        contentStartOffset : contentOffset,
+                        current_column : 0
+                    });
+                    pageElementCount = 0;
+                    
+                    //Add any figures that were carried over from the previous page
+                    if (figureCarryover !== undefined && figureCarryover.length) {
+                        figureCarryoverCount = figureCarryover.length;
+                        for (figureCarryoverI = 0; figureCarryoverI < figureCarryoverCount; figureCarryoverI++) {
+                            _process_figure(figureCarryover[figureCarryoverI], page);
+                        }
+                        _reset_page(page);
+                    }
+                }
+                
+                //Add element to the page
+                overflow = _addPageContent(currentElement, page);
+                
+                //If there was no overflow continue to the next element
+                if (!overflow) {
+                    i++;
+                    pageElementCount++;
+                }
+
+                //Restart page processing if necessary (if a figure was processed)
+                if (page.data("process") === "restart") {
+                    //Reset the page data
+                    _reset_page(page);
+                    //Backup the counter to the first element processed on this page
+                    i = i - pageElementCount;
+                    pageElementCount = 0;
+                } else {
+                    //Determine if we are at the end of a page
+                    heightRemain = page.data("column_data")[page.data("current_column")].heightRemain;
+                    page.data("contentNextOffset", heightRemain);
+                    
+                    if (parseInt(page.data("current_column"), 10) === (base.options.columnsPerPage - 1) && heightRemain <= 0) {
+                        page.data("process", "done");
+                    }
+                }
             }
+
+            //Remove prerendered data
+            base.prerender.empty();
+
+            //Store the layout in localstorage for faster load times
+            $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
             
             //Remove base data
             delete base.data;
-            
-            //Trigger event to let other features know layout is complete
-            $(document).trigger("osci_layout_complete");
         };
 
         //Add content to the current page
