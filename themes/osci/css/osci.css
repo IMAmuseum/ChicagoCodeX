@@ -572,17 +572,17 @@ ul#osci_navigation_toc li a {
 /* new steez */
 
 #osci_viewer h3 {
-	font-size:20px;
-	padding-top:1.2em;
-	border-bottom:1px solid #ccc;
+	font-size:20px!important;
+	padding-top:1.2em!important;
+	border-bottom:1px solid #ccc!important;
 }
 #osci_viewer h4 {
-	font-size:16px;
-	padding-top:.8em;
+	font-size:16px!important;
+	padding-top:.8em!important;
 }
-#osci_viewer h3 {
-	font-size:14px;
-	padding-top:.5em;
+#osci_viewer h5 {
+	font-size:14px!important;
+	padding-top:.5em!important;
 }
 
 #osci_viewer .osci_page {
