@@ -756,7 +756,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	bottom: 5px;
 	height: 32px;
 }
-.fancybox-title-float tbody, .fancybox-title-float tr.even {
+.fancybox-title-float tbody, .fancybox-title-float tr {
 	background:none!important;
 	border:none!important;	
 }
