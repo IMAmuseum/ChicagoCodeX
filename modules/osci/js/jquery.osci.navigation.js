@@ -454,10 +454,12 @@
                         var toc = $("#osci_navigation_toc", this),
                             activeLi = $("#osci_toc_node_" + base.data.nid, toc);
                         
-                        $("li", toc).removeClass("active");
+                        $("li, a", toc).removeClass("active");
                         
                         activeLi.addClass("active");
                         activeLi.parents("li").addClass("active");
+                        
+                        $("li.active", toc).children("a").addClass("active");
                     }
                 }).addClass("open");
   
