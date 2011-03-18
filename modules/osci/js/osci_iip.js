@@ -269,7 +269,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('left', '0px')
 			.css('width', '100%')
 			.css('height', '100%')
-			.css('background-color', 'rgba(0,0,0,0.8)');
+			.css('background-color', 'rgba(0,0,0,0.8)')
+            .css('z-index', '9999');
 
 		var newdiv = $('<div id="iip_fullscreen" class="iipmap" />').appendTo(fs_wrap);
 		newdiv.css('position', 'relative')
