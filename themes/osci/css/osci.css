@@ -281,7 +281,7 @@ ul#osci_navigation_toc ul li.active a li.active a {
 	/*text-decoration:underline!important;	*/
 }
 a.osci_toc_arrow.active {
-    opacity: 1.0;
+    opacity: 1.0!important;
 }
 ul#osci_navigation_toc li.active li.active a
 ul#osci_navigation_toc ul li.active li a,
