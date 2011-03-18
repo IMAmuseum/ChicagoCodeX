@@ -19,7 +19,10 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     }
 
     $vars['type'] = $node->type;
-    $vars['caption'] = (empty($figure['caption'])) ? $node->title : check_markup($figure['caption'], $figure['format']);
+    $vars['caption'] = (empty($figure['caption'])) ? '' : check_markup($figure['caption'], $figure['format']);
+    $title = isset($vars['number_template']) ? $vars['number_template'] : $vars['id'];
+    $title .= $vars['caption'];
+
     switch ($node->type) {
         case 'image':
         	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]) || $vars['osci_static_image'])
@@ -29,17 +32,20 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         		    $image = theme_image_style(array(
                 	    'style_name' => $vars['osci_image_cache'],
             			'path' => $node->field_image['und'][0]['uri'],
-                	    'alt' => $node->title,
+                	    'alt' => $title,
+        		    	'title' => $title,
             			'attributes' => ''
             		));
         		} else {
         		    $image = theme_image(array(
             			'path' => $node->field_image['und'][0]['uri'],
+        		        'alt' => $title,
+        		        'title' => $title,
             			'attributes' => ''
             		));
         		}
 
-        		$vars['content'] = l($image, file_create_url($node->field_image['und'][0]['uri']), array('html' => true));
+        		$vars['content'] = l($image, file_create_url($node->field_image['und'][0]['uri']), array('html' => true, 'attributes' => array('title' => $title)));
         	}
         	elseif (isset($node->field_ptiff['und'][0]))
         	{
@@ -57,6 +63,9 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         	    )
     		));
     		break;
+        case 'html_figure':
+            $vars['content'] = check_markup($node->field_osci_figure_content['und'][0]['value'], $node->field_osci_figure_content['und'][0]['format']);
+            break;
     }
 }
 

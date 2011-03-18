@@ -212,11 +212,15 @@
                     osci_value : $this.attr("href")
                 });
             } else {
-                $("#osci_more_wrapper").trigger({
-                    type : "osci_more_goto",
-                    tab_name : "figures",
-                    selector : "div[data-figure_id=" + $this.attr("href").substr(1) + "]"
+                $($this.attr("href"), "#osci_pages").trigger({
+                    type : "osci_figure_fullscreen"
                 });
+                
+//                $("#osci_more_wrapper").trigger({
+//                    type : "osci_more_goto",
+//                    tab_name : "figures",
+//                    selector : "div[data-figure_id=" + $this.attr("href").substr(1) + "]"
+//                });
             }
         });
         

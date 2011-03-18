@@ -345,7 +345,7 @@ function osci_body_copy_render_layout($nid)
             $plateId = 'osci_plate_fig';
             $finalFigures[$plateId] = array(
                 'figure_reference' => $plateNid,
-                'number_template' => '',
+                'number_template' => ($catalogNumber) ? "Cat. {$catalogNumber}" : ' ',
                 'caption' => $plateCaption,
                 'position' => 't',
                 'columns' => '55%',
@@ -785,7 +785,8 @@ function osci_body_copy_field_widget_settings_form($field, $instance)
 function figure_reference($args) {
     $figs = db_select('node', 'n')
         ->fields('n', array('title', 'nid'))
-        ->condition('type', 'image')
+//        ->condition('type', 'image')
+        ->condition('type', array('image', 'html_figure'), 'IN')
         ->condition('status', 1)
         ->condition('title', '%'.db_like($args).'%', 'LIKE')
         ->orderBy('created', DESC)
