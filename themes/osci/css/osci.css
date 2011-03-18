@@ -573,12 +573,16 @@ ul#osci_navigation_toc li a {
 
 #osci_viewer h3 {
 	font-size:20px;
+	padding-top:1.2em;
+	border-bottom:1px solid #ccc;
 }
 #osci_viewer h4 {
 	font-size:16px;
+	padding-top:.8em;
 }
 #osci_viewer h3 {
-	font-size:14pxem;
+	font-size:14px;
+	padding-top:.5em;
 }
 
 #osci_viewer .osci_page {
