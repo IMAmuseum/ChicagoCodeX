@@ -761,12 +761,20 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	bottom: 5px;
 	height: 32px;
 }
-#fancybox-title-float-left, #fancybox-title-float-left {
+#fancybox-title-float-left, #fancybox-title-float-right {
 	display:none!important;	
 }
 #fancybox-title-float-main {
 	background-color: #fff;
-	background-image: none;		
+	background-image: none;
+	padding-left:15px;	
+	padding-right:15px;
+	 
+	-moz-border-radius-bottomright:4px;
+	border-bottom-right-radius: 4px;
+	
+	-moz-border-radius-bottomleft:4px;
+	border-bottom-left-radius: 4px;
 }
 .fancybox-title-float tbody, .fancybox-title-float tr {
 	background:none!important;
