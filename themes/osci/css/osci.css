@@ -280,7 +280,7 @@ ul#osci_navigation_toc ul li.active a,
 ul#osci_navigation_toc ul li.active a li.active a {
 	/*text-decoration:underline!important;	*/
 }
-a.osci_toc_arrow.active {
+a.osci_toc_arrow.active, a.osci_toc_arrow.expanded {
     opacity: 1.0!important;
 }
 ul#osci_navigation_toc li.active li.active a
