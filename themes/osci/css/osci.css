@@ -34,6 +34,9 @@ body.page-node-reader {
     /*z-index: 9999;*/
     position:relative;
 }
+#osci_header #osci_book_section_title {
+	z-index:999;	
+}
 
 #osci_header h1 {
     font-size: 14px; 
