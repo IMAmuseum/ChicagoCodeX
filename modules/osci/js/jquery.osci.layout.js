@@ -291,7 +291,7 @@
             if (paragraphIdentifier.length) {
                 if ($("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id"), page).length === 0) {
                     paragraphIdentifier.appendTo(page).css({
-                        "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2)) + "px",
+                        "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2) - 4) + "px",
                         "margin-top" : content.position().top + parseInt(column.css("margin-top"), 10) + "px"
                     });
                 }
