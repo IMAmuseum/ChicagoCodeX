@@ -271,7 +271,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('height', '100%')
 			.css('background-color', 'rgba(0,0,0,0.8)');
 
-		var newdiv = $('<div id="iip_fullscreen" />').appendTo(fs_wrap);
+		var newdiv = $('<div id="iip_fullscreen" class="iipmap" />').appendTo(fs_wrap);
 		newdiv.css('position', 'relative')
 		.css('margin', 'auto')
 		.css('top', '5%')
@@ -330,7 +330,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 (function($) {
 	$(document).bind("osci_layout_complete", function()
 	{
-		$('.iipmap').each(function(){ iipmap($(this)); });	
+		$('.iipmap', "#osci_viewer").each(function(){ iipmap($(this)); });	
 	});	
 
 }) (jQuery);

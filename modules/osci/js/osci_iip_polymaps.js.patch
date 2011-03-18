@@ -1,0 +1,13 @@
+--- osci_iip_polymaps.js.orig	2011-03-18 10:23:47.000000000 -0400
++++ osci_iip_polymaps.js	2011-03-18 10:32:32.000000000 -0400
+@@ -481,7 +481,9 @@
+ 
+   map.focusableParent = function() {
+     for (var p = container; p; p = p.parentNode) {
+-      if (p.tabIndex >= 0) return p;
++      if (p.className.match) {
++        if (p.className.match(/iipmap/)) return p;
++      }
+     }
+     return window;
+   };
