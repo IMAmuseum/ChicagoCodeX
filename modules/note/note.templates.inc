@@ -16,6 +16,7 @@ function note_preprocess_note(&$vars) {
                     'class' => array(
                         'note-edit-link',
                         'ctools-use-modal',
+                        'ctools-modal-fixed-modal',
                     ),
                 ),
             )

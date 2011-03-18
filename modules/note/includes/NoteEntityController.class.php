@@ -33,6 +33,11 @@ class NoteEntityController extends DrupalDefaultEntityController {
         field_attach_presave('note', $note);
 
         try {
+            // Make sure all numbers are greater then 0
+            $note->letter_count     = max(0, $note->letter_count);
+            $note->word_count       = max(0, $note->word_count);
+            $note->paragraph_count  = max(0, $note->paragraph_count);
+
             if (isset($note->onid)) {
                 drupal_write_record('note', $note, 'onid');
                 field_attach_update('note', $note);

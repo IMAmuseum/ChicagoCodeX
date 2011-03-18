@@ -328,8 +328,8 @@ function note_preprocess_osci_viewer(&$vars) {
         'fixed-modal' => array(
             'modalSize' => array(
                 'type'      => 'fixed',
-                'width'     => 400,
-                'height'    => 300,
+                'width'     => 500,
+                'height'    => 350,
             ),
         ),
     ), 'setting');
@@ -346,7 +346,7 @@ function note_preprocess_osci_viewer(&$vars) {
         l('Note', 'ajax/note/add', 
             array(
                 'attributes' => array(
-                    'class' => array('ctools-use-modal', 'note-note', 'fixed-modal'),
+                    'class' => array('ctools-use-modal', 'ctools-modal-fixed-modal'),
                 )
             )
         ),
@@ -368,6 +368,8 @@ function user_notes($node) {
         ->fields('c', array('nid', 'onid', 'body', 'word_count', 'letter_count', 'paragraph_count', 'original_text'))
         ->condition('uid', $user->uid)
         ->condition('nid', $node->nid)
+        ->orderBy('paragraph_count', 'asc')
+        ->orderBy('letter_count', 'asc')
         ->execute();
     foreach($query as $row) {
         $rows[] = (array)$row; 

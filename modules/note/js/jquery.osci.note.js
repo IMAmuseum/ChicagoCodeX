@@ -195,6 +195,7 @@
         base.highlightTxt = function(txt, note) {
             $.osci.note.toolbar.detach();
     
+            console.log(note);
             //TODO work in note data settings
             if (!$('span#span-note-' + note.onid).length) {
                 var data = base.getSelectionData(txt, note.original_text);
@@ -207,6 +208,8 @@
         }
 
         base.getSelectionData = function(txt, selection) {
+            if (txt.html() == '') return;
+
             var data = {
                 length: txt.html().length,
                 start:  txt.html().indexOf(selection),
@@ -223,14 +226,28 @@
                 selection = window.getSelection(); 
             } else if (document.getSelection) { 
                 selection = document.getSelection(); 
-            }else { 
+            } else { 
                 selection = document.selection && document.selection.createRange(); 
                 if (selection.text) { 
                     selection = selection.text; 
                 } 
             } 
-            selection =  new String(selection).replace(/^\s+|\s+$/g,'');
+            selection = base.getSelectionHTML(selection); 
+
             return selection; 
+        }
+
+        base.getSelectionHTML = function(selection) {
+            var range = (document.all ? selection.createRange() : selection.getRangeAt(selection.rangeCount - 1).cloneRange());
+
+            if (document.all) {
+                return range.htmlText;
+            } else {
+                var clonedSelection = range.cloneContents();
+                var div = document.createElement('div');
+                div.appendChild(clonedSelection);
+                return div.innerHTML;
+            }
         }
 
         base.stripTags = function(txt) {
