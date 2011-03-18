@@ -570,6 +570,17 @@ ul#osci_navigation_toc li a {
 
 
 /* new steez */
+
+#osci_viewer h3 {
+	font-size:1.8em;
+}
+#osci_viewer h5 {
+	font-size:1.6em;
+}
+#osci_viewer h5 {
+	font-size:1.4em;
+}
+
 #osci_viewer .osci_page {
 	background-color:#fff;
 	-moz-box-shadow: 0 2px 6px #666;
@@ -706,6 +717,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	top:5px;right:15px;
 	background: #FFB51A url('../images/loader.gif') no-repeat left top !important;
 }
+
 
 
 /* technical analysis & summary styles */
