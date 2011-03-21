@@ -644,7 +644,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
         $fnId = $fieldName . '_fn_' . $nid . '_' . $id;
         $class = ($id == 1) ? 'footnote first' : 'footnote';
         $bodyCopy['footnotes'][$id] = array(
-            '#title' => $id . ' <span>(' . $fnId . ')</span>',
+            '#title' => $id . ' <span>[footnote:' . $fnId . ']</span>',
             '#type' => 'textarea',
             '#default_value' => $footnote,
             '#rows' => $instance['widget']['settings']['footnote_rows'],
@@ -679,7 +679,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
         $figId = $fieldName . '_fig_' . $nid . '_' . $id;
         $class = ($id == 1) ? 'figure first' : 'figure';
         $bodyCopy['figures'][$id] = array(
-            '#title'        => $id . ' <span>(' . $figId . ')</span>',
+            '#title'        => $id . ' <span>[figure:' . $figId . ']</span>',
             '#type'         => 'fieldset',
             '#attributes'   => array('class' => array($class)),
             '#prefix'       => '<div id="' . $figId . '" data-figprefix="' . $fieldName . '_fig_' . $nid . '_" class="figure-wrapper">',
@@ -687,7 +687,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#weight'       => ($id == 'figure_blank') ? -1 : $id,
             '#tree'         => true,
             'figure_id'     => array(
-                '#markup'   => '<div class="figure_identifier">' . $id . ' <span>(' . $figId . ')</span> </div>'
+                '#markup'   => '<div class="figure_identifier">' . $id . ' <span>[figure:' . $figId . ']</span> </div>'
             ),
             'figure_reference' => array(
                 '#title'                => t('Figure Reference'),
