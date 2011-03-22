@@ -780,5 +780,12 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 .fancybox-title-float tbody, .fancybox-title-float tr {
 	background:none!important;
 	border:none!important;	
-	
+}
+
+#fancybox-title-float-main * {
+    display: inline;   
+}
+
+#fancybox-title-float-main .figure_fullscreen {
+    display: none;
 }

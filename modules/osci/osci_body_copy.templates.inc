@@ -10,7 +10,8 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     	'columns' => $figure['columns'],
     	'aspect' => $node->field_aspect_ratio['und'][0]['value'],
         'vertical_position' => substr($figure['position'], 0, 1),
-        'horizontal_position' => strlen($figure['position']) > 1 ? substr($figure['position'], 1, 1) : "na"
+        'horizontal_position' => strlen($figure['position']) > 1 ? substr($figure['position'], 1, 1) : "na",
+        'figure_type' => $node->type
     );
 
     $vars['data'] = '';
@@ -27,25 +28,50 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         case 'image':
         	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]) || $vars['osci_static_image'])
         	{
+        	    $image = array();
         		// ptiff is empty, use the image field for display
         		if (isset($vars['osci_image_cache'])) {
-        		    $image = theme_image_style(array(
+        		    $image[] = theme_image_style(array(
                 	    'style_name' => $vars['osci_image_cache'],
             			'path' => $node->field_image['und'][0]['uri'],
                 	    'alt' => $title,
         		    	'title' => $title,
-            			'attributes' => ''
+            			'attributes' => array(
+        		            'class' => $vars['osci_image_cache']
+        		        )
             		));
         		} else {
-        		    $image = theme_image(array(
+        		    $image[] = theme_image(array(
             			'path' => $node->field_image['und'][0]['uri'],
         		        'alt' => $title,
         		        'title' => $title,
-            			'attributes' => ''
+            			'attributes' => array(
+        		            'class' => 'osci_image_full'
+        		        )
             		));
         		}
 
-        		$vars['content'] = l($image, file_create_url($node->field_image['und'][0]['uri']), array('html' => true, 'attributes' => array('title' => $title)));
+        		$imageStyles = array("osci_image_256", "osci_image_512", "osci_image_1024");
+        		foreach($imageStyles as $imgStyle) {
+        		    $image[] = theme_image_style(array(
+                	    'style_name' => $imgStyle,
+            			'path' => $node->field_image['und'][0]['uri'],
+                	    'alt' => $title,
+        		    	'title' => $title,
+            			'attributes' => array(
+        		            'class' => $imgStyle
+        		        )
+            		));
+        		}
+
+        		$vars['content'] = l(
+        		    implode(" ",$image),
+        		    file_create_url($node->field_image['und'][0]['uri']),
+        		    array(
+        		    	'html' => true,
+        		    	'attributes' => array('title' => $title)
+        		    )
+        		);
         	}
         	elseif (isset($node->field_ptiff['und'][0]))
         	{

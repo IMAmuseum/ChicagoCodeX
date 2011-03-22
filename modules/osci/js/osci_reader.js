@@ -6,13 +6,6 @@
         $(document).bind("osci_layout_complete", function(e) {
             var figureImages = $("figure.image", "#osci_pages");
 
-            $('.figureContent > a', figureImages).fancybox();
-            
-            $('.figureContent img', figureImages).each(function() {
-                $(this).width($(this).parents('.figureContent').width());
-                $(this).height($(this).parents('.figureContent').height());
-            });
-
             figureImages.bind("osci_figure_fullscreen", function(e) {
                 $('.figureContent > a', this).click();
             });
@@ -48,7 +41,64 @@
             outerPageGutter : Drupal.settings.osci_layout.outer_page_gutter,
             viewerId : Drupal.settings.osci_layout.viewer_id,
             minLinesPerColumn : Drupal.settings.osci_layout.min_lines_per_column,
-            layoutCacheTime : Drupal.settings.osci_layout.cache_time
+            layoutCacheTime : Drupal.settings.osci_layout.cache_time,
+            processFigureCallback : {
+                image : function(figure, content) {
+                    var contentWidth = content.width(),
+                        contentHeight = content.height(),
+                        imageCacheSize = 0,
+                        finalImage, finalImageWidth;
+                    
+                    $("a", content).fancybox();
+                    
+                    imageCacheSize = Math.pow(2, Math.ceil(Math.log(contentWidth) / Math.log(2)));
+                    
+                    if (imageCacheSize > 0 && imageCacheSize <= 1024) {
+                        $("img:not(.osci_image_" + imageCacheSize + ")", content).remove();
+                        finalImageWidth = imageCacheSize;
+                    } else {
+                        $("img:not(.osci_image_full)", content).remove();
+                    } 
+                    
+                    finalImage = $("img", content);
+                    if (finalImageWidth === undefined) {
+                        finalImageWidth = finalImage.width();
+                    }
+                    
+                    if (finalImageWidth > contentWidth) {
+                        finalImage.width(contentWidth);
+                    }
+                    
+                    figure.prepend(content);
+                    
+                    return true;
+                },
+                html_figure : function(figure, content) {
+                    var contentHeight = 0, aspect = 0;
+                    figure.prepend(content);
+                    
+                    content.children().each(function(i, elem){
+                        contentHeight += $(elem).outerHeight(true);
+                    });
+                    
+                    aspect = Math.round((content.width() / contentHeight) * 1000) / 1000;
+
+                    if (aspect != figure.data("aspect")) {
+                        figure.data("aspect", aspect);
+                        return false;
+                    }
+                    
+                    $("<a>", {
+                        href : "#",
+                        "class" : "figure_fullscreen"
+                    }).appendTo($("figcaption", figure)).fancybox({
+                        content : content.clone().height("").width(""),
+                        title : $("figcaption", figure).clone().html()
+                    });
+                    
+                    return true;
+                }
+            }
         };
         
         //$('#osci_note_panel_wrapper').overscroll();

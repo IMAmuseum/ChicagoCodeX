@@ -52,13 +52,6 @@
                     }
                 });
                 
-                //Create a div to load the content into prior to rendering. This is necessary for determining heights.
-                base.prerender = $("#osci_reader_content");
-                if (!base.prerender.length) {
-                    base.prerender = $("<div>", {id : "osci_reader_content"});
-                    base.$el.append(base.prerender);
-                }
-                
                 // Moved to the navigation module so that it does not get triggerd multiple times after more than one node has been loaded
                 // if (!window.resizeTimer) {
                 //     $(window).resize(function(){
@@ -80,7 +73,7 @@
 
         base.render = function()
         {
-            var i = 0, elements, totalElements = 0, page, currentElement, pageElementCount, 
+            var i = 0, totalElements = 0, page, currentElement, pageElementCount, 
                 figureLinks, overflow, contentOffset = 0, cache = null, heightRemain = 0, 
                 figureCarryover, figureCarryoverCount, figureCarryoverI = 0, plateFigure;
 
@@ -89,11 +82,11 @@
             
             base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
             
-            //Load content into prerender div
-            base.prerender.append(base.data);
-            
             //Collect the figures from the content
-            base.figures = $("figure", base.prerender).remove();
+            base.figures = base.data.filter("figure");
+            
+            //remove the figures from the base data
+            base.data = base.data.filter(":not(figure)");
             
             //Set some more data points
             base.options.viewHeight = base.viewer.height();
@@ -104,21 +97,16 @@
             //Calculate the constraints of the viewer area
             _calcViewerInfo();
 
-            //Set the width of the prerender div to a single column so heights can be calculated
-            base.prerender.css("width", base.options.columnWidth + "px");
-
-            elements = base.prerender.children();
-            totalElements = elements.length;
-
             //Add the plate figure if found
             plateFigure = base.figures.filter("#osci_plate_fig");
             if (plateFigure.length) {
                 figureCarryover = ["#osci_plate_fig"];
             }
             
+            totalElements = base.data.length;
             //Loop over the elements to add them to the layout
             while (i < totalElements) {
-                currentElement = $(elements[i]).clone();
+                currentElement = $(base.data[i]).clone();
 
                 //Don't render figure elements, these are handled in the element where they are referenced
                 if (currentElement.text() === 'Figures') {
@@ -178,14 +166,12 @@
                 }
             }
 
-            //Remove prerendered data
-            base.prerender.empty();
-
             //Store the layout in localstorage for faster load times
             $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
             
             //Remove base data
             delete base.data;
+            delete base.figures;
         };
 
         //Add content to the current page
@@ -269,7 +255,8 @@
                         figureProcessed = _process_figure($l.attr("href"), page);
 
                         //Add a class to the figure link (in current content and the prerendered content) so it is only processed once
-                        $("a[href=" + $l.attr("href") + "]", base.prerender).addClass("processed");
+                        //$("a[href=" + $l.attr("href") + "]", base.prerender).addClass("processed");
+                        $("a[href=" + $l.attr("href") + "]", base.data).addClass("processed");
                         $l.addClass("processed");
                         
                         //if a figure was processed and not carried over exit the loop
@@ -336,10 +323,7 @@
             var figure, aspect, columns, position, verticalPosition, horizontalPosition, column, addLeftPadding = 0,
                 offsetLeft, offsetTop, width, height, captionHeight, columnCoverage = [], colStart, colEnd, pageFigures,
                 figureOffset, figureX, figureY, placed = false, placementAttempts = 0, pageData, i, checkWidth,
-                availableWidth;
-
-            //Get the figures currently on the page to check if current figure can fit
-            pageFigures = $("figure", page);
+                availableWidth, figureContent, figureType;
 
             //get the actual figure
             figure = base.figures.filter(figureId);
@@ -350,49 +334,63 @@
             aspect = figure.data("aspect");
             verticalPosition = figure.data("vertical_position");
             horizontalPosition = figure.data("horizontal_position");
+            figureType = figure.data("figure_type");
 
+            //pull out the figure content before adding to the dom so images are not loaded
+            figureContent = $(".figureContent", figure).remove();
+            
+            //add it to the page
+            figure.appendTo(page);
+
+            //if figure is not displayed in the content hide it (ignore placement and sizing code)
             if (position === 'n') {
-                figure.appendTo(page).hide();
+                figure.hide();
             } else {
-                //add it to the page
-                figure.appendTo(page);
-                
-                //If a percentage based width hint is specified, convert to number of columns to cover
-                if (typeof(columns) === 'string' && columns.indexOf("%") > 0) {
-                    columns = Math.ceil((parseInt(columns, 10) / 100) * base.options.columnsPerPage);
-                }
-
-                //Calculate maximum width for a figure
-                if (columns > base.options.columnsPerPage || position === 'p') {
-                    width = base.options.innerPageWidth;
-                    columns = base.options.columnsPerPage;
+                //Only process size data on first attempt to place this figure
+                if (!figure.data("sized")) {
+                    //If a percentage based width hint is specified, convert to number of columns to cover
+                    if (typeof(columns) === 'string' && columns.indexOf("%") > 0) {
+                        columns = Math.ceil((parseInt(columns, 10) / 100) * base.options.columnsPerPage);
+                    }
+    
+                    //Calculate maximum width for a figure
+                    if (columns > base.options.columnsPerPage || position === 'p') {
+                        width = base.options.innerPageWidth;
+                        columns = base.options.columnsPerPage;
+                    } else {
+                        width = (columns * base.options.columnWidth) + (base.options.gutterWidth * (columns - 1));
+                    }
+                    figure.css("width", width + "px");
+                    
+                    //Get the height of the caption
+                    captionHeight = $("figcaption", figure).height();
+                    
+                    //Calculate height of figure plus the caption
+                    height = (width / aspect) + captionHeight;
+        
+                    //If the height of the figure is greater than the page height, scale it down
+                    if (height > base.options.innerPageHeight) {
+                        height = base.options.innerPageHeight;
+        
+                        //set new width and the new column coverage number
+                        width = (height - captionHeight) * aspect;
+                        columns = Math.ceil((width + base.options.gutterWidth) / (base.options.gutterWidth + base.options.columnWidth));
+                    }
+                    figure.css({ height :  height + "px", width : width + "px"});
+    
+                    //Set the size of the figure content div inside the actual figure element
+                    figureContent.css({
+                        width : width,
+                        height : height - captionHeight
+                    });
+                    
+                    figure.data("sized", true);
                 } else {
-                    width = (columns * base.options.columnWidth) + (base.options.gutterWidth * (columns - 1));
+                    height = figure.height();
+                    width = figure.width();
                 }
-                figure.css("width", width + "px");
                 
-                //Get the height of the caption
-                captionHeight = $("figcaption", figure).height();
-                
-                //Calculate height of figure plus the caption
-                height = (width / aspect) + captionHeight;
-    
-                //If the height of the figure is greater than the page height, scale it down
-                if (height > base.options.innerPageHeight) {
-                    height = base.options.innerPageHeight;
-    
-                    //set new width and the new column coverage number
-                    width = (height - captionHeight) * aspect;
-                    columns = Math.ceil((width + base.options.gutterWidth) / (base.options.gutterWidth + base.options.columnWidth));
-                }
-                figure.css({ height :  height + "px", width : width + "px"});
-
-                //Set the size of the figure content div inside the actual figure element
-                $(".figureContent", figure).css({
-                    width : width,
-                    height : height - captionHeight
-                });
-
+                //If the figure is not as wide as the available space, center it
                 availableWidth = (base.options.columnWidth * columns) + ((columns - 1) * base.options.gutterWidth);
                 if (width < availableWidth) {
                     addLeftPadding = Math.floor((availableWidth - width) / 2);
@@ -413,7 +411,10 @@
                     default:
                         column = page.data("current_column");
                 }
-
+                
+                //Get the figures currently on the page to check if current figure can fit
+                pageFigures = $("figure:not(" + figureId + ")", page);
+                
                 while (!placed && placementAttempts < base.options.columnsPerPage) {
                     
                     //Detemine the left offset start column and width of the figure
@@ -501,7 +502,7 @@
                 
                 //figure was not placed on page... carryover
                 if (!placed) {
-                    figure.detach();
+                    figure.detach().prepend(figureContent);
                     pageData = page.data();
                     if (pageData.figure_carryover !== undefined) {
                         pageData.figure_carryover.push(figureId);
@@ -511,6 +512,15 @@
                     page.data(pageData);
                     return false;
                 }
+            }
+            
+            if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
+                if (!base.options.processFigureCallback[figureType](figure, figureContent)) {
+                    figure.data("sized", false);
+                    _process_figure(figureId, page);
+                }
+            } else {
+                figure.prepend(figureContent);
             }
             
             return true;
