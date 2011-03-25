@@ -789,3 +789,14 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 #fancybox-title-float-main .figure_fullscreen {
     display: none;
 }
+
+#osci_loading {
+    width: 100%;
+    height: 100%; 
+    position: absolute; 
+    background: black url('../images/ajax-loader.gif') no-repeat center center;
+    top: 0;
+    left: 0;
+    z-index: 9999; 
+    opacity: .7;
+}

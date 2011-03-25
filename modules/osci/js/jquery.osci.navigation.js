@@ -12,10 +12,12 @@
         {
             var toc;
             
+            //clear the layout cache
             $.osci.storage.clearCache("osci_layout_cache:");
             
             base.options = $.extend({}, $.osci.navigation.defaultOptions, options);
             
+            //setup the base data
             base.data = {
                 nid : base.options.nid,
                 mlid : base.options.mlid,
@@ -24,18 +26,18 @@
                 to : {operation : "page", value : "first"}
             };
             
-            toc = _get_table_of_contents(base.options.nid, base.options.bid);
-            base.data.toc = toc.data;
-            
             $(document).bind({
+            	//update the navigation when layout is complete
                 osci_layout_complete : function() {
                     _reset_navigation();
                 },
+                //bind navigation to the document so it can be easily triggered
                 osci_navigation : function(e) {
                     base.navigateTo(e.osci_to, e.osci_value);
                 }
             });
             
+            //bind function for handling html5 history back button
             $(window).bind("popstate",function(e){
                 if (e.originalEvent.state !== null && e.originalEvent.state.nid) {
                     if (base.data.nid !== e.originalEvent.state.nid) {
@@ -46,16 +48,19 @@
                 }
             });
             
+            //setup the prev button
             $("#" + base.options.prevLinkId).click(function (e){
                 e.preventDefault();
                 base.navigateTo("prev");
             });
             
+            //setup the next button
             $("#" + base.options.nextLinkId).click(function (e){
                 e.preventDefault();
                 base.navigateTo("next");
             });
             
+            //make the arrow keys available to navigation
             $(window).keydown(function(e){
                 var keyCode = e.keyCode || e.which;
 
@@ -79,42 +84,49 @@
                 });
             }
             
-            _create_table_of_contents();
-            base.loadContent(true);
+            //get the table of contents and load the content of the current section
+            $.osci.storage.getUrl({
+                url : base.options.apiEndpoint + base.options.nid + "/book.json",
+                key : "bid_" + base.options.bid,
+                type : "json",
+                expire : base.options.cacheTime,
+                callback : function(data) {
+                	base.data.toc = data.data;
+                	_create_table_of_contents();
+                	base.loadContent(true);
+                }
+            });
         };   
         
+        //wrapper for the content loading function
         base.loadContent = function(updateHistory)
         {
+        	//check if user defined load function is a function and call it
             if ($.isFunction($.osci.navigation.options.loadFunction)) {
                 $.osci.navigation.options.loadFunction($.osci.navigation.data);
             }
             
+            //update the browser history
             if (updateHistory) {
                 $.osci.navigation.updateHistory($.osci.navigation.data.nid);
             }
         };
         
-        function _get_table_of_contents(nid, bid)
-        {
-            return $.osci.storage.getUrl({
-                url : base.options.apiEndpoint + nid + "/book.json",
-                key : "bid_" + bid,
-                type : "json",
-                expire : base.options.cacheTime
-            });
-        }
-        
+        //function to call when the browser is resized
         function _osci_resize()
         {
+        	//get the first paragraph currently displayed so we can try to stay on the same page after the resize
             var firstParagraph = $("p.osci_paragraph:first", "div.osci_page_" + (base.data.currentPage + 1));
             base.data.to = { operation : "paragraph", value : firstParagraph.data("paragraph_id")};
             
             //$("ul", "#" + base.options.tocId).trigger("osci_toc_update_heights");
             
+            //clear the layout cache and reload the content
             $.osci.storage.clearCache("osci_layout_cache:");
             base.loadContent();
         }
         
+        //reset the navigation
         function _reset_navigation()
         {
             var paragraphData, page,
@@ -132,6 +144,7 @@
             base.navigateTo(base.data.to.operation, base.data.to.value);
         }
         
+        //update the reference images to the current section
         function _update_reference_image()
         {
             var nid = base.data.nid,
@@ -139,12 +152,14 @@
                 navImageWrapper = $(".osci_reference_image"),
                 largeUrl = "#", thumbUrl = "";
             
-            
+            //make sure we have a place for the image
             if (navImageWrapper.length) {
+            	//loop over each image placeholder
                 navImageWrapper.each(function(i, elem) {
                     var $elem = $(elem),
                         imagePreset = $elem.data("image_preset");
                     
+                    //if the placeholder does not have a link/image in it yet, add it
                     if (!$elem.children().length) {
                         $elem.append($("<a>", {
                             html : $("<img>").bind("osci_reference_image_alter", function(e){
@@ -159,6 +174,7 @@
                         }));
                     }
                     
+                    //update the link and image with the current section plate image data
                     if (tocData.plate_image && tocData.plate_image.full_image_url && tocData.plate_image[imagePreset]) {
                         largeUrl = tocData.plate_image.full_image_url;
                         thumbUrl = tocData.plate_image[imagePreset];
@@ -170,6 +186,7 @@
             }
         }
         
+        //update the page title to the current section
         function _update_title()
         {
             var hasParent = true,
@@ -180,6 +197,7 @@
                 bookTitle = "",
                 subTitle = "";
             
+            //work our way up the table of contents heirarchy to get the title parts
             while (hasParent) {
                 titleParts.push(base.data.toc["nid_" + nid].title);
                 
@@ -190,6 +208,7 @@
                 }
             }
             
+            //build the title string
             titleLength = titleParts.length;
             for (var i = 0; i < titleLength; i++) {
                 if (i === titleLength - 1) {
@@ -203,10 +222,12 @@
                 }
             }
 
+            //put the title parts into the page
             $("h1.osci_book_title").text(bookTitle);
             $("h2.osci_book_section_title").text(subTitle);
         }
         
+        //update the HTML5 url history
         base.updateHistory = function (nid, replace)
         {
             var tocData;
@@ -226,11 +247,13 @@
             }
         };
         
+        //handle reader navigation
         base.navigateTo = function(to, value)
         {
             var totalColumns, newPage, tocData, newOffset, identifier, tocContainer;
 
             switch(to) {
+            	//go to the next page
                 case "next":
                     base.data.currentPage++;
                     if (base.data.currentPage >= base.data.pageCount) {
@@ -244,7 +267,7 @@
                         return;
                     }
                     break;
-
+                //go to the previous page
                 case "prev":
                     base.data.currentPage--;
                     if (base.data.currentPage < 0) {
@@ -258,7 +281,7 @@
                         return;
                     }
                     break;
-
+                //go to a specific page
                 case "page":
                     if (value === "first") {
                         base.data.currentPage = 0;
@@ -270,7 +293,7 @@
                         base.data.currentPage = value - 1;
                     }
                     break;
-
+                //go to a specfic column
                 case "column":
                     totalColumns = base.data.layoutData.columnsPerPage * base.data.pageCount;
                     if (value > totalColumns || value < 1) {
@@ -283,7 +306,7 @@
                     }
                     return;
                     break;
-                    
+                //go to a specific paragraph 
                 case "paragraph":
                     newPage = $("p.osci_paragraph_" + value + ":first","#" + base.data.layoutData.viewerId).parents(".osci_page").data("page");
                     if (newPage !== undefined) {
@@ -291,7 +314,7 @@
                     }
                     return;
                     break;
-                    
+                //go to a jquery selector result
                 case "selector":
                     newPage = $(value + ":first","#" + base.data.layoutData.viewerId).parents(".osci_page").data("page");
                     if (newPage !== undefined) {
@@ -299,7 +322,7 @@
                     }
                     return;
                     break;
-                    
+                //go to a specific node
                 case "node":
                     if (value.indexOf("#")) {
                         value = value.split("#");
@@ -320,12 +343,13 @@
             }
 
             newOffset = 0;
-            
+            //Calculate the new page container offset
             if (base.data.currentPage > 0) {
                 newOffset = -1 * ((base.data.currentPage * base.data.layoutData.pageWidth) + 
                     ((base.data.layoutData.outerPageGutter[1] + base.data.layoutData.outerPageGutter[3]) * (base.data.currentPage)));
             }
 
+            //if the table of contents is not overlaying the content shift the content to not be under the toc
             if (!base.options.tocOverlay) {
                 tocContainer = $("#" + base.options.tocId);
                 if (tocContainer.hasClass("open") && tocContainer.outerWidth() > base.data.layoutData.outerPageGutter[3]) {
@@ -333,8 +357,10 @@
                 }
             }
 
+            //update the paging navigation
             $("#" + base.options.sectionNavId).trigger("osci_update_navigation_section", base.data.currentPage);
 
+            //shift the page using css3
             $("#osci_pages", "#osci_viewer").css({
                 "-webkit-transform" : "translate(" + newOffset + "px, 0)",
                 "-moz-transform" : "translate(" + newOffset + "px, 0)",
@@ -342,41 +368,60 @@
             });
         };
         
+        //create the paging navigation bar
         function _create_section_navigation_bar()
         {
             var container = $("#" + base.options.sectionNavId),
+            	//how many pages are there
                 parts = base.data.pageCount,
+                //determine the width of each part to fill the container
                 partWidth = Math.floor(container.width() / parts),
+                //determine if we have pixels left over
                 addPixels = Math.abs(Math.round(container.width() - (parts * partWidth))),
                 navBar, i, classes = "", heightRemain = 0, li, finalWidth,
+                //add or subtract pixels
                 addSubPixels = (container.width() - (parts * partWidth)) > 0 ? 1 : -1;
            
+            //get the navbar
             navBar = $("#osci_navigation_section_list", container);
+            
+            //if the navbar has not been created, create it
             if (!navBar.length) {
                 navBar = $("<ul>", {
                     id : "osci_navigation_section_list",
                     width : "100%"
                 }).appendTo(container);
+                
+                //bind an event to update the navigation
+                container.bind("osci_update_navigation_section", function(e, page){
+                    $("li", this).removeClass("active");
+                    $("li:eq(" + page + ")", this).addClass("active");
+                });
             }
             navBar.empty();
             
+            //create each navbar part
             i = 1;
             while (i <= parts) {
                 classes = "";
+                //first part add classes
                 if (i === 1) {
                     classes += "first active";
                 } 
 
+                //add the last class to the last part
                 if (i === parts) {
                     classes += " last";
                 }
                 
+                //update the width of the part if there were leftover pixels
                 if (i > (parts - Math.floor(addPixels / 2)) || i < (1 + Math.ceil(addPixels / 2))) {
                     finalWidth = partWidth + addSubPixels;
                 } else {
                     finalWidth = partWidth;
                 }
                 
+                //create the li
                 li = $("<li>",{
                     css : { width : finalWidth + "px" },
                     data : { navigateTo : i },
@@ -397,11 +442,6 @@
                 
                 i++;
             }
-            
-            container.bind("osci_update_navigation_section", function(e, page){
-                $("li", this).removeClass("active");
-                $("li:eq(" + page + ")", this).addClass("active");
-            });
         }
         
         function _create_table_of_contents()

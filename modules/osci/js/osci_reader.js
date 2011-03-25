@@ -1,9 +1,17 @@
 (function($) {
     $(document).ready(function() {
+    	$(document).bind("osci_layout_start", function(e){
+    	    $("<div>", {
+    	        id : "osci_loading"
+    	    }).appendTo("body");
+    	});
+    	
         /****************************************
          * Figure Image Handling
          */
         $(document).bind("osci_layout_complete", function(e) {
+            $("#osci_loading").remove();
+            
             var figureImages = $("figure.image", "#osci_pages");
 
             figureImages.bind("osci_figure_fullscreen", function(e) {
@@ -160,63 +168,65 @@
             loadFunction : function (navData)
             {
                 var footnotes, data, more, figures,
-                    endpoint = Drupal.settings.osci_navigation.content_endpoint.replace("{$nid}", navData.nid),
-                    content = $.osci.storage.getUrl({
-                        url :  endpoint,
-                        expire : Drupal.settings.osci_navigation.cache_time
-                    });
+                    endpoint = Drupal.settings.osci_navigation.content_endpoint.replace("{$nid}", navData.nid);
                 
-                data = $(content.data);
-                footnotes = $("#field_osci_footnotes", data).remove();
+                $.osci.storage.getUrl({
+                    url :  endpoint,
+                    expire : Drupal.settings.osci_navigation.cache_time,
+                    callback : function(content) {
+                    	data = $(content.data);
+                        footnotes = $("#field_osci_footnotes", data).remove();
 
-                more = $("#osci_more_wrapper").data("osci.more");
-                more.add_content("footnotes", $(".footnote", footnotes), true, 1);
-                
-                figures = $("#field_osci_figures", data);
-                more.add_content("figures", $(".figureThumbnail", figures).remove(), true, undefined, function(tab){
-                    $(".figureThumbnail", tab).each(function(i, elem){
-                        var $elem = $(elem);
-                        $("<a>", {
-                            text : "goto",
-                            href : "#",
-                            click : function(e) {
-                                e.preventDefault();
-                                var id = $("img", $(this).parent()).data("figure_id");
-                                
-                                $(document).trigger({
-                                    type : "osci_navigation",
-                                    osci_to : "selector",
-                                    osci_value : "#" + id
-                                });
-                                
-                                $("#osci_more_wrapper").trigger({
-                                    type : "osci_more_toggle",
-                                    osci_more_close : true
-                                });
-                            },
-                            title : "goto figure in context",
-                            "class" : "figure_goto"
-                        }).appendTo($elem);
+                        more = $("#osci_more_wrapper").data("osci.more");
+                        more.add_content("footnotes", $(".footnote", footnotes), true, 1);
                         
-                        $("<a>", {
-                            text : "fullscreen",
-                            href : "#",
-                            click : function(e) {
-                                e.preventDefault();
-                                var id = $("img", $(this).parent()).data("figure_id");
+                        figures = $("#field_osci_figures", data);
+                        more.add_content("figures", $(".figureThumbnail", figures).remove(), true, undefined, function(tab){
+                            $(".figureThumbnail", tab).each(function(i, elem){
+                                var $elem = $(elem);
+                                $("<a>", {
+                                    text : "goto",
+                                    href : "#",
+                                    click : function(e) {
+                                        e.preventDefault();
+                                        var id = $("img", $(this).parent()).data("figure_id");
+                                        
+                                        $(document).trigger({
+                                            type : "osci_navigation",
+                                            osci_to : "selector",
+                                            osci_value : "#" + id
+                                        });
+                                        
+                                        $("#osci_more_wrapper").trigger({
+                                            type : "osci_more_toggle",
+                                            osci_more_close : true
+                                        });
+                                    },
+                                    title : "goto figure in context",
+                                    "class" : "figure_goto"
+                                }).appendTo($elem);
                                 
-                                $("#" + id, "#osci_pages").trigger({
-                                    type : "osci_figure_fullscreen"
-                                });
-                            },
-                            title : "view fullscreen",
-                            "class" : "figure_fullscreen"
-                        }).appendTo($elem);
-                    });
-                });
-                
-                $("#" + Drupal.settings.osci_navigation.reader_id).osci_layout(data, {
-                    cacheId : navData.nid
+                                $("<a>", {
+                                    text : "fullscreen",
+                                    href : "#",
+                                    click : function(e) {
+                                        e.preventDefault();
+                                        var id = $("img", $(this).parent()).data("figure_id");
+                                        
+                                        $("#" + id, "#osci_pages").trigger({
+                                            type : "osci_figure_fullscreen"
+                                        });
+                                    },
+                                    title : "view fullscreen",
+                                    "class" : "figure_fullscreen"
+                                }).appendTo($elem);
+                            });
+                        });
+                        
+                        $("#" + Drupal.settings.osci_navigation.reader_id).osci_layout(data, {
+                            cacheId : navData.nid
+                        });
+                    }
                 });
             }
         });

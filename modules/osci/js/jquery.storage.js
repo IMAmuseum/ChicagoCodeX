@@ -27,7 +27,7 @@ $.osci.getURL({
 
     $.osci.storage.getUrl = function (config) 
     {
-        var store, time, start, key, item = null, finished,
+        var time, start, key, item = null, finished,
             settings = $.extend({}, $.osci.storage.defaultSettings, config);
 
         // return if a url is not set
@@ -35,60 +35,40 @@ $.osci.getURL({
             return false;
         }
 
-        // if browser supports localStorage proceed
-        if ($.osci.storage.hasLocalStorage()) {
-            store = window.localStorage;
-            time = new Date();
-            start = new Date();
-            key = (settings.key === 'url') ? settings.url : settings.key;
-                    
-            time = Math.floor(time.getTime() / 1000);
-
-            if (settings.clear === true) {
-                store.removeItem(key);
-            } else {
-                item = JSON.parse(store.getItem(key));
-            }
-            
-            if (item === null || item.expire <= time) {
-                item = null;
-            } else {
-                item.cache = 'true';
-            }
-        }
-            
-        if (item === null) {
-            $.ajax({
-                url: settings.url,
-                cache: false,
-                async: false,
-                dataType: settings.type,
-                success: function(data) {
-                    var jsonItem, time = new Date();
-                    time = Math.floor(time.getTime() / 1000 + settings.expire);
-                    item = {
-                        data  : data,
-                        expire: time
-                    };
-                    
-                    if ($.osci.storage.hasLocalStorage()) {
-                        jsonItem = JSON.stringify(item);
-                    
-                        store.setItem(key, jsonItem); 
-                    }
-                    
-                    item.cache = 'false';
-                },
-                error: function(arg1, arg2) {
-                    //console.log('An error has occurred');
-                    return null;
-                }
-            });
+        key = (settings.key === 'url') ? settings.url : settings.key;
+                
+        item = $.osci.storage.get(key);
+        
+        if (!(item === null || item === undefined)) {
+            item.cache = 'true';
+            settings.callback(item);
+            return;
         }
 
-        finished = new Date();
-        item.time = finished.getTime() - start.getTime();
-        return item;
+        //no localstorage or expired
+        $.ajax({
+            url: settings.url,
+            cache: false,
+            async: true,
+            dataType: settings.type,
+            success: function(data) {
+                var jsonItem, time = new Date();
+                time = Math.floor(time.getTime() / 1000 + settings.expire);
+                item = {
+                    data  : data,
+                    expire: time
+                };
+
+                $.osci.storage.set(key, item, settings.expire);
+
+                item.cache = 'false';
+                settings.callback(item);
+            },
+            error: function(arg1, arg2) {
+                //console.log('An error has occurred');
+                return null;
+            }
+        });
     };
 
     $.osci.storage.clearCache = function(prefix) 
@@ -114,8 +94,6 @@ $.osci.getURL({
                     }
                 }
             }
-            $('.stat').html('Cache cleared');
-            $('#returnResult').html('');
             return true;
         } 
     };
@@ -149,10 +127,16 @@ $.osci.getURL({
             
             time = new Date();
             time = Math.floor(time.getTime() / 1000 + expire);
-            item = {
-                data  : value,
-                expire: time
-            };
+            
+            if (value.data) {
+            	item = value;
+            } else {
+	            item = {
+	                data : value
+	            };
+            }
+            
+            item.expire = time;
             
             jsonItem = JSON.stringify(item);
             window.localStorage.setItem(key, jsonItem); 
@@ -164,7 +148,8 @@ $.osci.getURL({
         expire: 86400, // One day
         type:   'html',
         clear:  false,
-        key:    'url'
+        key:    'url',
+        callback : function(data) {return data;}
     };
 })(jQuery);
 

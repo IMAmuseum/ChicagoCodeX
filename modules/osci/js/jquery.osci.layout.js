@@ -16,10 +16,9 @@
         base.init = function()
         {
             var pCount = 0;
-            
             //Trigger event so we know layout is begining
             $(document).trigger("osci_layout_start");
-            
+
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.viewer = $("#" + base.options.viewerId).empty();
             
