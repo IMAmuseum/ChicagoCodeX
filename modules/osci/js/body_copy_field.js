@@ -6,8 +6,57 @@
 		// send nid to server to fetch preview
 		$.get(Drupal.settings.baseUrl + 'ajax/figurepreview/' + id,
 			function (data) {
-				$('.figure_reference_preview', 
-					$(target).parents(".fieldset-wrapper:first")).html(data.div);
+				var dest = $('.figure_reference_preview', $(target).parents(".fieldset-wrapper:first"));
+				dest.html(data.div);
+				if (data.ptiff == true) {
+					// place a polymaps breakout button
+					var button = $('<input type="button">');
+					button.val('Set Frame')
+						.css('float', 'right')
+						.click(function() {
+							// determine best size to open dialog, based on figure size
+							var iw = $(data.ptiffDiv).data('iw');
+							var ih = $(data.ptiffDiv).data('ih');
+							var mapW, mapH;
+							if (iw > ih) {
+								// wider than tall
+								var ratio = ih / iw;
+								mapW = 640;
+								mapH = mapW * ratio;
+							}
+							else {
+								// taller than wide
+								var ratio = iw / ih;
+								mapH = 480;
+								mapW = mapH * ratio;
+							}
+							console.log(mapW, mapH);
+							// open new modal dialog
+							var modal = $('<div></div>');
+							var mapContainer = $('<div></div>');
+							mapContainer.css('width', mapW).css('height', mapH).css('margin', '0 auto');
+							mapContainer.html(data.ptiffDiv);
+							modal.html(mapContainer);
+							modal.dialog({
+								title: 'Set Frame',
+								width: mapW + 30,
+								modal: true,
+								buttons: [
+								          {
+								        	  text: 'Cancel', 
+								        	  click: function(){ $(this).dialog('close'); }
+								          },
+								          {
+								        	  text: 'Save Frame', 
+								        	  click: function() { alert('todo'); }
+								          }
+								]
+							});
+							// make the polymap live
+							$('.iipmap', modal).each(function(){ iipmap($(this)); });
+						});
+					dest.after(button);
+				}
 			},
 			"json"
 		);
@@ -142,7 +191,6 @@
 	            	if (currentVal == parseInt(currentVal)) {
 	            		getPreviewDiv(currentVal, event.target);
 	            	}
-	
 	        	}, 500);
 	        }
         });

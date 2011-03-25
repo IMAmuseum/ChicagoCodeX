@@ -3,6 +3,10 @@
 function osci_body_copy_init() {
 	$baseUrl = url("", array('absolute' => TRUE));
 	drupal_add_js(array('baseUrl' => $baseUrl), 'setting');
+	drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_nns.min.js', 'file');
+    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_polymaps.js', 'file');
+    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip.js', 'file');
+	drupal_add_library('system', 'ui.dialog');
 }
 
 function osci_body_copy_menu()
@@ -811,12 +815,26 @@ function osci_body_copy_figure_preview($nid) {
 	switch($node->type) {
 		case "image":
 			// if the ptiff value is set indicates iip
-			isset($node->field_ptiff['und'][0]) ? $ret->ptiff = true : $ret->ptiff = false;
+			if (isset($node->field_ptiff['und'][0])) {
+				$ret->ptiff = true;
+				$ret->ptiffDiv = _osci_iip_create_iip_div($node, 'poly_preview_'.time());
+			}
+			else {
+				$ret->ptiff = false;
+			}
 			if (isset($node->field_image['und'][0])) {
 				$ret->image = file_create_url($node->field_image['und'][0]['uri']);
 				$ret->div = '<div style="width:100%;">'
-					.'<img style="width:100%;" class="preview_image" '
-					.'id="preview_'.$time.'" src="'.$ret->image.'" />'
+					.theme_image_style(array(
+                	    'style_name' => 'osci_image_256',
+            			'path' => $node->field_image['und'][0]['uri'],
+                	    'alt' => $title,
+        		    	'title' => $title,
+            			'attributes' => array(
+        		           	'class' => 'preview_image',
+							'style' => 'width:100%;'
+        		    	)
+        		    ))
 					.'</div>';
 			}
 			break;
