@@ -1,5 +1,10 @@
 <?php
 
+function osci_body_copy_init() {
+	$baseUrl = url("", array('absolute' => TRUE));
+	drupal_add_js(array('baseUrl' => $baseUrl), 'setting');
+}
+
 function osci_body_copy_menu()
 {
     $items = array();
@@ -15,7 +20,15 @@ function osci_body_copy_menu()
 
     $items['ajax/figure'] = array(
         'title'             => 'Figure search',
-        'page callback'     => 'figure_reference',
+        'page callback'     => 'osci_body_copy_figure_reference',
+        'access arguments'  => array('access content'),
+        'type'              => MENU_CALLBACK,
+    );
+    
+    $items['ajax/figurepreview/%'] = array(
+        'title'             => 'Figure preview',
+        'page callback'     => 'osci_body_copy_figure_preview',
+    	'page arguments'	=> array(2),
         'access arguments'  => array('access content'),
         'type'              => MENU_CALLBACK,
     );
@@ -686,6 +699,10 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#suffix'      => '</div>',
             '#weight'       => ($id == 'figure_blank') ? -1 : $id,
             '#tree'         => true,
+            'figure_preview' => array(
+                '#markup'	=> '<div class="figure_reference_preview" id="preview_'.$figId.'" '
+                	.'style="width:200px;float:right;">&nbsp;</div>',
+            ),
             'figure_id'     => array(
                 '#markup'   => '<div class="figure_identifier">' . $id . ' <span>[figure:' . $figId . ']</span> </div>'
             ),
@@ -694,6 +711,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
                 '#description'          => t('Type the identifier of the media that this figure should display.'),
                 '#type'                 => 'textfield',
                 '#autocomplete_path'    => 'ajax/figure',
+            	'#attributes'			=> array('class' => array('figure_reference_field')),
                 '#default_value'        => isset($figure['figure_reference']) ? $figure['figure_reference'] : '',
             ),
             'number_template' => array(
@@ -782,7 +800,34 @@ function osci_body_copy_field_widget_settings_form($field, $instance)
     return $form;
 }
 
-function figure_reference($args) {
+function osci_body_copy_figure_preview($nid) {
+	//if (!is_numeric($nid)) return;
+	
+	// get node and ensure it's a valid figure type
+	$node = node_load($nid);
+	$ret = new stdClass();
+	$time = time();
+	$ret->time = $time;
+	switch($node->type) {
+		case "image":
+			// if the ptiff value is set indicates iip
+			if (isset($node->field_ptiff['und'][0])) {
+				$ret->ptiff = true;
+				$ret->div = _osci_iip_create_iip_div($node, $time);
+			}
+			elseif (isset($node->field_image['und'][0])) {
+				$ret->image = file_create_url($node->field_image['und'][0]['uri']);
+				$ret->div = '<div style="width:100%;">'
+					.'<img style="width:100%;" class="preview_image" '
+					.'id="preview_'.$time.'" src="'.$ret->image.'" />'
+					.'</div>';
+			}
+			break;
+	}
+	return drupal_json_output($ret);
+}
+
+function osci_body_copy_figure_reference($args) {
     $figs = db_select('node', 'n')
         ->fields('n', array('title', 'nid'))
 //        ->condition('type', 'image')

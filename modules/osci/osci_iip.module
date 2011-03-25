@@ -184,7 +184,7 @@ function _osci_iip_create_iip_div($node, $figure_id) {
 	}
 	else { $field_overlay = ""; }
 
-	$ret = '<div id="map_'.$figure_id.'" class="iipmap" tabindex="500" data-node="'.$node->nid.'" ';
+	$ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
 	$ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zlm="'.$attr['zl'].'" ';
 	$ret .= 'data-ptiff="'.$node->field_ptiff['und'][0]['value'].'" data-figure-id="'.$figure_id.'" ';
 	$ret .= 'data-svg="'.$field_svg.'" data-overlay="'.$field_overlay.'" ';

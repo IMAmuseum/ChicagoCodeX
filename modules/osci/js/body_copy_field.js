@@ -84,5 +84,29 @@
             });
             $(obj).ckeditor(function() {}, config);
         }
+        
+        /**************************************************
+         * Figure Preview
+         */
+        $('.figure_reference_field').live('keyup', function(event) {
+        	// wait a second to see if anything else was pressed
+        	var origVal = event.target.value;
+        	setTimeout(function() {
+        		var currentVal = event.target.value;
+        		if (currentVal == origVal && currentVal != "" && currentVal == parseInt(currentVal)) {
+            		console.log(currentVal, 'retrieving div for id');
+            		// send nid to server to fetch preview
+            		$.get(Drupal.settings.baseUrl + 'ajax/figurepreview/' + currentVal,
+            			function (data) {
+            				console.log(data, 'retrieved data');
+            				console.log(event.target);
+            				$('.figure_reference_preview', 
+            					$(event.target).parents(".fieldset-wrapper:first")).html(data.div);
+            			},
+            			"json"
+            		);
+        		}
+        	}, 1250);
+        });
     });
 })(jQuery);
