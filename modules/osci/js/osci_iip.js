@@ -260,6 +260,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr("fill","#aaa")
 			.attr("class", "svg_arrow");
 	}
+
+	/*
+	 * Utility functions
+	 */
 	
 	function make_fullscreen() {
 		
@@ -298,11 +302,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
     var figure = div.parents('figure');
     figure.bind('osci_figure_fullscreen', make_fullscreen);
 	
-	
-	/*
-	 * Utility functions
-	 */
-	
 	function make_small() {
 		$('#iip_fullscreen').parent().remove();
 	}
@@ -324,7 +323,12 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		return (Math.log(x))/(Math.log(base));
 	}
 	
-	
+	function getMap(e) {
+		if ($.isFunction(e.callback)){
+			e.callback(map);
+		}
+	}
+	div.bind('get_map', getMap);
 	
 }
 

@@ -710,6 +710,11 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             'figure_id'     => array(
                 '#markup'   => '<div class="figure_identifier">' . $id . ' <span>[figure:' . $figId . ']</span> </div>'
             ),
+            'figure_coords' => array(
+            	'#type' => 'hidden',
+            	'#default_value' => isset($figure['figure_coords']) ? $figure['figure_coords'] : '{}',
+            	'#attributes' => array('class' => 'figure_coords'),
+            ),
             'figure_reference' => array(
                 '#title'                => t('Figure Reference'),
                 '#description'          => t('Type the identifier of the media that this figure should display.'),

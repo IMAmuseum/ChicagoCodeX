@@ -2,6 +2,16 @@
 
 (function ($) {
 	
+	function getMapBounds(map) {
+		var extents = map.extent();
+		var coords = JSON.stringify({
+			swLon: extents[0].lon,
+			swLat: extents[0].lat,
+			neLon: extents[1].lon,
+			neLat: extents[1].lat
+		});
+	}
+	
 	function getPreviewDiv(id, target) {
 		// send nid to server to fetch preview
 		$.get(Drupal.settings.baseUrl + 'ajax/figurepreview/' + id,
@@ -47,7 +57,27 @@
 								          },
 								          {
 								        	  text: 'Save Frame', 
-								        	  click: function() { alert('todo'); }
+								        	  click: function() {
+								        		  // trigger get_map event on the map container to get current coords
+								        		  $('.iipmap', mapContainer).trigger({
+								        			  type: "get_map",
+								                      callback: function(map) {
+								                    	  // get the coords of the sw, ne corners
+								                    	  var extents = map.extent();
+								                    	  var coords = JSON.stringify({
+								                    		  swLon: extents[0].lon,
+								                    		  swLat: extents[0].lat,
+								                    		  neLon: extents[1].lon,
+								                    		  neLat: extents[1].lat
+								                    	  });
+								                    	  // inject into hidden form
+								                    	  var input = $('.figure_coords', $(target).parents(".fieldset-wrapper:first"));
+								                    	  input.val(coords);
+								                      },
+								                  });
+								        		  // close the modal
+								        		  modal.dialog('destroy');
+								        	  }
 								          }
 								]
 							});
