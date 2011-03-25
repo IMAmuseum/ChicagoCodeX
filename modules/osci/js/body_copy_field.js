@@ -30,7 +30,6 @@
 								mapH = 480;
 								mapW = mapH * ratio;
 							}
-							console.log(mapW, mapH);
 							// open new modal dialog
 							var modal = $('<div></div>');
 							var mapContainer = $('<div></div>');
