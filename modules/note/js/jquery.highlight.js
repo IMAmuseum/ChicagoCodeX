@@ -16,17 +16,17 @@
 	        /* 
 	         * A single node will have itself as the common ancestor.
 	         */
-	        if (parentNode.isSameNode(this)) {
+	        if (parentNode.isSameNode(selectionRange.startContainer)) {
 	        	/*
 	        	 * nodeType 1 = textNode
 	        	 * nodeType 3 = htmlNode
 	        	 */
 	        	if (this.nodeType == 1) { 
-		        	processTxtNode(this, 'start', selectionRange.startOffset);
-		        	processTxtNode(this, 'end', selectionRange.endOffset);
+		        	processTxtNode(parentNode, 'start', selectionRange.startOffset);
+		        	processTxtNode(parentNode, 'end', selectionRange.endOffset);
 	        	} else if (this.nodeType == 3) {
-	        		processHtmlNode(this, 'start', selectionRange.startOffest);
-	        		processHtmlNode(this, 'end', selectionRange.endOffset);
+	        		processHtmlNode(parentNode.parentElement, 'start', selectionRange.startOffest);
+	        		processHtmlNode(parentNode.parentElement, 'end', selectionRange.endOffset);
 	        	}
 		    } else { 
 		        $(parentNode).contents().each(function() {
@@ -79,14 +79,14 @@
 	    
 	    // Process a text node with a wrapper
 	    var processTxtNode = function(textNode, position, offset) {
-	        var wrapper = document.createElement(this.settings.wrapperElement);
-	        wrapper.className = this.settings.wrapperClass;
+	        var wrapper = document.createElement(settings.wrapperElement);
+	        wrapper.className = settings.wrapperClass;
 
 	    	switch(position) {
 	    		case 'start':
 	    			var preText = document.createTextNode(textNode.nodeValue.substring(0, offset));
 	    			wrapper.appendChild(document.createTextNode(textNode.nodeValue.substring(offset, textNode.length)));
-	    			textNode.parentNode.insertBefore(subText, textNode);
+	    			textNode.parentNode.insertBefore(preText, textNode);
 	    	        textNode.parentNode.replaceChild(wrapper, textNode);
 	    			break;
 	    		case 'middle':
@@ -114,7 +114,7 @@
 	    			$(htmlNode).html(newHtml);
 	    			break;
 	    		case 'middle':
-	                $(htmlNode).html('<span>' + $(nodeHtml).html() + '</span>');
+	                $(htmlNode).html('<span>' + $(htmlNode).html() + '</span>');
 	    			break;
 	    		case 'end':
 	    			var newHtml = '<span>'
@@ -125,4 +125,6 @@
 	    			break;
 	    	}
 	    }
-}(jQuery);
+    }
+})(jQuery);
+

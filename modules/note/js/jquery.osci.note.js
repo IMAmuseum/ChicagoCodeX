@@ -195,7 +195,6 @@
         base.highlightTxt = function(txt, note) {
             $.osci.note.toolbar.detach();
     
-            console.log(note);
             //TODO work in note data settings
             if (!$('span#span-note-' + note.onid).length) {
                 var data = base.getSelectionData(txt, note.original_text);
@@ -248,10 +247,6 @@
                 div.appendChild(clonedSelection);
                 return div.innerHTML;
             }
-        }
-
-        base.stripTags = function(txt) {
-            return txt.replace(/<\/?[^>]+(>|$)/g, '');
         }
 
         base.init();
