@@ -117,6 +117,8 @@
                 /**
                  * Handle selection dialog
                  */
+                $('#osci_viewer .osci_paragraph').highlight();
+                /*
                 $('#osci_viewer .osci_paragraph').mouseup(function() {
                     $.osci.note.selection = base.getSelected();
                     $.osci.note.activeParagraph = $(this);
@@ -127,6 +129,7 @@
                     $.osci.note.toolbar.appendTo(this); 
 
                 });
+                */
 
                 /*************************************
                  * handle note dialog

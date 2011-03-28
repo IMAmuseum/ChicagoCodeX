@@ -109,21 +109,18 @@
 	    	switch(position) {
 	    		case 'start':
 	    			var preHtml = htmlNode.innerHTML.substring(0, offset);
-                    var wrapper = document.createElement(settings.wrapperElement);
-                    wrapper.innerHTML = htmlNode.innerHTML.substring(offset, htmlNode.innerHTML.length);
+                    var wrapper = wrapHtml(htmlNode.innerHTML.substring(offset, htmlNode.innerHTML.length));
 	    			htmlNode.innerHTML = preHtml; 
                     htmlNode.appendChild(wrapper);
 	    			break;
 	    		case 'middle':
-                    var wrapper = document.createElement(settings.wrapperElement);
-                    wrapper.innerHTML = htmlNode.innerHTML;
+                    var wrapper = wrapHtml(htmlNode.innerHTML);
                     htmlNode.innerHTML = '';
                     htmlNode.appendChild(wrapper);
 	    			break;
 	    		case 'end':
 	                var postHtml = htmlNode.innerHTML.substring(offset, htmlNode.innerHTML.length);
-                    var wrapper = document.createElement(settings.wrapperElement);
-                    wrapper.innerHTML = htmlNode.innerHTML.substring(0, offset);
+                    var wrapper = wrapHtml(htmlNode.innerHTML.substring(0, offset));
                     htmlNode.innerHTML = '';
                     htmlNode.insertBefore(wrapper);
                     htmlNode.innerHTML += postHtml;
@@ -135,6 +132,13 @@
             var wrapper = document.createElement(settings.wrapperElement);
             wrapper.className = settings.wrapperClass;
             wrapper.appendChild(txt);
+            return wrapper;
+        }
+
+        var wrapHtml = function(html) {
+            var wrapper = document.createElement(settings.wrapperElement);
+            wrapper.className = settings.wrapperClass;
+            wrapper.innerHTML = html;
             return wrapper;
         }
     }
