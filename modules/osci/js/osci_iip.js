@@ -60,6 +60,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var center_lon = div.attr('data-center-lon');
 	var svg_path = div.attr('data-svg');
 	var ptiff_overlay = div.attr('data-overlay');
+	var options = $.parseJSON(div.parents('figure:first').attr('data-options'));
 	var tile_size = 256;
 	var overlay_opacity = '0';
 	
@@ -306,15 +307,23 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		$('#iip_fullscreen').parent().remove();
 	}
 	
-	function reset_map() { // Set visible window so that full image fits inside and doesn't overflow
+	function reset_map() { 
+		// Set visible window so that full image fits inside and doesn't overflow
 		// If we have a center value set, let's use it, else calculate
 		// best center based on coordinates of our image tiles.
-		if (center_lat && center_lon) { // primarily used for make_fullscreen to retain center
+		
+		// only used for make_fullscreen to retain center
+		if (center_lat && center_lon) { 
 			map.center({lat: parseFloat(center_lat), lon: parseFloat(center_lon)});
 			map.zoom(zoom_level);
 		}
+		// honor inset data
+		else if (options && options.swLat) {
+			map.extent([{lat: options.swLat, lon: options.swLon}, {lat: options.neLat, lon: options.neLon}]);
+		}
 		else {
 			// map extents are to be given as SW corner, NE corner
+			// fit the whole image
 			map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
 		}
 	}
@@ -330,6 +339,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	div.bind('get_map', getMap);
 	
+	function restoreDefault(e) {
+		map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
+	}
+	div.bind('restore_default_map', restoreDefault);
 }
 
 (function($) {

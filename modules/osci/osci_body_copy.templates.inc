@@ -4,14 +4,14 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $figure = $vars['figure'];
     $node = node_load($figure['figure_reference']);
     node_build_content($node);
-
     $data = array(
     	'position' => $figure['position'],
     	'columns' => $figure['columns'],
     	'aspect' => $node->field_aspect_ratio['und'][0]['value'],
         'vertical_position' => substr($figure['position'], 0, 1),
         'horizontal_position' => strlen($figure['position']) > 1 ? substr($figure['position'], 1, 1) : "na",
-        'figure_type' => $node->type
+        'figure_type' => $node->type,
+    	'options' => htmlspecialchars($figure['figure_options'])
     );
 
     $vars['data'] = '';
