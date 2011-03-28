@@ -56,9 +56,7 @@
 		var interactionLabel = $('<label>').html('Disable Interaction');
 		var interactionToggle = $('<input type="checkbox">')
 			.addClass('interaction_toggle');
-		console.log(options);
 		if (options.interaction == false) {
-			console.log('options.interaction == false');
 			interactionToggle.attr('checked', 'checked');
 		}
 		interactionContainer.append(interactionToggle).append(interactionLabel);
@@ -104,7 +102,6 @@
 			                    		  neLat: extents[1].lat,
 			                    		  interaction: (!interactionToggle.attr('checked'))
 			                    	  });
-			                    	  console.log(options, 'options');
 			                    	  // inject into hidden form
 			                    	  var input = $('.figure_options', $(dest).parents(".fieldset-wrapper:first"));
 			                    	  input.val(options);
