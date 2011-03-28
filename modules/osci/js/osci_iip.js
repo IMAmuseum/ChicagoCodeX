@@ -60,10 +60,12 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var center_lon = div.attr('data-center-lon');
 	var svg_path = div.attr('data-svg');
 	var ptiff_overlay = div.attr('data-overlay');
-	var options = $.parseJSON(div.parents('figure:first').attr('data-options'));
+	var editing = div.attr('data-editing');
+	var options = $.parseJSON(div.parents('figure:first').attr('data-options')) || new Object();
+	console.log(options, 'options');
 	var tile_size = 256;
 	var overlay_opacity = '0';
-	
+
 	
 	// Calculate best zoom level to start at based on div parent's size.
 	var parent_w = parseInt(div.parent().css('width'));
@@ -104,6 +106,17 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	image.url(window['tile_loader_'+figure_id]);
 	image.id('image');
 	map.add(image);
+	
+	
+	/* 
+	 * Controls
+	 */
+	
+	
+	// If editing, force controls to be on
+	if (editing) {
+		options.interaction = true;
+	}
 	
 	// If we have an overlay, place that on top
 	if (ptiff_overlay) {
@@ -165,101 +178,105 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		}
 	});
 	
+	// More controls
+	
+	var nmap = n$(div[0]); // the map container ran through the nns js library for svg manipulation
+	
+	if (options.interaction != false) {
+		map.add(po.interact());
+		var compass = po.compass().pan('none');
+		map.add(compass);
+		// hide it in initial view
+		$('g.compass', div).css("visibility", "hidden");
+		
+		// Add reset button
+		var reset_btn = nmap.add("svg:svg")
+			.attr("width", 40)
+			.attr("height", 15)
+			.attr("class", "reset-button")
+			.style("position","absolute")
+			.style("left","16px")
+			.style("top","65px")
+			.style("visibility","hidden")
+			.on("mousedown",reset_map);
+		reset_btn.add("svg:rect")
+			.attr("width", "100%")
+			.attr("height", "100%")
+			.style("fill", "rgb(0,0,0)");
+		reset_btn.add("svg:text")
+			.attr("x", "4")
+			.attr("y", "10")
+			.attr("font-size", 9)
+			.attr("font-family", "Arial, Arial, Helvetica, sans-serif")
+			.attr("fill", "white")
+			.attr("pointer-events","none")
+			.text("RESET");	
+		
+		// If collapsed, add a expand button to go fullscreen
+		if (collapsed) {
+			var fs = nmap.add("svg:svg")
+				.attr("width",32)
+				.attr("height",32)
+				.attr("class", "fullscreen")
+				.style("position","absolute")
+				.style("right","5px")
+				.style("top","5px")
+				.style("visibility","hidden")
+				.on("mousedown",make_fullscreen);
+			var circle = fs.add("svg:circle")
+				.attr("cx",16)
+				.attr("cy",16)
+				.attr("r",14)
+				.attr("fill","#000")
+				.attr("stroke","#ccc")
+				.attr("stroke-width",4)
+				.add("svg:title")
+				.text("Toggle fullscreen.");
+			var arrow = fs.add("svg:path")
+				.attr("transform","translate(16,16)rotate(-45)scale(5)translate(-1.85,0)")
+				.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
+				.attr("pointer-events","none")
+				.attr("fill","#aaa")
+				.attr("class", "svg_arrow");
+		}
+		// Else add the downsize (destroy) button
+		else {
+			var fs = nmap.add("svg:svg")
+				.attr("width",32)
+				.attr("height",32)
+				.attr("class", "fullscreen")
+				.style("position","absolute")
+				.style("right","5px")
+				.style("top","5px")
+				.style("visibility","hidden")
+				.on("mousedown",make_small);
+			var circle = fs.add("svg:circle")
+				.attr("cx",16)
+				.attr("cy",16)
+				.attr("r",14)
+				.attr("fill","#000")
+				.attr("stroke","#ccc")
+				.attr("stroke-width",4)
+				.add("svg:title")
+				.text("Toggle fullscreen.");
+			var arrow = fs.add("svg:path")
+				.attr("transform","translate(16,16)rotate(135)scale(5)translate(-1.85,0)")
+				.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
+				.attr("pointer-events","none")
+				.attr("fill","#aaa")
+				.attr("class", "svg_arrow");
+		}
+	}
+	
+	
+	
+	
 	/*
 	 * SVG 
 	 */
 	
 	if (svg_path) {
 		map.add(po.svgLayer(svg_path));
-	}
-	
-	/* 
-	 * Controls
-	 */
-	
-	var nmap = n$(div[0]); // the map container ran through the nns js library for svg manipulation
-	map.add(po.interact());
-	var compass = po.compass().pan('none');
-	map.add(compass);
-	// hide it in initial view
-	$('g.compass', div).css("visibility", "hidden");
-	
-	// Add reset button
-	var reset_btn = nmap.add("svg:svg")
-		.attr("width", 40)
-		.attr("height", 15)
-		.attr("class", "reset-button")
-		.style("position","absolute")
-		.style("left","16px")
-		.style("top","65px")
-		.style("visibility","hidden")
-		.on("mousedown",reset_map);
-	reset_btn.add("svg:rect")
-		.attr("width", "100%")
-		.attr("height", "100%")
-		.style("fill", "rgb(0,0,0)");
-	reset_btn.add("svg:text")
-		.attr("x", "4")
-		.attr("y", "10")
-		.attr("font-size", 9)
-		.attr("font-family", "Arial, Arial, Helvetica, sans-serif")
-		.attr("fill", "white")
-		.attr("pointer-events","none")
-		.text("RESET");	
-	
-	// If collapsed, add a expand button to go fullscreen
-	if (collapsed) {
-		var fs = nmap.add("svg:svg")
-			.attr("width",32)
-			.attr("height",32)
-			.attr("class", "fullscreen")
-			.style("position","absolute")
-			.style("right","5px")
-			.style("top","5px")
-			.style("visibility","hidden")
-			.on("mousedown",make_fullscreen);
-		var circle = fs.add("svg:circle")
-			.attr("cx",16)
-			.attr("cy",16)
-			.attr("r",14)
-			.attr("fill","#000")
-			.attr("stroke","#ccc")
-			.attr("stroke-width",4)
-			.add("svg:title")
-			.text("Toggle fullscreen.");
-		var arrow = fs.add("svg:path")
-			.attr("transform","translate(16,16)rotate(-45)scale(5)translate(-1.85,0)")
-			.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
-			.attr("pointer-events","none")
-			.attr("fill","#aaa")
-			.attr("class", "svg_arrow");
-	}
-	// Else add the downsize (destroy) button
-	else {
-		var fs = nmap.add("svg:svg")
-			.attr("width",32)
-			.attr("height",32)
-			.attr("class", "fullscreen")
-			.style("position","absolute")
-			.style("right","5px")
-			.style("top","5px")
-			.style("visibility","hidden")
-			.on("mousedown",make_small);
-		var circle = fs.add("svg:circle")
-			.attr("cx",16)
-			.attr("cy",16)
-			.attr("r",14)
-			.attr("fill","#000")
-			.attr("stroke","#ccc")
-			.attr("stroke-width",4)
-			.add("svg:title")
-			.text("Toggle fullscreen.");
-		var arrow = fs.add("svg:path")
-			.attr("transform","translate(16,16)rotate(135)scale(5)translate(-1.85,0)")
-			.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
-			.attr("pointer-events","none")
-			.attr("fill","#aaa")
-			.attr("class", "svg_arrow");
 	}
 
 	/*
