@@ -17,17 +17,10 @@
 	         * A single node will have itself as the common ancestor.
 	         */
 	        if (parentNode.isSameNode(selectionRange.startContainer)) {
-	        	/*
-	        	 * nodeType 1 = textNode
-	        	 * nodeType 3 = htmlNode
-	        	 */
-	        	if (this.nodeType == 1) { 
-		        	processTxtNode(parentNode, 'start', selectionRange.startOffset);
-		        	processTxtNode(parentNode, 'end', selectionRange.endOffset);
-	        	} else if (this.nodeType == 3) {
-	        		processHtmlNode(parentNode.parentElement, 'start', selectionRange.startOffest);
-	        		processHtmlNode(parentNode.parentElement, 'end', selectionRange.endOffset);
-	        	}
+		       	processTxtNode(parentNode, 'node', selectionRange.startOffset, selectionRange.endOffset);
+            /* 
+             * Multiple nodes have been selected
+             */
 		    } else { 
 		        $(parentNode).contents().each(function() {
 		            // Text Nodes
@@ -56,7 +49,6 @@
 	    });
 	    
 	    // Get selected text and return the selection range object
-	    
 	    var getSelected = function() {
 	        if (window.getSelection) { // W3C compliant browser.  aka, not IE
 	            var selection = window.getSelection();
@@ -64,8 +56,6 @@
 	            var selection = document.selection && document.selection.createRange();
 	        }
 	        
-	        if (selection == '') return false;
-
 	        if (selection.getRangeAt)
 	            var range = selection.getRangeAt(0);
 	        else { // Safari!
@@ -78,27 +68,38 @@
 	    }
 	    
 	    // Process a text node with a wrapper
-	    var processTxtNode = function(textNode, position, offset) {
-	        var wrapper = document.createElement(settings.wrapperElement);
-	        wrapper.className = settings.wrapperClass;
+	    var processTxtNode = function(textNode, position, offset, offset2) {
 
 	    	switch(position) {
 	    		case 'start':
 	    			var preText = document.createTextNode(textNode.nodeValue.substring(0, offset));
-	    			wrapper.appendChild(document.createTextNode(textNode.nodeValue.substring(offset, textNode.length)));
+                    var wrapper = wrapTxt(document.createTextNode(textNode.nodeValue.substring(offset, textNode.length)));
+
 	    			textNode.parentNode.insertBefore(preText, textNode);
 	    	        textNode.parentNode.replaceChild(wrapper, textNode);
 	    			break;
 	    		case 'middle':
-	    			wrapper.appendChild(document.createTextNode(textNode.nodeValue));
+                    var wrapper = wrapTxt(document.createTextNode(textNode.nodeValue));
+
 	    	        textNode.parentNode.replaceChild(wrapper, textNode);
 	    			break;
 	    		case 'end':
-	    			wrapper.appendChild(document.createTextNode(textNode.nodeValue.substring(0, offset)));
-	    			var postText = document.createTextNode(textNode.nodeValue.substring(offset, textNode.length));
+                    var wrapper     = wrapTxt(document.createTextNode(textNode.nodeValue.substring(0, offset)));
+	    			var postText    = document.createTextNode(textNode.nodeValue.substring(offset, textNode.length));
+
 	    			textNode.parentNode.insertBefore(wrapper, textNode);
 	    	        textNode.parentNode.replaceChild(postText, textNode);
 	    			break;
+                case 'node':
+                    var wrapper     = wrapTxt(document.createTextNode(textNode.nodeValue.substring(offset, offset2)));
+                    var preText     = document.createTextNode(textNode.nodeValue.substring(0, offset));
+                    var postText    = document.createTextNode(textNode.nodeValue.substring(offset2, textNode.length));
+                    var newText     = document.createDocumentFragment();
+                    newText.appendChild(preText);
+                    newText.appendChild(wrapper);
+                    newText.appendChild(postText);
+                    textNode.parentNode.replaceChild(newText, textNode);
+                    break;
 	    	}
 	    	
 	    }
@@ -107,24 +108,35 @@
 	    var processHtmlNode = function(htmlNode, position, offset) {
 	    	switch(position) {
 	    		case 'start':
-	    			var newHtml = $(htmlNode).html().substring(0, offset) 
-	                	+ '<span>' 
-	                	+ $(htmlNode).html().substring(offset, htmlNode.length) 
-	                	+ '</span>';
-	    			$(htmlNode).html(newHtml);
+	    			var preHtml = htmlNode.innerHTML.substring(0, offset);
+                    var wrapper = document.createElement(settings.wrapperElement);
+                    wrapper.innerHTML = htmlNode.innerHTML.substring(offset, htmlNode.innerHTML.length);
+	    			htmlNode.innerHTML = preHtml; 
+                    htmlNode.appendChild(wrapper);
 	    			break;
 	    		case 'middle':
-	                $(htmlNode).html('<span>' + $(htmlNode).html() + '</span>');
+                    var wrapper = document.createElement(settings.wrapperElement);
+                    wrapper.innerHTML = htmlNode.innerHTML;
+                    htmlNode.innerHTML = '';
+                    htmlNode.appendChild(wrapper);
 	    			break;
 	    		case 'end':
-	    			var newHtml = '<span>'
-	                    + $(htmlNode).html().substring(0, offset) 
-	                    + '</span>'
-	                    + $(htmlNode).html().substring(offset, htmlNode.length);
-	                $(htmlNode).html(newHtml);
+	                var postHtml = htmlNode.innerHTML.substring(offset, htmlNode.innerHTML.length);
+                    var wrapper = document.createElement(settings.wrapperElement);
+                    wrapper.innerHTML = htmlNode.innerHTML.substring(0, offset);
+                    htmlNode.innerHTML = '';
+                    htmlNode.insertBefore(wrapper);
+                    htmlNode.innerHTML += postHtml;
 	    			break;
 	    	}
 	    }
+    
+        var wrapTxt = function(txt) {
+            var wrapper = document.createElement(settings.wrapperElement);
+            wrapper.className = settings.wrapperClass;
+            wrapper.appendChild(txt);
+            return wrapper;
+        }
     }
 })(jQuery);
 
