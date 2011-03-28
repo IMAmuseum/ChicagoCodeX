@@ -62,7 +62,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var ptiff_overlay = div.attr('data-overlay');
 	var editing = div.attr('data-editing');
 	var options = $.parseJSON(div.parents('figure:first').attr('data-options')) || new Object();
-	console.log(options, 'options');
 	var tile_size = 256;
 	var overlay_opacity = '0';
 
