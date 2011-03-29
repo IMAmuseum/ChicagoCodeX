@@ -1,9 +1,11 @@
 (function($) {
     $(document).ready(function() {
-    	$(document).bind("osci_layout_start", function(e){
-    	    $("<div>", {
-    	        id : "osci_loading"
-    	    }).appendTo("body");
+    	$(document).bind({
+    	    "osci_layout_start" : function(e){
+        	    $("<div>", {
+        	        id : "osci_loading"
+        	    }).appendTo("body");
+        	}
     	});
     	
         /****************************************
@@ -108,8 +110,6 @@
                 }
             }
         };
-        
-        //$('#osci_note_panel_wrapper').overscroll();
 
         $.osci.note({
             notePanelId : "osci_note_panel_wrapper",
@@ -231,6 +231,7 @@
             }
         });
         
+        //make footnotes link to footnote text in more bar
         $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
             var $this = $(this);
@@ -242,6 +243,7 @@
             });
         });
         
+        //make footnotes link in more bar to position in text
         $("span.footnote_number", "#osci_more_wrapper").live("click", function(e){
             e.preventDefault();
             var id = $(this).parent().attr("id");
@@ -258,6 +260,7 @@
             });
         });
         
+        //make figure linkw open the fullscreen view
         $("a.figure-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
             var $this = $(this),
@@ -284,6 +287,7 @@
             }
         });
         
+        //make more & navigation bars close when viewer is clicked
         $("#" + Drupal.settings.osci_layout.viewer_id).click(function(e){
             $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
                 type : "osci_nav_toggle",
@@ -295,31 +299,36 @@
                 osci_more_close : true
             });
         });
-
-        $(".osci_reference_image a", "#osci_table_of_contents_wrapper").fancybox();
         
-        /***************************************
-         * Hot key popup image
-         */
-
-        var keyCode = 70,
-            checkKey = false,
-            everpresent = $(".everpresent a", "#osci_note_panel_wrapper"),
-            titleLink = '<a target="_blank" href="' + everpresent.attr('href') + '">Open in new window</a>';
-        
-        everpresent.fancybox({ 
-            speedIn: 100, 
-            speedOut: 100, 
-            scroll: 'no',
-            title: titleLink 
+        $(document).bind({
+            "osci_layout_complete" : function(e) {
+                $(".osci_reference_image:not(.fancy)").each(function(){
+                    var $this = $(this),
+                        link = $("a", this),
+                        fancyOptions = {
+                            speedIn : 100,
+                            speedOut : 100,
+                            scroll : 'no'
+                        };
+                
+                    if ($this.hasClass("everpresent")) {
+                        fancyOptions.title = '<a target="_blank" href="' + link.attr('href') + '">Open in new window</a>';
+                    }
+                
+                    link.fancybox(fancyOptions);
+                        
+                    $this.addClass("fancy");
+                });
+            }
         });
-
+        
+        var checkKey = false;
         $(document).keydown(function(e) {
-            if (e.keyCode == keyCode && e.ctrlKey === true && checkKey === false) {
+            if (e.keyCode == 70 && e.ctrlKey === true && checkKey === false) {
                 checkKey = true;
                 $(".everpresent a").click();
                 e.preventDefault();
-            } else if (e.keyCode == keyCode && e.ctrlKey === true && checkKey === true) {
+            } else if (e.keyCode == 70 && e.ctrlKey === true && checkKey === true) {
                 checkKey = false;
                 $('#fancybox-close').click();
                 e.preventDefault();
