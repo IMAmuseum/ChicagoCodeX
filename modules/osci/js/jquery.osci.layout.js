@@ -50,14 +50,6 @@
                         })).addClass("osci_paragraph_" + pCount + " osci_paragraph").attr("data-paragraph_id", pCount);
                     }
                 });
-                
-                // Moved to the navigation module so that it does not get triggerd multiple times after more than one node has been loaded
-                // if (!window.resizeTimer) {
-                //     $(window).resize(function(){
-                //         if (window.resizeTimer) clearTimeout(window.resizeTimer);
-                //         window.resizeTimer = setTimeout(base.render, 100);
-                //     });
-                // }
     
                 base.render();
             } else {
