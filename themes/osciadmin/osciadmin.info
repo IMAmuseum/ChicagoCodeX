@@ -2,6 +2,6 @@ name = OSCI Admin
 description = A sub-theme for Seven
 screenshot = images/screenshot.jpg
 core = 7.x
-base theme = Seven
+base theme = Seven 7.0
 engine = phptemplate
 stylesheets[all][] = style.css
