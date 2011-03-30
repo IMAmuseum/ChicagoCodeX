@@ -809,10 +809,10 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	
 }
 .figureContent table tr th {
-	padding:4px;
+	padding:4px!important;
 }
 .figureContent table tr td {
-	padding:4px;
+	padding:4px!important;
 }
 
 
