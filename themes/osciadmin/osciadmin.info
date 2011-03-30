@@ -1,6 +1,6 @@
 name = OSCI Admin
 description = based on Seven
-screenshot = images/screenshot.png
+screenshot = images/screenshot.jpg
 core = 7.x
 base theme = Seven
 engine = phptemplate
