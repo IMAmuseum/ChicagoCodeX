@@ -4,4 +4,4 @@ screenshot = images/screenshot.jpg
 core = 7.x
 base theme = Seven 7.0
 engine = phptemplate
-stylesheets[all][] = style.css
+stylesheets[all][] = osciadmin.css
