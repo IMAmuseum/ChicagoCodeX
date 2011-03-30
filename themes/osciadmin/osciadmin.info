@@ -1,5 +1,5 @@
 name = OSCI Admin
-description = based on Seven
+description = A sub-theme for Seven
 screenshot = images/screenshot.jpg
 core = 7.x
 base theme = Seven
