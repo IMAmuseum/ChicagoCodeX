@@ -1,0 +1,7 @@
+name = PRN 960 Sub-theme
+description = based on Seven
+screenshot = images/screenshot.png
+core = 7.x
+base theme = seven
+engine = phptemplate
+stylesheets[all][] = style.css
