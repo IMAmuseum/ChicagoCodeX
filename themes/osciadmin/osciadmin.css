@@ -1,2 +1,24 @@
 /* CSS Document */
 
+/* some admin stuff */
+.figure input.ui-button {
+	background-color:#A6A7A2;
+	text-transform:uppercase;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	padding:10px 25px;
+	font-size:11px;
+	text-transform:uppercase;
+	float:right;
+	margin-top:10px;
+	margin-right:5px;
+	color:#fff;
+}
+
+.figure_reference_preview {
+	margin:0;padding:0;
+	float:right;
+	width:200px;
+	margin-top:10px;	
+}
