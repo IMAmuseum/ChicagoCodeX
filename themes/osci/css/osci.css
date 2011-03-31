@@ -824,6 +824,9 @@ ul.selection-toolbar {
     box-shadow: 0 1px 3px #000;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size:12px;
+	background-color: #fff!important;
+    background: -moz-linear-gradient(100% 100% 90deg, #fff, #e3e3e3);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#e3e3e3));
 }
 
 div.ctools-modal-content {
