@@ -829,7 +829,8 @@ ul.selection-toolbar {
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#e3e3e3));
 }
 ul.selection-toolbar li.first {
-	background: url('../images/bg-doublearrow.png') no-repeat 100% 15px;	
+	background: url('../images/bg-doublearrows.png') no-repeat 100% 15px;	
+	padding-right:10px!important;
 }
 
 div.ctools-modal-content {
