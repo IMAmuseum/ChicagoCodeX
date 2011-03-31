@@ -857,17 +857,27 @@ div.ctools-modal-content .modal-title {
 div.ctools-modal-content a.close {
 	font-size:11px;
 	padding-top:4px;
+	color:#999!important;
 }
 div.ctools-modal-content a img { display:none!important; }
 
 div.ctools-modal-content textarea, div.ctools-modal-content inpu.form-text {
-	background-color:#E3E3E3 !important;	
+	background-color:#E3E3E3 !important;
+	border-color:#999!important;	
 }
 div.ctools-modal-content .resizable-textarea {
 width: auto;
-margin-left: 0!important;
-margin-right: 0!important;
+	margin-left: 0!important;
+	margin-right: 0!important;
+	border-color:#999!important;
 }
 div.ctools-modal-content .at-term-entry {
 	float:none!important;	
 }
+.resizable-textarea .grippie {
+	
+	border: 1px solid #999 !important;
+	
+}
+
+
