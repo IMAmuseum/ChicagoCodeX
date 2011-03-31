@@ -816,5 +816,10 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 }
 
 
-
+/* hightlight popup */
+ul.selection-toolbar {
+	-moz-box-shadow: 0 1px 3px #000;
+    -webkit-box-shadow: 0 1px 3px #000;
+    box-shadow: 0 1px 3px #000;
+}
 
