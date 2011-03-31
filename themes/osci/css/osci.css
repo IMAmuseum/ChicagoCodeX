@@ -879,5 +879,16 @@ div.ctools-modal-content .at-term-entry {
 	border: 1px solid #999 !important;
 	
 }
+div.ctools-modal-content input.form-submit {
+	border:none!important	
+	border-radius: 3px;
+    -moz-border-radius: 3px!important;
+    -webkit-border-radius: 3px!important;
+    background-color: #333!important;
+    background: -moz-linear-gradient(100% 100% 90deg, #333, #000);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#333), to(#000));
+	color:#fff!important;
+	text-tranform:uppercase;
+}
 
 
