@@ -831,7 +831,7 @@ background: white;
 color: black;
 padding: 0;
 margin: 2px;
-border: 2px solid #464646;
+	border: 5px solid #000;
 width: 600px;
 text-align: left;
 	font-family:Arial, Helvetica, sans-serif!important;
@@ -840,8 +840,11 @@ text-align: left;
 	box-shadow: 0 1px 3px #000;
 }
 div.ctools-modal-content .modal-header {
-	background-color: #464646;
-padding: 0 .25em 0 1em;
+	background-color: #fff;
+	padding: 0 .25em 0 1em;
+	margin:10px;
+	border-bottom:2px solid #333;
+	color:#000!important;
 }
 #modalBackdrop {
 	background:#000!important;
@@ -852,6 +855,6 @@ padding: 0 .25em 0 1em;
 }
 div.ctools-modal-content a.close {
 	font-size:11px;
-		
+	padding-top:4px;
 }
-div.ctools-modal-content a img { display:none!imporant; }
+div.ctools-modal-content a img { display:none!important; }
