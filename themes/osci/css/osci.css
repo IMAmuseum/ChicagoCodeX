@@ -828,7 +828,7 @@ ul.selection-toolbar {
     background: -moz-linear-gradient(100% 100% 90deg, #fff, #e3e3e3);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#e3e3e3));*/
 	background: url('../images/bg-toolbar-carrot.png') no-repeat center bottom!important;
-	padding-bottom:10px;
+	padding:10px 10px 20px 10px!important;
 }
 ul.selection-toolbar li.first a {
 	background: url('../images/bg-doublearrows.png') no-repeat right 9px!important;	
