@@ -175,20 +175,16 @@
         };
         
         base.addNotes = function() {
-console.log('boo');
-console.log(base.options.userNoteCallback + '/' + Drupal.settings.osci.nid);
             $.ajax({
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
-console.log(data);
                     base.processNotes(data);
                 } 
             });
         }
 
         base.processNotes = function(data) {
-console.log(data);
             if (data == null) return;
 
             $('.noteTitle').remove();
