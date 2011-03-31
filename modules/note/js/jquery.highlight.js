@@ -4,10 +4,13 @@
 		var settings = $.extend({
 			wrapperElement: 'span',
 			wrapperClass: 'highlight',
+            eventListen: 'mouseup',
+            eventTarget: this,
+            success: function() {} 
 		}, options);
 		
 		// Listen for mouse up event, capture text, and highlight it
-	    $(this).mouseup(function() {
+	    $(settings.eventTarget).bind(settings.eventListen, function() {
 	        var selectionRange = getSelected();
 	        var parentNode = selectionRange.commonAncestorContainer;
 	        var foundStart = false;
@@ -46,6 +49,8 @@
 		            }
 		        });
 		    }
+
+            settings.success(this);
 	    });
 	    
 	    // Get selected text and return the selection range object

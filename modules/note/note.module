@@ -371,7 +371,7 @@ function user_notes($node) {
         ->condition('nid', $node->nid)
         ->orderBy('paragraph_count', 'asc')
         ->orderBy('letter_count', 'asc')
-        -yexecute();
+        ->execute();
     foreach($query as $row) {
         $rows[] = (array)$row; 
     }

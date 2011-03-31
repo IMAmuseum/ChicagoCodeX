@@ -62,6 +62,7 @@
                  * Save a highlight
                  */
                 $('a.note-highlight').live('click', function(e) {
+                    //TODO this section should happen in the success callback of the highlight
                     e.preventDefault();
 
                     var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
@@ -117,8 +118,13 @@
                 /**
                  * Handle selection dialog
                  */
-                $('#osci_viewer .osci_paragraph').highlight();
-                /*
+/*
+                $('#osci_viewer .osci_paragraph').highlight({
+                    success: function(obj) {
+                        $.osci.note.toolbar.appendTo(obj);
+                    }
+                });
+*/
                 $('#osci_viewer .osci_paragraph').mouseup(function() {
                     $.osci.note.selection = base.getSelected();
                     $.osci.note.activeParagraph = $(this);
@@ -126,10 +132,9 @@
 
                     if ($.osci.note.selection === '') return; 
 
-                    $.osci.note.toolbar.appendTo(this); 
+                    $.osci.note.toolbar.appendTo(this);
 
                 });
-                */
 
                 /*************************************
                  * handle note dialog
@@ -170,16 +175,20 @@
         };
         
         base.addNotes = function() {
+console.log('boo');
+console.log(base.options.userNoteCallback + '/' + Drupal.settings.osci.nid);
             $.ajax({
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
+console.log(data);
                     base.processNotes(data);
                 } 
             });
         }
 
         base.processNotes = function(data) {
+console.log(data);
             if (data == null) return;
 
             $('.noteTitle').remove();
