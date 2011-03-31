@@ -334,11 +334,13 @@ function citation_form() {
 
     $form['citation_text'] = array(
         '#type'     => 'textarea',
+        '#default_value'    => t('(Author of entry) in Gloria Groom et al., Paintings and Drawings by the Impressionist Circle in the Collection of the Art Institute of Chicago: Monet (Chicago: The Art Institute of Chicago, 2013), cat. 19, para. 6, doi: xx.xxxx/xxxxxx'),
     );    
 
     $form['citation_url'] = array(
         '#type'     => 'textfield',
         '#title'    => 'URL Citation',
+        '#default_value'    => t('http://oremipsumdolor.org/sitamet/consectetur-adipiscing-elit'),
     );
 
     return $form;

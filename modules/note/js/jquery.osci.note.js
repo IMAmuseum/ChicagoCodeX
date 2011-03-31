@@ -102,8 +102,8 @@
                             $("input[name='paragraph_count']").val($.osci.note.activeParagraph.data('paragraph_id'));
                             break;
                         case 'citation-form':
-                            $('#edit-citation-text').html($.osci.note.selection);
-                            $('#edit-citation-url').val(window.location);
+                            //$('#edit-citation-text').html($.osci.note.selection);
+                            //$('#edit-citation-url').val(window.location);
                             $('#edit-citation-text, #edit-citation-url').click(function(e) {
                                 e.preventDefault();
                                 $(this).select();
