@@ -861,7 +861,7 @@ div.ctools-modal-content a.close {
 }
 div.ctools-modal-content a img { display:none!important; }
 
-div.ctools-modal-content textarea, div.ctools-modal-content inpu.form-text {
+div.ctools-modal-content textarea, div.ctools-modal-content input.form-text {
 	background-color:#E3E3E3 !important;
 	border-color:#999!important;	
 }
