@@ -70,3 +70,22 @@ function user_notes_ajax($node) {
     if (!user_access('view own notes')) return;
     return drupal_json_output(user_notes($node));
 }
+
+function citation_ajax() {
+    ctools_include('modal');
+
+    $form_state = array(
+        'ajax'  => TRUE,
+        'title' => 'Citations',
+    );
+
+    $output = ctools_modal_form_wrapper('citation_form', $form_state);
+
+    if ($form_state['executed']) {
+        $output = array();
+        $output[] = ctools_modal_command_dismiss();
+    }
+
+    print ajax_render($output);
+    exit;
+}

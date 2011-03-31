@@ -118,14 +118,21 @@ function note_menu() {
 
     $items['ajax/note/highlight'] = array(
         'page callback'     => 'notes_highlight',
-        'access arguments'   => array('TRUE'),
+        'access arguments'  => array('TRUE'),
         'type'              => MENU_CALLBACK,
         'file'              => 'note.ajax.inc',
     );
 
     $items['ajax/note/note'] = array(
         'page callback'     => 'notes_note',
-        'access arguments'   => array('TRUE'),
+        'access arguments'  => array('TRUE'),
+        'type'              => MENU_CALLBACK,
+        'file'              => 'note.ajax.inc',
+    );
+
+    $items['ajax/citation'] = array(
+        'page callback'     => 'citation_ajax',
+        'access arguments'  => array('TRUE'),
         'type'              => MENU_CALLBACK,
         'file'              => 'note.ajax.inc',
     );
@@ -322,6 +329,21 @@ function note_form_submit($form, &$form_state) {
     }
 }
 
+function citation_form() {
+    $form = array();
+
+    $form['citation_text'] = array(
+        '#type'     => 'textarea',
+    );    
+
+    $form['citation_url'] = array(
+        '#type'     => 'textfield',
+        '#title'    => 'URL Citation',
+    );
+
+    return $form;
+}
+
 function note_preprocess_osci_viewer(&$vars) {
     ctools_include('modal');
     ctools_modal_add_js();
@@ -351,6 +373,13 @@ function note_preprocess_osci_viewer(&$vars) {
                 )
             )
         ),
+        l('Cite', 'ajax/citation',
+            array(
+                'attributes' => array(
+                    'class' => array('ctools-use-modal', 'ctools-modal-fixed-modal'),
+                ),
+            )
+        )
     );
 
     $vars['notes'] = theme('item_list', 

@@ -89,14 +89,28 @@
                  * Update form fields when submitting a note
                  */
                 $(document).bind('CToolsAttachBehaviors', function(e, modal) {
-                    var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
-                    var wordCount = $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length;
+                    var id = $(modal).find('form').attr('id');
+                    switch(id) {
+                        case 'note-form':
+                            var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
+                            var wordCount = $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length;
 
-                    $("input[name='original_text']").val($.osci.note.selection);
-                    $("input[name='nid']").val(Drupal.settings.osci.nid);
-                    $("input[name='word_count']").val(wordCount);
-                    $("input[name='letter_count']").val(data.start);
-                    $("input[name='paragraph_count']").val($.osci.note.activeParagraph.data('paragraph_id'));
+                            $("input[name='original_text']").val($.osci.note.selection);
+                            $("input[name='nid']").val(Drupal.settings.osci.nid);
+                            $("input[name='word_count']").val(wordCount);
+                            $("input[name='letter_count']").val(data.start);
+                            $("input[name='paragraph_count']").val($.osci.note.activeParagraph.data('paragraph_id'));
+                            break;
+                        case 'citation-form':
+                            $('#edit-citation-text').html($.osci.note.selection);
+                            $('#edit-citation-url').val(window.location);
+                            $('#edit-citation-text, #edit-citation-url').click(function(e) {
+                                e.preventDefault();
+                                $(this).select();
+                            });
+
+                            break;
+                    }
                 });
 
                 /**
