@@ -830,7 +830,7 @@ ul.selection-toolbar {
 	background: url('../images/bg-toolbar-carrot.png') no-repeat center bottom!important;
 	padding:10px 10px 20px 10px!important;
 	text-align:left!important;
-	width:300px!important;
+	/*width:300px!important;*/
 }
 ul.selection-toolbar li.first a {
 	background: url('../images/bg-doublearrows.png') no-repeat right 9px!important;	
