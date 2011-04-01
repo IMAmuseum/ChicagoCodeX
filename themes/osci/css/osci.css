@@ -721,7 +721,7 @@ div.note {
 
 #osci_note_panel_wrapper .field-name-field-taxonomy-tags {
 	padding:0px 10px 22px 10px!important;
-	opacity:.5;
+	opacity:.6;
 }
 #osci_note_panel_wrapper .field-name-field-taxonomy-tags:hover {
 	opacity:1;
@@ -731,7 +731,7 @@ div.note {
 	text-transform:uppercase;
 	padding-bottom:5px!important;
 	background: url('../images/bg-bevel.png') repeat-x left bottom;
-	color:#333!important;
+	color:#000!important;
 	font-size:1em!important;
 }
 .note ul.links li a {
