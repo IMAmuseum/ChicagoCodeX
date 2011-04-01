@@ -31,12 +31,13 @@
 
                 //$('.osci_paragraph').delegate('span.highlight', 'hover', function(e) {
                 $('span.highlight').live('hover', function(e) {
+                    var onid = $(this).data('onid');
                     if (e.type == 'mouseenter') {
-                        var onid = $(this).data('onid');
                         $('.note-close-link').click();
-                        $('#note-link-' + onid + ' a').click();
+                        $('#note-link-' + onid + ' a').css({ opacity: 1 });
                         $(this).addClass('highlight-note');
                     } else {
+                        $('#note-link-' + onid + ' a').css({ opacity: 0.5 });
                         $(this).removeClass('highlight-note');
                     }
                 });
