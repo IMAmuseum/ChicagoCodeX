@@ -712,17 +712,19 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 }
 /* */
 .note-content {
-	padding:10px!important;	
+	margin:5px!important;padding:5px!important;	color:#000 !important;
+	background-color:#FFC54A;
 }
 
 #osci_note_panel_wrapper .field-name-field-taxonomy-tags {
-	padding:0px px 10px 10px!important;	
+	padding:0px 10px 10px 10px!important;	
 }
 .note h3.field-label {
 	font-weight:normal;
 	text-transform:uppercase;
-	padding-bottom:5px;margin-bottom:5px;
+	padding-bottom:5px!important;
 	background: url('../images/bg-bevel.png') repeat-x left bottom;
+	color:#333!important;
 }
 
 /* loading animation */
