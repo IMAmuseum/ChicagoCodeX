@@ -15,7 +15,7 @@
         {
             base.options = $.extend({}, $.osci.note.defaultOptions, options);
             base.panel = $("#" + base.options.notePanelId);
-            var noteLinkMarkup = '{{if body}}<div id="note-link-${onid}" class="noteTitle">' +
+            var noteLinkMarkup = '{{if body}}<div id="note-link-${onid}" data-onid=${onid} class="noteTitle">' +
                 '<a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/note/load/${onid}">${body}</a>' +
                 '</div>{{/if}}';
 
@@ -29,9 +29,27 @@
                  * Highlight/Note hover handling
                  */
 
-                $('p').delegate('span.highlight-note', 'hover', function() {
+                //$('.osci_paragraph').delegate('span.highlight', 'hover', function(e) {
+                $('span.highlight').live('hover', function(e) {
+                    if (e.type == 'mouseenter') {
+                        var onid = $(this).data('onid');
+                        $('.note-close-link').click();
+                        $('#note-link-' + onid + ' a').click();
+                        $(this).addClass('highlight-note');
+                    } else {
+                        $(this).removeClass('highlight-note');
+                    }
+                });
+
+                $('.noteTitle').live('hover', function(e) {
                     var onid = $(this).data('onid');
-                    $('#note-link-' + onid).toggleClass('note-link-hover');
+                    if (e.type == 'mouseenter') {
+                        $('span#span-note-' + onid).addClass('highlight-note');
+
+                    } else {
+
+                        $('span#span-note-' + onid).removeClass('highlight-note');
+                    }
                 });
 
                 $('p').delegate('span.highlight-note', 'click', function() {
@@ -39,17 +57,15 @@
                     $('#note-link-' + onid + ' a').click();
                 });
 
-                $('p').delegate('span.highlight', 'hover', function(e) {
-                    $(this).toggleClass('highlight-hover');
-                    if (e.type == 'mouseenter') {
-                        var onid = $(this).data('onid');
-                        var link = '<a href="' + Drupal.settings.basePath + 'ajax/note/delete/' + onid +'" class="note-delete-link use-ajax">Delete</a>';
-                        $(this).prepend(link);
-                        Drupal.detachBehaviors();
-                        Drupal.attachBehaviors();
-                    } else {
-                        $(this).find('.note-delete-link').remove();
-                    }
+                $('p').delegate('span.highlight', 'click', function(e) {
+                    /*
+                    $(this).toggleClass('highlight-note');
+                    var onid = $(this).data('onid');
+                    var link = '<a href="' + Drupal.settings.basePath + 'ajax/note/delete/' + onid +'" class="note-delete-link use-ajax">Delete</a>';
+                    $(this).prepend(link);
+                    Drupal.detachBehaviors();
+                    Drupal.attachBehaviors();
+                    */
                 });
 
                 /*************************************************
@@ -220,8 +236,7 @@
             //TODO work in note data settings
             if (!$('span#span-note-' + note.onid).length) {
                 var data = base.getSelectionData(txt, note.original_text);
-                var highlightClass = (note.body !== null) ? 'highlight-note' : 'highlight';
-                var replacementTxt = '<span id="span-note-' + note.onid + '" data-onid="' + note.onid + '" class="' + highlightClass + '">' + note.original_text + '</span>';
+                var replacementTxt = '<span id="span-note-' + note.onid + '" data-onid="' + note.onid + '" class="highlight">' + note.original_text + '</span>';
                 txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
             }
 

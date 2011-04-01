@@ -67,7 +67,6 @@ function note_ajax_delete($onid) {
 }
 
 function user_notes_ajax($node) {
-    if (!user_access('view own notes')) return;
     return drupal_json_output(user_notes($node));
 }
 

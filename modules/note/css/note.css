@@ -1,6 +1,5 @@
-.highlight-hover,
 .highlight-note {
-    background-color: #FFCC33;
+    background-color: #FFCC33 !important;
 }
 
 span.highlight {
