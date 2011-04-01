@@ -705,7 +705,7 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 	right:5px;
 }
 .note-close-link {
-	background: url('../images/icon-close.png') no-repeat left top;
+	background: url('../images/icon-minimize.png') no-repeat left top;
 	position:absolute;
 	top:5px;
 	right:5px;
@@ -717,7 +717,7 @@ div.note {
 }
 .note-content {
 	margin:5px!important;padding:5px!important;	color:#000 !important;
-	background-color:#FFC54A;
+	/*background-color:#FFC54A;*/
 }
 
 #osci_note_panel_wrapper .field-name-field-taxonomy-tags {
