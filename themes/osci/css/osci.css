@@ -712,7 +712,8 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 }
 /* */
 div.note {
-	padding-top:5px;	
+	padding-top:5px!important;
+	font-family:Arial, Helvetica, sans-serif !important;
 }
 .note-content {
 	margin:5px!important;padding:5px!important;	color:#000 !important;
@@ -728,6 +729,11 @@ div.note {
 	padding-bottom:5px!important;
 	background: url('../images/bg-bevel.png') repeat-x left bottom;
 	color:#333!important;
+	font-size:1em!important;
+}
+.note ul.links li a {
+	color:#000!important;
+	text-decoration:underline!important;	
 }
 
 /* loading animation */
