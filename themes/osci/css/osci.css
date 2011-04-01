@@ -712,7 +712,6 @@ a.note-edit-link:hover, a.note-delete-link:hover, a.note-close-link:hover {
 }
 /* */
 div.note {
-	padding-top:5px!important;
 	font-family:Arial, Helvetica, sans-serif !important;
 }
 .note-content {
@@ -721,7 +720,11 @@ div.note {
 }
 
 #osci_note_panel_wrapper .field-name-field-taxonomy-tags {
-	padding:0px 10px 22px 10px!important;	
+	padding:0px 10px 22px 10px!important;
+	opacity:.5;
+}
+#osci_note_panel_wrapper .field-name-field-taxonomy-tags:hover {
+	opacity:1;
 }
 .note h3.field-label {
 	font-weight:normal;
