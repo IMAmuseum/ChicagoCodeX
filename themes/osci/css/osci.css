@@ -756,7 +756,7 @@ div.note {
 	color:#666;
     font-size: 12px;*/
 }
-.field_osci_tombstone {
+.field_osci_tombstone, .field_osci_technical_analysis  {
 	text-align:left!important;	
 }
 
