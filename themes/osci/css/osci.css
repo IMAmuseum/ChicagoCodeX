@@ -750,10 +750,11 @@ div.note {
 
 
 /* technical analysis & summary styles */
+/*******************************************************************/
 .field_osci_technical_analysis, .field_osci_technical_summary {
-    /*font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace;*/
+    /*font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace;
 	color:#666;
-    font-size: 12px;
+    font-size: 12px;*/
 }
 .field_osci_tombstone {
 	text-align:left!important;	
