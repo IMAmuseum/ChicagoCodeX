@@ -159,29 +159,25 @@
                     var $elem = $(elem),
                         imagePreset = $elem.data("image_preset");
                     
-                    //if the placeholder does not have a link/image in it yet, add it
-                    if (!$elem.children().length) {
-                        $elem.append($("<a>", {
-                            html : $("<img>").bind("osci_reference_image_alter", function(e){
-                                var $this = $(this);
-                                
-                                if (e.osci_nav_hover_image) {
-                                    $this.attr("src", e.osci_nav_hover_image);
-                                } else {
-                                    $this.attr("src", $this.data("default_src"));
-                                }
-                            })
-                        }));
-                    }
-                    
                     //update the link and image with the current section plate image data
                     if (tocData.plate_image && tocData.plate_image.full_image_url && tocData.plate_image[imagePreset]) {
                         largeUrl = tocData.plate_image.full_image_url;
                         thumbUrl = tocData.plate_image[imagePreset];
-                        
-                        $("a", $elem).attr("href", largeUrl);
-                        $("img", $elem).attr("src", thumbUrl).data("default_src", thumbUrl);
                     }
+                    
+                    $elem.empty().append($("<a>", {
+                        "class" : "osci_reference_image_link",
+                        href : largeUrl,
+                        html : $("<img>",{ src : thumbUrl }).bind("osci_reference_image_alter", function(e){
+                            var $this = $(this);
+                            
+                            if (e.osci_nav_hover_image) {
+                                $this.attr("src", e.osci_nav_hover_image);
+                            } else {
+                                $this.attr("src", $this.data("default_src"));
+                            }
+                        })
+                    }));
                 });
             }
         }
