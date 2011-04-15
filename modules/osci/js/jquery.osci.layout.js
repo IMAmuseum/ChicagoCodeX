@@ -17,7 +17,10 @@
         {
             var pCount = 0;
             //Trigger event so we know layout is begining
-            $(document).trigger("osci_layout_start");
+            setTimeout(
+                function(){$(document).trigger("osci_layout_start")},
+                100
+            );
 
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.viewer = $("#" + base.options.viewerId).empty();
@@ -59,7 +62,10 @@
             }
             
             //Trigger event to let other features know layout is complete
-            $(document).trigger("osci_layout_complete");
+            setTimeout(
+                function(){$(document).trigger("osci_layout_complete")},
+                100
+            );
         };
 
         base.render = function()
