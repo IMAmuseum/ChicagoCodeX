@@ -5,6 +5,9 @@
         	    $("<div>", {
         	        id : "osci_loading"
         	    }).appendTo("body");
+        	},
+        	"touchmove" : function(e) {
+        	    e.preventDefault();
         	}
     	});
     	
