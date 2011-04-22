@@ -15,7 +15,7 @@
 
         base.init = function()
         {
-            var pCount = 0;
+            var pCount = 0, dataCount = 0, i, isP, $elem, parentId;
             //Trigger event so we know layout is begining
             setTimeout(
                 function(){$(document).trigger("osci_layout_start")},
@@ -34,8 +34,11 @@
                 base.data = $("section > *:not(section, header)", data);
                 
                 //add field name as a class to each child of a section
-                base.data.each(function(i, elem) {
-                    var isP, $elem = $(elem), parentId; 
+                dataCount = base.data.length;
+                for (i = 0; i < dataCount; i++) {
+                //base.data.each(function(i, elem) {
+                    //var isP, $elem = $(elem), parentId; 
+                    $elem = $(base.data[i]);
                     
                     parentId = $elem.parents("section[id]").attr("id");
                     if (parentId) {
@@ -52,7 +55,8 @@
                             "data-paragraph_id" : pCount
                         })).addClass("osci_paragraph_" + pCount + " osci_paragraph").attr("data-paragraph_id", pCount);
                     }
-                });
+                //});
+                }
     
                 base.render();
             } else {

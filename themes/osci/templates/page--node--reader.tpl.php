@@ -85,18 +85,9 @@
  * @see bartik_process_page()
  */
 ?>
-<div id="page-wrapper"><div id="page">
-
-
   <?php if ($messages): ?>
     <div id="messages"><div class="section">
       <?php print $messages; ?>
     </div></div> <!-- /.section, /#messages -->
   <?php endif; ?>
-
-
-      <?php print render($page['content']); ?>
-
-
-
-</div></div> <!-- /#page, /#page-wrapper -->
+  <?php print render($page['content']); ?>
