@@ -218,7 +218,7 @@ body.page-node-reader {
 	bottom:0px;right:0px;
 	overflow:hidden;
 	position:absolute;
-	background: url("../images/bg-fader-top.png") repeat-x left top, url("../images/bg-fader-top.png") repeat-x left bottom;	
+	background: url("../images/bg-fader-top.png") repeat-x left top, url("../images/bg-fader-btm.png") repeat-x left bottom;	
 }
 ul#osci_navigation_toc {
     border-top: 1px solid #888;
