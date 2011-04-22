@@ -740,7 +740,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
                 '#title'            => t('Position'),
                 '#description'      => t('A hint on how to place the figure on a page.'),
                 '#type'             => 'select',
-                '#default_value'    => isset($figure['position']) ? $figure['position'] : 't',
+                '#default_value'    => isset($figure['position']) ? $figure['position'] : 'n',
                 '#options'          => array(
                     't'     => 'top',
                     'b'     => 'bottom',
