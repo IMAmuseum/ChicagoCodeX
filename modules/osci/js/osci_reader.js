@@ -216,12 +216,19 @@
                                         e.preventDefault();
                                         var id = $("img", $(this).parent()).data("figure_id");
                                         
-                                        $(document).trigger({
-                                            type : "osci_navigation",
-                                            osci_to : "selector",
-                                            osci_value : "#" + id
+                                        $("a[href='#" + id + "']").each(function() {
+                                            var position    = $(this).position();
+                                            var height      = $(this).parents('.osci_page').height();
+                                            if (position.top <= height && position.top > 0) {
+                                                var page = $(this).parents('.osci_page').data('page');
+                                                $(document).trigger({
+                                                    type : "osci_navigation",
+                                                    osci_to : "page",
+                                                    osci_value: page 
+                                                });
+                                            }
                                         });
-                                        
+
                                         $("#osci_more_wrapper").trigger({
                                             type : "osci_more_toggle",
                                             osci_more_close : true
@@ -282,12 +289,19 @@
             e.preventDefault();
             var id = $(this).parent().attr("id");
             
-            $(document).trigger({
-                type : "osci_navigation",
-                osci_to : "selector",
-                osci_value : "a[href='#" + id + "']"
+            $("a[href='#" + id + "']").each(function() {
+                var position    = $(this).position();
+                var height      = $(this).parents('.osci_page').height();
+                if (position.top <= height && position.top > 0) {
+                    var page = $(this).parents('.osci_page').data('page');
+                    $(document).trigger({
+                        type : "osci_navigation",
+                        osci_to : "page",
+                        osci_value: page 
+                    });
+                }
             });
-            
+
             $("#osci_more_wrapper").trigger({
                 type : "osci_more_toggle",
                 osci_more_close : true
