@@ -89,7 +89,17 @@ function _filter_footnote($text, $filter, $format) {
  */
 function _process_footnote($text) {
     if (empty($text[1])) return $text[0];
-    return '<a href="#'.$text[1].'" class="superscript footnote-link">'.$text[1].'</a>';
+    list($ident) = explode('_fn_', $text[1]);
+    $table = 'field_revision_field_' . $ident;
+    $field = 'field_' . $ident . '_footnotes';
+    $db = db_select($table, 't')
+        ->fields('t', array('entity_id'))
+        ->condition($field, '%' .$text[1]. '%', 'LIKE')
+        ->execute()
+        ->fetchAssoc();
+    if (count($db['entity_id'])) {
+        return '<a href="#'.$text[1].'" class="superscript footnote-link">'.$text[1].'</a>';
+    }
 }
 
 /**
