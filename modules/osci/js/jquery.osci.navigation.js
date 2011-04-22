@@ -443,7 +443,7 @@
         function _create_table_of_contents()
         {
             var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, 
-                j, subItem, subItemCount, wrap, tocWrapper;
+                j, subItem, subItemCount, tocWrapper;
 
             toc = $("#osci_navigation_toc", container);
             if (!toc.length) {
@@ -468,8 +468,6 @@
                     id : "osci_navigation_toc",
                     width : "100%"
                 }).appendTo(tocWrapper);
-                
-                tocWrapper.append($("<div>", {"class" : "osci_navigation_toc_fader"}));
                 
                 container.bind({
                     "osci_nav_toggle" : function(e){
@@ -510,7 +508,6 @@
                 });
             }
             toc.empty();
-            wrap = toc.parent();
 
             for (i in base.data.toc) {
                 node = base.data.toc[i];
@@ -563,7 +560,7 @@
 //                //$elem.overscroll({showThumbs: false}).trigger("osci_toc_update_heights");
 //            });
          
-              wrap.height(($(window).height() - wrap.position().top - 40) + "px").overscroll({direction : "vertical", showThumbs : true});
+            tocWrapper.height(($(window).height() - tocWrapper.position().top - 40) + "px").overscroll({direction : "vertical", showThumbs : true});
               $("ul", toc).hide();
         }
         
