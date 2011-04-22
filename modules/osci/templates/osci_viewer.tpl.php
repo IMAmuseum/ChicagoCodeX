@@ -5,7 +5,7 @@
         <div id="osci_header_controls"></div>
     </div>
     <div id="osci_table_of_contents_wrapper">
-        <a href="#" class="osci_table_of_contents_handle">ToC</a>
+        <a href="#" class="osci_table_of_contents_handle">Contents</a>
     </div>
     <div id="osci_viewer"></div>
     <div id="osci_note_panel_wrapper">
