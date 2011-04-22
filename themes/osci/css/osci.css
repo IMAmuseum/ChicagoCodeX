@@ -218,7 +218,7 @@ body.page-node-reader {
 	right:0px;
 	overflow:hidden;
 	position:absolute;
-	background: url("../images/bg-fader-top.png") repeat-x left top, url("../images/bg-fader-btm.png") repeat-x left bottom;	
+	background: url("../images/bg-fader-top.png") repeat-x left top;	
 	height:60px;
 }
 .osci_navigation_toc_fader_bottom {
@@ -227,7 +227,7 @@ body.page-node-reader {
 	bottom:0px;right:0px;
 	overflow:hidden;
 	position:absolute;
-	background: url("../images/bg-fader-top.png") repeat-x left top, url("../images/bg-fader-btm.png") repeat-x left bottom;	
+	background: url("../images/bg-fader-btm.png") repeat-x left bottom;	
 	height:60px;
 }
 ul#osci_navigation_toc {
