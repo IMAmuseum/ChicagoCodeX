@@ -338,6 +338,8 @@ function osci_body_copy_render_layout($nid)
         foreach($footnoteOrder as $k => $fnId) {
             if (isset($footnotes[$fnId])) {
                 $finalFootnotes[$k] = array_merge($footnotes[$fnId], array('fnCount' => $k));
+            } else {
+                dpm($fnId);
             }
         }
 
