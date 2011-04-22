@@ -75,7 +75,7 @@
         base.add_content = function(tabName, data, paginate, perPage, callback)
         {
             var tabNum, tabId = "osci_tab_" + tabName, tab, total, i, pager, item, maxPagesDisplay = 5, totalPages,
-                tabs = $("#" + base.options.tabContainerId, base.$el), tabWidth, calcWidth;
+                tabs = $("#" + base.options.tabContainerId, base.$el), tabWidth, calcWidth, pagerItemText, maxPagerItemText;
 
             if (base.tab_map[tabName] !== undefined) {
                 tabNum = base.tab_map[tabName];
@@ -155,9 +155,16 @@
                     }).appendTo(pager).hide();
                     
                     for (i = 1; i <= totalPages; i++) {
+                        if (perPage > 1) {
+                            maxPagerItemText = (i * perPage) > total ? total : (i * perPage);
+                            pagerItemText = ((i * perPage) - perPage + 1) + " - " + maxPagerItemText;
+                        } else {
+                            pagerItemText = i;
+                        }
+                        
                         item = $("<li>",{
                             html : $("<a>",{
-                                text : i,
+                                text : pagerItemText,
                                 data : {page_number : i - 1},
                                 href : "#"                            
                             }),

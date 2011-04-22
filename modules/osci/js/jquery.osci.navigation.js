@@ -442,7 +442,8 @@
         
         function _create_table_of_contents()
         {
-            var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, j, subItem, subItemCount, wrap;
+            var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, 
+                j, subItem, subItemCount, wrap, tocWrapper;
 
             toc = $("#osci_navigation_toc", container);
             if (!toc.length) {
@@ -461,10 +462,14 @@
                     text : "Navigation"
                 }).appendTo(container);
                 
+                tocWrapper = $("<div>",{id : "osci_navigation_toc_wrapper"}).appendTo(container);
+                
                 toc = $("<ul>", {
                     id : "osci_navigation_toc",
                     width : "100%"
-                }).appendTo(container).wrap($("<div>",{id : "osci_navigation_toc_wrapper"}));
+                }).appendTo(tocWrapper);
+                
+                tocWrapper.append($("<div>", {"class" : "osci_navigation_toc_fader"}));
                 
                 container.bind({
                     "osci_nav_toggle" : function(e){
