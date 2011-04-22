@@ -477,7 +477,13 @@ ul#osci_navigation_toc li a {
 }
 
 #osci_more_wrapper ul.osci_pager li.osci_pager_item {
-    width: 16px; 
+    /*width: 16px; */
+}
+#osci_more_wrapper ul.osci_pager li.osci_pager_item.first {
+	margin-left:20px!important;	
+}
+#osci_more_wrapper ul.osci_pager li.osci_pager_item.last {
+	margin-right:20px!important;	
 }
 
 #osci_more_wrapper ul.osci_pager li a.osci_pager_nav_first {
