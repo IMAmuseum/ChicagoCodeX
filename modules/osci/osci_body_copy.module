@@ -338,8 +338,6 @@ function osci_body_copy_render_layout($nid)
         foreach($footnoteOrder as $k => $fnId) {
             if (isset($footnotes[$fnId])) {
                 $finalFootnotes[$k] = array_merge($footnotes[$fnId], array('fnCount' => $k));
-            } else {
-                dpm($fnId);
             }
         }
 
@@ -376,7 +374,11 @@ function osci_body_copy_render_layout($nid)
 
         foreach($figureOrder as $k => $fId) {
             if (isset($figures[$fId])) {
-                $finalFigures[$k] = array_merge($figures[$fId], array('figCount' => $k));
+                if (isset($finalFigures[$fId])) {
+                    $finalFigures[$fId]['figOccurences']++;
+                } else {
+                    $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $k, 'figOccurences' => 1));
+                }
             }
         }
 
@@ -397,7 +399,7 @@ function osci_body_copy_render_layout($nid)
     unset($elements['#pre_render']);
 
     print render($elements);
-//    return render($elements);
+    //return render($elements);
 }
 
 function osci_body_copy_entity_info_alter(&$entity_info)
