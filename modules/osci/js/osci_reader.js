@@ -29,6 +29,12 @@
             {
                 switch (state) {
                     case "open":
+                        // Ensure the toc tab is closed
+                        $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
+                            type : "osci_nav_toggle",
+                            osci_nav_close : true
+                        });
+                        
                         more.css({
                             "-webkit-transform" : "translate(0, 0)",
                             "-moz-transform" : "translate(0, 0)",
@@ -145,10 +151,18 @@
                             "transform" : "translate(0px, 0)"
                         });
                         
+                        // When the toc tab is opened:
+                        // close the more tab and slide it to the right
                         $("#osci_more_wrapper").trigger({
                             type : "osci_more_toggle",
                             osci_more_close : true
-                        });
+                        })
+                        .css({
+                        	"-webkit-transform" : "translate(" + toc.outerWidth() + "px, 300px)",
+                        	"-moz-transform" : "translate(" + toc.outerWidth() + "px, 300px)",
+                        	"transform" : "translate(" + toc.outerWidth() + "px, 300px)"
+	                    });
+                        
                         $("#osci_note_panel_wrapper").trigger({
                             type : "osci_note_toggle",
                             osci_note_close : true
@@ -160,6 +174,14 @@
                             "-moz-transform" : "translate(-" + toc.outerWidth() + "px, 0)",
                             "transform" : "translate(-" + toc.outerWidth() + "px, 0)"
                         });
+                        
+                        // When the toc tab is closed:
+                        // slide the more tab to the right
+                        $("#osci_more_wrapper").css({
+                        	"-webkit-transform" : "translate(0px, 300px)",
+                        	"-moz-transform" : "translate(0px, 300px)",
+                        	"transform" : "translate(0px, 300px)"
+	                    });
                         
                         $("#osci_note_panel_wrapper").trigger({
                             type : "osci_note_toggle",
