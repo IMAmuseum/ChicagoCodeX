@@ -598,7 +598,7 @@
                             expander.click();
                         }
 
-                        base.navigateTo("node", $(this).data("nid"));
+                        base.navigateTo("node", $(this).data("nid") + "#osci_plate_fig");
                     }
                 }).hover(
                     function(e){
