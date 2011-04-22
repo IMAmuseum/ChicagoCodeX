@@ -231,6 +231,15 @@
                                     "class" : "figure_goto"
                                 }).appendTo($elem);
                                 
+                                $("img", $elem).click(function(e){
+                                    e.preventDefault();
+                                    var id = $(this).data("figure_id");
+                                    
+                                    $("#" + id, "#osci_pages").trigger({
+                                        type : "osci_figure_fullscreen"
+                                    });
+                                });
+                                
                                 $("<a>", {
                                     text : "fullscreen",
                                     href : "#",
@@ -285,7 +294,7 @@
             });
         });
         
-        //make figure linkw open the fullscreen view
+        //make figure links open the fullscreen view
         $("a.figure-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
             var $this = $(this),
@@ -303,12 +312,6 @@
                 $($this.attr("href"), "#osci_pages").trigger({
                     type : "osci_figure_fullscreen"
                 });
-                
-//                $("#osci_more_wrapper").trigger({
-//                    type : "osci_more_goto",
-//                    tab_name : "figures",
-//                    selector : "div[data-figure_id=" + $this.attr("href").substr(1) + "]"
-//                });
             }
         });
         
