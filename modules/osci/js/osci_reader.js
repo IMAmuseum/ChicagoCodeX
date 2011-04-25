@@ -1,4 +1,45 @@
 (function($) {
+    
+    function pulsateText(element)
+    {
+        var temp = element.clone(),
+            offset = element.offset();
+        
+        temp.appendTo("#osci_viewer");
+        
+        temp.css({
+            position: "absolute",
+            top : offset.top - 28 + "px",
+            left : offset.left + "px",
+            "-webkit-animation-duration" : "0.5s", 
+            "-webkit-animation-iteration-count" : "3",
+            "-webkit-animation-name" : "pulse",
+            "text-shadow" : "0px 0px 3px #CCC"
+        });
+        
+        setTimeout(function(){temp.remove();}, 2000);
+    }
+    
+    function findAndGotoElement() {
+        var $this = $(this),
+        column = $this.parents(".column"),
+        offset = $this.offset(),
+        columnOffset = column.offset(),
+        columnBottom = columnOffset.top + column.height(),
+        page = 0;
+    
+        if (offset.top <= columnBottom && offset.top >= columnOffset.top) {
+            page = $this.parents('.osci_page').data('page');
+            $(document).trigger({
+                type : "osci_navigation",
+                osci_to : "page",
+                osci_value: page 
+            });
+            pulsateText($this);
+            return false;
+        }
+    }
+    
     $(document).ready(function() {
     	$(document).bind({
     	    "osci_layout_start" : function(e){
@@ -18,11 +59,6 @@
             $("#osci_loading").remove();
             
             var figureImages = $("figure.image", "#osci_pages");
-
-            // Prevents fancybox from closing the tray
-            $('.figureContent > a').click(function(e) {
-                e.stopPropagations();
-            });
 
             figureImages.bind("osci_figure_fullscreen", function(e) {
                 $('.figureContent > a', this).click();
@@ -50,7 +86,7 @@
                         more.css({
                             "-webkit-transform" : "translate(0, " + more.outerHeight() + "px)",
                             "-moz-transform" : "translate(0, " + more.outerHeight() + "px)",
-                            "transform" : "translate(0, " + more.outerHeight() + "px)",
+                            "transform" : "translate(0, " + more.outerHeight() + "px)"
                         });
                         break;
                 }
@@ -221,18 +257,7 @@
                                         e.preventDefault();
                                         var id = $("img", $(this).parent()).data("figure_id");
                                         
-                                        $("a[href='#" + id + "']").each(function() {
-                                            var position    = $(this).position();
-                                            var height      = $(this).parents('.osci_page').height();
-                                            if (position.top <= height && position.top > 0) {
-                                                var page = $(this).parents('.osci_page').data('page');
-                                                $(document).trigger({
-                                                    type : "osci_navigation",
-                                                    osci_to : "page",
-                                                    osci_value: page 
-                                                });
-                                            }
-                                        });
+                                        $("a[href='#" + id + "']").each(findAndGotoElement);
 
                                         $("#osci_more_wrapper").trigger({
                                             type : "osci_more_toggle",
@@ -294,18 +319,7 @@
             e.preventDefault();
             var id = $(this).parent().attr("id");
             
-            $("a[href='#" + id + "']").each(function() {
-                var position    = $(this).position();
-                var height      = $(this).parents('.osci_page').height();
-                if (position.top <= height && position.top > 0) {
-                    var page = $(this).parents('.osci_page').data('page');
-                    $(document).trigger({
-                        type : "osci_navigation",
-                        osci_to : "page",
-                        osci_value: page 
-                    });
-                }
-            });
+            $("a[href='#" + id + "']").each(findAndGotoElement);
 
             $("#osci_more_wrapper").trigger({
                 type : "osci_more_toggle",
