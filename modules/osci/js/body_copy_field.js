@@ -187,7 +187,7 @@
 				// if the preview url was detected, swap out the standard image
 				if (previewUrl) {
 					var imageElem = dest.find('img:first');
-					imageElem.attr('src', Drupal.settings.baseUrl + previewUrl);
+					imageElem.attr('src', Drupal.settings.basePath + previewUrl);
 				}
 				
 				// place a figure options breakout button

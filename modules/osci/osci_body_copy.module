@@ -933,7 +933,7 @@ function osci_body_copy_figure_thumb_save() {
 	file_put_contents($dir.$filename, $fileData);
 	// form the return
 	$ret = new stdClass;
-	$ret->url = "/sites/default/files/previews/".$filename;
+	$ret->url = "sites/default/files/previews/".$filename;
 	print json_encode($ret);
 }
 
