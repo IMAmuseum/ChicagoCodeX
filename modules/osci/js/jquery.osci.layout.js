@@ -37,7 +37,10 @@
             }
             
             //Trigger event to let other features know layout is complete
-            $(document).trigger("osci_layout_complete");
+            setTimeout(
+                function(){$(document).trigger("osci_layout_complete");},
+                1
+            );
         };
 
         base.render = function()
