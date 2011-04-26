@@ -265,6 +265,8 @@ function osci_body_copy_render_layout_print($nid)
 
 function osci_body_copy_render_layout($nid)
 {
+    include("includes/simple_html_dom.php");    
+    
     $node = node_load($nid);
     $elements = node_view($node, 'body_copy');
     $footnotes = array();
@@ -284,17 +286,68 @@ function osci_body_copy_render_layout($nid)
     $catalogNumber = ($node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
     $bodyCopyElements = osci_body_copy_sort_elements($elements);
 
+    $paragraphCount = 0;
+    
     foreach ($bodyCopyElements as $k => $weight) {
         $v = $elements[$k];
         $elements[$k]['#theme'] = 'body_copy_field_html5';
 
-        $markup = $v[0]['#markup'];
-        if (strlen($markup)) {
-            $dom = new domDocument;
-            $dom->loadHTML("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body id=\"temp_body\">" . $v[0]['#markup'] . "</body></html>");
-            $xpath = new DOMXpath($dom);
+        if (strlen($v[0]['#markup'])) {
+            $html = str_get_html($v[0]['#markup']);
+            
+            $paragraphs = $html->find('p');
+            if (count($paragraphs)) {
+                foreach($paragraphs as $p) {
+                    $paragraphCount++;
+                    $p->innertext = "<span class=\"osci_paragraph_identifier osci_paragraph_{$paragraphCount}\">{$paragraphCount}</span>" . $p->innertext();
+                    //.addClass("osci_paragraph_" + pCount + " osci_paragraph").attr("data-paragraph_id", pCount);
+                    $newClass = $p->class ? $p->class . ' ' : '';
+                    $p->class = $newClass . "osci_paragraph_{$paragraphCount} osci_paragraph";
+                    $p->setAttribute("data-paragraph_id", $paragraphCount);
+                }
+            }
+            
+            $v[0]['#markup'] = $html->save();
+            $html = str_get_html($v[0]['#markup']);
+            
+            $figLinks = $html->find("a.figure-link");
+            if (count($figLinks)) {
+                foreach ($figLinks as $link) {
+                    $fId = $link->innertext();
 
-            $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' figure-link ')]");
+                    $numberTemplate = ($v[0]['osci_figures'][$fId]['number_template']) ? $v[0]['osci_figures'][$fId]['number_template'] : "Fig. cat#.fig#";
+                    $numberTemplate = str_replace(
+                        array('cat#', 'fig#'),
+                        array($catalogNumber, ++$figureCount),
+                        $numberTemplate
+                    );
+                    $v[0]['osci_figures'][$fId]['number_template'] = $numberTemplate;
+
+                    $link->innertext = $numberTemplate;
+                    $figureOrder[$figureCount] = $fId;
+                }
+            }
+            
+            $v[0]['#markup'] = $html->save();
+            $html = str_get_html($v[0]['#markup']);
+            
+            $fnLinks = $html->find("a.footnote-link");
+            if (count($fnLinks)) {
+                foreach ($fnLinks as $link) {
+                    $fnId = $link->innertext();
+
+                    $link->innertext = ++$footnoteCount;
+                    $footnoteOrder[$footnoteCount] = $fnId;
+                }
+            }
+
+            $elements[$k][0]['#markup'] = $html->save();
+
+            //$dom = new domDocument;
+            //$dom->loadHTML("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body id=\"temp_body\">" . $v[0]['#markup'] . "</body></html>");
+            //$xpath = new DOMXpath($dom);
+            
+            /*$links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' figure-link ')]");
             if (!is_null($links)) {
                 foreach($links as $link) {
                     $fId = $link->nodeValue;
@@ -311,9 +364,9 @@ function osci_body_copy_render_layout($nid)
 
                     $figureOrder[$figureCount] = $fId;
                 }
-            }
+            }*/
 
-            $links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' footnote-link ')]");
+            /*$links = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' footnote-link ')]");
             if (!is_null($links)) {
                 foreach($links as $link) {
                     $fnId = $link->nodeValue;
@@ -326,7 +379,7 @@ function osci_body_copy_render_layout($nid)
             }
 
             $markup = substr(substr($dom->saveXml($dom->getElementById("temp_body")), 21), 0, -7);
-            $elements[$k][0]['#markup'] = $markup;
+            $elements[$k][0]['#markup'] = $markup;*/
         }
 
         $footnotes += $v[0]['osci_footnotes'];

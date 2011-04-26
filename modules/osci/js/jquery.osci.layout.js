@@ -17,10 +17,7 @@
         {
             var pCount = 0, dataCount = 0, i, isP, $elem, parentId;
             //Trigger event so we know layout is begining
-            setTimeout(
-                function(){$(document).trigger("osci_layout_start")},
-                100
-            );
+            $(document).trigger("osci_layout_start");
 
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.viewer = $("#" + base.options.viewerId).empty();
@@ -32,32 +29,6 @@
             if (cache === null) {
                 //Get the data from the HTML body copy output we only want section content
                 base.data = $("section > *:not(section, header)", data);
-                
-                //add field name as a class to each child of a section
-                dataCount = base.data.length;
-                for (i = 0; i < dataCount; i++) {
-                //base.data.each(function(i, elem) {
-                    //var isP, $elem = $(elem), parentId; 
-                    $elem = $(base.data[i]);
-                    
-                    parentId = $elem.parents("section[id]").attr("id");
-                    if (parentId) {
-                        $elem.addClass(parentId);
-                    }
-                    
-                    //Add the paragraph numbering
-                    isP = $elem.is("p");
-                    if (isP) {
-                        pCount++;
-                        $elem.prepend($("<span>",{
-                            html : pCount,
-                            "class" : "osci_paragraph_identifier osci_paragraph_" + pCount,
-                            "data-paragraph_id" : pCount
-                        })).addClass("osci_paragraph_" + pCount + " osci_paragraph").attr("data-paragraph_id", pCount);
-                    }
-                //});
-                }
-    
                 base.render();
             } else {
                 //Cache found load layout from localstorage
@@ -66,17 +37,14 @@
             }
             
             //Trigger event to let other features know layout is complete
-            setTimeout(
-                function(){$(document).trigger("osci_layout_complete")},
-                100
-            );
+            $(document).trigger("osci_layout_complete");
         };
 
         base.render = function()
         {
             var i = 0, totalElements = 0, page, currentElement, pageElementCount, 
                 figureLinks, overflow, contentOffset = 0, cache = null, heightRemain = 0, 
-                figureCarryover, figureCarryoverCount, figureCarryoverI = 0, plateFigure;
+                figureCarryover, figureCarryoverCount, figureCarryoverI = 0, plateFigure, parentId, originalElement;
 
             //Calculate height information
             _updateHeights();
@@ -107,12 +75,14 @@
             totalElements = base.data.length;
             //Loop over the elements to add them to the layout
             while (i < totalElements) {
-                currentElement = $(base.data[i]).clone();
-
-                //Don't render figure elements, these are handled in the element where they are referenced
-                if (currentElement.text() === 'Figures') {
-                    break;
+                originalElement = $(base.data[i]);
+                currentElement = originalElement.clone();
+                
+                parentId = originalElement.parents("section[id]").attr("id");
+                if (parentId) {
+                    currentElement.addClass(parentId);
                 }
+                delete originalElement;
 
                 //If no page is defined or the page is full create a new page
                 if (page === undefined || page.data("process") === 'done') {
@@ -124,6 +94,7 @@
                     
                     //Get a new page and append it to the viewer
                     page = _newPage().appendTo(base.viewer.pages);
+
                     page.data({
                         contentStartOffset : contentOffset,
                         current_column : 0
