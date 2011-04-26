@@ -13,7 +13,7 @@
 	}
 	
 	
-	function figureOptionsPolymap(data, dest, options) {
+	function figureOptionsPolymap(data, dest, options, figureId) {
 		// determine best size to open dialog, based on figure size
 		var iw = $(data.ptiffDiv).data('iw');
 		var ih = $(data.ptiffDiv).data('ih');
@@ -61,8 +61,16 @@
 		}
 		interactionContainer.append(interactionToggle).append(interactionLabel);
 		fieldset.append(interactionContainer);
-		// overlay slider control
 		
+		// clear between elements
+		fieldset.append($('<div>').addClass('clear').html('&nbsp;'));
+		
+		// thumbnail
+		var thumbContainer = $('<div>');
+		var thumbLabel = $('<label>').html('Thumbnail Image');
+		var thumbFileField = $('<input type="file" id="thumbFileField">');
+		thumbContainer.append(thumbLabel).append(thumbFileField);
+		fieldset.append(thumbContainer);
 		
 		// add options fieldset to modal
 		modal.append(fieldset);
@@ -89,6 +97,45 @@
 			          {
 			        	  text: 'Save Options', 
 			        	  click: function() {
+			        		  // if a thumbnail was specified, upload it and get back the file path
+			        		  // inlcude the path in the options below
+			        		  if (thumbFileField.val() != "") {
+			        			  var reader = new FileReader();
+			        			  // declare onload for reader
+			        			  reader.onload = function(e) {
+			        				  // get the dataURI
+			        				  var fileDataURI = e.target.result;
+			        				  // send the image to the server
+			        				  var post = {
+			        						  fileDataURI: fileDataURI,
+			        						  figureId: figureId
+			        				  };
+			        				  $.ajax({
+			        					  type: 'POST',
+			        					  url: Drupal.settings.baseUrl + "ajax/figurethumb/save",
+			        					  data: post,
+			        					  success: function(data) {
+			        						  // get the current figure options, add or replace the url
+			        						  // and resave the options to the dom.
+		        					  		  var data = JSON.parse(data);
+		        					  		  var figureOptions = JSON.parse(dest.siblings('.figure_options:first').val());
+		        					  		  figureOptions.previewUrl = data.url;
+		        					  		  dest.siblings('.figure_options:first').val(JSON.stringify(figureOptions));
+		        					  		  
+		        					  		  // swap out the original preview image
+		        					  		  var imageElem = dest.find('img:first');
+		        					  		  console.log(imageElem);
+		        					  		  // force a timestamp here to force reload
+		        					  		  imageElem.attr('src', data.url + "?" + new Date().getTime());
+		        					  		  
+		        					  		  modal.dialog('destroy');
+		        						  }
+			        				  });
+			        			  };
+			        			  // read in the file to activate the onload function
+			        			  reader.readAsDataURL(thumbFileField[0].files[0]);
+			        		  }
+			        		  
 			        		  // trigger get_map event on the map container to get current coords
 			        		  $('.iipmap', mapContainer).trigger({
 			        			  type: "get_map",
@@ -110,7 +157,9 @@
 			                      },
 			                  });
 			        		  // close the modal
-			        		  modal.dialog('destroy');
+			        		  if (thumbFileField.val() == "") {
+			        			  modal.dialog('destroy');
+			        		  }
 			        	  }
 			          }
 			]
@@ -121,17 +170,34 @@
 	
 	
 	function getPreviewDiv(id, target) {
+		// retrieve options
+		var options = $.parseJSON($('.figure_options', $(target).parents(".fieldset-wrapper:first")).val());
+		
+		// check for the preview url if it's present
+		var previewUrl = false;
+		if (options.previewUrl && options.previewUrl != "") {
+			previewUrl = options.previewUrl;
+		}
+
 		// send nid to server to fetch preview
 		$.get(Drupal.settings.baseUrl + 'ajax/figurepreview/' + id,
 			function (data) {
 				var dest = $('.figure_reference_preview', $(target).parents(".fieldset-wrapper:first"));
 				dest.html(data.div);
+				
+				// if the preview url was detected, swap out the standard image
+				if (previewUrl) {
+					var imageElem = dest.find('img:first');
+					imageElem.attr('src', previewUrl);
+				}
+				
 				// place a figure options breakout button
 				var button = $('<input type="button">');
 				button.val('Figure Options')
 					.css('float', 'right')
 					.addClass('ui-button')
 					.addClass('figure_options_button');
+				
 				// replace the current button if it's there
 				var orig_button = $('.figure_options_button', dest.parent());
 				if (orig_button.length > 0) {
@@ -140,13 +206,19 @@
 				else{
 					dest.after(button);
 				}
+				
 				// the figure options button fires off a modal dependent on the type of figure
 				if (data.ptiff == true) {
 					// polymap - use figureOptionsPolymap()
 					button.click(function() {
-						// retrieve options
-						var options = $.parseJSON($('.figure_options', $(target).parents(".fieldset-wrapper:first")).val());
-						figureOptionsPolymap(data, dest, options)
+						var figureId = dest.siblings('.figure_identifier:first').find('span')
+							.html()
+							.match(/\[\w+:(.+)\]/);
+						// check for this value, we must have it to continue properly
+						figureId = figureId[1] ? figureId[1] : null
+						if (figureId) { 
+							figureOptionsPolymap(data, dest, options, figureId) 
+						}
 					});
 				}
 				else {

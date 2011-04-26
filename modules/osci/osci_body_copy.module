@@ -36,6 +36,13 @@ function osci_body_copy_menu()
         'access arguments'  => array('access content'),
         'type'              => MENU_CALLBACK,
     );
+    
+   	$items['ajax/figurethumb/save'] = array(
+        'title'             => 'Save Figure Thumbnail',
+        'page callback'     => 'osci_body_copy_figure_thumb_save',
+        'access arguments'  => array('access content'),
+        'type'              => MENU_CALLBACK,
+    );
 
     $items['node/%/pdf'] = array(
         'title' => 'Pdf',
@@ -902,6 +909,32 @@ function osci_body_copy_figure_preview($nid) {
 			break;
 	}
 	return drupal_json_output($ret);
+}
+
+function osci_body_copy_figure_thumb_save() {
+	global $base_url;
+	preg_match('/data:\w+\/(\w+);base64,(.*)/', $_REQUEST['fileDataURI'], $matches);
+	$fileType = $matches[1];
+	switch($fileType) {
+		case "jpeg":
+			$ext = 'jpg';
+			break;
+		case "png":
+			$ext = 'png';
+			break;
+		case "gif":
+			$ext = 'gif';
+			break;
+	}
+	$fileData = base64_decode(str_replace(' ','+',$matches[2]));
+	$figureId = $_REQUEST['figureId'];
+	$dir = $_SERVER['DOCUMENT_ROOT']."/sites/default/files/previews/";
+	$filename = $figureId.'.'.$ext;
+	file_put_contents($dir.$filename, $fileData);
+	// form the return
+	$ret = new stdClass;
+	$ret->url = "/sites/default/files/previews/".$filename;
+	print json_encode($ret);
 }
 
 function osci_body_copy_figure_reference($args) {
