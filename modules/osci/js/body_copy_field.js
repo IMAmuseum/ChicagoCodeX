@@ -125,7 +125,7 @@
 		        					  		  // swap out the original preview image
 		        					  		  var imageElem = dest.find('img:first');
 		        					  		  // force a timestamp here to force reload
-		        					  		  imageElem.attr('src', data.url + "?" + new Date().getTime());
+		        					  		  imageElem.attr('src', Drupal.settings.basePath + data.url + "?" + new Date().getTime());
 		        					  		  
 		        					  		  modal.dialog('destroy');
 		        						  }
