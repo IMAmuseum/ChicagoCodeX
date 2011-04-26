@@ -13,6 +13,12 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         'figure_type' => $node->type,
     	'options' => htmlspecialchars($figure['figure_options'])
     );
+    // store the options as they are, then strip out the url since it's
+    // only needed on the thumbnail
+    $options = json_decode(htmlspecialchars_decode($data['options']));
+    $tempOptions = json_decode(htmlspecialchars_decode($data['options']));
+    unset($tempOptions->previewUrl);
+    $data['options'] = htmlspecialchars(json_encode($tempOptions));
 
     $vars['data'] = '';
     foreach($data as $k => $v) {
@@ -79,7 +85,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         		$vars['content'] = _osci_iip_create_iip_div($node, $figure['id']);
         	}
         	// test is a preview url is available.  If so, use it in the thumbnail below
-        	$options = json_decode(htmlspecialchars_decode($data['options']));
+        	
         	if ($options && $options->previewUrl && $options->previewUrl != '') {
         		$vars['thumbnail'] = theme_image_style(array(
 	        	    'style_name' => "osci_thumbnail_165w",
@@ -102,6 +108,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
 	        	    )
     			));
         	}
+        	
         	
     		break;
         case 'html_figure':
