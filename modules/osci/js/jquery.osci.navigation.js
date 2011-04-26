@@ -116,7 +116,7 @@
         function _osci_resize()
         {
         	//get the first paragraph currently displayed so we can try to stay on the same page after the resize
-            var firstParagraph = $("p.osci_paragraph:first", "div.osci_page_" + (base.data.currentPage + 1));
+            var firstParagraph = $("div.osci_page_" + (base.data.currentPage + 1)).find("p.osci_paragraph:first");
             base.data.to = { operation : "paragraph", value : firstParagraph.data("paragraph_id")};
             
             //$("ul", "#" + base.options.tocId).trigger("osci_toc_update_heights");
@@ -304,7 +304,7 @@
                     break;
                 //go to a specific paragraph 
                 case "paragraph":
-                    newPage = $("p.osci_paragraph_" + value + ":first","#" + base.data.layoutData.viewerId).parents(".osci_page").data("page");
+                    newPage = $("#" + base.data.layoutData.viewerId).find("p.osci_paragraph_" + value + ":first").parents(".osci_page").data("page");
                     if (newPage !== undefined) {
                         base.navigateTo("page", newPage);
                     }
@@ -312,7 +312,7 @@
                     break;
                 //go to a jquery selector result
                 case "selector":
-                    newPage = $(value + ":first","#" + base.data.layoutData.viewerId).parents(".osci_page").data("page");
+                    newPage = $("#" + base.data.layoutData.viewerId).find(value + ":first").parents(".osci_page").data("page");
                     if (newPage !== undefined) {
                         base.navigateTo("page", newPage);
                     }
@@ -379,22 +379,36 @@
                 addSubPixels = (container.width() - (parts * partWidth)) > 0 ? 1 : -1;
            
             //get the navbar
-            navBar = $("#osci_navigation_section_list", container);
+            navBar = container.find("#osci_navigation_section_list");
             
             //if the navbar has not been created, create it
             if (!navBar.length) {
                 navBar = $("<ul>", {
                     id : "osci_navigation_section_list",
                     width : "100%"
-                }).appendTo(container);
+                }).hide().appendTo(container);
                 
                 //bind an event to update the navigation
                 container.bind("osci_update_navigation_section", function(e, page){
-                    $("li", this).removeClass("active");
-                    $("li:eq(" + page + ")", this).addClass("active");
+                    var $this = $(this);
+                    $this.find("li").removeClass("active");
+                    $this.find("li:eq(" + page + ")").addClass("active");
+                });
+                
+                navBar.delegate("li", "click", function(e){
+                    e.preventDefault();
+                    
+                    var page, $this;
+                    
+                    $this = $(this);
+                    page = $this.data("navigateTo");
+                    
+                    $this.siblings().removeClass("active");
+                    $this.addClass("active");
+                    base.navigateTo("page", page);
                 });
             }
-            navBar.empty();
+            navBar.hide().empty();
             
             //create each navbar part
             i = 1;
@@ -421,23 +435,13 @@
                 li = $("<li>",{
                     css : { width : finalWidth + "px" },
                     data : { navigateTo : i },
-                    "class" : classes,
-                    click : function (e) {
-                        e.preventDefault();
-                        
-                        var page, $this;
-                        
-                        $this = $(this);
-                        page = $this.data("navigateTo");
-                        
-                        $this.siblings().removeClass("active");
-                        $this.addClass("active");
-                        base.navigateTo("page", page);
-                    }
+                    "class" : classes
                 }).appendTo(navBar);
                 
                 i++;
             }
+            
+            navBar.show();
         }
         
         function _create_table_of_contents()
@@ -445,7 +449,7 @@
             var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, 
                 j, subItem, subItemCount, tocWrapper;
 
-            toc = $("#osci_navigation_toc", container);
+            toc = container.find("#osci_navigation_toc");
             if (!toc.length) {
                 $("<h2>", {
                     text : "Reference Image"
@@ -490,21 +494,98 @@
                         }
                     }, 
                     "osci_toc_update" : function(e){
-                        var toc = $("#osci_navigation_toc", this),
-                            activeLi = $("#osci_toc_node_" + base.data.nid, toc);
+                        var $this = $(this),
+                            toc = $this.find("#osci_navigation_toc"),
+                            activeLi = toc.find("#osci_toc_node_" + base.data.nid);
                         
-                        $("li, a", toc).removeClass("active");
+                        toc.find("li, a").removeClass("active");
                         
                         activeLi.addClass("active");
                         activeLi.parents("li").addClass("active");
                         
-                        $("li.active", toc).children("a").addClass("active");
+                        toc.find("li.active").children("a").addClass("active");
                     }
                 }).addClass("open");
   
-                $(".osci_table_of_contents_handle", container).click(function(e){
+                container.find(".osci_table_of_contents_handle").click(function(e){
                     e.preventDefault();
                     container.trigger({type : "osci_nav_toggle"});
+                });
+                
+                toc.delegate("a", "click", function(e){
+                    e.preventDefault();
+                    
+                    var checkElement,
+                        $this = $(this),
+                        parent = $this.parents("ul:first"),
+                        container = $this.parents("#osci_navigation_toc_wrapper"),
+                        isExpander = $this.hasClass("osci_toc_arrow"),
+                        expander = isExpander ? $this : $this.next();
+                    
+                    if (container.data("dragging")) {
+                        return;
+                    }
+
+                    if (isExpander || !expander.hasClass("expanded")) {
+                        checkElement = expander.siblings("ul");
+    
+                        parent.find("ul").slideUp("normal");
+                        parent.find(".expanded").removeClass("expanded").text("+");
+                        
+                        if (checkElement.length) {
+                            if (!checkElement.is(":visible")) {
+                                checkElement.slideDown("normal");
+                                expander.text("-").addClass("expanded");
+                            } else {
+                                checkElement.slideUp("normal");
+                                expander.text("+");
+                            }
+                        }
+                    }
+                    
+                    if (!isExpander) {
+                        base.navigateTo("node", $(this).data("nid") + "#osci_plate_fig");
+                    }
+                });
+                
+                toc.delegate("a", "hover", function(e){
+                    var $this, data, parents,
+                        plateContainer = $("#" + base.options.tocId).find(".osci_reference_image img");
+                    
+                    switch (e.type) {
+                        case "mouseenter":
+                            $this = $(this);
+                            data = $this.parent("li").data();
+                                
+                            if (data.plate_image && data.plate_image.thumbnail_165w_url) {
+                                plateContainer.trigger({
+                                    type : "osci_reference_image_alter",
+                                    osci_nav_hover_image : data.plate_image.thumbnail_165w_url
+                                });
+                            } else {
+                                parents = $this.parents("li");
+    
+                                if (parents && parents.length) {
+                                    parents.each(function(i, elem){
+                                        data = $(elem).data();
+    
+                                        if (data.plate_image && data.plate_image.thumbnail_165w_url) {
+                                            plateContainer.trigger({
+                                                type : "osci_reference_image_alter",
+                                                osci_nav_hover_image : data.plate_image.thumbnail_165w_url
+                                            });
+                                            return false;
+                                        }
+                                    });
+                                }
+                            }
+                            break;
+                        case "mouseleave":
+                            plateContainer.trigger({
+                                type : "osci_reference_image_alter"
+                            });
+                            break;
+                    }
                 });
             }
             toc.empty();
@@ -522,7 +603,7 @@
                 if (rootNid === node.parent.nid) {
                     toc.append(tocItem);
                 } else {
-                    subMenu = $("#osci_toc_node_" + node.parent.nid + "_submenu", toc);
+                    subMenu = toc.find("#osci_toc_node_" + node.parent.nid + "_submenu");
                     if (!(subMenu.length)) {
                         subMenu = _create_sub_menu(node.parent.nid);
                     }
@@ -531,7 +612,7 @@
                 }
                 
                 if (node.sub_sections && node.sub_sections.length) {
-                    subMenu = $("#osci_toc_node_" + node.nid + "_submenu", toc);
+                    subMenu = toc.find("#osci_toc_node_" + node.nid + "_submenu");
                     if (!(subMenu.length)) {
                         subMenu = _create_sub_menu(node.nid);
                     }
@@ -561,7 +642,7 @@
 //            });
          
             tocWrapper.height(($(window).height() - tocWrapper.position().top - 40) + "px").overscroll({direction : "vertical", showThumbs : true});
-              $("ul", toc).hide();
+            toc.find("ul").hide();
         }
         
         function _create_menu_item(node)
@@ -582,92 +663,13 @@
                     href : "#",
                     data : {
                         nid : link
-                    },
-                    click : function(e) {
-                        e.preventDefault();
-                        
-                        var $this = $(this),
-                            expander = $this.next(),
-                            container = $this.parents("#osci_navigation_toc_wrapper");
-
-                        if (container.data("dragging")) {
-                            return;
-                        }
-
-                        if (!expander.hasClass("expanded")) {
-                            expander.click();
-                        }
-
-                        base.navigateTo("node", $(this).data("nid") + "#osci_plate_fig");
                     }
-                }).hover(
-                    function(e){
-                        var $this = $(this),
-                            data = $this.parent("li").data(),
-                            parents;
-                            
-                        if (data.plate_image && data.plate_image.thumbnail_165w_url) {
-                            $(".osci_reference_image img", "#" + base.options.tocId).trigger({
-                                type : "osci_reference_image_alter",
-                                osci_nav_hover_image : data.plate_image.thumbnail_165w_url
-                            });
-                        } else {
-                            parents = $this.parents("li");
-
-                            if (parents && parents.length) {
-                                parents.each(function(i, elem){
-                                    data = $(elem).data();
-
-                                    if (data.plate_image && data.plate_image.thumbnail_165w_url) {
-                                        $(".osci_reference_image img", "#" + base.options.tocId).trigger({
-                                            type : "osci_reference_image_alter",
-                                            osci_nav_hover_image : data.plate_image.thumbnail_165w_url
-                                        });
-                                        return false;
-                                    }
-                                });
-                            }
-                        }
-                    },
-                    function(e){
-                        $(".osci_reference_image img", "#" + base.options.tocId).trigger({
-                            type : "osci_reference_image_alter"
-                        });
-                    }
-                )
+                })
             ).append(
                 $("<a>", {
                    "class" : "osci_toc_arrow",
                    href : "#",
-                   text : "+",
-                   click : function (e) {
-                       e.preventDefault();
-                       
-                       var checkElement,
-                           $this = $(this),
-                           parent = $this.parents("ul:first"),
-                           container = $this.parents("#osci_navigation_toc_wrapper"),
-                           toc = $("#" + base.options.tocId + " > ul");
-                       
-                       if (container.data("dragging")) {
-                           return;
-                       }
-
-                       checkElement = $this.siblings("ul");
-
-                       $("ul", parent).slideUp("normal");
-                       $(".expanded", parent).removeClass("expanded").text("+");
-                       
-                       if (checkElement.length) {
-                           if (!checkElement.is(":visible")) {
-                               checkElement.slideDown("normal");
-                               $this.text("-").addClass("expanded");
-                           } else {
-                               checkElement.slideUp("normal");
-                               $this.text("+");
-                           }
-                       }
-                   }
+                   text : "+"
                 })
             );
             
@@ -695,7 +697,7 @@
 //                    }
 //                }
 //            });
-            }).appendTo($("#osci_toc_node_" + nid)).hide();
+            }).hide().appendTo($("#osci_toc_node_" + nid));
 //            }).appendTo($("#osci_toc_node_" + nid));
             
             return subMenu;

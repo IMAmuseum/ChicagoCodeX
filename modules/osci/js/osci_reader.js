@@ -157,14 +157,13 @@
             }
         };
 
-//        $.osci.note({
-//            notePanelId : "osci_note_panel_wrapper",
-//            panelPixelsClosed : 20,
-//            userNoteCallback : Drupal.settings.basePath + 'ajax/note',
-//            noteAddCallback : Drupal.settings.basePath + 'ajax/note/add',
-//            noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save',
-//        });
-        $("ul.selection-toolbar").hide();
+        $.osci.note({
+            notePanelId : "osci_note_panel_wrapper",
+            panelPixelsClosed : 20,
+            userNoteCallback : Drupal.settings.basePath + 'ajax/note',
+            noteAddCallback : Drupal.settings.basePath + 'ajax/note/add',
+            noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save',
+        });
         
         $.osci.navigation({
             readerId : Drupal.settings.osci_navigation.reader_id,
