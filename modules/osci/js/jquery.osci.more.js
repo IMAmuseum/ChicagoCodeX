@@ -20,48 +20,49 @@
             
             base.options = $.extend({}, $.osci.more.defaultOptions, options);
             
-            base.$el.bind("osci_more_toggle", function(e){
-                var $this = $(this);
-
-                if (($this.hasClass("open") && !e.osci_more_open) || e.osci_more_close) {
-                    if (base.options.moreToggleCallback !== undefined) {
-                        base.options.moreToggleCallback($this, "close");
+            base.$el.bind({
+                "osci_more_toggle" : function(e){
+                    var $this = $(this);
+    
+                    if (($this.hasClass("open") && !e.osci_more_open) || e.osci_more_close) {
+                        if (base.options.moreToggleCallback !== undefined) {
+                            base.options.moreToggleCallback($this, "close");
+                        }
+                        $this.removeClass("open");
+                    } else {
+                        if (base.options.moreToggleCallback !== undefined) {
+                            base.options.moreToggleCallback($this, "open");
+                        }
+                        $this.addClass("open");
                     }
-                    $this.removeClass("open");
-                } else {
-                    if (base.options.moreToggleCallback !== undefined) {
-                        base.options.moreToggleCallback($this, "open");
+                },
+                "osci_more_goto" : function(e){
+                    var $this = $(this), tabNum, tabData, tab, itemNumber, gotoPage,
+                        tabs = $("#" + base.options.tabContainerId, base.$el);
+                    
+                    if (base.tab_map[e.tab_name] !== undefined) {
+                        tabNum = base.tab_map[e.tab_name];
+                        
+                        tabs.tabs("select", tabNum);
+                        
+                        tab = $("div.ui-tabs-panel:not(.ui-tabs-hide)", $this);
+                        tabData = tab.data();
+                        
+                        itemNumber = $(e.selector, tab).index();
+    
+                        if (tabData.osci_pager_per_page > 1) {
+                            gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page) - 1;
+                        } else {
+                            gotoPage = itemNumber;
+                        }
+                        $("li.osci_pager_item:eq(" + gotoPage + ")", tab).children().click();
+                        
+                        $this.trigger({ type : "osci_more_toggle", osci_more_open : true});
                     }
-                    $this.addClass("open");
                 }
             }).addClass("open");
             
-            base.$el.bind("osci_more_goto", function(e){
-                var $this = $(this), tabNum, tabData, tab, itemNumber, gotoPage,
-                    tabs = $("#" + base.options.tabContainerId, base.$el);
-                
-                if (base.tab_map[e.tab_name] !== undefined) {
-                    tabNum = base.tab_map[e.tab_name];
-                    
-                    tabs.tabs("select", tabNum);
-                    
-                    tab = $("div.ui-tabs-panel:not(.ui-tabs-hide)", $this);
-                    tabData = tab.data();
-                    
-                    itemNumber = $(e.selector, tab).index();
-
-                    if (tabData.osci_pager_per_page > 1) {
-                        gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page) - 1;
-                    } else {
-                        gotoPage = itemNumber;
-                    }
-                    $("li.osci_pager_item:eq(" + gotoPage + ")", tab).children().click();
-                    
-                    $this.trigger({ type : "osci_more_toggle", osci_more_open : true});
-                }
-            });
-            
-            $(".osci_more_handle", base.$el).click(function(e){
+            base.$el.find("a.osci_more_handle").click(function(e){
                 e.preventDefault();
                 base.$el.trigger({type : "osci_more_toggle"});
             }).click();
@@ -209,7 +210,7 @@
                         "class" : "osci_pager_nav_last"
                     }).appendTo(pager);
                     
-                    $("a", pager).bind("click", function(e) {
+                    pager.delegate("a", "click", function(e) {
                         e.preventDefault();
                         var $this = $(this),
                             pageNum = $this.data("page_number"),
@@ -218,7 +219,7 @@
                             totalItems = container.data("osci_pager_total_items"),
                             totalPages = container.data("osci_pager_total_pages"),
                             perPage = container.data("osci_pager_per_page"),
-                            pagerItems = $("li.osci_pager_item", container),
+                            pagerItems = container.find("li.osci_pager_item"),
                             maxPagesDisplay = container.data("osci_pager_max_pages_display"),
                             pagerItem, displayItem, startItem, endItem;
                         
@@ -234,7 +235,7 @@
                             }
                         }
     
-                        pagerItem = $("li.osci_pager_item:eq(" + pageNum + ")", container);
+                        pagerItem = container.find("li.osci_pager_item:eq(" + pageNum + ")");
                         container.data("osci_pager_current_page", pageNum);
                         pagerItems.removeClass("active");
                         pagerItem.addClass("active");
@@ -248,21 +249,21 @@
                         }
                         
                         if (pagerItems.filter(".last:visible").length){                   
-                            $(".more", container).hide();
+                            container.find("li.more").hide();
                         } else {
-                            $(".more", container).show();
+                            container.find("li.more").show();
                         }
                         
                         if (pagerItems.filter(".first:visible").length){
-                            $(".less", container).hide();
+                            container.find("li.less").hide();
                         } else {
-                            $(".less", container).show();
+                            container.find("li.less").show();
                         }
                         
                         startItem = pageNum * perPage;
                         endItem = startItem + perPage;
                         
-                        $(".osci_pager_display_item", container).children().hide().slice(startItem, endItem).show();
+                        container.find("div.osci_pager_display_item").children().hide().slice(startItem, endItem).show();
                     });
                     
                     tab.data({
@@ -271,10 +272,9 @@
                        osci_pager_per_page : perPage,
                        osci_pager_current_page : 1,
                        osci_pager_max_pages_display : maxPagesDisplay
-                   })
-                   .append(pager);
+                   }).append(pager);
                     
-                    $("a.osci_pager_nav_first", "#" + tabId).click();
+                    $("#" + tabId).find("a.osci_pager_nav_first").click();
                 } else {
                     tab.html(data);
                 }

@@ -144,13 +144,7 @@
             }
 
             //Store the layout in localstorage for faster load times
-            setTimeout(
-                function(){
-                    $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
-                },
-                10
-            );
-            
+            $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
         };
 
         //Add content to the current page

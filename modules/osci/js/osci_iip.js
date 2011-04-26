@@ -364,7 +364,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 (function($) {
 	$(document).bind("osci_layout_complete", function()
 	{
-		$('.iipmap', "#osci_viewer").each(function(){ iipmap($(this)); });	
+	    $("#osci_viewer").find('div.iipmap').each(function(){ iipmap($(this)); });	
 	});	
 
 }) (jQuery);
