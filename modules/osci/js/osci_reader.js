@@ -49,21 +49,17 @@
         	},
         	"touchmove" : function(e) {
         	    e.preventDefault();
-        	}
-    	});
-    	
-        /****************************************
-         * Figure Image Handling
-         */
-        $(document).bind("osci_layout_complete", function(e) {
-            $("#osci_loading").remove();
-            
-            var figureImages = $("figure.image", "#osci_pages");
+        	},
+        	"osci_layout_complete" : function(e) {
+                $("#osci_loading").remove();
+                
+                var figureImages = $("figure.image", "#osci_pages");
 
-            figureImages.bind("osci_figure_fullscreen", function(e) {
-                $('.figureContent > a', this).click();
-            });
-        });
+                figureImages.bind("osci_figure_fullscreen", function(e) {
+                    $('.figureContent > a', this).click();
+                });
+            }
+    	});
         
         $("#osci_more_wrapper").osci_more({
             moreToggleCallback : function(more, state)
@@ -161,13 +157,14 @@
             }
         };
 
-        $.osci.note({
-            notePanelId : "osci_note_panel_wrapper",
-            panelPixelsClosed : 20,
-            userNoteCallback : Drupal.settings.basePath + 'ajax/note',
-            noteAddCallback : Drupal.settings.basePath + 'ajax/note/add',
-            noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save',
-        });
+//        $.osci.note({
+//            notePanelId : "osci_note_panel_wrapper",
+//            panelPixelsClosed : 20,
+//            userNoteCallback : Drupal.settings.basePath + 'ajax/note',
+//            noteAddCallback : Drupal.settings.basePath + 'ajax/note/add',
+//            noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save',
+//        });
+        $("ul.selection-toolbar").hide();
         
         $.osci.navigation({
             readerId : Drupal.settings.osci_navigation.reader_id,
@@ -233,7 +230,7 @@
             },
             loadFunction : function (navData)
             {
-                var footnotes, data, more, figures,
+                var footnotes, data, more,
                     endpoint = Drupal.settings.osci_navigation.content_endpoint.replace("{$nid}", navData.nid);
                 
                 $.osci.storage.getUrl({
@@ -241,13 +238,12 @@
                     expire : Drupal.settings.osci_navigation.cache_time,
                     callback : function(content) {
                     	data = $(content.data);
-                        footnotes = $("#field_osci_footnotes", data).remove();
+                        footnotes = data.find("#field_osci_footnotes").remove();
 
                         more = $("#osci_more_wrapper").data("osci.more");
                         more.add_content("footnotes", $(".footnote", footnotes), true, 1);
                         
-                        figures = $("#field_osci_figures", data);
-                        more.add_content("figures", $(".figureThumbnail", figures).remove(), true, undefined, function(tab){
+                        more.add_content("figures", data.find("#field_osci_figures").find(".figureThumbnail").remove(), true, undefined, function(tab){
                             $(".figureThumbnail", tab).each(function(i, elem){
                                 var $elem = $(elem);
                                 $("<a>", {
@@ -334,7 +330,7 @@
                 visible;
 
             visible = $($this.attr("href") + ":visible", "#osci_pages");
-            
+
             if (visible.length) {
                 $(document).trigger({
                     type : "osci_navigation",
