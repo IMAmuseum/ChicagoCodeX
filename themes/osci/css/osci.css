@@ -92,28 +92,31 @@ body.page-node-reader {
 
 #osci_nav_prev {
     position: absolute;
-    width: 16px;
-	height:20px;
-    top: 0;
-    right: 70px;
+    width: 24px;
+	height:30px;
+    top: -14px;
+    right: 76px;
 	background: transparent url('../images/btn-prev.png') no-repeat left top;
-	overflow:hidden;display:block;text-indent:999px;
+	background-size: 100%;
+	overflow:hidden;display:block;text-indent:999px;font-size:0;
 	opacity: 0.3;
 }
 
 #osci_nav_next {
-	width: 16px;
-	height:20px;
+	width: 24px;
+	height:30px;
     position: absolute;
-    right: 40px;
-    top: 0;
+    right: 34px;
+    top: -14px;
     text-align: right;
 	background: transparent url('../images/btn-next.png') no-repeat left top;
-	overflow:hidden;display:block;text-indent:999px;
+	background-size: 100%;
+	overflow:hidden;display:block;text-indent:999px;font-size:0;
 	opacity: 0.3;
 }
 #osci_nav_next:hover, #osci_nav_prev:hover {
 	opacity: 0.8;
+	cursor: pointer;
 }
 
 #osci_navigation_tools {
