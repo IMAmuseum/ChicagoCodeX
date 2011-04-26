@@ -25,10 +25,26 @@
             //Check to see if layout has been cached in localstorage
             cache = $.osci.storage.get('osci_layout_cache:' + base.options.cacheId);
             
+            //Calculate height information
+            _updateHeights();
+            
+            //Set some more data points
+            base.options.viewHeight = base.viewer.height();
+            base.options.viewWidth  = base.viewer.width();
+            base.options.columnCount = 1;
+            base.options.pageCount = 0;
+
+            //Calculate the constraints of the viewer area
+            _calcViewerInfo();
+            
             //No cache process content for layout
             if (cache === null) {
                 //Get the data from the HTML body copy output we only want section content
-                base.data = $("section > *:not(section, header)", data);
+                base.data = data.children("section:not(#field_osci_figures)").children("section.content").children();
+                
+                //Collect the figures from the content
+                base.figures = data.children("#field_osci_figures").find("figure");
+                
                 base.render();
             } else {
                 //Cache found load layout from localstorage
@@ -41,6 +57,10 @@
                 function(){$(document).trigger("osci_layout_complete");},
                 1
             );
+            
+            //Remove base data
+            delete base.data;
+            delete base.figures;
         };
 
         base.render = function()
@@ -49,25 +69,7 @@
                 figureLinks, overflow, contentOffset = 0, cache = null, heightRemain = 0, 
                 figureCarryover, figureCarryoverCount, figureCarryoverI = 0, plateFigure, parentId, originalElement;
 
-            //Calculate height information
-            _updateHeights();
-            
             base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
-            
-            //Collect the figures from the content
-            base.figures = base.data.filter("figure");
-            
-            //remove the figures from the base data
-            base.data = base.data.filter(":not(figure)");
-            
-            //Set some more data points
-            base.options.viewHeight = base.viewer.height();
-            base.options.viewWidth  = base.viewer.width();
-            base.options.columnCount = 1;
-            base.options.pageCount = 0;
-
-            //Calculate the constraints of the viewer area
-            _calcViewerInfo();
 
             //Add the plate figure if found
             plateFigure = base.figures.filter("#osci_plate_fig");
@@ -143,10 +145,6 @@
 
             //Store the layout in localstorage for faster load times
             $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
-            
-            //Remove base data
-            delete base.data;
-            delete base.figures;
         };
 
         //Add content to the current page
