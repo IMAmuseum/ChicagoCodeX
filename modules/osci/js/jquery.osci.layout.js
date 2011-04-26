@@ -55,7 +55,7 @@
             //Trigger event to let other features know layout is complete
             setTimeout(
                 function(){$(document).trigger("osci_layout_complete");},
-                1
+                10
             );
             
             //Remove base data
@@ -144,7 +144,13 @@
             }
 
             //Store the layout in localstorage for faster load times
-            $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
+            setTimeout(
+                function(){
+                    $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
+                },
+                10
+            );
+            
         };
 
         //Add content to the current page
