@@ -163,7 +163,7 @@
                 //If there is height remaining in the column, get it
                 if (pageColumnData[i].heightRemain > 0) {
                     //check for exising column
-                    column = $("div.column_" + i, page);
+                    column = page.find("div.column_" + i);
                     pageColumnNumber = i;
                     page.data("current_column", pageColumnNumber);
                     //if column doesnt exist, create it
@@ -216,7 +216,7 @@
             }
 
             //find figure references and process the figure
-            figureLinks = $("a.figure-link:not(.processed)", content);
+            figureLinks = content.find("a.figure-link:not(.processed)");
             if (figureLinks.length) {
                 figureLinks.each(function(i, l){
                     var linkLocation, $l = $(l);
@@ -229,7 +229,7 @@
 
                         //Add a class to the figure link (in current content and the prerendered content) so it is only processed once
                         //$("a[href=" + $l.attr("href") + "]", base.prerender).addClass("processed");
-                        $("a[href=" + $l.attr("href") + "]", base.data).addClass("processed");
+                        base.data.find("a[href=" + $l.attr("href") + "]").addClass("processed");
                         $l.addClass("processed");
                         
                         //if a figure was processed and not carried over exit the loop
@@ -247,9 +247,9 @@
             }
 
             // Position Paragraph Identifiers in the gutter
-            paragraphIdentifier = $("span.osci_paragraph_identifier", content).remove();
+            paragraphIdentifier = content.find("span.osci_paragraph_identifier").remove();
             if (paragraphIdentifier.length) {
-                if ($("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id"), page).length === 0) {
+                if (page.find("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id")).length === 0) {
                     paragraphIdentifier.appendTo(page).css({
                         "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2) - 4) + "px",
                         "margin-top" : content.position().top + parseInt(column.css("margin-top"), 10) + "px"
@@ -310,11 +310,11 @@
             figureType = figure.data("figure_type");
 
             //pull out the figure content before adding to the dom so images are not loaded
-            figureContent = $(".figureContent", figure).remove();
-            
-            //add it to the page
-            figure.appendTo(page);
+            figureContent = figure.find("div.figureContent").remove();
 
+            //add new figure to the page
+            figure.appendTo(page);
+            
             //if figure is not displayed in the content hide it (ignore placement and sizing code)
             if (position === 'n') {
                 figure.hide();
@@ -336,7 +336,7 @@
                     figure.css("width", width + "px");
                     
                     //Get the height of the caption
-                    captionHeight = $("figcaption", figure).height();
+                    captionHeight = figure.find("figcaption").height();
                     
                     //Calculate height of figure plus the caption
                     height = (width / aspect) + captionHeight;
@@ -386,10 +386,9 @@
                 }
                 
                 //Get the figures currently on the page to check if current figure can fit
-                pageFigures = $("figure:not(" + figureId + ")", page);
+                pageFigures = page.find("figure:not(#" + figureId + "):visible");
                 
                 while (!placed && placementAttempts < base.options.columnsPerPage) {
-                    
                     //Detemine the left offset start column and width of the figure
                     if ((column + columns) > base.options.columnsPerPage) {
                         column -= (column + columns) - base.options.columnsPerPage;
@@ -428,12 +427,11 @@
                     //check if current placement overlaps any other figures
                     placed = true;
                     if (pageFigures.length) {
-                        figureOffset = figure.offset();
-                        figureX = [figureOffset.left, figureOffset.left + figure.outerWidth()];
-                        figureY = [figureOffset.top, figureOffset.top + figure.outerHeight()];
+                        figureX = [offsetLeft, offsetLeft + figure.outerWidth()];
+                        figureY = [offsetTop, offsetTop + figure.outerHeight()];
                         pageFigures.each(function(i, elem) {
                             var $elem = $(elem),
-                                position = $elem.offset(),
+                                position = $elem.position(),
                                 elemX = [position.left, position.left + $elem.outerWidth()],
                                 elemY = [position.top, position.top + $elem.outerHeight()];
                             
