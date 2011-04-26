@@ -1,7 +1,7 @@
 
 
 (function ($) {
-	
+	console.log(Drupal);
 	function getMapBounds(map) {
 		var extents = map.extent();
 		var coords = JSON.stringify({
@@ -124,7 +124,6 @@
 		        					  		  
 		        					  		  // swap out the original preview image
 		        					  		  var imageElem = dest.find('img:first');
-		        					  		  console.log(imageElem);
 		        					  		  // force a timestamp here to force reload
 		        					  		  imageElem.attr('src', data.url + "?" + new Date().getTime());
 		        					  		  
@@ -188,7 +187,7 @@
 				// if the preview url was detected, swap out the standard image
 				if (previewUrl) {
 					var imageElem = dest.find('img:first');
-					imageElem.attr('src', previewUrl);
+					imageElem.attr('src', Drupal.settings.baseUrl + previewUrl);
 				}
 				
 				// place a figure options breakout button
