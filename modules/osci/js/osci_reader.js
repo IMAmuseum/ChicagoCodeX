@@ -17,26 +17,106 @@
             "text-shadow" : "0px 0px 3px #CCC"
         });
         
-        setTimeout(function(){temp.remove();}, 2000);
+        setTimeout(function(){temp.remove();}, 1500);
     }
     
-    function findAndGotoElement() {
-        var $this = $(this),
-        column = $this.parents(".column"),
-        offset = $this.offset(),
-        columnOffset = column.offset(),
-        columnBottom = columnOffset.top + column.height(),
-        page = 0;
-    
-        if (offset.top <= columnBottom && offset.top >= columnOffset.top) {
-            page = $this.parents('.osci_page').data('page');
-            $(document).trigger({
-                type : "osci_navigation",
-                osci_to : "page",
-                osci_value: page 
-            });
-            pulsateText($this);
-            return false;
+    function findAndGotoElement(selector, occurence) {
+        var elem = $(selector);
+            isFigLink = $(elem[0]).hasClass("figure-link"),
+            validItem = undefined;
+        
+        if (occurence === undefined || occurence < 1) {
+            occurence = 1;
+        }
+            
+        elem.each(function(i){
+            var $this = $(this),
+                thisOccur = $this.data("occurence"),
+                column = $this.parents(".column"),
+                offset = $this.offset(),
+                columnOffset = column.offset(),
+                columnBottom = columnOffset.top + column.height(),
+                page = 0;
+            
+            if (thisOccur === undefined || thisOccur < 1) {
+                thisOccur = 1;
+            }
+            
+            if (thisOccur === occurence && offset.top <= columnBottom && offset.top >= columnOffset.top) {
+                page = $this.parents('.osci_page').data('page');
+                $(document).trigger({
+                    type : "osci_navigation",
+                    osci_to : "page",
+                    osci_value: page 
+                });
+                pulsateText($this);
+                validItem = $this;
+                return false;
+            }
+        });
+        
+        if (isFigLink && validItem) {
+            var figure = $(validItem.attr("href")),
+                occurences = figure.data("occurences"),
+                pos, linker, validItemOccur = validItem.data("occurence"),
+                nextLink, prevLink;
+            
+            if (occurences > 1) {
+                pos = validItem.offset();
+                linker = $("#osci_figure_linker");
+                
+                if (linker.length === 0) {
+                    linker = $("<div>", {
+                        id : "osci_figure_linker",
+                        html : "<a href=\"#\" class=\"prev\" title=\"Previous Reference\">&lt;</a><a href=\"#\" class=\"next\" title=\"Next Reference\">&gt;</a><a href=\"#\" class=\"close\" title=\"Close Reference Navigator\">x</a>"
+                    }).delegate("a", "click", function(e) {
+                        e.preventDefault();
+                        var $this = $(this),
+                            linkToOccur = 1,
+                            container = $this.parent(),
+                            occurences = parseInt(container.data("occurences"), 10),
+                            currentOccur = parseInt(container.data("occurence"), 10),
+                            selector = $this.attr("href");
+                        
+                        if ($this.hasClass("close")) {
+                            container.remove();
+                            return;
+                        }
+                        
+                        if ($this.hasClass("next")) {
+                            if (currentOccur != occurences) {
+                                linkToOccur = ++currentOccur;
+                            }
+                        } else {
+                            if (currentOccur == 1) {
+                                linkToOccur = occurences;
+                            } else {
+                                linkToOccur = --currentOccur;
+                            }
+                        }
+                        
+                        container.data("occurence", linkToOccur);
+                        findAndGotoElement(selector, linkToOccur)
+                    }).appendTo("#osci_viewer");
+                }
+                
+                nextLink = linker.find("a.next").show().attr("href", selector);
+                prevLink = linker.find("a.prev").show().attr("href", selector);
+                
+                if (validItemOccur === occurences) {
+                    nextLink.hide();
+                }
+                
+                if (validItemOccur === 1) {
+                    prevLink.hide();
+                }
+
+                linker.css({
+                    position : "absolute",
+                    top : pos.top + "px",
+                    left : pos.left + "px"
+                }).data({occurence : validItemOccur, occurences : occurences});
+            }
         }
     }
     
@@ -252,7 +332,7 @@
                                         e.preventDefault();
                                         var id = $("img", $(this).parent()).data("figure_id");
                                         
-                                        $("a[href='#" + id + "']").each(findAndGotoElement);
+                                        findAndGotoElement("a[href='#" + id + "']");
 
                                         $("#osci_more_wrapper").trigger({
                                             type : "osci_more_toggle",
@@ -314,7 +394,7 @@
             e.preventDefault();
             var id = $(this).parent().attr("id");
             
-            $("a[href='#" + id + "']").each(findAndGotoElement);
+            findAndGotoElement("a[href='#" + id + "']");
 
             $("#osci_more_wrapper").trigger({
                 type : "osci_more_toggle",

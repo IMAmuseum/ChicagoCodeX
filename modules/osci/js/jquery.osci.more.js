@@ -23,7 +23,7 @@
             base.$el.bind({
                 "osci_more_toggle" : function(e){
                     var $this = $(this);
-    
+
                     if (($this.hasClass("open") && !e.osci_more_open) || e.osci_more_close) {
                         if (base.options.moreToggleCallback !== undefined) {
                             base.options.moreToggleCallback($this, "close");

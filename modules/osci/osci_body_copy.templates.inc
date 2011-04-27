@@ -4,6 +4,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $figure = $vars['figure'];
     $node = node_load($figure['figure_reference']);
     node_build_content($node);
+
     $data = array(
     	'position' => $figure['position'],
     	'columns' => $figure['columns'],
@@ -11,7 +12,8 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         'vertical_position' => substr($figure['position'], 0, 1),
         'horizontal_position' => strlen($figure['position']) > 1 ? substr($figure['position'], 1, 1) : "na",
         'figure_type' => $node->type,
-    	'options' => htmlspecialchars($figure['figure_options'])
+    	'options' => htmlspecialchars($figure['figure_options']),
+        'occurences' => $figure['figOccurences']
     );
     // store the options as they are, then strip out the url since it's
     // only needed on the thumbnail
