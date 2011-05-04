@@ -3,12 +3,11 @@
 	$.fn.highlight = function(options) { 
 		var settings = $.extend({
 			wrapperElement: 'span',
-			wrapperClass: 'highlight',
+			wrapperClass: 'highlight-temp',
             eventListen: 'mouseup',
             eventTarget: this,
-            onSelect: function() {},
+            onSelection: function() {},
             onEmptySelection: function() { return false; },
-            onSuccess: function() {} 
 		}, options);
 		
 		// Listen for mouse up event, capture text, and highlight it
@@ -53,7 +52,7 @@
 		        });
 		    }
 
-            settings.onSuccess(this);
+            settings.onSelection(this);
 	    });
 	    
 	    // Get selected text and return the selection range object

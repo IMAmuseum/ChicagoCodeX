@@ -151,29 +151,16 @@
                 );
 
                 /**
-                 * Handle selection dialog
+                 * Handle text highlighting
                  */
                 $('#osci_viewer .osci_paragraph').highlight({
-                    onSuccess: function(obj) {
+                    onSelection: function(obj) {
                         $.osci.note.toolbar.appendTo(obj);
                     },
                     onEmptySelection: function() {
-                        $.osci.note.toolbar = $('ul.selection-toolbar').detach();
+                        $.osci.note.toolbar.detach();
                     }
                 });
-
-                /* replace with highlight plugin
-                $('#osci_viewer .osci_paragraph').mouseup(function() {
-                    $.osci.note.selection = base.getSelected();
-                    $.osci.note.activeParagraph = $(this);
-                    $.osci.note.toolbar.detach();
-
-                    if ($.osci.note.selection === '') return; 
-
-                    $.osci.note.toolbar.appendTo(this);
-
-                });
-                */
 
                 /*************************************
                  * handle note dialog
