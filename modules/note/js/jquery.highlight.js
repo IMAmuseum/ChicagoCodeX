@@ -10,9 +10,11 @@
             onEmptySelection: function() { return false; },
 		}, options);
 		
+		var selectionRange = false;
+		
 		// Listen for mouse up event, capture text, and highlight it
 	    $(settings.eventTarget).bind(settings.eventListen, function() {
-	        var selectionRange = getSelected();
+	        selectionRange = getSelected();
             if (!selectionRange) return settings.onEmptySelection();
 	        var parentNode = selectionRange.commonAncestorContainer;
 	        var foundStart = false;

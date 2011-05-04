@@ -7,10 +7,21 @@
     $.osci.note = function(options)
     {
         var base = this.note;
-        var selection = '';
         var activeParagraph = 0;
         var toolbar = {};
-
+        
+        /**
+         * Handle text highlighting
+         */
+        base.selection = $('#osci_viewer .osci_paragraph').highlight({
+            onSelection: function(obj) {
+                $.osci.note.toolbar.appendTo(obj);
+            },
+            onEmptySelection: function() {
+                $.osci.note.toolbar.detach();
+            }
+        });
+        
         base.init = function()
         {
             base.options = $.extend({}, $.osci.note.defaultOptions, options);
@@ -82,6 +93,8 @@
                     //TODO this section should happen in the success callback of the highlight
                     e.preventDefault();
 
+                    $('.highlight-temp').addClass('highlight');
+                    $('.highlight-temp').removeClass('highlight-temp');
 /****************************************
                     var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
                     var data = {
@@ -150,17 +163,7 @@
                     }
                 );
 
-                /**
-                 * Handle text highlighting
-                 */
-                $('#osci_viewer .osci_paragraph').highlight({
-                    onSelection: function(obj) {
-                        $.osci.note.toolbar.appendTo(obj);
-                    },
-                    onEmptySelection: function() {
-                        $.osci.note.toolbar.detach();
-                    }
-                });
+                
 
                 /*************************************
                  * handle note dialog
