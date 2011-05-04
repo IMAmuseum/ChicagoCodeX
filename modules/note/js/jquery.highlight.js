@@ -6,12 +6,15 @@
 			wrapperClass: 'highlight',
             eventListen: 'mouseup',
             eventTarget: this,
-            success: function() {} 
+            onSelect: function() {},
+            onEmptySelection: function() { return false; },
+            onSuccess: function() {} 
 		}, options);
 		
 		// Listen for mouse up event, capture text, and highlight it
 	    $(settings.eventTarget).bind(settings.eventListen, function() {
 	        var selectionRange = getSelected();
+            if (!selectionRange) return settings.onEmptySelection();
 	        var parentNode = selectionRange.commonAncestorContainer;
 	        var foundStart = false;
 	        var foundEnd = false;
@@ -50,7 +53,7 @@
 		        });
 		    }
 
-            settings.success(this);
+            settings.onSuccess(this);
 	    });
 	    
 	    // Get selected text and return the selection range object
@@ -60,6 +63,8 @@
 	        } else { // IE
 	            var selection = document.selection && document.selection.createRange();
 	        }
+
+            if (selection.toString() == '') return false;
 	        
 	        if (selection.getRangeAt)
 	            var range = selection.getRangeAt(0);

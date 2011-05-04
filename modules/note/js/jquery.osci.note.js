@@ -82,6 +82,7 @@
                     //TODO this section should happen in the success callback of the highlight
                     e.preventDefault();
 
+/****************************************
                     var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
                     var data = {
                         original_text:      $.osci.note.selection,
@@ -90,6 +91,7 @@
                         letter_count:       data.start,
                         paragraph_count:    $.osci.note.activeParagraph.data('paragraph_id'),
                     }
+**************************/
 
                     $.ajax({
                         type: 'post',
@@ -109,6 +111,7 @@
                     var id = $(modal).find('form').attr('id');
                     switch(id) {
                         case 'note-form':
+/*i*********************
                             var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
                             var wordCount = $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length;
 
@@ -117,6 +120,7 @@
                             $("input[name='word_count']").val(wordCount);
                             $("input[name='letter_count']").val(data.start);
                             $("input[name='paragraph_count']").val($.osci.note.activeParagraph.data('paragraph_id'));
+************************/
                             break;
                         case 'citation-form':
                             //$('#edit-citation-text').html($.osci.note.selection);
@@ -149,13 +153,16 @@
                 /**
                  * Handle selection dialog
                  */
-/*
                 $('#osci_viewer .osci_paragraph').highlight({
-                    success: function(obj) {
+                    onSuccess: function(obj) {
                         $.osci.note.toolbar.appendTo(obj);
+                    },
+                    onEmptySelection: function() {
+                        $.osci.note.toolbar = $('ul.selection-toolbar').detach();
                     }
                 });
-*/
+
+                /* replace with highlight plugin
                 $('#osci_viewer .osci_paragraph').mouseup(function() {
                     $.osci.note.selection = base.getSelected();
                     $.osci.note.activeParagraph = $(this);
@@ -166,6 +173,7 @@
                     $.osci.note.toolbar.appendTo(this);
 
                 });
+                */
 
                 /*************************************
                  * handle note dialog
@@ -210,11 +218,12 @@
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
-                    base.processNotes(data);
+                    ////////////////base.processNotes(data);
                 } 
             });
         }
 
+/******************************************
         base.processNotes = function(data) {
             if (data == null) return;
 
@@ -256,7 +265,6 @@
             return data;
         }
 
-        /* attempt to find a text selection */ 
         base.getSelected = function() { 
             var selection = false;
             if (window.getSelection) { 
@@ -286,6 +294,7 @@
                 return div.innerHTML;
             }
         }
+****************************/
 
         base.init();
     };
