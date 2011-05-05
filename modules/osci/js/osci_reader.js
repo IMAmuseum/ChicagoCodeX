@@ -134,6 +134,10 @@
                 $("#osci_loading").remove();
                 
                 var figureImages = $("figure.image", "#osci_pages");
+                // Prevents fancybox from closing the tray
+                $('.figureContent > a').click(function(e) {
+                    e.stopPropagation();
+                });
 
                 figureImages.bind("osci_figure_fullscreen", function(e) {
                     $('.figureContent > a', this).click();
