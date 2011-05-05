@@ -9,18 +9,7 @@
         var base = this.note;
         var activeParagraph = 0;
         var toolbar = {};
-        
-        /**
-         * Handle text highlighting
-         */
-        base.selection = $('#osci_viewer .osci_paragraph').highlight({
-            onSelection: function(obj) {
-                $.osci.note.toolbar.appendTo(obj);
-            },
-            onEmptySelection: function() {
-                $.osci.note.toolbar.detach();
-            }
-        });
+        var selection = '';
         
         base.init = function()
         {
@@ -33,6 +22,55 @@
             $.template('noteLink', noteLinkMarkup);
 
             $(document).bind("osci_layout_complete", function(e) {
+
+                /**
+                * Handle text highlighting
+                */
+        
+                base.selection = $('#osci_viewer .osci_paragraph').highlight({
+                    onSelection: function(obj, e, selectionRange, selection) {
+                        $.osci.note.toolbar.appendTo($('body'));
+                        $.osci.note.selection = selection;
+                        var left    = e.clientX - ($.osci.note.toolbar.outerWidth() / 2);
+                        var top     = e.clientY - $.osci.note.toolbar.outerHeight() - parseInt($('.osci_paragraph').css('lineHeight'));
+                        $.osci.note.toolbar.css('left', left);
+                        $.osci.note.toolbar.css('top', top); 
+
+                        $('a.note-highlight').click(function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            var properties = {
+                                startContainer: selectionRange.startContainer.outerHTML,
+                                startOffset: selectionRange.startOffset,
+                                endContainer: selectionRange.endContainer.outerHTML,
+                                endOffset: selectionRange.endOffset,
+                            };
+
+                            $.ajax({
+                                type: 'post',
+                                dataType: 'json',
+                                url: base.options.noteSaveCallback,
+                                data: properties,
+                                success: function(data) {
+                                    $('.highlight-temp').addClass('highlight');
+                                    $('.highlight-temp').removeClass('highlight-temp');
+                                    //base.processNotes(data);
+                                }
+                            });
+                        });
+
+                        // Cleanup Toolbar
+                        $('ul.selection-toolbar a').click(function() {
+                            $.osci.note.toolbar.detach();
+                        });
+
+                    },
+                    onEmptySelection: function() {
+                        $.osci.note.toolbar.detach();
+                    }
+                });
+
 
                 base.addNotes();
 
@@ -57,9 +95,7 @@
                     var onid = $(this).data('onid');
                     if (e.type == 'mouseenter') {
                         $('span#span-note-' + onid).addClass('highlight-note');
-
                     } else {
-
                         $('span#span-note-' + onid).removeClass('highlight-note');
                     }
                 });
@@ -80,42 +116,8 @@
                     */
                 });
 
-                /*************************************************
-                 * Dialog interaction
-                 */
-
+                // Hide toolbar on load
                 $.osci.note.toolbar = $('ul.selection-toolbar').detach();
-
-                /**
-                 * Save a highlight
-                 */
-                $('a.note-highlight').live('click', function(e) {
-                    //TODO this section should happen in the success callback of the highlight
-                    e.preventDefault();
-
-                    $('.highlight-temp').addClass('highlight');
-                    $('.highlight-temp').removeClass('highlight-temp');
-/****************************************
-                    var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
-                    var data = {
-                        original_text:      $.osci.note.selection,
-                        nid:                Drupal.settings.osci.nid,
-                        word_count:         $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length,
-                        letter_count:       data.start,
-                        paragraph_count:    $.osci.note.activeParagraph.data('paragraph_id'),
-                    }
-**************************/
-
-                    $.ajax({
-                        type: 'post',
-                        dataType: 'json',
-                        url: base.options.noteSaveCallback,
-                        data: data,
-                        success: function(data) {
-                            base.processNotes(data);
-                        } 
-                    });
-                });
 
                 /**
                  * Update form fields when submitting a note
@@ -124,20 +126,12 @@
                     var id = $(modal).find('form').attr('id');
                     switch(id) {
                         case 'note-form':
-/*i*********************
-                            var data = base.getSelectionData($.osci.note.activeParagraph, $.osci.note.selection);
-                            var wordCount = $.osci.note.activeParagraph.html().substring(0, data.start).split(' ').length;
-
-                            $("input[name='original_text']").val($.osci.note.selection);
                             $("input[name='nid']").val(Drupal.settings.osci.nid);
-                            $("input[name='word_count']").val(wordCount);
-                            $("input[name='letter_count']").val(data.start);
-                            $("input[name='paragraph_count']").val($.osci.note.activeParagraph.data('paragraph_id'));
-************************/
+                            //$("input[name='original_text']").val($.osci.note.selection);
                             break;
                         case 'citation-form':
                             //$('#edit-citation-text').html($.osci.note.selection);
-                            //$('#edit-citation-url').val(window.location);
+                            $('#edit-citation-url').val(window.location);
                             $('#edit-citation-text, #edit-citation-url').click(function(e) {
                                 e.preventDefault();
                                 $(this).select();

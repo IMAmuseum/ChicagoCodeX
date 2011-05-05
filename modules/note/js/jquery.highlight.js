@@ -13,8 +13,9 @@
 		var selectionRange = false;
 		
 		// Listen for mouse up event, capture text, and highlight it
-	    $(settings.eventTarget).bind(settings.eventListen, function() {
-	        selectionRange = getSelected();
+	    $(settings.eventTarget).bind(settings.eventListen, function(e) {
+	        selection = getSelected();
+            selectionRange = getRange(selection);
             if (!selectionRange) return settings.onEmptySelection();
 	        var parentNode = selectionRange.commonAncestorContainer;
 	        var foundStart = false;
@@ -54,7 +55,7 @@
 		        });
 		    }
 
-            settings.onSelection(this);
+            settings.onSelection(this, e, selectionRange, selection.toString());
 	    });
 	    
 	    // Get selected text and return the selection range object
@@ -65,8 +66,17 @@
 	            var selection = document.selection && document.selection.createRange();
 	        }
 
-            if (selection.toString() == '') return false;
+            if (selection.toString() == '') {
+                $('.highlight-temp').each(function() {
+                    $(this).replaceWith($(this).html());
+                });
+                return false;
+            }
 	        
+            return selection;   
+        }
+
+        var getRange = function(selection) {
 	        if (selection.getRangeAt)
 	            var range = selection.getRangeAt(0);
 	        else { // Safari!
@@ -74,7 +84,6 @@
 	            range.setStart(selection.anchorNode,selection.anchorOffset);
 	            range.setEnd(selection.focusNode,selection.focusOffset);
 	        }
-
 	        return range;
 	    }
 	    

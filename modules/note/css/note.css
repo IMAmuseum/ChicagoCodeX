@@ -2,6 +2,10 @@
     background-color: #FFCC33 !important;
 }
 
+.highlight-temp { 
+    background-color: #ccc;
+}
+
 span.highlight {
     position: relative;
 }

@@ -28,7 +28,7 @@ function note_ajax_add() {
 }
 
 function note_ajax_save($onid = null) {
-    note_save($_POST);
+    //note_save($_POST);
     $node = node_load($_POST['nid']); 
 
     return drupal_json_output(user_notes($node));
