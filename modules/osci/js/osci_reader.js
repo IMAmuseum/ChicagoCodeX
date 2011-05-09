@@ -333,6 +333,15 @@
                         //Add footnotes to the more bar
                         more.add_content("footnotes", $(".footnote", footnotes), true, 1);
                         
+                        //Remove plate image thumbnail
+                        figures = figures.filter(function(){
+                            if ($(this).data("figure_id") == "osci_plate_fig") {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        });
+                        
                         //Add figures to the more bar
                         more.add_content("figures", figures, true, undefined, function(tab){
                             $(".figureThumbnail", tab).each(function(i, elem){
