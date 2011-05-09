@@ -6,6 +6,7 @@
 			wrapperClass: 'highlight-temp',
             eventListen: 'mouseup',
             eventTarget: this,
+            parentNode: 'p',
             onSelection: function() {},
             onEmptySelection: function() { return false; },
 		}, options);
@@ -14,48 +15,54 @@
 		
 		// Listen for mouse up event, capture text, and highlight it
 	    $(settings.eventTarget).bind(settings.eventListen, function(e) {
-	        selection = getSelected();
-            selectionRange = getRange(selection);
+	        var selectionRange = getSelected();
             if (!selectionRange) return settings.onEmptySelection();
-	        var parentNode = selectionRange.commonAncestorContainer;
-	        var foundStart = false;
-	        var foundEnd = false;
 
-	        /* 
-	         * A single node will have itself as the common ancestor.
-	         */
-	        if (parentNode.isSameNode(selectionRange.startContainer)) {
-		       	processTxtNode(parentNode, 'node', selectionRange.startOffset, selectionRange.endOffset);
-            /* 
-             * Multiple nodes have been selected
-             */
-		    } else { 
-		        $(parentNode).contents().each(function() {
-		            // Text Nodes
-		            if (selectionRange.startContainer.isSameNode(this) && !foundStart) {
-		            	processTxtNode(this, 'start', selectionRange.startOffset);
-		                foundStart = true;
-		            } else if (selectionRange.endContainer.isSameNode(this) && !foundEnd) {
-		            	processTxtNode(this, 'end', selectionRange.endOffset);
-		                foundEnd = true;
-		            } else if (this.nodeType == 3 && foundStart == true && foundEnd !== true) {
-		            	processTxtNode(this, 'middle');
-		            }
-	
-		            // HTML Nodes
-		            if (selectionRange.startContainer.parentElement.isSameNode(this) && !foundStart) {
-		            	processHtmlNode(this, 'start', selectionRange.startOffset)
-		                foundStart = true;
-		            } else if (selectionRange.endContainer.parentElement.isSameNode(this) && !foundEnd) {
-		            	processHtmlNode(this, 'end', selectionRange.endOffset);
-		                foundEnd = true;
-		            } else if (this.nodeType == 1 && foundStart == true && foundEnd !== true) {
-		            	processHtmlNode(this, 'middle');
-		            }
-		        });
-		    }
+            var parentNode  = $(selectionRange.startContainer).parents(settings.parentNode)[0];
+            var properties  = {
+                selection:      selectionRange.toString(),
+                startNode:      selectionRange.startContainer.nodeValue,
+                startOffset:    selectionRange.startOffset,
+                endNode:        selectionRange.endContainer.nodeValue,
+                endOffset:      selectionRange.endOffset,
+                parentOffset:   parentNode.innerText.indexOf(selectionRange.startContainer.nodeValue),
+                paragraphId:    $(parentNode).data('paragraph_id')
+            }
 
-            settings.onSelection(this, e, selectionRange, selection.toString());
+            var processNode = false;
+
+            $(parentNode).contents().each(function() {
+                if ($(this).text() == '') return;
+
+                var isStartNode = properties.startNode.indexOf($(this).text());
+                var isEndNode   = properties.endNode.indexOf($(this).text());
+                var startOffset = 0;
+                var endOffset   = $(this).text().length;
+
+                // Find the start node
+                if (isStartNode == 0) {
+                    startOffset = properties.startOffset;
+                    processNode = true;
+                }
+
+                // Find the end node
+                if (isEndNode == 0) {
+                    endOffset = properties.endOffset;
+                    var foundEnd = true;
+                }
+
+                if (this.nodeType == 1 && processNode === true) { // HTML
+                    processHtmlNode(this, startOffset, endOffset);
+                } else if (this.nodeType == 3 && processNode === true) { // Text
+                    processTxtNode(this, startOffset, endOffset);
+                }
+
+                if (foundEnd === true) processNode = false; 
+                
+            });
+console.log(processNode);
+
+            settings.onSelection(this, e, properties);
 	    });
 	    
 	    // Get selected text and return the selection range object
@@ -73,10 +80,6 @@
                 return false;
             }
 	        
-            return selection;   
-        }
-
-        var getRange = function(selection) {
 	        if (selection.getRangeAt)
 	            var range = selection.getRangeAt(0);
 	        else { // Safari!
@@ -88,64 +91,25 @@
 	    }
 	    
 	    // Process a text node with a wrapper
-	    var processTxtNode = function(textNode, position, offset, offset2) {
+	    var processTxtNode = function(textNode, startOffset, endOffset) {
 
-	    	switch(position) {
-	    		case 'start':
-	    			var preText = document.createTextNode(textNode.nodeValue.substring(0, offset));
-                    var wrapper = wrapTxt(document.createTextNode(textNode.nodeValue.substring(offset, textNode.length)));
-
-	    			textNode.parentNode.insertBefore(preText, textNode);
-	    	        textNode.parentNode.replaceChild(wrapper, textNode);
-	    			break;
-	    		case 'middle':
-                    var wrapper = wrapTxt(document.createTextNode(textNode.nodeValue));
-
-	    	        textNode.parentNode.replaceChild(wrapper, textNode);
-	    			break;
-	    		case 'end':
-                    var wrapper     = wrapTxt(document.createTextNode(textNode.nodeValue.substring(0, offset)));
-	    			var postText    = document.createTextNode(textNode.nodeValue.substring(offset, textNode.length));
-
-	    			textNode.parentNode.insertBefore(wrapper, textNode);
-	    	        textNode.parentNode.replaceChild(postText, textNode);
-	    			break;
-                case 'node':
-                    var wrapper     = wrapTxt(document.createTextNode(textNode.nodeValue.substring(offset, offset2)));
-                    var preText     = document.createTextNode(textNode.nodeValue.substring(0, offset));
-                    var postText    = document.createTextNode(textNode.nodeValue.substring(offset2, textNode.length));
-                    var newText     = document.createDocumentFragment();
-                    newText.appendChild(preText);
-                    newText.appendChild(wrapper);
-                    newText.appendChild(postText);
-                    textNode.parentNode.replaceChild(newText, textNode);
-                    break;
-	    	}
-	    	
+	    	var preText     = document.createTextNode(textNode.nodeValue.substring(0, startOffset));
+            var wrapper     = wrapTxt(document.createTextNode(textNode.nodeValue.substring(startOffset, endOffset)));
+            var postText    = document.createTextNode(textNode.nodeValue.substring(endOffset, textNode.length));
+            var newText     = document.createDocumentFragment();
+            newText.appendChild(preText);
+            newText.appendChild(wrapper);
+            newText.appendChild(postText);
+            textNode.parentNode.replaceChild(newText, textNode);
 	    }
 
 	    // Process html node with a wrapper
-	    var processHtmlNode = function(htmlNode, position, offset) {
-	    	switch(position) {
-	    		case 'start':
-	    			var preHtml = htmlNode.innerHTML.substring(0, offset);
-                    var wrapper = wrapHtml(htmlNode.innerHTML.substring(offset, htmlNode.innerHTML.length));
-	    			htmlNode.innerHTML = preHtml; 
-                    htmlNode.appendChild(wrapper);
-	    			break;
-	    		case 'middle':
-                    var wrapper = wrapHtml(htmlNode.innerHTML);
-                    htmlNode.innerHTML = '';
-                    htmlNode.appendChild(wrapper);
-	    			break;
-	    		case 'end':
-	                var postHtml = htmlNode.innerHTML.substring(offset, htmlNode.innerHTML.length);
-                    var wrapper = wrapHtml(htmlNode.innerHTML.substring(0, offset));
-                    htmlNode.innerHTML = '';
-                    htmlNode.insertBefore(wrapper);
-                    htmlNode.innerHTML += postHtml;
-	    			break;
-	    	}
+	    var processHtmlNode = function(htmlNode, startOffset, endOffset) {
+                var preHtml         = htmlNode.innerHTML.substring(0, startOffset);
+	    		var wrapHtmlTxt     = htmlNode.innerHTML.substring(startOffset, endOffset);
+                var postHtml        = htmlNode.innerHTML.substring(endOffset, htmlNode.innerHTML.length); 
+                wrapHtmlTxt         = wrapHtml(wrapHtmlTxt);
+                htmlNode.innerHTML  = preHtml + wrapHtmlTxt.outerHTML + postHtml; 
 	    }
     
         var wrapTxt = function(txt) {

@@ -28,25 +28,19 @@
                 */
         
                 base.selection = $('#osci_viewer .osci_paragraph').highlight({
-                    onSelection: function(obj, e, selectionRange, selection) {
+                    onSelection: function(obj, e, selectionRange) {
                         $.osci.note.toolbar.appendTo($('body'));
-                        $.osci.note.selection = selection;
                         var left    = e.clientX - ($.osci.note.toolbar.outerWidth() / 2);
                         var top     = e.clientY - $.osci.note.toolbar.outerHeight() - parseInt($('.osci_paragraph').css('lineHeight'));
                         $.osci.note.toolbar.css('left', left);
                         $.osci.note.toolbar.css('top', top); 
 
+                        $('a.note-highlight').unbind('click');
                         $('a.note-highlight').click(function(e) {
                             e.preventDefault();
                             e.stopPropagation();
 
-                            var properties = {
-                                startContainer: selectionRange.startContainer.outerHTML,
-                                startOffset: selectionRange.startOffset,
-                                endContainer: selectionRange.endContainer.outerHTML,
-                                endOffset: selectionRange.endOffset,
-                            };
-
+/*
                             $.ajax({
                                 type: 'post',
                                 dataType: 'json',
@@ -58,6 +52,7 @@
                                     //base.processNotes(data);
                                 }
                             });
+*/
                         });
 
                         // Cleanup Toolbar
