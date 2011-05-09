@@ -41,6 +41,14 @@ function osci_filters_filter_info() {
         'settings callback' => '_filter_settings',
         'tips callback'     => '_filter_figure_tips',
     );
+    
+    $filters['osci_cross_link'] = array(
+        'title'             => t('Cross Link filter'),
+        'description'       => t('Allow cross content linking within a book'),
+        'process callback'  => '_filter_cross_link',
+        'settings callback' => '_filter_settings',
+        'tips callback'     => '_filter_cross_link_tips'
+    );
 
     return $filters;
 }
@@ -174,4 +182,53 @@ function _process_args($text) {
     }
 
     return $data;
+}
+
+/***********************************************************************
+ *
+ * Cross linking
+ *
+ */
+
+/**
+ * Process callback for filter
+ */
+function _filter_cross_link($text, $filter, $format) {
+    $regex = '/\[link:(.*?)\]/i';
+    return preg_replace_callback($regex, '_process_cross_link', $text);
+}
+
+/**
+ * Regex replace callback
+ */
+function _process_cross_link($text) {
+    if (empty($text[1])) return $text[0];
+    $args = _process_args($text[1]);
+
+    $nid = $args['id'];
+    $url = url("node/{$nid}/reader");
+    $linkText = isset($args['args']['text']) ? $args['args']['text'] : "Link " . $nid;
+    
+    $query = "";
+    if (isset($args['args']['paragraph'])) {
+        $query = "#p-" . $args['args']['paragraph'];
+    }
+    
+    if (isset($args['args']['section'])) {
+        $query = '#field_' . $args['args']['section'] . '_anchor';
+    }
+    
+    if ($query) {
+        $url = url("node/{$nid}/reader", array('fragment' => substr($query, 1)));
+        $query = "data-query=\"$query\"";
+    }
+
+    return "<a href=\"{$url}\" class=\"cross-link\" data-nid=\"{$nid}\" {$query}>{$linkText}</a>";
+}
+
+/**
+ * Tooltip funcion
+ */
+function _filter_cross_link_tips() {
+    return t('Insert a Link with [link:Node ID]');
 }

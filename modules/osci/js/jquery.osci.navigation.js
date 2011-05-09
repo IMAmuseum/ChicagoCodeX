@@ -99,7 +99,7 @@
         };   
         
         //wrapper for the content loading function
-        base.loadContent = function(updateHistory)
+        base.loadContent = function(updateHistory, navAfterLoadTo, navAfterLoadValue)
         {
         	//check if user defined load function is a function and call it
             if ($.isFunction($.osci.navigation.options.loadFunction)) {
@@ -109,6 +109,10 @@
             //update the browser history
             if (updateHistory) {
                 $.osci.navigation.updateHistory($.osci.navigation.data.nid);
+            }
+            
+            if (!(navAfterLoadTo === undefined) && !(navAfterLoadValue === undefined)) {
+                base.navigateTo(navAfterLoadTo, navAfterLoadValue);
             }
         };
         
@@ -320,20 +324,27 @@
                     break;
                 //go to a specific node
                 case "node":
-                    if (value.indexOf("#")) {
+                    if (!(!isNaN(parseFloat(value)) && isFinite(value)) && value.indexOf("#")) {
                         value = value.split("#");
                         identifier = "#" + value[1];
                         value = parseInt(value[0], 10);
                     }
                     
                     if (base.data.nid !== value) {
+                        //handle special paragraph selector
+                        if (identifier.indexOf("#p-") >= 0) {
+                            identifier = "p.osci_paragraph_" + identifier.split("-")[1] + ":first";
+                        }
+                        
                         base.data.nid = value;
+                        base.data.to = {operation : "selector", value : identifier};
                         base.loadContent(true);
+                    } else {
+                        if (identifier !== undefined) {
+                            base.navigateTo("selector", identifier);
+                        }
                     }
 
-                    if (identifier !== undefined) {
-                        base.navigateTo("selector", identifier);
-                    }
                     return;
                     break;
             }
@@ -526,7 +537,7 @@
                         return;
                     }
 
-                    if (isExpander || !expander.hasClass("expanded")) {
+                    if (expander.length && (isExpander || !expander.hasClass("expanded"))) {
                         checkElement = expander.siblings("ul");
     
                         parent.find("ul").slideUp("normal");

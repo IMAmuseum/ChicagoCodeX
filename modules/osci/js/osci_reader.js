@@ -313,20 +313,28 @@
             },
             loadFunction : function (navData)
             {
-                var footnotes, data, more,
-                    endpoint = Drupal.settings.osci_navigation.content_endpoint.replace("{$nid}", navData.nid);
+                var endpoint = Drupal.settings.osci_navigation.content_endpoint.replace("{$nid}", navData.nid);
                 
+                //Get the data
                 $.osci.storage.getUrl({
                     url :  endpoint,
                     expire : Drupal.settings.osci_navigation.cache_time,
                     callback : function(content) {
-                    	data = $(content.data);
-                        footnotes = data.find("#field_osci_footnotes").remove();
-
-                        more = $("#osci_more_wrapper").data("osci.more");
+                        var data = $(content.data),
+                            footnotes = data.find("#field_osci_footnotes").remove(),
+                            figures = data.find("#field_osci_figures").find(".figureThumbnail").remove(),
+                            more = $("#osci_more_wrapper").data("osci.more");
+                        
+                        //Do the layout
+                        $("#" + Drupal.settings.osci_navigation.reader_id).osci_layout(data, {
+                            cacheId : navData.nid
+                        });
+                        
+                        //Add footnotes to the more bar
                         more.add_content("footnotes", $(".footnote", footnotes), true, 1);
                         
-                        more.add_content("figures", data.find("#field_osci_figures").find(".figureThumbnail").remove(), true, undefined, function(tab){
+                        //Add figures to the more bar
+                        more.add_content("figures", figures, true, undefined, function(tab){
                             $(".figureThumbnail", tab).each(function(i, elem){
                                 var $elem = $(elem);
                                 $("<a>", {
@@ -372,13 +380,27 @@
                                 }).appendTo($elem);
                             });
                         });
-                        
-                        $("#" + Drupal.settings.osci_navigation.reader_id).osci_layout(data, {
-                            cacheId : navData.nid
-                        });
                     }
                 });
             }
+        });
+        
+        //make cross linking work
+        $("a.cross-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
+            e.preventDefault();
+            var $this = $(this),
+                query = $this.data("query"),
+                link = $this.data("nid");
+
+            if (query.length > 0) {
+                link += query;
+            }
+            
+            $(document).trigger({
+                type : "osci_navigation",
+                osci_to : "node",
+                osci_value : link
+            });
         });
         
         //make footnotes link to footnote text in more bar
