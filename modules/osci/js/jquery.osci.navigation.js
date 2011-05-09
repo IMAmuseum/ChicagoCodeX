@@ -656,6 +656,7 @@
 
             tocItem = $("<li>", {
                 id : "osci_toc_node_" + id,
+                "class" : node.field,
                 data : node
             }).append(
                 $("<a>", {
