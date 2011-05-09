@@ -307,7 +307,7 @@ function osci_body_copy_render_layout($nid)
             if (count($paragraphs)) {
                 foreach($paragraphs as $p) {
                     $paragraphCount++;
-                    $p->innertext = "<span class=\"osci_paragraph_identifier osci_paragraph_{$paragraphCount}\">{$paragraphCount}</span>" . $p->innertext();
+                    $p->innertext = "<span class=\"osci_paragraph_identifier osci_paragraph_{$paragraphCount}\" data-paragraph_id=\"{$paragraphCount}\">{$paragraphCount}</span>" . $p->innertext();
                     $newClass = $p->class ? $p->class . ' ' : '';
                     $p->class = $newClass . "osci_paragraph_{$paragraphCount} osci_paragraph";
                     $p->setAttribute("data-paragraph_id", $paragraphCount);
