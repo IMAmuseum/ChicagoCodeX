@@ -34,30 +34,30 @@ function note_schema() {
                 'description'   => 'The original text to cite',
                 'type'          => 'text',
             ),
-            'startOffset' => array(
+            'start_offset' => array(
                 'description'   => 'The number of letters into the start node',
                 'type'          => 'int',
                 'default'       => 0,
             ),
-            'startNode' => array(
+            'start_node' => array(
                 'description'   => 'The beginning node of the selection',
                 'type'          => 'text',
             ),
-            'endOffset' => array(
+            'end_offset' => array(
                 'description'   => 'The number of letters into the end node',
                 'type'          => 'int',
                 'default'       => 0,
             ),
-            'endNode' => array(
+            'end_node' => array(
                 'description'   => 'the ending node of the selection',
                 'type'          => 'text',
             ),
-            'parentOffset' => array(
+            'parent_offset' => array(
                 'description'   => 'The number of characters into the parent node',
                 'type'          => 'int',
                 'default'       => 0,
             ),
-            'paragraphId' => array(
+            'paragraph_id' => array(
                 'description'   => 'ID of the paragraph to highlight in',
                 'type'          => 'int',
                 'default'       => 0,
