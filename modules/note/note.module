@@ -257,7 +257,7 @@ function note_form($form, &$form_state) {
         '#value' => $user->uid,
     );
 
-    $form['original_text'] = array(
+    $form['selection'] = array(
         '#type'  => 'hidden',
     );
 
@@ -265,16 +265,28 @@ function note_form($form, &$form_state) {
         '#type'  => 'hidden',
     );
 
-    $form['word_count'] = array(
+    $form['end_node'] = array(
         '#type'  => 'hidden',
     );
 
-    $form['letter_count'] = array(
+    $form['end_offset'] = array(
         '#type'  => 'hidden',
     );
 
-    $form['paragraph_count'] = array(
+    $form['paragraph_id'] = array(
         '#type'  => 'hidden',
+    );
+
+    $form['parent_offset'] = array(
+        '#type'  => 'hidden',
+    );
+
+    $form['start_node'] = array(
+        '#type' => 'hidden',
+    );
+
+    $form['start_offset'] = array(
+        '#type' => 'hidden',
     );
 
     $form['submit'] = array(

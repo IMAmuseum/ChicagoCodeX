@@ -1,15 +1,7 @@
 (function ($) {
 
 	$.fn.highlight = function(options) { 
-		var settings = $.extend({
-			wrapperElement: 'span',
-			wrapperClass: 'highlight-temp',
-            eventListen: 'mouseup',
-            eventTarget: this,
-            parentNode: 'p',
-            onSelection: function() {},
-            onEmptySelection: function() { return false; },
-		}, options);
+		var settings = $.extend($.highlighter.settings, options);
 		
 		var selectionRange = false;
 		
@@ -21,21 +13,21 @@
             var parentNode  = $(selectionRange.startContainer).parents(settings.parentNode)[0];
             var properties  = {
                 selection:      selectionRange.toString(),
-                startNode:      selectionRange.startContainer.nodeValue,
-                startOffset:    selectionRange.startOffset,
-                endNode:        selectionRange.endContainer.nodeValue,
-                endOffset:      selectionRange.endOffset,
-                parentOffset:   parentNode.innerText.indexOf(selectionRange.startContainer.nodeValue),
-                paragraphId:    $(parentNode).data('paragraph_id')
+                start_node:      selectionRange.startContainer.nodeValue,
+                start_offset:    selectionRange.startOffset,
+                end_node:        selectionRange.endContainer.nodeValue,
+                end_offset:      selectionRange.endOffset,
+                parent_offset:   parentNode.innerText.indexOf(selectionRange.startContainer.nodeValue),
+                paragraph_id:    $(parentNode).data('paragraph_id')
             }
 
-            highlighting = $.highlighter.highlightNode(parentNode, properties);
+            highlighting = $.highlighter.highlight(parentNode, properties);
 
-            // TODO: crashes browser when highlighting heading
+            /*// TODO: crashes browser when highlighting heading
             while (highlighting === true) {
                 parentNode = $(parentNode).next(parentNode)[0];
                 highlighting = $.highlighter.highlightNode(parentNode, properties, true);
-            }
+            }*/
 
             settings.onSelection(this, e, properties);
 	    });
@@ -74,14 +66,14 @@
         $(obj).contents().each(function() {
             if ($(this).text() == '') return;
 
-            var isStartNode = properties.startNode.indexOf($(this).text());
-            var isEndNode   = properties.endNode.indexOf($(this).text());
-            var startOffset = 0;
-            var endOffset   = $(this).text().length;
+            var isStartNode = properties.start_node.indexOf($(this).text());
+            var isEndNode   = properties.end_node.indexOf($(this).text());
+            var start_offset = 0;
+            var end_offset   = $(this).text().length;
 
             // Find the start node
             if (isStartNode == 0) {
-                startOffset = properties.startOffset;
+                start_offset = properties.start_offset;
                 processNode = true;
             }
 
@@ -89,15 +81,18 @@
 
             // Find the end node
             if (isEndNode == 0) {
-                endOffset = properties.endOffset;
+                end_offset = properties.end_offset;
                 var foundEnd = true;
             }
 
             if (this.nodeType == 1 && processNode === true) { // HTML
-                $.highlighter.processHtmlNode(this, startOffset, endOffset);
+                $.highlighter.processHtmlNode(this, start_offset, end_offset);
             } else if (this.nodeType == 3 && processNode === true) { // Text
-                $.highlighter.processTxtNode(this, startOffset, endOffset);
+                $.highlighter.processTxtNode(this, start_offset, end_offset);
             }
+
+            $($.highlighter.newElement).data('onid', properties.onid);
+            $($.highlighter.newElement).addClass('note-' + properties.onid);
 
             if (foundEnd === true) processNode = false;
         });
@@ -105,12 +100,21 @@
         return processNode; 
     }
 	
-	// Process a text node with a wrapper
-    $.highlighter.processTxtNode = function(textNode, startOffset, endOffset) {
+    $.highlighter.highlight = function(parentNode, properties) {
+        highlighting = $.highlighter.highlightNode(parentNode, properties);
 
-    	var preText     = document.createTextNode(textNode.nodeValue.substring(0, startOffset));
-        var wrapper     = $.highlighter.wrapTxt(document.createTextNode(textNode.nodeValue.substring(startOffset, endOffset)));
-        var postText    = document.createTextNode(textNode.nodeValue.substring(endOffset, textNode.length));
+        // TODO: crashes browser when highlighting heading
+        while (highlighting === true) {
+            parentNode = $(parentNode).next(parentNode)[0];
+            highlighting = $.highlighter.highlightNode(parentNode, properties, true);
+        }
+    }
+	// Process a text node with a wrapper
+    $.highlighter.processTxtNode = function(textNode, start_offset, end_offset) {
+
+    	var preText     = document.createTextNode(textNode.nodeValue.substring(0, start_offset));
+        var wrapper     = $.highlighter.wrapTxt(document.createTextNode(textNode.nodeValue.substring(start_offset, end_offset)));
+        var postText    = document.createTextNode(textNode.nodeValue.substring(end_offset, textNode.length));
         var newText     = document.createDocumentFragment();
         newText.appendChild(preText);
         newText.appendChild(wrapper);
@@ -119,26 +123,37 @@
     }
 
     // Process html node with a wrapper
-    $.highlighter.processHtmlNode = function(htmlNode, startOffset, endOffset) {
-            var preHtml         = htmlNode.innerHTML.substring(0, startOffset);
-    		var wrapHtmlTxt     = htmlNode.innerHTML.substring(startOffset, endOffset);
-            var postHtml        = htmlNode.innerHTML.substring(endOffset, htmlNode.innerHTML.length); 
+    $.highlighter.processHtmlNode = function(htmlNode, start_offset, end_offset) {
+            var preHtml         = htmlNode.innerHTML.substring(0, start_offset);
+    		var wrapHtmlTxt     = htmlNode.innerHTML.substring(start_offset, end_offset);
+            var postHtml        = htmlNode.innerHTML.substring(end_offset, htmlNode.innerHTML.length); 
             wrapHtmlTxt         = $.highlighter.wrapHtml(wrapHtmlTxt);
             htmlNode.innerHTML  = preHtml + wrapHtmlTxt.outerHTML + postHtml; 
     }
 
-    var $.highlighter.wrapTxt = function(txt) {
-        var wrapper = document.createElement(settings.wrapperElement);
-        wrapper.className = settings.wrapperClass;
+    $.highlighter.wrapTxt = function(txt) {
+        var wrapper = document.createElement($.highlighter.settings.wrapperElement);
+        wrapper.className = $.highlighter.settings.wrapperClass;
         wrapper.appendChild(txt);
+        $.highlighter.newElement = wrapper;
         return wrapper;
     }
 
-    var $.highlighter.wrapHtml = function(html) {
-        var wrapper = document.createElement(settings.wrapperElement);
-        wrapper.className = settings.wrapperClass;
+    $.highlighter.wrapHtml = function(html) {
+        var wrapper = document.createElement($.highlighter.settings.wrapperElement);
+        wrapper.className = $.highlighter.settings.wrapperClass;
         wrapper.innerHTML = html;
         return wrapper;
     }
+
+    $.highlighter.settings = {
+        wrapperElement: 'span',
+        wrapperClass: 'highlight-temp',
+        eventListen: 'mouseup',
+        eventTarget: this,
+        parentNode: 'p',
+        onSelection: function() {},
+        onEmptySelection: function() { return false; }
+    };
 })(jQuery);
 

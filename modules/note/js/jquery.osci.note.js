@@ -30,6 +30,8 @@
                 base.selection = $('#osci_viewer .osci_paragraph').highlight({
                     onSelection: function(obj, e, properties) {
                         $.osci.note.toolbar.appendTo($('body'));
+                        $.osci.note.selection = properties;
+
                         var left    = e.clientX - ($.osci.note.toolbar.outerWidth() / 2);
                         var top     = e.clientY - $.osci.note.toolbar.outerHeight() - parseInt($('.osci_paragraph').css('lineHeight'));
                         $.osci.note.toolbar.css('left', left);
@@ -48,8 +50,6 @@
                                 url: base.options.noteSaveCallback,
                                 data: properties,
                                 success: function(data) {
-                                    $('.highlight-temp').addClass('highlight');
-                                    $('.highlight-temp').removeClass('highlight-temp');
                                     base.processNotes(data);
                                 }
                             });
@@ -89,9 +89,9 @@
                 $('.noteTitle').live('hover', function(e) {
                     var onid = $(this).data('onid');
                     if (e.type == 'mouseenter') {
-                        $('span#span-note-' + onid).addClass('highlight-note');
+                        $('span.note-' + onid).addClass('highlight-note');
                     } else {
-                        $('span#span-note-' + onid).removeClass('highlight-note');
+                        $('span.note-' + onid).removeClass('highlight-note');
                     }
                 });
 
@@ -122,10 +122,16 @@
                     switch(id) {
                         case 'note-form':
                             $("input[name='nid']").val(Drupal.settings.osci.nid);
-                            //$("input[name='original_text']").val($.osci.note.selection);
+                            $("input[name='selection']").val($.osci.note.selection.selection);
+                            $("input[name='end_node']").val($.osci.note.selection.end_node);
+                            $("input[name='end_offset']").val($.osci.note.selection.end_offset);
+                            $("input[name='paragraph_id']").val($.osci.note.selection.paragraph_id);
+                            $("input[name='parent_offset']").val($.osci.note.selection.parent_offset);
+                            $("input[name='start_node']").val($.osci.note.selection.start_node);
+                            $("input[name='start_offset']").val($.osci.note.selection.start_offset);
                             break;
                         case 'citation-form':
-                            //$('#edit-citation-text').html($.osci.note.selection);
+                            $('#edit-citation-text').html($.osci.note.selection.selection);
                             $('#edit-citation-url').val(window.location);
                             $('#edit-citation-text, #edit-citation-url').click(function(e) {
                                 e.preventDefault();
@@ -197,6 +203,10 @@
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
+                    for (var i = 0; i < data.length; i++) {
+                        var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_id);
+                        $.highlighter.highlightNode(activeParagraph, data[i]);
+                    }
                     base.processNotes(data);
                 } 
             });
@@ -205,78 +215,16 @@
         base.processNotes = function(data) {
             if (data == null) return;
 
-console.log(data);
             $('.noteTitle').remove();
             $.tmpl('noteLink', data).appendTo(base.panel);
 
-            for (var i = 0; i < data.length; i++) {
-                var activeParagraph = $('p.osci_paragraph_' + data[i].paragraphId);
-                $.highlighter.highlightNode(activeParagraph, data[i]);
-//TODO
-                ///////base.highlightTxt(activeParagraph, data[i]);
-            }
+            $('.highlight-temp').addClass('highlight');
+            $('.highlight-temp').removeClass('highlight-temp');
 
             Drupal.detachBehaviors();
             Drupal.attachBehaviors();
 
         }
-/******************************************
-
-        base.highlightTxt = function(txt, note) {
-            $.osci.note.toolbar.detach();
-    
-            //TODO work in note data settings
-            if (!$('span#span-note-' + note.onid).length) {
-                var data = base.getSelectionData(txt, note.original_text);
-                var replacementTxt = '<span id="span-note-' + note.onid + '" data-onid="' + note.onid + '" class="highlight">' + note.original_text + '</span>';
-                txt.html(txt.html().substring(0, data.start) + replacementTxt + txt.html().substring(data.end, data.len));
-            }
-
-            return data;
-        }
-
-        base.getSelectionData = function(txt, selection) {
-            if (txt.html() == '') return;
-
-            var data = {
-                length: txt.html().length,
-                start:  txt.html().indexOf(selection),
-                end:    txt.html().indexOf(selection) + selection.length,
-            }
-
-            return data;
-        }
-
-        base.getSelected = function() { 
-            var selection = false;
-            if (window.getSelection) { 
-                selection = window.getSelection(); 
-            } else if (document.getSelection) { 
-                selection = document.getSelection(); 
-            } else { 
-                selection = document.selection && document.selection.createRange(); 
-                if (selection.text) { 
-                    selection = selection.text; 
-                } 
-            } 
-            selection = base.getSelectionHTML(selection); 
-
-            return selection; 
-        }
-
-        base.getSelectionHTML = function(selection) {
-            var range = (document.all ? selection.createRange() : selection.getRangeAt(selection.rangeCount - 1).cloneRange());
-
-            if (document.all) {
-                return range.htmlText;
-            } else {
-                var clonedSelection = range.cloneContents();
-                var div = document.createElement('div');
-                div.appendChild(clonedSelection);
-                return div.innerHTML;
-            }
-        }
-****************************/
 
         base.init();
     };
