@@ -1,7 +1,6 @@
 
 
 (function ($) {
-	console.log(Drupal);
 	function getMapBounds(map) {
 		var extents = map.extent();
 		var coords = JSON.stringify({
@@ -14,6 +13,7 @@
 	
 	
 	function figureOptionsPolymap(data, dest, options, figureId) {
+		console.log(options);
 		// determine best size to open dialog, based on figure size
 		var iw = $(data.ptiffDiv).data('iw');
 		var ih = $(data.ptiffDiv).data('ih');
@@ -48,7 +48,7 @@
 		modal.append(figureContainer);
 		
 		// options fieldset
-		var fieldset = $('<fieldset>').append('<legend>Options</legend>');
+		var fieldset = $('<fieldset>').append('<legend>Reader Options</legend>');
 		
 		// insert polymap options
 		// interaction control
@@ -61,6 +61,20 @@
 		}
 		interactionContainer.append(interactionToggle).append(interactionLabel);
 		fieldset.append(interactionContainer);
+		
+		// clear between elements
+		fieldset.append($('<div>').addClass('clear').html('&nbsp;'));
+		
+		// insert annotation overlay options
+		// inset annotation control
+		var annotationContainer = $('<div>');
+		var annotationLabel = $('<label>').html('Disable Annotations');
+		var annotationToggle = $('<input type="checkbox">');
+		if (options.annotation == false) {
+				annotationToggle.attr('checked', 'checked');
+		}
+		annotationContainer.append(annotationToggle).append(annotationLabel);
+		fieldset.append(annotationContainer);
 		
 		// clear between elements
 		fieldset.append($('<div>').addClass('clear').html('&nbsp;'));
@@ -95,7 +109,7 @@
 			        	  }
 			          },
 			          {
-			        	  text: 'Save Options', 
+			        	  text: 'Finish', 
 			        	  click: function() {
 			        		  // if a thumbnail was specified, upload it and get back the file path
 			        		  // inlcude the path in the options below
@@ -146,7 +160,8 @@
 			                    		  swLat: extents[0].lat,
 			                    		  neLon: extents[1].lon,
 			                    		  neLat: extents[1].lat,
-			                    		  interaction: (!interactionToggle.attr('checked'))
+			                    		  interaction: (!interactionToggle.attr('checked')),
+			                    		  annotation: (!annotationToggle.attr('checked'))
 			                    	  });
 			                    	  // inject into hidden form
 			                    	  var input = $('.figure_options', $(dest).parents(".fieldset-wrapper:first"));
@@ -167,7 +182,7 @@
 		$('.iipmap', modal).each(function(){ iipmap($(this)); });
 	}
 	
-	
+	// builds preview div in editing mode, and creates figure options button if applicable
 	function getPreviewDiv(id, target) {
 		// retrieve options
 		var options = $.parseJSON($('.figure_options', $(target).parents(".fieldset-wrapper:first")).val());
@@ -216,7 +231,8 @@
 						// check for this value, we must have it to continue properly
 						figureId = figureId[1] ? figureId[1] : null
 						if (figureId) { 
-							figureOptionsPolymap(data, dest, options, figureId) 
+							var options = $.parseJSON($('.figure_options', $(target).parents(".fieldset-wrapper:first")).val());
+							figureOptionsPolymap(data, dest, options, figureId);
 						}
 					});
 				}

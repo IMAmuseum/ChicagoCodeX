@@ -21,7 +21,6 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $tempOptions = json_decode(htmlspecialchars_decode($data['options']));
     unset($tempOptions->previewUrl);
     $data['options'] = htmlspecialchars(json_encode($tempOptions));
-
     $vars['data'] = '';
     foreach($data as $k => $v) {
         $vars['data'] .= 'data-'.$k.'="'.$v.'" ';

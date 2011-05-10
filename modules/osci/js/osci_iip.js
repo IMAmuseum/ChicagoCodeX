@@ -61,7 +61,12 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var svg_path = div.attr('data-svg');
 	var ptiff_overlay = div.attr('data-overlay');
 	var editing = div.attr('data-editing');
-	var options = $.parseJSON(div.parents('figure:first').attr('data-options')) || new Object();
+	var options = $.parseJSON(div.parents('figure:first').attr('data-options'));
+	// set up some sensible defaults if the figure didn't provide any options
+	if (!options) {
+		options = {interaction: true, annotations: true};
+	}
+	console.log(options);
 	var tile_size = 256;
 	var overlay_opacity = '0';
 
@@ -115,9 +120,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// If editing, force controls to be on
 	if (editing) {
 		options.interaction = true;
+		options.annotation = true;
 	}
 	
-	// If we have an overlay, place that on top
+	// If we have an overlay, place that on top and make it transparent
 	if (ptiff_overlay) {
 		var overlay = po.image();
 		var tlo = 'tile_loader_'+figure_id+'_overlay = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff_overlay+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://stanley.imamuseum.org/osci/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
@@ -161,8 +167,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	div.mouseover(function() {
 		// Show controls
 		$('g.compass', div).css("visibility", "visible");
-		reset_btn.style("visibility", "visible");
-		fs.style("visibility", "visible");
+		if (options.interaction) {
+			reset_btn.style("visibility", "visible");
+			fs.style("visibility", "visible");
+		}
 		if (ptiff_overlay) {
 			slider_div.css('visibility', 'visible');
 		}
@@ -170,8 +178,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	div.mouseout(function() {
 		// Hide controls
 		$('g.compass', div).css("visibility", "hidden");
-		reset_btn.style("visibility", "hidden");
-		fs.style("visibility", "hidden");
+		if (options.interaction) {
+			reset_btn.style("visibility", "hidden");
+			fs.style("visibility", "hidden");
+		}
 		if (ptiff_overlay) {
 			slider_div.css('visibility', 'hidden');
 		}
@@ -274,7 +284,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	 * SVG 
 	 */
 	
-	if (svg_path) {
+	if (svg_path && options.annotation) {
 		map.add(po.svgLayer(svg_path));
 	}
 
