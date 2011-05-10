@@ -388,11 +388,9 @@ function note_preprocess_osci_viewer(&$vars) {
 function user_notes($node) {
     global $user;
     $query = db_select('note', 'c')
-        ->fields('c', array('nid', 'onid', 'body', 'word_count', 'letter_count', 'paragraph_count', 'original_text'))
+        ->fields('c')
         ->condition('uid', $user->uid)
         ->condition('nid', $node->nid)
-        ->orderBy('paragraph_count', 'asc')
-        ->orderBy('letter_count', 'asc')
         ->execute();
     foreach($query as $row) {
         $rows[] = (array)$row; 

@@ -29,16 +29,23 @@
                 paragraphId:    $(parentNode).data('paragraph_id')
             }
 
-            highlightNode(parentNode, properties);
+            highlighting = highlightNode(parentNode, properties);
+
+            // TODO: crashes browser when highlighting heading
+            while (highlighting === true) {
+                parentNode = $(parentNode).next(parentNode)[0];
+                highlighting = highlightNode(parentNode, properties, true);
+            }
 
             settings.onSelection(this, e, properties);
 	    });
 	    
-	    var highlightNode = function(obj, properties) {
-	    	var processNode = false;
+	    var highlightNode = function(obj, properties, processNode) {
+	    	processNode = (processNode) ? processNode : false;
 
             $(obj).contents().each(function() {
                 if ($(this).text() == '') return;
+
                 var isStartNode = properties.startNode.indexOf($(this).text());
                 var isEndNode   = properties.endNode.indexOf($(this).text());
                 var startOffset = 0;
@@ -49,6 +56,8 @@
                     startOffset = properties.startOffset;
                     processNode = true;
                 }
+
+                if (processNode === false) return;
 
                 // Find the end node
                 if (isEndNode == 0) {
@@ -63,11 +72,9 @@
                 }
 
                 if (foundEnd === true) processNode = false;
-                
-                return processNode;
             });
-console.log(processNode);
             
+            return processNode; 
 	    }
 	    
 	    // Get selected text and return the selection range object

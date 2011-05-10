@@ -28,7 +28,7 @@
                 */
         
                 base.selection = $('#osci_viewer .osci_paragraph').highlight({
-                    onSelection: function(obj, e, selectionRange) {
+                    onSelection: function(obj, e, properties) {
                         $.osci.note.toolbar.appendTo($('body'));
                         var left    = e.clientX - ($.osci.note.toolbar.outerWidth() / 2);
                         var top     = e.clientY - $.osci.note.toolbar.outerHeight() - parseInt($('.osci_paragraph').css('lineHeight'));
@@ -40,7 +40,8 @@
                             e.preventDefault();
                             e.stopPropagation();
 
-/*
+                            properties.nid = $.osci.navigation.data.nid;
+
                             $.ajax({
                                 type: 'post',
                                 dataType: 'json',
@@ -49,10 +50,9 @@
                                 success: function(data) {
                                     $('.highlight-temp').addClass('highlight');
                                     $('.highlight-temp').removeClass('highlight-temp');
-                                    //base.processNotes(data);
+                                    base.processNotes(data);
                                 }
                             });
-*/
                         });
 
                         // Cleanup Toolbar
@@ -197,27 +197,29 @@
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
-                    ////////////////base.processNotes(data);
+                    base.processNotes(data);
                 } 
             });
         }
 
-/******************************************
         base.processNotes = function(data) {
             if (data == null) return;
 
+console.log(data);
             $('.noteTitle').remove();
             $.tmpl('noteLink', data).appendTo(base.panel);
 
             for (var i = 0; i < data.length; i++) {
                 var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_count);
-                base.highlightTxt(activeParagraph, data[i]);
+//TODO
+                ///////base.highlightTxt(activeParagraph, data[i]);
             }
 
             Drupal.detachBehaviors();
             Drupal.attachBehaviors();
 
         }
+/******************************************
 
         base.highlightTxt = function(txt, note) {
             $.osci.note.toolbar.detach();

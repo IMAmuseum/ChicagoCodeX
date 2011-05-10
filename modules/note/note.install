@@ -30,22 +30,35 @@ function note_schema() {
                 'type'          => 'varchar',
                 'length'        => 255,
             ),
-            'original_text' => array(
+            'selection' => array(
                 'description'   => 'The original text to cite',
                 'type'          => 'text',
             ),
-            'word_count' => array(
-                'description'   => 'The number of words into the current paragraph',
+            'startOffset' => array(
+                'description'   => 'The number of letters into the start node',
                 'type'          => 'int',
                 'default'       => 0,
             ),
-            'letter_count' => array(
-                'description'   => 'The number of letters into the current paragraph',
+            'startNode' => array(
+                'description'   => 'The beginning node of the selection',
+                'type'          => 'text',
+            ),
+            'endOffset' => array(
+                'description'   => 'The number of letters into the end node',
                 'type'          => 'int',
                 'default'       => 0,
             ),
-            'paragraph_count' => array(
-                'description'   => 'The number of the paragraph that holds our note',
+            'endNode' => array(
+                'description'   => 'the ending node of the selection',
+                'type'          => 'text',
+            ),
+            'parentOffset' => array(
+                'description'   => 'The number of characters into the parent node',
+                'type'          => 'int',
+                'default'       => 0,
+            ),
+            'paragraphId' => array(
+                'description'   => 'ID of the paragraph to highlight in',
                 'type'          => 'int',
                 'default'       => 0,
             ),
