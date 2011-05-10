@@ -29,53 +29,16 @@
                 paragraphId:    $(parentNode).data('paragraph_id')
             }
 
-            highlighting = highlightNode(parentNode, properties);
+            highlighting = $.highlighter.highlightNode(parentNode, properties);
 
             // TODO: crashes browser when highlighting heading
             while (highlighting === true) {
                 parentNode = $(parentNode).next(parentNode)[0];
-                highlighting = highlightNode(parentNode, properties, true);
+                highlighting = $.highlighter.highlightNode(parentNode, properties, true);
             }
 
             settings.onSelection(this, e, properties);
 	    });
-	    
-	    var highlightNode = function(obj, properties, processNode) {
-	    	processNode = (processNode) ? processNode : false;
-
-            $(obj).contents().each(function() {
-                if ($(this).text() == '') return;
-
-                var isStartNode = properties.startNode.indexOf($(this).text());
-                var isEndNode   = properties.endNode.indexOf($(this).text());
-                var startOffset = 0;
-                var endOffset   = $(this).text().length;
-
-                // Find the start node
-                if (isStartNode == 0) {
-                    startOffset = properties.startOffset;
-                    processNode = true;
-                }
-
-                if (processNode === false) return;
-
-                // Find the end node
-                if (isEndNode == 0) {
-                    endOffset = properties.endOffset;
-                    var foundEnd = true;
-                }
-
-                if (this.nodeType == 1 && processNode === true) { // HTML
-                    processHtmlNode(this, startOffset, endOffset);
-                } else if (this.nodeType == 3 && processNode === true) { // Text
-                    processTxtNode(this, startOffset, endOffset);
-                }
-
-                if (foundEnd === true) processNode = false;
-            });
-            
-            return processNode; 
-	    }
 	    
 	    // Get selected text and return the selection range object
 	    var getSelected = function() {
@@ -137,6 +100,43 @@
             wrapper.innerHTML = html;
             return wrapper;
         }
+    }
+	
+	$.highlighter.highlightNode = function(obj, properties, processNode) {
+    	processNode = (processNode) ? processNode : false;
+
+        $(obj).contents().each(function() {
+            if ($(this).text() == '') return;
+
+            var isStartNode = properties.startNode.indexOf($(this).text());
+            var isEndNode   = properties.endNode.indexOf($(this).text());
+            var startOffset = 0;
+            var endOffset   = $(this).text().length;
+
+            // Find the start node
+            if (isStartNode == 0) {
+                startOffset = properties.startOffset;
+                processNode = true;
+            }
+
+            if (processNode === false) return;
+
+            // Find the end node
+            if (isEndNode == 0) {
+                endOffset = properties.endOffset;
+                var foundEnd = true;
+            }
+
+            if (this.nodeType == 1 && processNode === true) { // HTML
+                processHtmlNode(this, startOffset, endOffset);
+            } else if (this.nodeType == 3 && processNode === true) { // Text
+                processTxtNode(this, startOffset, endOffset);
+            }
+
+            if (foundEnd === true) processNode = false;
+        });
+        
+        return processNode; 
     }
 })(jQuery);
 
