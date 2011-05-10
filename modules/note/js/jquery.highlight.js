@@ -64,42 +64,6 @@
 	        }
 	        return range;
 	    }
-	    
-	    // Process a text node with a wrapper
-	    var processTxtNode = function(textNode, startOffset, endOffset) {
-
-	    	var preText     = document.createTextNode(textNode.nodeValue.substring(0, startOffset));
-            var wrapper     = wrapTxt(document.createTextNode(textNode.nodeValue.substring(startOffset, endOffset)));
-            var postText    = document.createTextNode(textNode.nodeValue.substring(endOffset, textNode.length));
-            var newText     = document.createDocumentFragment();
-            newText.appendChild(preText);
-            newText.appendChild(wrapper);
-            newText.appendChild(postText);
-            textNode.parentNode.replaceChild(newText, textNode);
-	    }
-
-	    // Process html node with a wrapper
-	    var processHtmlNode = function(htmlNode, startOffset, endOffset) {
-                var preHtml         = htmlNode.innerHTML.substring(0, startOffset);
-	    		var wrapHtmlTxt     = htmlNode.innerHTML.substring(startOffset, endOffset);
-                var postHtml        = htmlNode.innerHTML.substring(endOffset, htmlNode.innerHTML.length); 
-                wrapHtmlTxt         = wrapHtml(wrapHtmlTxt);
-                htmlNode.innerHTML  = preHtml + wrapHtmlTxt.outerHTML + postHtml; 
-	    }
-    
-        var wrapTxt = function(txt) {
-            var wrapper = document.createElement(settings.wrapperElement);
-            wrapper.className = settings.wrapperClass;
-            wrapper.appendChild(txt);
-            return wrapper;
-        }
-
-        var wrapHtml = function(html) {
-            var wrapper = document.createElement(settings.wrapperElement);
-            wrapper.className = settings.wrapperClass;
-            wrapper.innerHTML = html;
-            return wrapper;
-        }
     }
 	
     $.highlighter = {};
@@ -130,15 +94,51 @@
             }
 
             if (this.nodeType == 1 && processNode === true) { // HTML
-                processHtmlNode(this, startOffset, endOffset);
+                $.highlighter.processHtmlNode(this, startOffset, endOffset);
             } else if (this.nodeType == 3 && processNode === true) { // Text
-                processTxtNode(this, startOffset, endOffset);
+                $.highlighter.processTxtNode(this, startOffset, endOffset);
             }
 
             if (foundEnd === true) processNode = false;
         });
         
         return processNode; 
+    }
+	
+	// Process a text node with a wrapper
+    $.highlighter.processTxtNode = function(textNode, startOffset, endOffset) {
+
+    	var preText     = document.createTextNode(textNode.nodeValue.substring(0, startOffset));
+        var wrapper     = $.highlighter.wrapTxt(document.createTextNode(textNode.nodeValue.substring(startOffset, endOffset)));
+        var postText    = document.createTextNode(textNode.nodeValue.substring(endOffset, textNode.length));
+        var newText     = document.createDocumentFragment();
+        newText.appendChild(preText);
+        newText.appendChild(wrapper);
+        newText.appendChild(postText);
+        textNode.parentNode.replaceChild(newText, textNode);
+    }
+
+    // Process html node with a wrapper
+    $.highlighter.processHtmlNode = function(htmlNode, startOffset, endOffset) {
+            var preHtml         = htmlNode.innerHTML.substring(0, startOffset);
+    		var wrapHtmlTxt     = htmlNode.innerHTML.substring(startOffset, endOffset);
+            var postHtml        = htmlNode.innerHTML.substring(endOffset, htmlNode.innerHTML.length); 
+            wrapHtmlTxt         = $.highlighter.wrapHtml(wrapHtmlTxt);
+            htmlNode.innerHTML  = preHtml + wrapHtmlTxt.outerHTML + postHtml; 
+    }
+
+    var $.highlighter.wrapTxt = function(txt) {
+        var wrapper = document.createElement(settings.wrapperElement);
+        wrapper.className = settings.wrapperClass;
+        wrapper.appendChild(txt);
+        return wrapper;
+    }
+
+    var $.highlighter.wrapHtml = function(html) {
+        var wrapper = document.createElement(settings.wrapperElement);
+        wrapper.className = settings.wrapperClass;
+        wrapper.innerHTML = html;
+        return wrapper;
     }
 })(jQuery);
 
