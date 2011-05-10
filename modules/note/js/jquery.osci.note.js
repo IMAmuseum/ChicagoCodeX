@@ -210,7 +210,8 @@ console.log(data);
             $.tmpl('noteLink', data).appendTo(base.panel);
 
             for (var i = 0; i < data.length; i++) {
-                var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_count);
+                var activeParagraph = $('p.osci_paragraph_' + data[i].paragraphId);
+                $.highlighter.highlightNode(activeParagraph, data[i]);
 //TODO
                 ///////base.highlightTxt(activeParagraph, data[i]);
             }

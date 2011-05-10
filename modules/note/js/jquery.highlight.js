@@ -102,6 +102,8 @@
         }
     }
 	
+    $.highlighter = {};
+
 	$.highlighter.highlightNode = function(obj, properties, processNode) {
     	processNode = (processNode) ? processNode : false;
 
