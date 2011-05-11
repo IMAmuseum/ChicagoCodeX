@@ -249,7 +249,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				.attr('min', '1')
 				.attr('max', '100')
 				.attr('value', overlay_opacity)
-				//.css('height', '100%')
 				.css('margin', '13px 5px')
 				.css('float', 'left')
 				.appendTo(controlBar);
