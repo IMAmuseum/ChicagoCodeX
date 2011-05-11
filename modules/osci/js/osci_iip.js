@@ -313,13 +313,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	});
 	div.mouseleave(function(e) {
 		// Hide controls
-		/*
 		if (options.interaction == true ) {
 			controlBarContainer.animate({height: '0px'}, 200, function() {
 				controlBarContainer.css('display', 'none');
 			});
 		}
-		*/
 	});
 	
 	
