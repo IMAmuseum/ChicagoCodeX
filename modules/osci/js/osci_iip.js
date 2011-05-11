@@ -143,7 +143,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('position', 'absolute')
 			.css('bottom', '0px')
 			.css('height', '0px')
-			.css('width', '100%')
+			.css('width', '100%') 
 			.css('text-align', 'center');
 		
 		// create the control bar
@@ -154,7 +154,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('opacity', '0.75')
 			.css('border-top-left-radius', '5px')
 			.css('border-top-right-radius', '5px');
-			
 		
 		// create the zoom controls
 		var zoomControlPlus = $('<div>')
@@ -167,6 +166,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('float', 'left')
 			.html('&nbsp;')
 			.mousedown(function(e) {
+				// prevent highlight-all on double click
 				e.preventDefault();
 				map.zoomBy(0.25);
 			})
@@ -181,6 +181,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('float', 'left')
 			.html('&nbsp;')
 			.mousedown(function(e) {
+				// prevent highlight-all on double click
 				e.preventDefault();
 				map.zoomBy(-0.25);
 			})
@@ -197,6 +198,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('float', 'left')
 			.html('&nbsp;')
 			.mousedown(function(e) {
+				// prevent highlight-all on double click
 				e.preventDefault();
 				reset_map();
 			})
@@ -236,6 +238,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				.html('&nbsp;')
 				.mousedown(function(e) {
 					e.preventDefault();
+					alert('this button not yet wired up');
 				})
 				.appendTo(controlBar);
 			
@@ -246,7 +249,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				.attr('min', '1')
 				.attr('max', '100')
 				.attr('value', overlay_opacity)
-				.css('margin', '5px 5px')
+				//.css('height', '100%')
+				.css('margin', '13px 5px')
 				.css('float', 'left')
 				.appendTo(controlBar);
 			
@@ -310,12 +314,13 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	});
 	div.mouseleave(function(e) {
 		// Hide controls
-		$('g.compass', div).css("visibility", "hidden");
+		/*
 		if (options.interaction == true ) {
 			controlBarContainer.animate({height: '0px'}, 200, function() {
 				controlBarContainer.css('display', 'none');
 			});
 		}
+		*/
 	});
 	
 	
