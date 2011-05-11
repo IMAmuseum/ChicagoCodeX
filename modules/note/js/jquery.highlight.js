@@ -62,18 +62,6 @@
             var isEndNode       = properties.end_node.indexOf($(node).text());
             var start_offset    = 0;
             var end_offset      = $(node).text().length;
-console.log('I');
-console.log({
-    node: node,
-    this: this,
-    isStartNode: isStartNode,
-    isEndNode: isEndNode,
-    selection: properties.selection,
-    start_node: properties.start_node,
-    node_text: $(node).text(),
-    index: properties.start_node.indexOf($(node).text()),
-    properties: properties
-});
 
             // Find the start node
             if (isStartNode == 0) {
