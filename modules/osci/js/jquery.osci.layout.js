@@ -71,6 +71,11 @@
 
             base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
 
+            if($.osci.fontSize) {
+            	// apply user defined font size
+            	$("#osci_pages").css("font-size", $.osci.fontSize + "%");
+            }            
+            
             //Add the plate figure if found
             plateFigure = base.figures.filter("#osci_plate_fig");
             if (plateFigure.length) {

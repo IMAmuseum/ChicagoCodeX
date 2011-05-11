@@ -66,10 +66,28 @@ body.page-node-reader {
 }
 
 #osci_header_controls {
-    background: #464646 url('../images/bg-header-bar-right.png') no-repeat;   
+    background: #464646 url('../images/bg-header-bar-right.png') no-repeat right;   
     float: right;
     height: 26px;
-    width: 198px;
+    width: 250px;
+}
+
+#osci_increase_font {
+	background: #464646 url('../../../modules/osci/images/iconFontIncrease.png') no-repeat;
+	width: 21px;
+	height: 21px;
+	cursor: pointer;
+	float: left;
+	padding-top: 3px;
+}
+
+#osci_decrease_font {
+	background: #464646 url('../../../modules/osci/images/iconFontDecrease.png') no-repeat;
+	width: 21px;
+	height: 21px;
+	cursor: pointer;
+	float: left;
+	padding-top: 3px;
 }
 
 #osci_viewer_wrapper {

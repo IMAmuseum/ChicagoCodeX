@@ -48,6 +48,37 @@
                 }
             });
             
+            // increase content font size
+            $("#osci_increase_font").click(function (e) {
+            	if($.osci.fontSize) {
+            		// check against maximum font size
+            		if(($.osci.fontSize + 20) > 140) {
+            			return
+            		}
+            		$.osci.fontSize += 20;
+            	} else {
+            		$.osci.fontSize = 100;
+            	}
+            	
+            	// reset content
+            	_osci_resize()
+            });
+            
+            // decrease content font size
+            $("#osci_decrease_font").click(function (e) {
+            	if($.osci.fontSize) {
+            		// check against minimum font size
+            		if(($.osci.fontSize - 20) <= 20) {
+            			return;
+            		}
+            		$.osci.fontSize -= 20;
+            	} else {
+            		$.osci.fontSize = 60;
+            	}
+            	// reset content
+            	_osci_resize()
+            });
+            
             //setup the prev button
             $("#" + base.options.prevLinkId).click(function (e){
                 e.preventDefault();

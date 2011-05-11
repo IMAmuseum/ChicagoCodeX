@@ -2,7 +2,10 @@
     <div id="osci_header">
         <h1 class="osci_book_title">Book Title</h1>
         <h2 class="osci_book_section_title">Book Section Title</h2>
-        <div id="osci_header_controls"></div>
+        <div id="osci_header_controls">
+        	<div id="osci_increase_font"></div>
+        	<div id="osci_decrease_font"></div>
+        </div>
     </div>
     <div id="osci_table_of_contents_wrapper">
         <a href="#" class="osci_table_of_contents_handle">Contents</a>
