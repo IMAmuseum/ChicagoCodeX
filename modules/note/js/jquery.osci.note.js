@@ -50,7 +50,7 @@
                                 url: base.options.noteSaveCallback,
                                 data: properties,
                                 success: function(data) {
-                                    base.processNotes(data);
+                                    base.addNotes();
                                 }
                             });
                         });
@@ -73,16 +73,15 @@
                  * Highlight/Note hover handling
                  */
 
-                //$('.osci_paragraph').delegate('span.highlight', 'hover', function(e) {
                 $('span.highlight').live('hover', function(e) {
                     var onid = $(this).data('onid');
                     if (e.type == 'mouseenter') {
                         $('.note-close-link').click();
                         $('#note-link-' + onid + ' a').css({ opacity: 1 });
-                        $(this).addClass('highlight-note');
+                        $('span.note-' + onid).addClass('highlight-note');
                     } else {
                         $('#note-link-' + onid + ' a').css({ opacity: 0.5 });
-                        $(this).removeClass('highlight-note');
+                        $('span.note-' + onid).removeClass('highlight-note');
                     }
                 });
 
@@ -203,10 +202,15 @@
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
+
                     for (var i = 0; i < data.length; i++) {
                         var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_id);
-                        $.highlighter.highlightNode(activeParagraph, data[i]);
+                        $.highlighter.highlight(activeParagraph, data[i]);
                     }
+
+                    $('.highlight-temp').addClass('highlight');
+                    $('.highlight-temp').removeClass('highlight-temp');
+
                     base.processNotes(data);
                 } 
             });
@@ -217,9 +221,6 @@
 
             $('.noteTitle').remove();
             $.tmpl('noteLink', data).appendTo(base.panel);
-
-            $('.highlight-temp').addClass('highlight');
-            $('.highlight-temp').removeClass('highlight-temp');
 
             Drupal.detachBehaviors();
             Drupal.attachBehaviors();

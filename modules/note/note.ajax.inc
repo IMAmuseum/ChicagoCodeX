@@ -28,7 +28,6 @@ function note_ajax_add() {
 }
 
 function note_ajax_save($onid = null) {
-dpm($_POST);
     note_save($_POST);
     $node = node_load($_POST['nid']); 
 
