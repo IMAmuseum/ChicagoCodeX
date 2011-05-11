@@ -1,5 +1,9 @@
 function iipmap (div) { // div should be a jQuery object of our map div element
 	
+	/*
+	 * Prerequisites
+	 */
+	
 	// We need jQuery magic
 	if ($ === undefined) {
 		if (jQuery === undefined) {
@@ -64,12 +68,15 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var options = $.parseJSON(div.parents('figure:first').attr('data-options'));
 	// set up some sensible defaults if the figure didn't provide any options
 	if (!options) {
-		options = {interaction: true, annotations: true};
+		options = {interaction: true, annotation: true};
 	}
-	console.log(options);
 	var tile_size = 256;
 	var overlay_opacity = '0';
-
+	
+	
+	/*
+	 * Calculation and Creation
+	 */
 	
 	// Calculate best zoom level to start at based on div parent's size.
 	var parent_w = parseInt(div.parent().css('width'));
@@ -111,183 +118,207 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	image.id('image');
 	map.add(image);
 	
-	
+	// if we have SVG annotations for this figure, add the layer
+	if (svg_path && options.annotation) {
+		map.add(po.svgLayer(svg_path));
+	}
+
+
 	/* 
 	 * Controls
 	 */
-	
 	
 	// If editing, force controls to be on
 	if (editing) {
 		options.interaction = true;
 		options.annotation = true;
 	}
-	
-	// If we have an overlay, place that on top and make it transparent
-	if (ptiff_overlay) {
-		var overlay = po.image();
-		var tlo = 'tile_loader_'+figure_id+'_overlay = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff_overlay+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://stanley.imamuseum.org/osci/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
-		eval(tlo);
-		overlay.url(window['tile_loader_'+figure_id+'_overlay']);
-		overlay.id('overlay_'+figure_id);
-		map.add(overlay);
+	if (options.interaction == true) {
+		// enable interaction on the map
+		map.add(po.interact());
 		
-		// create a slider control
-		var slider_div = $('<div>')
-			.attr('class', 'iip_slider_div')
+		// create the control bar shell
+		var controlBarContainer = $('<div>')
+			.attr('class', 'iip_control_bar_container')
 			.css('position', 'absolute')
-			.css('bottom', 0)
-			.css('left', '5%')
-			.css('width', '90%')
+			.css('bottom', '0px')
+			.css('height', '0px')
+			.css('width', '100%')
+			.css('text-align', 'center');
+		
+		// create the control bar
+		var controlBar = $('<div>')
+			.attr('class', 'iip_control_bar')
+			.css('display', 'inline-block')
 			.css('background-color', '#000')
 			.css('opacity', '0.75')
 			.css('border-top-left-radius', '5px')
-			.css('border-top-right-radius', '5px')
-			.css('visibility', 'hidden');
-		
-		var slider = $('<input>')
-			.attr('class', 'iip_slider')
-			.attr('type', 'range')
-			.attr('min', '1')
-			.attr('max', '100')
-			.attr('value', overlay_opacity)
-			.css('margin', '3px 5%')
-			.css('width', '90%')
-			.appendTo(slider_div);
+			.css('border-top-right-radius', '5px');
 			
-		slider.change(function(event) {
-			overlay_opacity = (event.target.value / 100);
-			$('#overlay_'+figure_id, div).attr('opacity' , overlay_opacity);
-		});
-		$('#overlay_'+figure_id, div).attr('opacity', overlay_opacity);
-		div.append(slider_div);	
+		
+		// create the zoom controls
+		var zoomControlPlus = $('<div>')
+			.attr('class', 'iip_control_bar_zoom iip_control_bar_zoom_plus')
+			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-plus.png')")
+			.css('background-repeat', 'no-repeat')
+			.css('width', '32px')
+			.css('height', '32px')
+			.css('margin', '5px 0px 5px 5px')
+			.css('float', 'left')
+			.html('&nbsp;')
+			.mousedown(function(e) {
+				e.preventDefault();
+				map.zoomBy(0.25);
+			})
+			.appendTo(controlBar);
+		var zoomControlMinus = $('<div>')
+			.attr('class', 'iip_control_bar_zoom iip_control_bar_zoom_minus')
+			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-minus.png')")
+			.css('background-repeat', 'no-repeat')
+			.css('width', '32px')
+			.css('height', '32px')
+			.css('margin', '5px 0px 5px 5px')
+			.css('float', 'left')
+			.html('&nbsp;')
+			.mousedown(function(e) {
+				e.preventDefault();
+				map.zoomBy(-0.25);
+			})
+			.appendTo(controlBar);
+		
+		// reset control
+		var zoomControlReset = $('<div>')
+			.attr('class', 'iip_control_bar_zoom iip_control_bar_zoom_reset')
+			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-reset.png')")
+			.css('background-repeat', 'no-repeat')
+			.css('width', '32px')
+			.css('height', '32px')
+			.css('margin', '5px 0px 5px 5px')
+			.css('float', 'left')
+			.html('&nbsp;')
+			.mousedown(function(e) {
+				e.preventDefault();
+				reset_map();
+			})
+			.appendTo(controlBar);
+		
+		// If we have an overlay, place that on top and make it transparent
+		// also add the slider controls to the controlBar
+		if (ptiff_overlay) {
+			var overlay = po.image();
+			var tlo = 'tile_loader_'+figure_id+'_overlay = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff_overlay+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://stanley.imamuseum.org/osci/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+			eval(tlo);
+			overlay.url(window['tile_loader_'+figure_id+'_overlay']);
+			overlay.id('overlay_'+figure_id);
+			map.add(overlay);
+			
+			// separator
+			var separator = $('<div>')
+				.attr('class', 'iip_control_bar_separator')
+				.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/imagetoolbar-divider.png')")
+				.css('background-repeat', 'no-repeat')
+				.css('width', '3px')
+				.css('height', '28px')
+				.css('margin', '7px 5px 5px 10px')
+				.css('float', 'left')
+				.html('&nbsp;')
+				.appendTo(controlBar);
+			
+			// create the overlay toggle button
+			var overlayControl = $('<div>')
+				.attr('class', 'iip_control_bar_overlay iip_control_bar_overlay_toggle')
+				.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-toggle.png')")
+				.css('background-repeat', 'no-repeat')
+				.css('width', '32px')
+				.css('height', '32px')
+				.css('margin', '5px 0px 5px 5px')
+				.css('float', 'left')
+				.html('&nbsp;')
+				.mousedown(function(e) {
+					e.preventDefault();
+				})
+				.appendTo(controlBar);
+			
+			// create a slider control		
+			var sliderControl = $('<input>')
+				.attr('class', 'iip_slider')
+				.attr('type', 'range')
+				.attr('min', '1')
+				.attr('max', '100')
+				.attr('value', overlay_opacity)
+				.css('margin', '5px 5px')
+				.css('float', 'left')
+				.appendTo(controlBar);
+			
+			// another separator
+			var separator2 = separator.clone();
+			separator2.appendTo(controlBar);
+			
+			// wire up the slider
+			sliderControl.change(function(event) {
+				overlay_opacity = (event.target.value / 100);
+				$('#overlay_'+figure_id, div).attr('opacity' , overlay_opacity);
+			});
+			$('#overlay_'+figure_id, div).attr('opacity', overlay_opacity);
+		}
+
+		// fullscreen button
+		// last control - place a margin on the end
+		var zoomControlFullscreen = $('<div>')
+			.attr('class', 'iip_control_bar_fullscreen')
+			.css('background-repeat', 'no-repeat')
+			.css('width', '32px')
+			.css('height', '32px')
+			.css('margin', '5px 5px 5px 5px')
+			.css('float', 'left')
+			.html('&nbsp;');
+		if (collapsed) {
+			zoomControlFullscreen
+			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-fullscreen.png')")
+			.mousedown(function(e) {
+				e.preventDefault();
+				make_fullscreen();
+			});
+		}
+		else {
+			zoomControlFullscreen
+			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-fullscreen.png')")
+			.mousedown(function(e) {
+				e.preventDefault();
+				make_small();
+			});
+		}
+		zoomControlFullscreen.appendTo(controlBar);
+		
+		// finally, append the built controlBar to the div
+		controlBar.appendTo(controlBarContainer);
+		controlBarContainer.appendTo(div);
+		
+		// now that the control bar has been added to the DOM, the control button
+		// images have been loaded.  It's now safe to hide the controlBarContainer
+		controlBarContainer.css('display', 'none');
+		
 	}
 	
 	// Set up our control visibility toggles for mouse events
-	div.mouseover(function() {
+	div.mouseenter(function(e) {
 		// Show controls
-		$('g.compass', div).css("visibility", "visible");
-		if (options.interaction) {
-			reset_btn.style("visibility", "visible");
-			fs.style("visibility", "visible");
-		}
-		if (ptiff_overlay) {
-			slider_div.css('visibility', 'visible');
+		if (options.interaction == true ) {
+			controlBarContainer.css('display', 'block');
+			controlBarContainer.animate({height: '42px'}, 200);
 		}
 	});
-	div.mouseout(function() {
+	div.mouseleave(function(e) {
 		// Hide controls
 		$('g.compass', div).css("visibility", "hidden");
-		if (options.interaction) {
-			reset_btn.style("visibility", "hidden");
-			fs.style("visibility", "hidden");
-		}
-		if (ptiff_overlay) {
-			slider_div.css('visibility', 'hidden');
+		if (options.interaction == true ) {
+			controlBarContainer.animate({height: '0px'}, 200, function() {
+				controlBarContainer.css('display', 'none');
+			});
 		}
 	});
 	
-	// More controls
 	
-	var nmap = n$(div[0]); // the map container ran through the nns js library for svg manipulation
-	
-	if (options.interaction != false) {
-		map.add(po.interact());
-		var compass = po.compass().pan('none');
-		map.add(compass);
-		// hide it in initial view
-		$('g.compass', div).css("visibility", "hidden");
-		
-		// Add reset button
-		var reset_btn = nmap.add("svg:svg")
-			.attr("width", 40)
-			.attr("height", 15)
-			.attr("class", "reset-button")
-			.style("position","absolute")
-			.style("left","16px")
-			.style("top","65px")
-			.style("visibility","hidden")
-			.on("mousedown",reset_map);
-		reset_btn.add("svg:rect")
-			.attr("width", "100%")
-			.attr("height", "100%")
-			.style("fill", "rgb(0,0,0)");
-		reset_btn.add("svg:text")
-			.attr("x", "4")
-			.attr("y", "10")
-			.attr("font-size", 9)
-			.attr("font-family", "Arial, Arial, Helvetica, sans-serif")
-			.attr("fill", "white")
-			.attr("pointer-events","none")
-			.text("RESET");	
-		
-		// If collapsed, add a expand button to go fullscreen
-		if (collapsed) {
-			var fs = nmap.add("svg:svg")
-				.attr("width",32)
-				.attr("height",32)
-				.attr("class", "fullscreen")
-				.style("position","absolute")
-				.style("right","5px")
-				.style("top","5px")
-				.style("visibility","hidden")
-				.on("mousedown",make_fullscreen);
-			var circle = fs.add("svg:circle")
-				.attr("cx",16)
-				.attr("cy",16)
-				.attr("r",14)
-				.attr("fill","#000")
-				.attr("stroke","#ccc")
-				.attr("stroke-width",4)
-				.add("svg:title")
-				.text("Toggle fullscreen.");
-			var arrow = fs.add("svg:path")
-				.attr("transform","translate(16,16)rotate(-45)scale(5)translate(-1.85,0)")
-				.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
-				.attr("pointer-events","none")
-				.attr("fill","#aaa")
-				.attr("class", "svg_arrow");
-		}
-		// Else add the downsize (destroy) button
-		else {
-			var fs = nmap.add("svg:svg")
-				.attr("width",32)
-				.attr("height",32)
-				.attr("class", "fullscreen")
-				.style("position","absolute")
-				.style("right","5px")
-				.style("top","5px")
-				.style("visibility","hidden")
-				.on("mousedown",make_small);
-			var circle = fs.add("svg:circle")
-				.attr("cx",16)
-				.attr("cy",16)
-				.attr("r",14)
-				.attr("fill","#000")
-				.attr("stroke","#ccc")
-				.attr("stroke-width",4)
-				.add("svg:title")
-				.text("Toggle fullscreen.");
-			var arrow = fs.add("svg:path")
-				.attr("transform","translate(16,16)rotate(135)scale(5)translate(-1.85,0)")
-				.attr("d","M0,0L0,.5 2,.5 2,1.5 4,0 2,-1.5 2,-.5 0,-.5Z")
-				.attr("pointer-events","none")
-				.attr("fill","#aaa")
-				.attr("class", "svg_arrow");
-		}
-	}
-	
-	
-	
-	
-	/*
-	 * SVG 
-	 */
-	
-	if (svg_path && options.annotation) {
-		map.add(po.svgLayer(svg_path));
-	}
-
 	/*
 	 * Utility functions
 	 */
@@ -370,6 +401,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	div.bind('restore_default_map', restoreDefault);
 }
+
+
+/*
+ * Build IIP maps on layout complete
+ */
 
 (function($) {
 	$(document).bind("osci_layout_complete", function()

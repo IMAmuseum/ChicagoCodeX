@@ -3,7 +3,6 @@
 function osci_body_copy_init() {
 	$baseUrl = url("", array('absolute' => TRUE));
 	drupal_add_js(array('baseUrl' => $baseUrl), 'setting');
-	drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_nns.min.js', 'file');
     drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_polymaps.js', 'file');
     drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip.js', 'file');
 	drupal_add_library('system', 'ui.dialog');

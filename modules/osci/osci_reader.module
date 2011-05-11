@@ -41,7 +41,6 @@ function osci_reader_render($nid)
     drupal_add_js(drupal_get_path('module', 'osci_layout') . '/js/jquery.osci.layout.js');
     drupal_add_js(drupal_get_path('module', 'osci_navigation') . '/js/jquery.osci.navigation.js');
     drupal_add_js(drupal_get_path('module', 'osci_reader') . '/js/jquery.osci.more.js');
-    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_nns.min.js', 'file');
     drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_polymaps.js', 'file');
     drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip.js', 'file');
     drupal_add_js(drupal_get_path('module', 'osci_reader') . '/js/osci_reader.js', 'file');
