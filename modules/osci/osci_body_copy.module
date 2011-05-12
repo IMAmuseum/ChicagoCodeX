@@ -922,4 +922,21 @@ function osci_body_copy_figure_reference($args) {
     }
     return drupal_json_output($matches);
 }
+
+/**
+ * Implementation of hook_form_alter().
+ * Add submit button to the top of the form for all node content types
+ */
+function osci_body_copy_form_alter(&$form, &$form_state, $form_id) {
+	if($form_id == 'work_of_art_node_form' || $form_id == 'collector_node_form' || $form_id == 'volume_node_form'
+		|| $form_id == 'section_node_form' || $form_id == 'image_node_form' || $form_id == 'html_figure_node_form'
+		|| $form_id == 'page_node_form') 
+	{
+		$form['top_submit'] = array(
+		 '#type' => 'submit',
+		 '#value' => t('Save'),
+		 '#weight' => -1000
+		);
+	}
+}
 ?>
