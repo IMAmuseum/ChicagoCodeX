@@ -268,6 +268,7 @@
             }
             
             contentMargin = parseInt(contentHeight - content.height(), 10);
+            contentHeight = content.outerHeight(true);
             
             //Update how much vertical height remains in the column
             heightRemain = pageColumnData[pageColumnNumber].heightRemain - contentHeight;
