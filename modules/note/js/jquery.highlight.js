@@ -57,6 +57,8 @@
 
         if (properties.start_node == properties.end_node) {
             var node = document.createTextNode(properties.start_node);
+            $(obj).html($(obj).html()); // reset the dom 
+
             $(obj).contents().each(function() {
                 if (node.nodeValue == this.nodeValue) {
                     $.highlighter.processTxtNode(this, properties.start_offset, properties.end_offset);
@@ -133,7 +135,12 @@
         var preHtml         = document.createTextNode(htmlNode.innerText.substring(0, start_offset));
     	var wrapHtmlTxt     = $.highlighter.wrapHtml(htmlNode.innerText.substring(start_offset, end_offset));
         var postHtml        = document.createTextNode(htmlNode.innerText.substring(end_offset, htmlNode.innerHTML.length)); 
-        htmlNode.removeChild(htmlNode.firstChild);
+        if (htmlNode.hasChildNodes()) {
+            while (htmlNode.childNodes.length > 0) {
+                htmlNode.removeChild(htmlNode.firstChild);
+            }
+        }
+
         htmlNode.appendChild(preHtml);
         htmlNode.appendChild(wrapHtmlTxt);
         htmlNode.appendChild(postHtml);

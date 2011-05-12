@@ -202,6 +202,7 @@
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
+                    if (data == null) return;
 
                     for (var i = 0; i < data.length; i++) {
                         var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_id);
