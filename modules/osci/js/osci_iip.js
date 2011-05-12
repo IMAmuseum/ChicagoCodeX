@@ -75,7 +75,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	
 	/*
-	 * Calculation and Creation
+	 * Layer Creation and Calculations
 	 */
 	
 	// Calculate best zoom level to start at based on div parent's size.
@@ -118,12 +118,26 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	image.id('image');
 	map.add(image);
 	
-	// if we have SVG annotations for this figure, add the layer
-	if (svg_path && options.annotation) {
-		map.add(po.svgLayer(svg_path));
+	// If we have an overlay image, layer it above the original image
+	// and make it transparent
+	if (ptiff_overlay) {
+		var overlay = po.image();
+		var tlo = 'tile_loader_'+figure_id+'_overlay = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff_overlay+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://stanley.imamuseum.org/osci/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+		eval(tlo);
+		overlay.url(window['tile_loader_'+figure_id+'_overlay']);
+		overlay.id('overlay_'+figure_id);
+		map.add(overlay);
 	}
+	
+	// if we have SVG annotations for this figure, add the layer
+    if (svg_path && options.annotation) {
+    	var annotations = po.svgLayer(svg_path);
+    	annotations.id('annotations_'+figure_id);
+        map.add(annotations);
+    }
 
 
+	
 	/* 
 	 * Controls
 	 */
@@ -204,31 +218,23 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			})
 			.appendTo(controlBar);
 		
-		// If we have an overlay, place that on top and make it transparent
-		// also add the slider controls to the controlBar
-		if (ptiff_overlay) {
-			var overlay = po.image();
-			var tlo = 'tile_loader_'+figure_id+'_overlay = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff_overlay+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://stanley.imamuseum.org/osci/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
-			eval(tlo);
-			overlay.url(window['tile_loader_'+figure_id+'_overlay']);
-			overlay.id('overlay_'+figure_id);
-			map.add(overlay);
-			
-			// separator
-			var separator = $('<div>')
-				.attr('class', 'iip_control_bar_separator')
-				.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/imagetoolbar-divider.png')")
-				.css('background-repeat', 'no-repeat')
-				.css('width', '3px')
-				.css('height', '28px')
-				.css('margin', '7px 5px 5px 10px')
-				.css('float', 'left')
-				.html('&nbsp;')
-				.appendTo(controlBar);
-			
-			// create the overlay toggle button
-			var overlayControl = $('<div>')
-				.attr('class', 'iip_control_bar_overlay iip_control_bar_overlay_toggle')
+		// separator
+		var separator = $('<div>')
+			.attr('class', 'iip_control_bar_separator')
+			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/imagetoolbar-divider.png')")
+			.css('background-repeat', 'no-repeat')
+			.css('width', '3px')
+			.css('height', '28px')
+			.css('margin', '7px 5px 5px 10px')
+			.css('float', 'left')
+			.html('&nbsp;')
+			.appendTo(controlBar);
+		
+		// Add the annotation toggle
+		if (options.annotation == true) {
+			// create the annotation toggle button
+			var annotationControl = $('<div>')
+				.attr('class', 'iip_control_bar_annotation iip_control_bar_annotation_toggle')
 				.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-toggle.png')")
 				.css('background-repeat', 'no-repeat')
 				.css('width', '32px')
@@ -238,20 +244,39 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				.html('&nbsp;')
 				.mousedown(function(e) {
 					e.preventDefault();
-					alert('this button not yet wired up');
+					// find the current state of annotation opacity and reverse it
+					var annotationsLayer = $('#annotations_'+figure_id);
+					var opacity = annotationsLayer.css('opacity');
+					if (opacity == 1) {
+						annotationsLayer.animate({opacity: 0}, 500);
+					}
+					else {
+						annotationsLayer.animate({opacity: 1}, 500);
+					}
 				})
 				.appendTo(controlBar);
-			
-			// create a slider control		
-			
+		}
+				
+		// Add the overlay controls to the controlBar
+		if (ptiff_overlay) {
+			// create a slider control
+			// set width to 10% of the controlBarContainer width
+			var sliderWidth = parseInt((div.width() * 0.2)) + "px";
 			var sliderControl = $('<div>')
 				.attr('class', 'iip_control_bar_slider')
-				.slider({max: 100})
 				.css('float', 'left')
-				.css('width', '150px')
 				.css('margin', '13px 5px 13px 15px')
+				.css('width', sliderWidth)
+				.slider({max: 100})
 				.appendTo(controlBar);
-			
+			// set the margin on the handle to negative half it's size
+			// prevents stylesheets from messing it up
+			// push it onto the top of the UI stack to give jquery time to configure it first.
+			var handle = sliderControl.slider('widget').find('.ui-slider-handle');
+			setTimeout(function() {
+				var leftMargin = (handle.width() / 2);
+				handle.css('margin-left', -leftMargin);
+			}, 1);
 			// wire up the slider
 			sliderControl.bind('slide', function(event, ui) {
 				overlay_opacity = (ui.value / 100);
@@ -260,15 +285,14 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			$('#overlay_'+figure_id, div).attr('opacity', overlay_opacity);
 			
 			
-			// another separator
-			var separator2 = separator.clone();
-			separator2
-				.css('margin', '7px 0px 5px 10px')
-				.appendTo(controlBar);
-			
-			
 		}
-
+		
+		// another separator
+		var separator2 = separator.clone();
+		separator2
+			.css('margin', '7px 0px 5px 10px')
+			.appendTo(controlBar);
+		
 		// fullscreen button
 		// last control - place a margin on the end
 		var zoomControlFullscreen = $('<div>')
@@ -300,6 +324,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// finally, append the built controlBar to the div
 		controlBar.appendTo(controlBarContainer);
 		controlBarContainer.appendTo(div);
+		
 		
 		// now that the control bar has been added to the DOM, the control button
 		// images have been loaded.  It's now safe to hide the controlBarContainer
