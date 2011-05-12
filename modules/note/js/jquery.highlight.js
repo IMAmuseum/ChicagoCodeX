@@ -112,6 +112,7 @@
         newText.appendChild(wrapper);
         newText.appendChild(postText);
         textNode.parentNode.replaceChild(newText, textNode);
+/*
 console.log({
     wrapper: wrapper,
     newText: newText,
@@ -122,6 +123,7 @@ console.log({
     start_offset: start_offset,
     end_offset: end_offset
 });
+*/
     }
 
     // Process html node with a wrapper
