@@ -157,8 +157,8 @@
         {
             var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, 
                 lineHeight, colHeight, overflow = false, paragraphIdentifier, figureProcessed = false, columnContentCount, isP = true,
-                numLines, visibleLines, figureLinks, contentHeight, i;
-
+                numLines, visibleLines, figureLinks, contentHeight, i, contentMargin, contentPosition, contentOffset, columnPosition, columnOffset;
+            
             isP = content.is("p");
             
             //Determine which column to put content into
@@ -250,35 +250,42 @@
                     return true;
                 }
             }
+            
+            contentPosition = content.position();
+            contentOffset = content.offset();
+            columnPosition = column.position();
+            columnOffset = column.offset();
 
             // Position Paragraph Identifiers in the gutter
             paragraphIdentifier = content.find("span.osci_paragraph_identifier").remove();
             if (paragraphIdentifier.length) {
                 if (page.find("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id")).length === 0) {
-                    paragraphIdentifier.appendTo(page).css({
+                    paragraphIdentifier.css({
                         "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2) - 4) + "px",
-                        "margin-top" : content.position().top + parseInt(column.css("margin-top"), 10) + "px"
-                    });
+                        "margin-top" : contentPosition.top + parseInt(column.css("margin-top"), 10) + "px"
+                    }).appendTo(page);
                 }
             }
-
+            
+            contentMargin = parseInt(contentHeight - content.height(), 10);
+            
             //Update how much vertical height remains in the column
-            heightRemain = pageColumnData[pageColumnNumber].heightRemain - content.outerHeight(true);
+            heightRemain = pageColumnData[pageColumnNumber].heightRemain - contentHeight;
             if (heightRemain > 0 && heightRemain < lineHeight) {
                 heightRemain = 0;
-            } else if (heightRemain < 0 && heightRemain >= (parseInt(content.css("margin-bottom"), 10) * -1)) {
+            } else if (heightRemain < 0 && heightRemain >= (contentMargin * -1)) {
                 heightRemain = 0;
             }
             
             //If we have negative height remaining, the content must be repeated in the next column
             if (heightRemain < 0) {
                 //Adjust the column height so partial lines of text are removed
-                numLines = contentHeight / lineHeight;
-                visibleLines = Math.floor((pageColumnData[pageColumnNumber].height - (content.offset().top - column.offset().top)) / lineHeight);
-                colHeight = pageColumnData[pageColumnNumber].height - ((pageColumnData[pageColumnNumber].height - (content.offset().top - column.offset().top)) % lineHeight);
+                numLines = Math.floor((contentHeight - contentMargin) / lineHeight);
+                visibleLines = Math.floor((pageColumnData[pageColumnNumber].height - (contentOffset.top - columnOffset.top)) / lineHeight);
+                colHeight = pageColumnData[pageColumnNumber].height - ((pageColumnData[pageColumnNumber].height - (contentOffset.top - columnOffset.top)) % lineHeight);
                 column.height(colHeight + "px");
 
-                heightRemain = (numLines - visibleLines) * lineHeight * -1;
+                heightRemain = ((numLines - visibleLines) * lineHeight * -1) - contentMargin;
 
                 overflow = true;
             }

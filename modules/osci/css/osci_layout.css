@@ -1,6 +1,8 @@
 #osci_viewer_wrapper * {
     margin: 0;
     padding: 0;
+    font-size: 1em;
+    line-height: 150%;
 }
 
 #osci_viewer_wrapper p {
