@@ -57,16 +57,18 @@
 
         if (properties.start_node == properties.end_node) {
             var node = document.createTextNode(properties.start_node);
-            $(obj).html($(obj).html()); // reset the dom 
-
             $(obj).contents().each(function() {
-                if (node.nodeValue == this.nodeValue) {
+                if (node.nodeValue == this.nodeValue) { // Text
                     $.highlighter.processTxtNode(this, properties.start_offset, properties.end_offset);
-                    $($.highlighter.newElement).data('onid', properties.onid);
-                    $($.highlighter.newElement).addClass('note-' + properties.onid);
+                } else if (node.textContent == this.textContent) { // HTML
+                    $.highlighter.processHtmlNode(this, properties.start_offset, properties.end_offset);
                 }
             });
 
+            $($.highlighter.newElement).data('onid', properties.onid);
+            $($.highlighter.newElement).addClass('note-' + properties.onid);
+
+            $(obj).html($(obj).html()); // reset the dom 
             return;
         } 
 
@@ -104,6 +106,7 @@
             if (foundEnd === true) processNode = false; // We found the end so stop processing
         });
         
+        $(obj).html($(obj).html()); // reset the dom 
         return processNode; 
     }
 	

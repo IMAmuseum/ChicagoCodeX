@@ -57,7 +57,9 @@ function note_ajax_delete($onid) {
     $script = '<script type="text/javascript">
             var highlightSpan = $("span.note-'.$onid.'");
             highlightSpan.find(".note-delete-link").remove();
-            highlightSpan.replaceWith(highlightSpan.html());
+            highlightSpan.each(function() {
+                $(this).replaceWith($(this).html());
+            });
             $.osci.note.addNotes();
         </script>';
     $output[] = ajax_command_remove('.note');

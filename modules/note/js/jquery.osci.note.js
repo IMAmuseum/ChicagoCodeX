@@ -202,6 +202,8 @@
                 url: base.options.userNoteCallback + '/' + Drupal.settings.osci.nid,
                 dataType: 'json',
                 success: function(data) {
+                    base.processNotes(data);
+
                     if (data == null) return;
 
                     for (var i = 0; i < data.length; i++) {
@@ -212,15 +214,15 @@
                     $('.highlight-temp').addClass('highlight');
                     $('.highlight-temp').removeClass('highlight-temp');
 
-                    base.processNotes(data);
                 } 
             });
         }
 
         base.processNotes = function(data) {
+            $('.noteTitle').remove();
+
             if (data == null) return;
 
-            $('.noteTitle').remove();
             $.tmpl('noteLink', data).appendTo(base.panel);
 
             Drupal.detachBehaviors();
