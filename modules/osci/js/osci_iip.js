@@ -245,7 +245,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				.mousedown(function(e) {
 					e.preventDefault();
 					// find the current state of annotation opacity and reverse it
-					var annotationsLayer = $('#annotations_'+figure_id);
+					var annotationsLayer = $('#annotations_'+figure_id, div);
 					var opacity = annotationsLayer.css('opacity');
 					if (opacity == 1) {
 						annotationsLayer.animate({opacity: 0}, 500);
@@ -283,8 +283,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				$('#overlay_'+figure_id, div).attr('opacity' , overlay_opacity);
 			});
 			$('#overlay_'+figure_id, div).attr('opacity', overlay_opacity);
-			
-			
 		}
 		
 		// another separator
@@ -313,7 +311,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		}
 		else {
 			zoomControlFullscreen
-			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-fullscreen.png')")
+			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/icon-imagetoolbar-fullscreenclose.png')")
 			.mousedown(function(e) {
 				e.preventDefault();
 				make_small();
@@ -356,8 +354,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	function make_fullscreen() {
 		
-		var fs_wrap = $('<div id="fs_wrap" />').appendTo('body');
-		fs_wrap.css('position', 'absolute')
+		var fs_wrap = $('<div id="fs_wrap" />')
+			.css('position', 'absolute')
 			.css('top', '0px')
 			.css('left', '0px')
 			.css('width', '100%')
@@ -383,8 +381,12 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr('data-center-lon', orig_center.lon)
 			.attr('data-svg', svg_path)
 			.attr('data-overlay', ptiff_overlay);
-
+		
+		// now that we're done with the manipulation, add it to the DOM 
+		fs_wrap.appendTo('body');
+		// create the new polymap
 		iipmap(newdiv);
+		
 	}
     // bind the our make_fullscreen() to an event on the figure.
     // this provides a way to trigger it from outside this js.
@@ -392,7 +394,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
     figure.bind('osci_figure_fullscreen', make_fullscreen);
 	
 	function make_small() {
-		$('#iip_fullscreen').parent().remove();
+		var iipFullscreen = $('#iip_fullscreen').parent();
+		iipFullscreen.animate({opacity: 0}, 500, function() {
+			iipFullscreen.remove();
+		});
 	}
 	
 	function reset_map() { 
