@@ -55,6 +55,19 @@
 	$.highlighter.highlightNode = function(obj, properties, processNode) {
     	processNode = (processNode) ? processNode : false;
 
+        if (properties.start_node == properties.end_node) {
+            var node = document.createTextNode(properties.start_node);
+            $(obj).contents().each(function() {
+                if (node.nodeValue == this.nodeValue) {
+                    $.highlighter.processTxtNode(this, properties.start_offset, properties.end_offset);
+                    $($.highlighter.newElement).data('onid', properties.onid);
+                    $($.highlighter.newElement).addClass('note-' + properties.onid);
+                }
+            });
+
+            return;
+        } 
+
         $(obj).contents().each(function(idx, node) {
             if ($(node).text().trim() == '') return; // empty node
 
@@ -112,31 +125,21 @@
         newText.appendChild(wrapper);
         newText.appendChild(postText);
         textNode.parentNode.replaceChild(newText, textNode);
-/*
-console.log({
-    wrapper: wrapper,
-    newText: newText,
-    preText: textNode.nodeValue.substring(0, start_offset),
-    wrapperTxt: textNode.nodeValue.substring(start_offset, end_offset),
-    postText: textNode.nodeValue.substring(end_offset, textNode.length),
-    textNode: textNode,
-    start_offset: start_offset,
-    end_offset: end_offset
-});
-*/
     }
 
     // Process html node with a wrapper
-    //TODO: this is getting buggered
     $.highlighter.processHtmlNode = function(htmlNode, start_offset, end_offset) {
-        if (htmlNode.innerHTML == '') return;
-        var preHtml         = htmlNode.innerText.substring(0, start_offset);
-    	var wrapHtmlTxt     = htmlNode.innerText.substring(start_offset, end_offset);
-        var postHtml        = htmlNode.innerText.substring(end_offset, htmlNode.innerHTML.length); 
-        wrapHtmlTxt         = $.highlighter.wrapHtml(wrapHtmlTxt);
-        htmlNode.innerHTML  = preHtml + wrapHtmlTxt.outerHTML + postHtml; 
+        if (htmlNode.nodeValue == '') return;
+        var preHtml         = document.createTextNode(htmlNode.innerText.substring(0, start_offset));
+    	var wrapHtmlTxt     = $.highlighter.wrapHtml(htmlNode.innerText.substring(start_offset, end_offset));
+        var postHtml        = document.createTextNode(htmlNode.innerText.substring(end_offset, htmlNode.innerHTML.length)); 
+        htmlNode.removeChild(htmlNode.firstChild);
+        htmlNode.appendChild(preHtml);
+        htmlNode.appendChild(wrapHtmlTxt);
+        htmlNode.appendChild(postHtml);
     }
 
+    // Wrap text
     $.highlighter.wrapTxt = function(txt) {
         var wrapper = document.createElement($.highlighter.settings.wrapperElement);
         wrapper.className = $.highlighter.settings.wrapperClass;
@@ -145,6 +148,7 @@ console.log({
         return wrapper;
     }
 
+    // Wrap html
     $.highlighter.wrapHtml = function(html) {
         var wrapper = document.createElement($.highlighter.settings.wrapperElement);
         wrapper.className = $.highlighter.settings.wrapperClass;
