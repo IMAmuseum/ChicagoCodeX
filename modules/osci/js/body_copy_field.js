@@ -13,7 +13,6 @@
 	
 	
 	function figureOptionsPolymap(data, dest, options, figureId) {
-		console.log(options);
 		// determine best size to open dialog, based on figure size
 		var iw = $(data.ptiffDiv).data('iw');
 		var ih = $(data.ptiffDiv).data('ih');
