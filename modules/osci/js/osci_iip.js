@@ -249,7 +249,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				.slider({max: 100})
 				.css('float', 'left')
 				.css('width', '150px')
-				.css('margin', '13px 20px')
+				.css('margin', '13px 5px 13px 15px')
 				.appendTo(controlBar);
 			
 			// wire up the slider
