@@ -243,26 +243,30 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				.appendTo(controlBar);
 			
 			// create a slider control		
-			var sliderControl = $('<input>')
-				.attr('class', 'iip_slider')
-				.attr('type', 'range')
-				.attr('min', '1')
-				.attr('max', '100')
-				.attr('value', overlay_opacity)
-				.css('margin', '13px 5px')
+			
+			var sliderControl = $('<div>')
+				.attr('class', 'iip_control_bar_slider')
+				.slider({max: 100})
 				.css('float', 'left')
+				.css('width', '150px')
+				.css('margin', '13px 20px')
 				.appendTo(controlBar);
 			
-			// another separator
-			var separator2 = separator.clone();
-			separator2.appendTo(controlBar);
-			
 			// wire up the slider
-			sliderControl.change(function(event) {
-				overlay_opacity = (event.target.value / 100);
+			sliderControl.bind('slide', function(event, ui) {
+				overlay_opacity = (ui.value / 100);
 				$('#overlay_'+figure_id, div).attr('opacity' , overlay_opacity);
 			});
 			$('#overlay_'+figure_id, div).attr('opacity', overlay_opacity);
+			
+			
+			// another separator
+			var separator2 = separator.clone();
+			separator2
+				.css('margin', '7px 0px 5px 10px')
+				.appendTo(controlBar);
+			
+			
 		}
 
 		// fullscreen button
@@ -399,7 +403,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	div.bind('get_map', getMap);
 	
 	function restoreDefault(e) {
-		map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
+		// map.extent([map.coordinateLocation({zoom: zoom_level, column: 0, row: th}), map.coordinateLocation({zoom: zoom_level, column: tw, row: 0})]);
+		reset_map();
 	}
 	div.bind('restore_default_map', restoreDefault);
 }
