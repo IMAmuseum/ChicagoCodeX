@@ -337,7 +337,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		controlBarContainer.css('display', 'none');
 		
 		// set initial mouseleave, so first tap on the figure on an ipad will fire a mouseenter event
-		div.mouseleave();
+		div.parent().focus();
 	}
 	
 	// Set up our control visibility toggles for mouse events
