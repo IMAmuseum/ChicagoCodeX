@@ -342,6 +342,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// Show controls
 		show_controls();
 	});
+	// add an event for mobile safari
 	div.bind('touchend', function() {
 		show_controls();
 	});
