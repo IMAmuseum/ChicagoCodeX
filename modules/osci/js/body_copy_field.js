@@ -160,7 +160,8 @@
 			                    		  neLon: extents[1].lon,
 			                    		  neLat: extents[1].lat,
 			                    		  interaction: (!interactionToggle.attr('checked')),
-			                    		  annotation: (!annotationToggle.attr('checked'))
+			                    		  annotation: (!annotationToggle.attr('checked')),
+			                    		  previewUrl: JSON.parse(dest.siblings('.figure_options:first').val()).previewUrl
 			                    	  });
 			                    	  // inject into hidden form
 			                    	  var input = $('.figure_options', $(dest).parents(".fieldset-wrapper:first"));

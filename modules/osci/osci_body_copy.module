@@ -847,9 +847,6 @@ function osci_body_copy_field_widget_settings_form($field, $instance)
 }
 
 function osci_body_copy_figure_preview($nid) {
-	
-	//if (!is_numeric($nid)) return;
-	
 	// get node and ensure it's a valid figure type
 	$node = node_load($nid);
 	$ret = new stdClass();
