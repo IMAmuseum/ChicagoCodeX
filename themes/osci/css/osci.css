@@ -672,6 +672,10 @@ a.figure_goto {
 	background: url('../images/icon-goto.png') no-repeat left top;
 	position:absolute;right:22px;bottom:2px;
 }
+a.figure_goto-multi {
+	background: url('../images/icon-goto-multi.png') no-repeat left top;
+	position:absolute;right:32px;bottom:2px;
+}
 a.figure_fullscreen {
 	background: url('../images/icon-fullscreen.png') no-repeat left top;
 	position:absolute;right:0px;bottom:2px;
