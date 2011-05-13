@@ -72,6 +72,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	var tile_size = 256;
 	var overlay_opacity = '0';
+
 	
 	
 	/*
@@ -182,7 +183,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.mousedown(function(e) {
 				// prevent highlight-all on double click
 				e.preventDefault();
-				map.zoomBy(0.25);
+				// set the zoom level to the next whole number zoom level
+				// this prevents "stitching" of tiles in current browsers
+				var currentZoom = map.zoom();
+				var nextWholeZoom = Math.floor(currentZoom) + 1;
+				map.zoom(nextWholeZoom);
 			})
 			.appendTo(controlBar);
 		var zoomControlMinus = $('<div>')
@@ -197,7 +202,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.mousedown(function(e) {
 				// prevent highlight-all on double click
 				e.preventDefault();
-				map.zoomBy(-0.25);
+				// set the zoom level to the next lower whole number.
+				// this prevents "stitching" of tiles in current browsers
+				var currentZoom = map.zoom();
+				var nextWholeZoom = Math.ceil(currentZoom) - 1
+				map.zoom(nextWholeZoom);
 			})
 			.appendTo(controlBar);
 		
@@ -218,18 +227,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			})
 			.appendTo(controlBar);
 		
-		// separator
-		var separator = $('<div>')
-			.attr('class', 'iip_control_bar_separator')
-			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/imagetoolbar-divider.png')")
-			.css('background-repeat', 'no-repeat')
-			.css('width', '3px')
-			.css('height', '28px')
-			.css('margin', '7px 5px 5px 10px')
-			.css('float', 'left')
-			.html('&nbsp;')
-			.appendTo(controlBar);
-		
 		// Add the annotation toggle
 		if (options.annotation == true) {
 			// create the annotation toggle button
@@ -248,17 +245,29 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 					var annotationsLayer = $('#annotations_'+figure_id, div);
 					var opacity = annotationsLayer.css('opacity');
 					if (opacity == 1) {
-						annotationsLayer.animate({opacity: 0}, 500);
+						annotationsLayer.animate({opacity: 0}, 250);
 					}
 					else {
-						annotationsLayer.animate({opacity: 1}, 500);
+						annotationsLayer.animate({opacity: 1}, 250);
 					}
 				})
 				.appendTo(controlBar);
 		}
-				
+		
 		// Add the overlay controls to the controlBar
 		if (ptiff_overlay) {
+			// separator
+			var separator = $('<div>')
+			.attr('class', 'iip_control_bar_separator')
+			.css('background-image', "url('"+Drupal.settings.baseUrl+"sites/default/modules/osci/images/imagetoolbar-divider.png')")
+			.css('background-repeat', 'no-repeat')
+			.css('width', '3px')
+			.css('height', '28px')
+			.css('margin', '7px 0px 5px 10px')
+			.css('float', 'left')
+			.html('&nbsp;')
+			.appendTo(controlBar);
+			
 			// create a slider control
 			// set width to 10% of the controlBarContainer width
 			var sliderWidth = parseInt((div.width() * 0.2)) + "px";
@@ -283,13 +292,13 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				$('#overlay_'+figure_id, div).attr('opacity' , overlay_opacity);
 			});
 			$('#overlay_'+figure_id, div).attr('opacity', overlay_opacity);
+			
+			// another separator
+			var separator2 = separator.clone();
+			separator2
+				.css('margin', '7px 5px 0px 10px')
+				.appendTo(controlBar);
 		}
-		
-		// another separator
-		var separator2 = separator.clone();
-		separator2
-			.css('margin', '7px 0px 5px 10px')
-			.appendTo(controlBar);
 		
 		// fullscreen button
 		// last control - place a margin on the end
@@ -323,11 +332,9 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		controlBar.appendTo(controlBarContainer);
 		controlBarContainer.appendTo(div);
 		
-		
 		// now that the control bar has been added to the DOM, the control button
 		// images have been loaded.  It's now safe to hide the controlBarContainer
 		controlBarContainer.css('display', 'none');
-		
 	}
 	
 	// Set up our control visibility toggles for mouse events
