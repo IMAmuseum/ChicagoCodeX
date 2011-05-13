@@ -19,7 +19,7 @@
             base.options = $.extend({}, $.osci.navigation.defaultOptions, options);
 
         	// get current url
-        	var currentUrl = $(location).attr('href');
+        	var currentUrl = window.location.href;
         	
         	// determine whether or not this is linking to something
         	if(currentUrl.indexOf('#') >= 0) {
