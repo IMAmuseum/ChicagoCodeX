@@ -65,7 +65,7 @@
                 }
             });
 
-            $($.highlighter.newElement).data('onid', properties.onid);
+            $($.highlighter.newElement).attr('data-onid', properties.onid);
             $($.highlighter.newElement).addClass('note-' + properties.onid);
 
             $(obj).html($(obj).html()); // reset the dom 
@@ -100,7 +100,7 @@
                 $.highlighter.processTxtNode(node, start_offset, end_offset);
             }
 
-            $($.highlighter.newElement).data('onid', properties.onid);
+            $($.highlighter.newElement).attr('data-onid', properties.onid);
             $($.highlighter.newElement).addClass('note-' + properties.onid);
 
             if (foundEnd === true) processNode = false; // We found the end so stop processing

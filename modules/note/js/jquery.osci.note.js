@@ -27,7 +27,7 @@
                 * Handle text highlighting
                 */
         
-                base.selection = $('#osci_viewer .osci_paragraph').highlight({
+                $('#osci_viewer .osci_paragraph').highlight({
                     onSelection: function(obj, e, properties) {
                         $.osci.note.toolbar.appendTo($('body'));
                         $.osci.note.selection = properties;
