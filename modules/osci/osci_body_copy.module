@@ -632,6 +632,7 @@ function osci_body_copy_field_widget_info()
 function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element)
 {
     drupal_add_library('system', 'ui.tabs');
+    drupal_add_library('system', 'ui.slider');
 
     $footnoteCount = isset($items[$delta]['footnote_index']) ? $items[$delta]['footnote_index'] : 0;
     $footnoteCount = $footnoteCount ? $footnoteCount : 0;
@@ -900,12 +901,25 @@ function osci_body_copy_figure_thumb_save() {
 	}
 	$fileData = base64_decode(str_replace(' ','+',$matches[2]));
 	$figureId = $_REQUEST['figureId'];
-	$dir = $_SERVER['DOCUMENT_ROOT'].substr(base_path(),1)."sites/default/files/previews/";
-	$filename = $figureId.'.'.$ext;
+	$dir = $_SERVER['DOCUMENT_ROOT'].substr(base_path(),1)."/sites/default/files/previews/";
+	
+	// remove any previous thumbs for this figure
+	$dirHandle = opendir($dir);
+	while (($file = readdir($dirHandle)) !== FALSE) {
+		if (strstr($file, $figureId)) {
+			$drupalFile = new stdClass();
+			$drupalFile->uri = "public://previews/".$file;
+			file_delete($drupalFile);
+		}
+	}
+	
+	// save the new figure thumb
+	$filename = $figureId.'.'.time().'.'.$ext;
 	file_put_contents($dir.$filename, $fileData);
 	// form the return
 	$ret = new stdClass;
 	$ret->url = "sites/default/files/previews/".$filename;
+	$ret->path = $dir.$filename;
 	print json_encode($ret);
 }
 
