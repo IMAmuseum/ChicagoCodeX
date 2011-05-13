@@ -295,6 +295,9 @@ function osci_body_copy_render_layout($nid)
 
     $paragraphCount = 0;
     
+    // get url for path
+    $paragraphUrl = url("node/{$nid}/reader", array('absolute' => TRUE, 'fragment' => 'p-'));
+
     foreach ($bodyCopyElements as $k => $weight) {
         $v = $elements[$k];
         $elements[$k]['#theme'] = 'body_copy_field_html5';
@@ -306,7 +309,7 @@ function osci_body_copy_render_layout($nid)
             if (count($paragraphs)) {
                 foreach($paragraphs as $p) {
                     $paragraphCount++;
-                    $p->innertext = "<span class=\"osci_paragraph_identifier osci_paragraph_{$paragraphCount}\" data-paragraph_id=\"{$paragraphCount}\">{$paragraphCount}</span>" . $p->innertext();
+                    $p->innertext = "<a href=\"" . $paragraphUrl . $paragraphCount . "\" class=\"osci_paragraph_identifier osci_paragraph_{$paragraphCount}\" data-paragraph_id=\"{$paragraphCount}\">{$paragraphCount}</a>" . $p->innertext();
                     $newClass = $p->class ? $p->class . ' ' : '';
                     $p->class = $newClass . "osci_paragraph_{$paragraphCount} osci_paragraph";
                     $p->setAttribute("data-paragraph_id", $paragraphCount);

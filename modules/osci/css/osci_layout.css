@@ -100,7 +100,7 @@
     margin: 0 6px 0 0;
 }
 
-#osci_viewer span.osci_paragraph_identifier {
+#osci_viewer a.osci_paragraph_identifier {
     position: absolute;
     color: #BBB;
 }

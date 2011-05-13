@@ -257,9 +257,9 @@
             columnOffset = column.offset();
 
             // Position Paragraph Identifiers in the gutter
-            paragraphIdentifier = content.find("span.osci_paragraph_identifier").remove();
+            paragraphIdentifier = content.find("a.osci_paragraph_identifier").remove();
             if (paragraphIdentifier.length) {
-                if (page.find("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id")).length === 0) {
+                if (page.find("a.osci_paragraph_" + paragraphIdentifier.data("paragraph_id")).length === 0) {
                     paragraphIdentifier.css({
                         "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2) - 4) + "px",
                         "margin-top" : contentPosition.top + parseInt(column.css("margin-top"), 10) + "px"
@@ -655,7 +655,7 @@
 
             //Remove all columns and identifiers
             $("div.column", page).remove();
-            $("span.osci_paragraph_identifier", page).remove();
+            $("a.osci_paragraph_identifier", page).remove();
 
             //Grab all of the figures currently on the page
             figures = $("figure:visible", page);

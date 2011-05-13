@@ -10,12 +10,23 @@
  
         base.init = function()
         {
-            var toc;
+            var toc, operation = "page", value = "first";
+            
             
             //clear the layout cache
             $.osci.storage.clearCache("osci_layout_cache:");
             
             base.options = $.extend({}, $.osci.navigation.defaultOptions, options);
+
+        	// get current url
+        	var currentUrl = $(location).attr('href');
+        	
+        	// determine whether or not this is linking to something
+        	if(currentUrl.indexOf('#') >= 0) {
+        		value = currentUrl.split("#");
+                value = base.options.nid + "#" + value[1];
+                operation = "node";
+        	}            
             
             //setup the base data
             base.data = {
@@ -23,12 +34,13 @@
                 mlid : base.options.mlid,
                 currentPage : 0,
                 pageCount : 0,
-                to : {operation : "page", value : "first"}
+                to : {operation : operation, value : value}
             };
             
             $(document).bind({
             	//update the navigation when layout is complete
                 osci_layout_complete : function() {
+
                     _reset_navigation();
                 },
                 //bind navigation to the document so it can be easily triggered
@@ -132,7 +144,7 @@
             if ($.isFunction($.osci.navigation.options.loadFunction)) {
                 $.osci.navigation.options.loadFunction($.osci.navigation.data);
             }
-            
+
             //update the browser history
             if (updateHistory) {
                 $.osci.navigation.updateHistory($.osci.navigation.data.nid);
@@ -355,13 +367,14 @@
                         value = value.split("#");
                         identifier = "#" + value[1];
                         value = parseInt(value[0], 10);
-                    }
-                    
-                    if (base.data.nid !== value) {
+                        
                         //handle special paragraph selector
                         if (identifier.indexOf("#p-") >= 0) {
                             identifier = "p.osci_paragraph_" + identifier.split("-")[1] + ":first";
                         }
+                    }
+                    
+                    if (base.data.nid !== value) {
                         
                         base.data.nid = value;
                         base.data.to = {operation : "selector", value : identifier};
