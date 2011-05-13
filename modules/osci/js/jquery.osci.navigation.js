@@ -51,13 +51,9 @@
             // increase content font size
             $("#osci_increase_font").click(function (e) {
             	if($.osci.fontSize) {
-            		// check against maximum font size
-            		if(($.osci.fontSize + 20) > 140) {
-            			return
-            		}
             		$.osci.fontSize += 20;
             	} else {
-            		$.osci.fontSize = 100;
+            		$.osci.fontSize = 120;
             	}
             	
             	// reset content
