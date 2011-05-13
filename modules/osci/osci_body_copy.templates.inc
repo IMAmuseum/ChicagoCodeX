@@ -30,8 +30,6 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $vars['caption'] = (empty($figure['caption'])) ? '' : trim(check_markup($figure['caption'], $figure['format']));
     $title = isset($figure['number_template']) ? $figure['number_template'] : '';
     $title = trim(strip_tags($title . $vars['caption']));
-dpm($vars, 'vars');
-dpm($node, 'node');
     switch ($node->type) {
     	
         case 'image':
