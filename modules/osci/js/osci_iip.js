@@ -336,8 +336,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// images have been loaded.  It's now safe to hide the controlBarContainer
 		controlBarContainer.css('display', 'none');
 		
-		// set initial focus, so first tap on the figure on an ipad will fire a mouseenter event
-		$(document).mouseenter();
+		// set initial mouseleave, so first tap on the figure on an ipad will fire a mouseenter event
+		div.mouseleave();
 	}
 	
 	// Set up our control visibility toggles for mouse events
