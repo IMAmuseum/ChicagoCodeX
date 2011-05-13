@@ -335,32 +335,40 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// now that the control bar has been added to the DOM, the control button
 		// images have been loaded.  It's now safe to hide the controlBarContainer
 		controlBarContainer.css('display', 'none');
-		
-		// set initial mouseleave, so first tap on the figure on an ipad will fire a mouseenter event
-		div.parent().focus();
 	}
 	
 	// Set up our control visibility toggles for mouse events
 	div.mouseenter(function(e) {
 		// Show controls
-		if (options.interaction == true ) {
-			controlBarContainer.css('display', 'block');
-			controlBarContainer.animate({height: '42px'}, 200);
-		}
+		show_controls();
+	});
+	div.bind('touchend', function() {
+		show_controls();
 	});
 	div.mouseleave(function(e) {
 		// Hide controls
-		if (options.interaction == true ) {
-			controlBarContainer.animate({height: '0px'}, 200, function() {
-				controlBarContainer.css('display', 'none');
-			});
-		}
+		hide_controls();
 	});
 	
 	
 	/*
 	 * Utility functions
 	 */
+	
+	function show_controls() {
+		if (options.interaction == true ) {
+			controlBarContainer.css('display', 'block');
+			controlBarContainer.animate({height: '42px'}, 200);
+		}
+	}
+	
+	function hide_controls() {
+		if (options.interaction == true ) {
+			controlBarContainer.animate({height: '0px'}, 200, function() {
+				controlBarContainer.css('display', 'none');
+			});
+		}
+	}
 	
 	function make_fullscreen() {
 		
