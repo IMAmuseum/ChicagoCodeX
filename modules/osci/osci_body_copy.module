@@ -932,10 +932,11 @@ function osci_body_copy_form_alter(&$form, &$form_state, $form_id) {
 		|| $form_id == 'section_node_form' || $form_id == 'image_node_form' || $form_id == 'html_figure_node_form'
 		|| $form_id == 'page_node_form') 
 	{
-		$form['top_submit'] = array(
+		$form['submit2'] = array(
 		 '#type' => 'submit',
 		 '#value' => t('Save'),
-		 '#weight' => -1000
+		 '#weight' => -1000,
+		 '#submit' => array('node_form_submit')
 		);
 	}
 }
