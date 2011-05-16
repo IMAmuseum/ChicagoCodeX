@@ -68,7 +68,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var options = $.parseJSON(div.parents('figure:first').attr('data-options'));
 	// set up some sensible defaults if the figure didn't provide any options
 	if (!options) {
-		options = {interaction: true, annotation: true};
+		options = {interaction: true, annotation: false};
 	}
 	var tile_size = 256;
 	var overlay_opacity = '0';
