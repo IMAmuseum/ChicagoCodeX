@@ -6,7 +6,7 @@
 		// Listen for mouse up event, capture text, and highlight it
 	    $(settings.eventTarget).bind(settings.eventListen, function(e) {
 	        var selectionRange = getSelected();
-            if (!selectionRange) return settings.onEmptySelection();
+            if (!selectionRange) return;
 
             var parentNode  = $(selectionRange.startContainer).parents(settings.parentNode)[0];
             var properties  = {
@@ -32,20 +32,26 @@
 	            var selection = document.selection && document.selection.createRange();
 	        }
 
-            if (selection.toString() == '') {
-                $('.highlight-temp').each(function() {
-                    $(this).replaceWith($(this).html());
-                });
-                return false;
-            }
-	        
-	        if (selection.getRangeAt)
+	        if (selection.getRangeAt) {
 	            var range = selection.getRangeAt(0);
-	        else { // Safari!
+	        } else { // Safari!
 	            var range = document.createRange();
 	            range.setStart(selection.anchorNode,selection.anchorOffset);
 	            range.setEnd(selection.focusNode,selection.focusOffset);
 	        }
+
+            if (selection.toString() == '') {
+                settings.onEmptySelection();
+                $('.highlight-temp').each(function() {
+                    $(this).replaceWith($(this).html());
+                });
+                $(range.startContainer).parents(settings.parentNode).each(function() {
+                    $(this).html($(this).html());
+                });
+
+                return false;
+            }
+	        
 	        return range;
 	    }
     }

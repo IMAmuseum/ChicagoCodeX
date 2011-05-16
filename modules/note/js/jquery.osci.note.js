@@ -49,7 +49,7 @@
                                 dataType: 'json',
                                 url: base.options.noteSaveCallback,
                                 data: properties,
-                                success: function(data) {
+                                success: function() {
                                     base.addNotes();
                                 }
                             });
@@ -111,7 +111,9 @@
                 });
 
                 // Hide toolbar on load
-                $.osci.note.toolbar = $('ul.selection-toolbar').detach();
+                if (!$.osci.note.toolbar) {
+                    $.osci.note.toolbar = $('ul.selection-toolbar').detach();
+                }
 
                 /**
                  * Update form fields when submitting a note
