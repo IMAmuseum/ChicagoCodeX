@@ -32,7 +32,7 @@
 	            var selection = document.selection && document.selection.createRange();
 	        }
 
-	        if (selection.getRangeAt) {
+	        if (selection.getRangeAt(0)) {
 	            var range = selection.getRangeAt(0);
 	        } else { // Safari!
 	            var range = document.createRange();
