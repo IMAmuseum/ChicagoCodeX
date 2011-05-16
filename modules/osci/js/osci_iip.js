@@ -68,7 +68,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var options = $.parseJSON(div.parents('figure:first').attr('data-options'));
 	// set up some sensible defaults if the figure didn't provide any options
 	if (!options) {
-		options = {interaction: true, annotation: false};
+		options = {interaction: true, annotation: true};
 	}
 	var tile_size = 256;
 	var overlay_opacity = '0';
@@ -228,7 +228,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.appendTo(controlBar);
 		
 		// Add the annotation toggle
-		if (options.annotation == true) {
+		if (svg_path && options.annotation) {
 			// create the annotation toggle button
 			var annotationControl = $('<div>')
 				.attr('class', 'iip_control_bar_annotation iip_control_bar_annotation_toggle')
@@ -431,14 +431,15 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// If we have a center value set, let's use it, else calculate
 		// best center based on coordinates of our image tiles.
 		
+		
+		// honor inset data
+		if (options && options.swLat) {
+			map.extent([{lat: options.swLat, lon: options.swLon}, {lat: options.neLat, lon: options.neLon}]);
+		}
 		// only used for make_fullscreen to retain center
-		if (center_lat && center_lon) { 
+		else if (center_lat && center_lon) { 
 			map.center({lat: parseFloat(center_lat), lon: parseFloat(center_lon)});
 			map.zoom(zoom_level);
-		}
-		// honor inset data
-		else if (options && options.swLat) {
-			map.extent([{lat: options.swLat, lon: options.swLon}, {lat: options.neLat, lon: options.neLon}]);
 		}
 		else {
 			// map extents are to be given as SW corner, NE corner
