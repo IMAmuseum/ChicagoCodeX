@@ -262,8 +262,8 @@
             }
 
             //put the title parts into the page
-            $("h1.osci_book_title").text(bookTitle);
-            $("h2.osci_book_section_title").text(subTitle);
+            $("h1.osci_book_title").html(bookTitle);
+            $("h2.osci_book_section_title").html(subTitle);
         }
         
         //update the HTML5 url history
@@ -711,7 +711,7 @@
                 data : node
             }).append(
                 $("<a>", {
-                    text : node.title,
+                    html : node.title,
                     href : "#",
                     data : {
                         nid : link

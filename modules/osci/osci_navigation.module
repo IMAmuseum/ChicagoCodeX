@@ -197,7 +197,7 @@ function _osci_navigation_get_toc($nid, $fullBook = false)
             _osci_navigation_load_additional_toc_data($toc);
         }
     }
-
+    
     return $toc;
 }
 
@@ -441,7 +441,7 @@ function _osci_navigation_load_additional_toc_data(&$toc)
         $view = node_view($node, "body_copy");
 
         if (isset($node->field_osci_navigation_title['und'][0]['value'])) {
-            $toc[$tocId]['title'] = check_markup($node->field_osci_navigation_title['und'][0]['value'], $node->field_osci_navigation_title['und'][0]['format']);
+            $data['title'] = check_markup($node->field_osci_navigation_title['und'][0]['value'], $node->field_osci_navigation_title['und'][0]['format']);
         }
 
         $subSections = array();

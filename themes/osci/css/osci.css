@@ -233,6 +233,10 @@ body.page-node-reader {
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:.85em;
 }
+
+#osci_navigation_toc_wrapper p {
+    margin: 0;
+}
 .osci_navigation_toc_fader_top {
 	display:block;
 	top:0px;left:0px;
