@@ -17,7 +17,7 @@ function note_ajax_add() {
 
     if ($form_state['executed']) {
         $output = array();
-        $script = '<script type="text/javascript">$.osci.note.addNotes();</script>';
+        $script = '<script type="text/javascript">jQuery.osci.note.addNotes();</script>';
         $output[] = ajax_command_remove('.note');
         $output[] = ajax_command_append('head', $script);
         $output[] = ctools_modal_command_dismiss();
@@ -55,13 +55,16 @@ function note_ajax_delete($onid) {
     note_delete($onid);
 
     $script = '<script type="text/javascript">
+        (function ($) {
             var highlightSpan = $("span.note-'.$onid.'");
             highlightSpan.find(".note-delete-link").remove();
             highlightSpan.each(function() {
                 $(this).replaceWith($(this).html());
             });
             $.osci.note.addNotes();
-        </script>';
+        })(jQuery);
+    </script>';
+
     $output[] = ajax_command_remove('.note');
     $output[] = ajax_command_append('head', $script);
 
