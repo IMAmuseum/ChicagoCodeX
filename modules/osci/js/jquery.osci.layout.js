@@ -168,7 +168,7 @@
             for (var i = 0; i < pageColumnDataCount; i++) {
                 //If there is height remaining in the column, get it
                 if (pageColumnData[i].heightRemain > 0) {
-                    //check for exising column
+                    //check for existing column
                     column = page.find("div.column_" + i);
                     pageColumnNumber = i;
                     page.data("current_column", pageColumnNumber);
@@ -259,9 +259,9 @@
             contentMargin = parseInt(contentHeight - content.height(), 10);
 
             // Position Paragraph Identifiers in the gutter
-            paragraphIdentifier = content.find("span.osci_paragraph_identifier").remove();
+            paragraphIdentifier = content.find("a.osci_paragraph_identifier").remove();
             if (paragraphIdentifier.length) {
-                if (page.find("span.osci_paragraph_" + paragraphIdentifier.data("paragraph_id")).length === 0) {
+                if (page.find("a.osci_paragraph_" + paragraphIdentifier.data("paragraph_id")).length === 0) {
                     paragraphIdentifier.css({
                         "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2) - 4) + "px",
                         "margin-top" : contentPosition.top + parseInt(column.css("margin-top"), 10) + "px"

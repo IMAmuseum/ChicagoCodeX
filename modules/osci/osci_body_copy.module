@@ -296,7 +296,7 @@ function osci_body_copy_render_layout($nid)
     $paragraphCount = 0;
     
     // get url for path
-    $paragraphUrl = url("node/{$nid}/reader", array('absolute' => TRUE, 'fragment' => 'p-'));
+    $paragraphUrl = url("node/{$nid}/reader", array('absolute' => TRUE, 'fragment' => 'para-'));
 
     foreach ($bodyCopyElements as $k => $weight) {
         $v = $elements[$k];

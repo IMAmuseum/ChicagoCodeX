@@ -369,7 +369,7 @@
                         value = parseInt(value[0], 10);
                         
                         //handle special paragraph selector
-                        if (identifier.indexOf("#p-") >= 0) {
+                        if (identifier.indexOf("#para-") >= 0) {
                             identifier = "p.osci_paragraph_" + identifier.split("-")[1] + ":first";
                         }
                     }

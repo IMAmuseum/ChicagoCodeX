@@ -211,7 +211,7 @@ function _process_cross_link($text) {
     
     $query = "";
     if (isset($args['args']['paragraph'])) {
-        $query = "#p-" . $args['args']['paragraph'];
+        $query = "#para-" . $args['args']['paragraph'];
     }
     
     if (isset($args['args']['section'])) {
