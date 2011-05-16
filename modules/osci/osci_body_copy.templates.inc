@@ -94,7 +94,8 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
 	        	    'alt' => $node->title,
 	    			'attributes' => array(
 	        	        'data-figure_id' => $figure['id'],
-	        	        'data-figure_number' => $figure['figCount']
+	        	        'data-figure_number' => $figure['figCount'],
+        		        'data-occurences' => $figure['figOccurences']
 	        	    )
     			));
         	}
@@ -105,7 +106,8 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
 	        	    'alt' => $node->title,
 	    			'attributes' => array(
 	        	        'data-figure_id' => $figure['id'],
-	        	        'data-figure_number' => $figure['figCount']
+	        	        'data-figure_number' => $figure['figCount'],
+        		        'data-occurences' => $figure['figOccurences']
 	        	    )
     			));
         	}

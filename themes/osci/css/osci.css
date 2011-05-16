@@ -667,7 +667,7 @@ h1, h2, h3, h4, h5 { text-align:left!important; }
 div.figureThumbnail .figure_number {
 	text-align:left;
 }
-a.figure_goto, a.figure_fullscreen {
+a.figure_goto, a.figure_fullscreen, a.figure_goto-multi {
 	height:16px;width:16px;display:block;overflow:hidden;
 	text-indent:999px;
 	opacity: 0.6;
@@ -678,13 +678,14 @@ a.figure_goto {
 }
 a.figure_goto-multi {
 	background: url('../images/icon-goto-multi.png') no-repeat left top;
-	position:absolute;right:32px;bottom:2px;
+	position:absolute;right:22px;bottom:2px;
+	width: 26px;
 }
 a.figure_fullscreen {
 	background: url('../images/icon-fullscreen.png') no-repeat left top;
 	position:absolute;right:0px;bottom:2px;
 }
-a.figure_goto:hover, a.figure_fullscreen:hover {
+a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
 	opacity:1.0;	
 }
 .footnote { 

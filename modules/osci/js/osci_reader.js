@@ -345,7 +345,10 @@
                         //Add figures to the more bar
                         more.add_content("figures", figures, true, undefined, function(tab){
                             $(".figureThumbnail", tab).each(function(i, elem){
-                                var $elem = $(elem);
+                                var $elem = $(elem),
+                                    img = $elem.find("img"),
+                                    gotoClass = (parseInt(img.data("occurences"), 10) > 1) ? "figure_goto-multi" : "figure_goto";
+                                
                                 $("<a>", {
                                     text : "goto",
                                     href : "#",
@@ -361,10 +364,10 @@
                                         });
                                     },
                                     title : "goto figure in context",
-                                    "class" : "figure_goto"
+                                    "class" : gotoClass
                                 }).appendTo($elem);
                                 
-                                $("img", $elem).click(function(e){
+                                img.click(function(e){
                                     e.preventDefault();
                                     var id = $(this).data("figure_id");
                                     
