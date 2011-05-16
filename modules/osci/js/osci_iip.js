@@ -382,15 +382,21 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('background-color', 'rgba(0,0,0,0.8)')
             .css('z-index', '9999');
 
-		var newdiv = $('<div id="iip_fullscreen" class="iipmap" />').appendTo(fs_wrap);
-		newdiv.css('position', 'relative')
-		.css('margin', 'auto')
-		.css('top', '5%')
-		.css('width', '95%')
-		.css('height', '90%');
+		var new_figure = $('<figure>')
+			.attr('data-options', JSON.stringify(options))
+			.css('margin', '0')
+			.css('height', '100%')
+			.css('width', '100%')
+			.appendTo(fs_wrap);
 		
-		// append attributes for the image
-		newdiv.attr('data-zlm', zoom_max)
+		var new_div = $('<div id="iip_fullscreen" class="iipmap" />')
+			.css('position', 'relative')
+			.css('margin', 'auto')
+			.css('top', '5%')
+			.css('width', '95%')
+			.css('height', '90%')
+			// append attributes for the image
+			.attr('data-zlm', zoom_max)
 			.attr('data-node', node)
 			.attr('data-figure-id', figure_id)
 			.attr('data-ptiff', ptiff)
@@ -399,21 +405,22 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr('data-center-lat', orig_center.lat)
 			.attr('data-center-lon', orig_center.lon)
 			.attr('data-svg', svg_path)
-			.attr('data-overlay', ptiff_overlay);
+			.attr('data-overlay', ptiff_overlay)
+			.appendTo(new_figure);
 		
 		// now that we're done with the manipulation, add it to the DOM 
 		fs_wrap.appendTo('body');
 		// create the new polymap
-		iipmap(newdiv);
+		iipmap(new_div);
 		
 	}
     // bind the our make_fullscreen() to an event on the figure.
     // this provides a way to trigger it from outside this js.
-    var figure = div.parents('figure');
+    var figure = div.parents('figure:first');
     figure.bind('osci_figure_fullscreen', make_fullscreen);
 	
 	function make_small() {
-		var iipFullscreen = $('#iip_fullscreen').parent();
+		var iipFullscreen = $('#fs_wrap');
 		iipFullscreen.animate({opacity: 0}, 500, function() {
 			iipFullscreen.remove();
 		});
