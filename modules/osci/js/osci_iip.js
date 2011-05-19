@@ -431,7 +431,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// If we have a center value set, let's use it, else calculate
 		// best center based on coordinates of our image tiles.
 		
-		
 		// honor inset data
 		if (options && options.swLat) {
 			map.extent([{lat: options.swLat, lon: options.swLon}, {lat: options.neLat, lon: options.neLon}]);
