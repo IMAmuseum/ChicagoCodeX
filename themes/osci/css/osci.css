@@ -995,21 +995,28 @@ div.ctools-modal-content input.form-submit {
     -moz-box-shadow: 0 -6px 6px #888;
     -webkit-box-shadow: 0 0 6px #888;
     box-shadow: 0 0 6px #888;
-    padding: 2px 2px;
+    padding: 5px 8px;
 }
 
 #osci_figure_linker a {
-    font-weight: bold;   
+    width:18px;height:18px;
+	overflow:hidden;
+	display:block;
+	padding:0;
+	text-indent:-999px; 
 }
 
 #osci_figure_linker a.next {
-    padding: 0 6px 0 0;   
+    
+	margin-right:20px; 
+	background: url('../images/icon-figref-next.png') no-repeat left top;
 }
 
 #osci_figure_linker a.prev {
-    padding: 0 6px 0 0;
+    margin-right:10px;
+	background: url('../images/icon-figref-prev.png') no-repeat left top;
 }
 
 #osci_figure_linker a.close {
-    color: red;   
+      background: url('../images/icon-figref-close.png') no-repeat left top;
 }
