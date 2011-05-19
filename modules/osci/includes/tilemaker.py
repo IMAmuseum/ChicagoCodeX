@@ -105,6 +105,14 @@ if __name__ == '__main__':
                 sys.stdout.flush() 
             print
     # save manifest.json
-    
+    manifest = {
+                
+                }
+    # save thumbnail
+    print "saving thumbnail ..."
+    thumb_width = 640
+    thumb_height = (thumb_width / image.size[0]) * image.size[1]
+    thumb = image.resize((thumb_width, thumb_height), Image.ANTIALIAS)
+    thumb.save(output_path + "thumb_" + os.path.basename(image_file))
     time_stop = time.time()
     print "finished - generated %d tiles in %.2f seconds" % (num_tiles, time_stop - time_start)

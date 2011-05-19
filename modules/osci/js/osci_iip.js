@@ -375,12 +375,13 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		
 		var fs_wrap = $('<div id="fs_wrap" />')
 			.css('position', 'absolute')
-			.css('top', '0px')
+			.css('top', '26px')
 			.css('left', '0px')
 			.css('width', '100%')
-			.css('height', '100%')
+			.css('height', $(window).height() - 29 + "px")
 			.css('background-color', 'rgba(0,0,0,0.8)')
             .css('z-index', '9999');
+		console.log($(window).height());
 
 		var new_figure = $('<figure>')
 			.attr('data-options', JSON.stringify(options))
@@ -392,9 +393,9 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		var new_div = $('<div id="iip_fullscreen" class="iipmap" />')
 			.css('position', 'relative')
 			.css('margin', 'auto')
-			.css('top', '5%')
-			.css('width', '95%')
-			.css('height', '90%')
+			.css('top', '0px')
+			.css('width', '100%')
+			.css('height', '100%')
 			// append attributes for the image
 			.attr('data-zlm', zoom_max)
 			.attr('data-node', node)
