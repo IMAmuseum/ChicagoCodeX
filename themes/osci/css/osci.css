@@ -1011,14 +1011,14 @@ div.ctools-modal-content input.form-submit {
 
 #osci_figure_linker a.next {
     
-	margin-right:20px; 
+	
 	background: url('../images/icon-figref-next.png') no-repeat left top;
 	left:36px;
 	
 }
 
 #osci_figure_linker a.prev {
-    margin-right:10px;
+    
 	background: url('../images/icon-figref-prev.png') no-repeat left top;
 	left:8px;
 }
