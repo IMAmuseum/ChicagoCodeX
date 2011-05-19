@@ -409,7 +409,7 @@ function osci_body_copy_render_layout($nid)
                 if (isset($finalFigures[$fId])) {
                     $finalFigures[$fId]['figOccurences']++;
                 } else {
-                    $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $k, 'figOccurences' => 1));
+                    $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $k, 'figOccurences' => 1, 'catalogNumber' => $catalogNumber));
                 }
             }
         }

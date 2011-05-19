@@ -4,7 +4,7 @@
         <?php print $content; ?>
     </div>
     <?php if (isset($thumbnail)) { ?>
-    <div class="figureThumbnail" data-figure_id="<?php print $figure['id']; ?>">
+    <div class="figureThumbnail" data-figure_id="<?php print $figure['id']; ?>" data-pager_display="<?php print $figure['catalogNumber'] . '.' . $figure['figCount']; ?>">
         <?php print $thumbnail; ?>
         <span class="figure_number"><?php print isset($figure['number_template']) ? $figure['number_template'] : $figure['id']; ?></span>
     </div>

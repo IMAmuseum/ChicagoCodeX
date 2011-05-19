@@ -76,7 +76,8 @@
         base.add_content = function(tabName, data, paginate, perPage, callback)
         {
             var tabNum, tabId = "osci_tab_" + tabName, tab, total, i, pager, item, maxPagesDisplay = 5, totalPages,
-                tabs = $("#" + base.options.tabContainerId, base.$el), tabWidth, calcWidth, pagerItemText, maxPagerItemText;
+                tabs = $("#" + base.options.tabContainerId, base.$el), tabWidth, calcWidth, pagerItemText, maxPagerItemText,
+                pagerItems = [], hasPagerDisplayData = false;
 
             if (base.tab_map[tabName] !== undefined) {
                 tabNum = base.tab_map[tabName];
@@ -122,6 +123,10 @@
                     
                     data.hide();
                     
+                    if (data.filter(":first").data("pager_display")) {
+                        hasPagerDisplayData = true;
+                    }
+                    
                     totalPages = Math.ceil(total / perPage);
                     maxPagesDisplay = Math.min(maxPagesDisplay, totalPages);
                     
@@ -130,37 +135,46 @@
                         "class" : "osci_pager"
                     });
                     
-                    $("<li>", {
+                    pagerItems.push($("<li>", {
                         html : $("<a>", {
                             text : "first",
                             data : {page_number : 0},
                             "class" : "osci_pager_nav_first"
                         }),
                         "class" : "osci_pager_nav_first"
-                    }).appendTo(pager);
+                    }));
                     
-                    $("<li>", {
+                    pagerItems.push($("<li>", {
                         html : $("<a>", {
                             text : "prev",
                             data : {page_number : -1},
                             "class" : "osci_pager_nav_prev"
                         }),
                         "class" : "osci_pager_nav_prev"
-                    }).appendTo(pager);
+                    }));
                     
-                    $("<li>", {
+                    pagerItems.push($("<li>", {
                         html : $("<span>", {
                             text : "..."
                         }),
                         "class" : "less"
-                    }).appendTo(pager).hide();
+                    }).hide());
                     
                     for (i = 1; i <= totalPages; i++) {
-                        if (perPage > 1) {
-                            maxPagerItemText = (i * perPage) > total ? total : (i * perPage);
-                            pagerItemText = ((i * perPage) - perPage + 1) + " - " + maxPagerItemText;
+                        if (hasPagerDisplayData) {
+                            if (perPage > 1) {
+                                maxPagerItemText = (i * perPage) > total ? data.filter(":eq(" + (total - 1) + ")").attr("data-pager_display") : data.filter(":eq(" + ((i * perPage) - 1) + ")").attr("data-pager_display");
+                                pagerItemText = data.filter(":eq(" + ((i * perPage) - perPage) + ")").attr("data-pager_display") + " - " + maxPagerItemText;
+                            } else {
+                                pagerItemText = data.filter(":eq(" + (i - 1) + ")").data("pager_display");
+                            }
                         } else {
-                            pagerItemText = i;
+                            if (perPage > 1) {
+                                maxPagerItemText = (i * perPage) > total ? total : (i * perPage);
+                                pagerItemText = ((i * perPage) - perPage + 1) + " - " + maxPagerItemText;
+                            } else {
+                                pagerItemText = i;
+                            }
                         }
                         
                         item = $("<li>",{
@@ -170,7 +184,7 @@
                                 href : "#"                            
                             }),
                             "class" : "osci_pager_item"
-                        }).appendTo(pager).hide();
+                        }).hide();
                         
                         if (i <= maxPagesDisplay) {
                             item.show();
@@ -183,32 +197,36 @@
                         if (i === totalPages) {
                             item.addClass("last");
                         }
+                        
+                        pagerItems.push(item);
                     } 
                     
-                    $("<li>", {
+                    pagerItems.push($("<li>", {
                         html : $("<span>", {
                             text : "..."
                         }),
                         "class" : "more"
-                    }).appendTo(pager).hide();
+                    }).hide());
                     
-                    $("<li>", {
+                    pagerItems.push($("<li>", {
                         html : $("<a>", {
                             text : "next",
                             data : {page_number : 1},
                             "class" : "osci_pager_nav_next"
                         }),
                         "class" : "osci_pager_nav_next"
-                    }).appendTo(pager);
+                    }));
                     
-                    $("<li>", {
+                    pagerItems.push($("<li>", {
                         html : $("<a>", {
                             text : "last",
                             data : {page_number : totalPages - 1},
                             "class" : "osci_pager_nav_last"
                         }),
                         "class" : "osci_pager_nav_last"
-                    }).appendTo(pager);
+                    }));
+                    
+                    pager.append.apply(pager, pagerItems);
                     
                     pager.delegate("a", "click", function(e) {
                         e.preventDefault();

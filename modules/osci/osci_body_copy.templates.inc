@@ -85,33 +85,24 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         	    $vars['type'] = "iip_image";
         		$vars['content'] = _osci_iip_create_iip_div($node, $figure['id']);
         	}
+        	
         	// test is a preview url is available.  If so, use it in the thumbnail below
-        	
         	if ($options && $options->previewUrl && $options->previewUrl != '') {
-        		$vars['thumbnail'] = theme_image_style(array(
-	        	    'style_name' => "osci_thumbnail_165w",
-	    			'path' => 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl),
-	        	    'alt' => $node->title,
-	    			'attributes' => array(
-	        	        'data-figure_id' => $figure['id'],
-	        	        'data-figure_number' => $figure['figCount'],
-        		        'data-occurences' => $figure['figOccurences']
-	        	    )
-    			));
+        	    $thumbnailPath = 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl);
+        	} else {
+        	    $thumbnailPath = $node->field_image['und'][0]['uri'];
         	}
-        	else {
-        		$vars['thumbnail'] = theme_image_style(array(
-	        	    'style_name' => "osci_thumbnail_165w",
-	    			'path' => $node->field_image['und'][0]['uri'],
-	        	    'alt' => $node->title,
-	    			'attributes' => array(
-	        	        'data-figure_id' => $figure['id'],
-	        	        'data-figure_number' => $figure['figCount'],
-        		        'data-occurences' => $figure['figOccurences']
-	        	    )
-    			));
-        	}
-        	
+        	    
+    		$vars['thumbnail'] = theme_image_style(array(
+        	    'style_name' => "osci_thumbnail_165w",
+    			'path' => $thumbnailPath,
+        	    'alt' => $node->title,
+    			'attributes' => array(
+        	        'data-figure_id' => $figure['id'],
+        	        'data-figure_number' => $figure['figCount'],
+    		        'data-occurences' => $figure['figOccurences']
+        	    )
+			));        	
         	
     		break;
         case 'html_figure':
