@@ -995,7 +995,7 @@ div.ctools-modal-content input.form-submit {
     -moz-box-shadow: 0 -6px 6px #888;
     -webkit-box-shadow: 0 0 6px #888;
     box-shadow: 0 0 6px #888;
-    padding: 5px 0;
+    height: 28px;
 	width:100px;
 }
 
