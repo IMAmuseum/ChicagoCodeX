@@ -79,6 +79,8 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         		    	'attributes' => array('title' => $title)
         		    )
         		);
+        		
+        		$vars['content'] = str_replace("src=", "data-src=", $vars['content']);
         	}
         	elseif (isset($node->field_ptiff['und'][0]))
         	{
@@ -102,7 +104,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         	        'data-figure_number' => $figure['figCount'],
     		        'data-occurences' => $figure['figOccurences']
         	    )
-			));        	
+			));      	
         	
     		break;
         case 'html_figure':

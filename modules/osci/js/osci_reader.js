@@ -201,6 +201,8 @@
                     } 
                     
                     finalImage = $("img", content);
+                    finalImage.attr("src", finalImage.data("src"));
+                    
                     if (finalImageWidth === undefined) {
                         finalImageWidth = finalImage.width();
                     }
@@ -214,25 +216,46 @@
                     return true;
                 },
                 html_figure : function(figure, content) {
-                    var contentHeight = 0, aspect = 0;
+                    var contentHeight = 0, aspect = 0, contentWidth = 0, translate;
                     figure.prepend(content);
                     
                     content.children().each(function(i, elem){
-                        contentHeight += $(elem).outerHeight(true);
+                        var $elem = $(elem);
+                        contentHeight += $elem.outerHeight(true);
+                        contentWidth += $elem.outerWidth(true);
                     });
                     
-                    aspect = Math.round((content.width() / contentHeight) * 1000) / 1000;
-
-                    if (aspect != figure.data("aspect")) {
-                        figure.data("aspect", aspect);
+                    aspect = Math.round((contentWidth / contentHeight) * 1000) / 1000;
+                    figure.data("aspect", aspect);
+                    
+                    if (!figure.data("aspect_determined")) {
+                        figure.data("aspect_determined", true);
                         return false;
-                    }
+                    } 
+
+//                    if (aspect > 1) {
+//                        translate = "translate(-" + ((contentWidth - (contentWidth / aspect)) / 2) + "px, 0)";
+//                    } else {
+//                        translate = "translate(0, " + ((contentHeight - (contentHeight * aspect)) / 2) + "px)";
+//                    }
+//                    
+//                    content.children().css({
+//                        "transform" : translate + " scale(" + aspect + ")",
+//                        "-moz-transform" : translate + " scale(" + aspect + ")",
+//                        "-webkit-transform" : translate + " scale(" + aspect + ")"
+//                    });
                     
                     $("<a>", {
                         href : "#",
                         "class" : "figure_fullscreen"
                     }).appendTo($("figcaption", figure)).fancybox({
-                        content : content.clone().height("").width(""),
+                        content : content.clone().css({
+                            height : "auto",
+                            width : "auto",
+                            transform : "translate(0px, 0px) scale(1)",
+                            "-moz-transform" : "translate(0px, 0px) scale(1)",
+                            "-webkit-transform" : "translate(0px, 0px) scale(1)"
+                        }),
                         title : $("figcaption", figure).clone().html()
                     });
                     
@@ -320,11 +343,12 @@
                     url :  endpoint,
                     expire : Drupal.settings.osci_navigation.cache_time,
                     callback : function(content) {
+
                         var data = $(content.data),
                             footnotes = data.find("#field_osci_footnotes").remove(),
                             figures = data.find("#field_osci_figures").find(".figureThumbnail").remove(),
                             more = $("#osci_more_wrapper").data("osci.more");
-                        
+
                         //Do the layout
                         $("#" + Drupal.settings.osci_navigation.reader_id).osci_layout(data, {
                             cacheId : navData.nid
