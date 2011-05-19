@@ -1007,6 +1007,10 @@ div.ctools-modal-content input.form-submit {
 	text-indent:-999px; 
 	position:absolute;
 	top:5px;
+	opacity:.7;
+}
+#osci_figure_linker a:hover {
+	opacity:1;	
 }
 
 #osci_figure_linker a.next {
@@ -1025,5 +1029,5 @@ div.ctools-modal-content input.form-submit {
 
 #osci_figure_linker a.close {
       background: url('../images/icon-figref-close.png') no-repeat left top;
-	  left:56px;
+	  left:76px;
 }
