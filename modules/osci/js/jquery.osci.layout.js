@@ -4,14 +4,14 @@
         $.osci = {};
     }
 
-    $.osci.layout = function(el, data, options)
+    $.osci.layout = function(data, options)
     {
-        var base = this;
+        var base = this.layout;
 
-        base.$el = $(el);
-        base.el = el;
+        //base.$el = $(el);
+        //base.el = el;
 
-        base.$el.data("osci.layout", base);
+        //base.$el.data("osci.layout", base);
 
         base.init = function()
         {
@@ -20,6 +20,7 @@
             $(document).trigger("osci_layout_start");
 
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
+            base.reader = $("#" + base.options.readerId);
             base.viewer = $("#" + base.options.viewerId).empty();
             
             //Check to see if layout has been cached in localstorage
@@ -37,6 +38,8 @@
             //Calculate the constraints of the viewer area
             _calcViewerInfo();
             
+            base.figureContent = {};
+            
             //No cache process content for layout
             if (cache === null) {
                 //Get the data from the HTML body copy output we only want section content
@@ -49,6 +52,7 @@
             } else {
                 //Cache found load layout from localstorage
                 base.options = cache.data.options;
+                base.figures = $(cache.data.figures);
                 base.viewer.append(cache.data.content);
             }
             
@@ -58,8 +62,43 @@
                 10
             );
             
+            $(document).bind("osci_navigation_complete", function(e, page){
+                var page = $(".osci_page_" + page);
+                
+                if (!page.hasClass("figures_processed")) {
+                    var figures = page.find("figure"),
+                        numFigures = figures.length, i = 0;
+                    
+                    if (numFigures) {
+                        for (i = 0; i < numFigures; i++) {
+                            var pageFigure = $(figures[i]),
+                                figureContent = base.figureContent["#" + pageFigure.attr("id")],
+                                figureType = pageFigure.data("figure_type");
+                            
+                            if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
+                                base.options.processFigureCallback[figureType](pageFigure, figureContent);
+                            } else {
+                                pageFigure.prepend(figureContent);
+                            }
+                        }
+                    }
+                    
+                    page.addClass("figures_processed");
+                }
+            });
+//          if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
+//          if (!base.options.processFigureCallback[figureType](figure, figureContent)) {
+//              figure.data("sized", false);
+//              _process_figure(figureId, page);
+//          }
+//      } else {
+//          figure.prepend(figureContent);
+//      }
+            
             //Remove base data
             delete base.data;
+            delete base.viewer;
+            delete base.reader;
             delete base.figures;
         };
 
@@ -149,7 +188,7 @@
             }
 
             //Store the layout in localstorage for faster load times
-            $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html()}, base.options.layoutCacheTime);
+            $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html(), figures : base.figures.html()}, base.options.layoutCacheTime);
         };
 
         //Add content to the current page
@@ -506,14 +545,16 @@
                 }
             }
             
-            if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
-                if (!base.options.processFigureCallback[figureType](figure, figureContent)) {
-                    figure.data("sized", false);
-                    _process_figure(figureId, page);
-                }
-            } else {
-                figure.prepend(figureContent);
-            }
+            base.figureContent[figureId] = figureContent;
+            
+//            if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
+//                if (!base.options.processFigureCallback[figureType](figure, figureContent)) {
+//                    figure.data("sized", false);
+//                    _process_figure(figureId, page);
+//                }
+//            } else {
+//                figure.prepend(figureContent);
+//            }
             
             return true;
         }
@@ -561,11 +602,11 @@
             var viewerHeight = 0;
 
             //Set the height of the container to the window height minus any margin on the container element
-            base.$el.height($(window).height() - (base.$el.outerHeight() - base.$el.height()));
+            base.reader.height($(window).height() - (base.reader.outerHeight() - base.reader.height()));
             
             //Calc viewer height by taking the height of the container minus all non-absolute positioned children inside the container.
-            viewerHeight = base.$el.height();
-            base.$el.children(":not(#" + base.viewer.attr("id") + ")").each(function(i, elem){
+            viewerHeight = base.reader.height();
+            base.reader.children(":not(#" + base.viewer.attr("id") + ")").each(function(i, elem){
                 var $elem = $(elem);
                 if ($elem.css("position") !== "absolute") {
                     viewerHeight -= $elem.outerHeight(true);
@@ -722,6 +763,7 @@
     };
 
     $.osci.layout.defaultOptions = {
+        readerId : "osci_viewer_wrapper",
         minColumnWidth : 200,
         maxColumnWidth : 300,
         gutterWidth : 40,

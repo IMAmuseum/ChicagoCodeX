@@ -215,6 +215,10 @@
                     
                     return true;
                 },
+                iip_image : function(figure, content) {
+                    figure.prepend(content);
+                    iipmap(content.find(".iipmap"));
+                },
                 html_figure : function(figure, content) {
                     var contentHeight = 0, aspect = 0, contentWidth = 0, translate;
                     figure.prepend(content);
@@ -350,7 +354,8 @@
                             more = $("#osci_more_wrapper").data("osci.more");
 
                         //Do the layout
-                        $("#" + Drupal.settings.osci_navigation.reader_id).osci_layout(data, {
+                        $.osci.layout(data, {
+                            readerId : Drupal.settings.osci_navigation.reader_id,
                             cacheId : navData.nid
                         });
                         

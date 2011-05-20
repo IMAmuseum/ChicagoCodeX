@@ -21,10 +21,6 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $tempOptions = json_decode(htmlspecialchars_decode($data['options']));
     unset($tempOptions->previewUrl);
     $data['options'] = htmlspecialchars(json_encode($tempOptions));
-    $vars['data'] = '';
-    foreach($data as $k => $v) {
-        $vars['data'] .= 'data-'.$k.'="'.$v.'" ';
-    }
 
     $vars['type'] = $node->type;
     $vars['caption'] = (empty($figure['caption'])) ? '' : trim(check_markup($figure['caption'], $figure['format']));
@@ -85,6 +81,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         	elseif (isset($node->field_ptiff['und'][0]))
         	{
         	    $vars['type'] = "iip_image";
+        	    $data['figure_type'] = "iip_image";
         		$vars['content'] = _osci_iip_create_iip_div($node, $figure['id']);
         	}
         	
@@ -110,6 +107,11 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         case 'html_figure':
             $vars['content'] = check_markup($node->field_osci_figure_content['und'][0]['value'], $node->field_osci_figure_content['und'][0]['format']);
             break;
+    }
+    
+    $vars['data'] = '';
+    foreach($data as $k => $v) {
+        $vars['data'] .= 'data-'.$k.'="'.$v.'" ';
     }
 }
 

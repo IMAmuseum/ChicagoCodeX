@@ -12,7 +12,6 @@
         {
             var toc, operation = "page", value = "first";
             
-            
             //clear the layout cache
             $.osci.storage.clearCache("osci_layout_cache:");
             
@@ -32,7 +31,7 @@
             base.data = {
                 nid : base.options.nid,
                 mlid : base.options.mlid,
-                currentPage : 0,
+                currentPage : 1,
                 pageCount : 0,
                 to : {operation : operation, value : value}
             };
@@ -172,12 +171,11 @@
         //reset the navigation
         function _reset_navigation()
         {
-            var paragraphData, page,
-                layoutData = $("#" + base.options.readerId).data("osci.layout");
+            var paragraphData, page
 
-            base.data.currentPage = 0;
-            base.data.pageCount = layoutData.options.pageCount;
-            base.data.layoutData = layoutData.options;
+            base.data.currentPage = 1;
+            base.data.pageCount = $.osci.layout.options.pageCount;
+            base.data.layoutData = $.osci.layout.options;
             base.data.length = parseInt(base.data.toc["nid_" + base.data.nid].length, 10);
 
             _update_title();
@@ -295,7 +293,7 @@
             	//go to the next page
                 case "next":
                     base.data.currentPage++;
-                    if (base.data.currentPage >= base.data.pageCount) {
+                    if (base.data.currentPage > base.data.pageCount) {
                         tocData = base.data.toc["nid_" + base.data.nid].next;
                         if (tocData.nid) {
                             base.data.nid = tocData.nid;
@@ -309,7 +307,7 @@
                 //go to the previous page
                 case "prev":
                     base.data.currentPage--;
-                    if (base.data.currentPage < 0) {
+                    if (base.data.currentPage < 1) {
                         tocData = base.data.toc["nid_" + base.data.nid].prev;
                         if (tocData.nid) {
                             base.data.nid = tocData.nid;
@@ -323,13 +321,13 @@
                 //go to a specific page
                 case "page":
                     if (value === "first") {
-                        base.data.currentPage = 0;
+                        base.data.currentPage = 1;
                     } else if (value === "last") {
-                        base.data.currentPage = base.data.pageCount - 1;
+                        base.data.currentPage = base.data.pageCount;
                     } else if (value > base.data.pageCount || value < 1) {
                         return;
                     } else {
-                        base.data.currentPage = value - 1;
+                        base.data.currentPage = value;
                     }
                     break;
                 //go to a specfic column
@@ -392,8 +390,8 @@
             newOffset = 0;
             //Calculate the new page container offset
             if (base.data.currentPage > 0) {
-                newOffset = -1 * ((base.data.currentPage * base.data.layoutData.pageWidth) + 
-                    ((base.data.layoutData.outerPageGutter[1] + base.data.layoutData.outerPageGutter[3]) * (base.data.currentPage)));
+                newOffset = -1 * (((base.data.currentPage - 1) * base.data.layoutData.pageWidth) + 
+                    ((base.data.layoutData.outerPageGutter[1] + base.data.layoutData.outerPageGutter[3]) * ((base.data.currentPage - 1))));
             }
 
             //if the table of contents is not overlaying the content shift the content to not be under the toc
@@ -405,7 +403,7 @@
             }
 
             //update the paging navigation
-            $("#" + base.options.sectionNavId).trigger("osci_update_navigation_section", base.data.currentPage);
+            //$("#" + base.options.sectionNavId).trigger("osci_update_navigation_section", base.data.currentPage);
 
             //shift the page using css3
             $("#osci_pages", "#osci_viewer").css({
@@ -413,6 +411,8 @@
                 "-moz-transform" : "translate(" + newOffset + "px, 0)",
                 "transform" : "translate(" + newOffset + "px, 0)"
             });
+            
+            $(document).trigger("osci_navigation_complete", base.data.currentPage);
         };
         
         //create the paging navigation bar
@@ -440,10 +440,10 @@
                 }).hide().appendTo(container);
                 
                 //bind an event to update the navigation
-                container.bind("osci_update_navigation_section", function(e, page){
-                    var $this = $(this);
-                    $this.find("li").removeClass("active");
-                    $this.find("li:eq(" + page + ")").addClass("active");
+                $(document).bind("osci_navigation_complete", function(e, page){
+                    var secNav = $("#osci_navigation_section_list");
+                    secNav.find("li").removeClass("active");
+                    secNav.find("li:eq(" + (page - 1) + ")").addClass("active");
                 });
                 
                 navBar.delegate("li", "click", function(e){
