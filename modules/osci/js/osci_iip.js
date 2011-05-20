@@ -62,6 +62,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var image_w = div.attr('data-iw');
 	var center_lat = div.attr('data-center-lat');
 	var center_lon = div.attr('data-center-lon');
+	var fullscreen_zoom = div.attr('data-fullscreen-zoom');
 	var svg_path = div.attr('data-svg');
 	var ptiff_overlay = div.attr('data-overlay');
 	var editing = div.attr('data-editing');
@@ -402,7 +403,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	
 	function make_fullscreen() {
-		
+		var center = map.center();
+
 		var fs_wrap = $('<div id="fs_wrap" />')
 			.css('position', 'absolute')
 			.css('top', '26px')
@@ -432,8 +434,9 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.attr('data-ptiff', ptiff)
 			.attr('data-ih', image_h)
 			.attr('data-iw', image_w)
-			.attr('data-center-lat', orig_center.lat)
-			.attr('data-center-lon', orig_center.lon)
+			.attr('data-center-lat', center.lat)
+			.attr('data-center-lon', center.lon)
+			.attr('data-fullscreen-zoom', map.zoom())
 			.attr('data-svg', svg_path)
 			.attr('data-overlay', ptiff_overlay)
 			.appendTo(new_figure);
@@ -464,11 +467,19 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// honor inset data
 		if (options && options.swLat) {
 			map.extent([{lat: options.swLat, lon: options.swLon}, {lat: options.neLat, lon: options.neLon}]);
+			if (center_lat && center_lon) {
+				map.center({lat: parseFloat(center_lat), lon: parseFloat(center_lon)});
+				if (fullscreen_zoom) {
+					map.zoom(fullscreen_zoom);
+				}
+			}
 		}
-		// only used for make_fullscreen to retain center
+		// make_fullscreen to retain center
 		else if (center_lat && center_lon) { 
 			map.center({lat: parseFloat(center_lat), lon: parseFloat(center_lon)});
-			map.zoom(zoom_level);
+			if (fullscreen_zoom) {
+				map.zoom(fullscreen_zoom);
+			}
 		}
 		else {
 			// map extents are to be given as SW corner, NE corner
