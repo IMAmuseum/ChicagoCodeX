@@ -133,7 +133,7 @@
                             break;
                         case 'citation-form':
                             $('#edit-citation-text').html($.osci.note.selection.selection);
-                            $('#edit-citation-url').val(window.location);
+                            $('#edit-citation-url').val($('a.osci_paragraph_' + $.osci.note.selection.paragraph_id).attr('href'));
                             $('#edit-citation-text, #edit-citation-url').click(function(e) {
                                 e.preventDefault();
                                 $(this).select();
@@ -207,6 +207,10 @@
                     base.processNotes(data);
 
                     if (data == null) return;
+                
+                    $('.highlight').each(function() {
+                        $(this).replaceWith($(this).text());
+                    });
 
                     for (var i = 0; i < data.length; i++) {
                         var activeParagraph = $('p.osci_paragraph_' + data[i].paragraph_id);

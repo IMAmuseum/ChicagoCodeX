@@ -32,13 +32,11 @@
 	            var selection = document.selection && document.selection.createRange();
 	        }
 
-	        if (selection.getRangeAt(0)) {
-	            var range = selection.getRangeAt(0);
-	        } else { // Safari!
-	            var range = document.createRange();
-	            range.setStart(selection.anchorNode,selection.anchorOffset);
-	            range.setEnd(selection.focusNode,selection.focusOffset);
-	        }
+	        var range = document.createRange();
+            if (selection.anchorNode != undefined && selection.focusNode != undefined) {
+	            range.setStart(selection.anchorNode, selection.anchorOffset);
+	            range.setEnd(selection.focusNode, selection.focusOffset);
+            }
 
             if (selection.toString() == '') {
                 settings.onEmptySelection();
@@ -61,58 +59,62 @@
 	$.highlighter.highlightNode = function(obj, properties, processNode) {
     	processNode = (processNode) ? processNode : false;
 
+        $(obj).html($(obj).html()); // reset the dom 
         if (properties.start_node == properties.end_node) {
             var node = document.createTextNode(properties.start_node);
             $(obj).contents().each(function() {
+                var newElement;
                 if (node.nodeValue == this.nodeValue) { // Text
-                    $.highlighter.processTxtNode(this, properties.start_offset, properties.end_offset);
+                    newElement = $.highlighter.processTxtNode(this, properties.start_offset, properties.end_offset);
                 } else if (node.textContent == this.textContent) { // HTML
-                    $.highlighter.processHtmlNode(this, properties.start_offset, properties.end_offset);
+                    newElement = $.highlighter.processHtmlNode(this, properties.start_offset, properties.end_offset);
+                }
+
+                if (newElement) {
+                    $(newElement).attr('data-onid', properties.onid);
+                    $(newElement).addClass('note-' + properties.onid);
                 }
             });
 
-            $($.highlighter.newElement).attr('data-onid', properties.onid);
-            $($.highlighter.newElement).addClass('note-' + properties.onid);
+        } else {
 
-            $(obj).html($(obj).html()); // reset the dom 
-            return;
-        } 
+            $(obj).contents().each(function(idx, node) {
+                if ($(node).text().trim() == '') return; // empty node
 
-        $(obj).contents().each(function(idx, node) {
-            if ($(node).text().trim() == '') return; // empty node
+                var isStartNode     = properties.start_node.indexOf($(node).text());
+                var isEndNode       = properties.end_node.indexOf($(node).text());
+                var start_offset    = 0;
+                var end_offset      = $(node).text().length;
 
-            var isStartNode     = properties.start_node.indexOf($(node).text());
-            var isEndNode       = properties.end_node.indexOf($(node).text());
-            var start_offset    = 0;
-            var end_offset      = $(node).text().length;
+                // Find the start node
+                if (isStartNode == 0) {
+                    start_offset = properties.start_offset;
+                    processNode = true;
+                }
 
-            // Find the start node
-            if (isStartNode == 0) {
-                start_offset = properties.start_offset;
-                processNode = true;
-            }
+                if (processNode === false) return;
 
-            if (processNode === false) return;
+                // Find the end node
+                if (isEndNode == 0) {
+                    end_offset = properties.end_offset;
+                    var foundEnd = true;
+                }
 
-            // Find the end node
-            if (isEndNode == 0) {
-                end_offset = properties.end_offset;
-                var foundEnd = true;
-            }
+                if (this.nodeType == 1 && processNode === true) { // HTML
+                    $.highlighter.processHtmlNode(node, start_offset, end_offset);
+                } else if (this.nodeType == 3 && processNode === true) { // Text
+                    $.highlighter.processTxtNode(node, start_offset, end_offset);
+                }
 
-            if (this.nodeType == 1 && processNode === true) { // HTML
-                $.highlighter.processHtmlNode(node, start_offset, end_offset);
-            } else if (this.nodeType == 3 && processNode === true) { // Text
-                $.highlighter.processTxtNode(node, start_offset, end_offset);
-            }
+                $($.highlighter.newElement).attr('data-onid', properties.onid);
+                $($.highlighter.newElement).addClass('note-' + properties.onid);
 
-            $($.highlighter.newElement).attr('data-onid', properties.onid);
-            $($.highlighter.newElement).addClass('note-' + properties.onid);
+                if (foundEnd === true) processNode = false; // We found the end so stop processing
+            });
+        }
 
-            if (foundEnd === true) processNode = false; // We found the end so stop processing
-        });
-        
         $(obj).html($(obj).html()); // reset the dom 
+
         return processNode; 
     }
 	
@@ -136,6 +138,8 @@
         newText.appendChild(wrapper);
         newText.appendChild(postText);
         textNode.parentNode.replaceChild(newText, textNode);
+
+        return wrapper;
     }
 
     // Process html node with a wrapper
@@ -153,6 +157,8 @@
         htmlNode.appendChild(preHtml);
         htmlNode.appendChild(wrapHtmlTxt);
         htmlNode.appendChild(postHtml);
+
+        return wrapHtmlTxt;
     }
 
     // Wrap text
@@ -160,7 +166,7 @@
         var wrapper = document.createElement($.highlighter.settings.wrapperElement);
         wrapper.className = $.highlighter.settings.wrapperClass;
         wrapper.appendChild(txt);
-        $.highlighter.newElement = wrapper;
+        //$.highlighter.newElement = wrapper;
         return wrapper;
     }
 
@@ -169,7 +175,7 @@
         var wrapper = document.createElement($.highlighter.settings.wrapperElement);
         wrapper.className = $.highlighter.settings.wrapperClass;
         wrapper.innerHTML = html;
-        $.highlighter.newElement = wrapper;
+        //$.highlighter.newElement = wrapper;
         return wrapper;
     }
 
