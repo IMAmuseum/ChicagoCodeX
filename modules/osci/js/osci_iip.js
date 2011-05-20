@@ -351,12 +351,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 				date = new Date();
 				if (div.attr('data-controls') != 'false' && (date.getTime() - div.attr('data-controls-time')) >= 750) {
 					if (div.attr('data-controls-lock') != 'true') {
-						console.log('hiding');
 						div.attr('data-controls', 'false');
 						hide_controls();
 					}
 				}
-			},750);
+			},1000);
 		});
 		controlBarContainer.mouseenter(function(e) {
 			div.attr('data-controls-lock', 'true');
