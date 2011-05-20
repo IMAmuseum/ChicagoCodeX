@@ -335,9 +335,38 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// now that the control bar has been added to the DOM, the control button
 		// images have been loaded.  It's now safe to hide the controlBarContainer
 		controlBarContainer.css('display', 'none');
+		
+		// Set up our control visibility toggles for mouse events
+		div.attr('data-controls', 'false');
+		div.mousemove(function(e) {
+			var date = new Date();
+			div.attr('data-controls-time', date.getTime());
+			div.attr('data-controls-mouse-x', e.pageX);
+			div.attr('data-controls-mouse-y', e.pageY);
+			if (div.attr('data-controls') == 'false') {
+				div.attr('data-controls', 'true'); 
+				show_controls();
+			}
+			setTimeout(function() {
+				date = new Date();
+				if (div.attr('data-controls') != 'false' && (date.getTime() - div.attr('data-controls-time')) >= 750) {
+					if (div.attr('data-controls-lock') != 'true') {
+						console.log('hiding');
+						div.attr('data-controls', 'false');
+						hide_controls();
+					}
+				}
+			},750);
+		});
+		controlBarContainer.mouseenter(function(e) {
+			div.attr('data-controls-lock', 'true');
+		});
+		controlBarContainer.mouseleave(function(e) {
+			div.attr('data-controls-lock', 'false');
+		});
 	}
 	
-	// Set up our control visibility toggles for mouse events
+	/* Old Controls
 	div.mouseenter(function(e) {
 		// Show controls
 		show_controls();
@@ -350,7 +379,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// Hide controls
 		hide_controls();
 	});
-	
+	*/
 	
 	/*
 	 * Utility functions
@@ -360,6 +389,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		if (options.interaction == true ) {
 			controlBarContainer.css('display', 'block');
 			controlBarContainer.animate({height: '42px'}, 200);
+			controlsVisible = true;
 		}
 	}
 	
@@ -368,6 +398,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			controlBarContainer.animate({height: '0px'}, 200, function() {
 				controlBarContainer.css('display', 'none');
 			});
+			controlsVisible = false
 		}
 	}
 	
@@ -381,7 +412,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('height', $(window).height() - 29 + "px")
 			.css('background-color', 'rgba(0,0,0,0.8)')
             .css('z-index', '9999');
-		console.log($(window).height());
 
 		var new_figure = $('<figure>')
 			.attr('data-options', JSON.stringify(options))
