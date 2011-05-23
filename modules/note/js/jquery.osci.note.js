@@ -21,7 +21,8 @@
 
             $.template('noteLink', noteLinkMarkup);
 
-            $(document).bind("osci_layout_complete", function(e) {
+            amplify.subscribe("osci_layout_complete", function() {
+            //$(document).bind("osci_layout_complete", function(e) {
 
                 /**
                 * Handle text highlighting
@@ -176,27 +177,51 @@
                 });
             });
             
-            base.panel.bind("osci_note_toggle", function(e) {
-                var $this = $(this);
-
-                if (($this.hasClass("open") && !e.osci_note_open) || e.osci_note_close) {
-                    $this.css({
-                        "-webkit-transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
-                        "-moz-transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
-                        "transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)"
+            amplify.subscribe("osci_note_toggle", function(data) {
+                if (!data) {
+                    data = {};
+                }
+                
+                if ((base.panel.hasClass("open") && !data.osci_note_open) || data.osci_note_close) {
+                    base.panel.css({
+                        "-webkit-transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
+                        "-moz-transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
+                        "transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)"
                     });
                     
-                    $this.removeClass("open");
+                    base.panel.removeClass("open");
                 } else {
-                    $this.css({
+                    base.panel.css({
                         "-webkit-transform" : "translate(0px, 0)",
                         "-moz-transform" : "translate(0px, 0)",
                         "transform" : "translate(0px, 0)"
                     });
 
-                    $this.addClass("open");
+                    base.panel.addClass("open");
                 }
-            }).addClass("open");
+            });
+            base.panel.addClass("open");
+//            base.panel.bind("osci_note_toggle", function(e) {
+//                var $this = $(this);
+//
+//                if (($this.hasClass("open") && !e.osci_note_open) || e.osci_note_close) {
+//                    $this.css({
+//                        "-webkit-transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
+//                        "-moz-transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
+//                        "transform" : "translate(" + ($this.outerWidth() - base.options.panelPixelsClosed) + "px, 0)"
+//                    });
+//                    
+//                    $this.removeClass("open");
+//                } else {
+//                    $this.css({
+//                        "-webkit-transform" : "translate(0px, 0)",
+//                        "-moz-transform" : "translate(0px, 0)",
+//                        "transform" : "translate(0px, 0)"
+//                    });
+//
+//                    $this.addClass("open");
+//                }
+//            }).addClass("open");
         };
         
         base.addNotes = function() {

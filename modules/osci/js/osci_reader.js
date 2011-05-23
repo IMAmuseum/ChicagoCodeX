@@ -44,11 +44,13 @@
             
             if (thisOccur === occurence && offset.top <= columnBottom && offset.top >= columnOffset.top) {
                 page = $this.parents('.osci_page').data('page');
-                $(document).trigger({
-                    type : "osci_navigation",
-                    osci_to : "page",
-                    osci_value: page 
-                });
+                amplify.publish("osci_navigation", {osci_to : "page", osci_value : page});
+                
+//                $(document).trigger({
+//                    type : "osci_navigation",
+//                    osci_to : "page",
+//                    osci_value: page 
+//                });
                 pulsateText($this);
                 validItem = $this;
                 return false;
@@ -121,40 +123,63 @@
     }
     
     $(document).ready(function() {
+        amplify.subscribe("osci_layout_start", function(data) {
+            $("<div>", {
+                id : "osci_loading"
+            }).appendTo("body");
+        });
+        
+        amplify.subscribe("osci_layout_complete", function(data) {
+            $("#osci_loading").remove();
+            
+            var figureImages = $("figure.image", "#osci_pages");
+            // Prevents fancybox from closing the tray
+            $('.figureContent > a').click(function(e) {
+                e.stopPropagation();
+            });
+
+            figureImages.bind("osci_figure_fullscreen", function(e) {
+                $('.figureContent > a', this).click();
+            });
+        });
+        
     	$(document).bind({
-    	    "osci_layout_start" : function(e){
-        	    $("<div>", {
-        	        id : "osci_loading"
-        	    }).appendTo("body");
-        	},
+//    	    "osci_layout_start" : function(e){
+//        	    $("<div>", {
+//        	        id : "osci_loading"
+//        	    }).appendTo("body");
+//        	},
         	"touchmove" : function(e) {
         	    e.preventDefault();
-        	},
-        	"osci_layout_complete" : function(e) {
-                $("#osci_loading").remove();
-                
-                var figureImages = $("figure.image", "#osci_pages");
-                // Prevents fancybox from closing the tray
-                $('.figureContent > a').click(function(e) {
-                    e.stopPropagation();
-                });
-
-                figureImages.bind("osci_figure_fullscreen", function(e) {
-                    $('.figureContent > a', this).click();
-                });
-            }
+        	}
+//        	},
+//        	"osci_layout_complete" : function(e) {
+//                $("#osci_loading").remove();
+//                
+//                var figureImages = $("figure.image", "#osci_pages");
+//                // Prevents fancybox from closing the tray
+//                $('.figureContent > a').click(function(e) {
+//                    e.stopPropagation();
+//                });
+//
+//                figureImages.bind("osci_figure_fullscreen", function(e) {
+//                    $('.figureContent > a', this).click();
+//                });
+//            }
     	});
         
-        $("#osci_more_wrapper").osci_more({
+        //$("#osci_more_wrapper").osci_more({
+        $.osci.more({
             moreToggleCallback : function(more, state)
             {
                 switch (state) {
                     case "open":
                         // Ensure the toc tab is closed
-                        $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
-                            type : "osci_nav_toggle",
-                            osci_nav_close : true
-                        });
+                        amplify.publish("osci_nav_toggle", {osci_nav_close : true});
+//                        $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
+//                            type : "osci_nav_toggle",
+//                            osci_nav_close : true
+//                        });
                         
                         more.css({
                             "-webkit-transform" : "translate(0, 0)",
@@ -301,20 +326,24 @@
                         
                         // When the toc tab is opened:
                         // close the more tab and slide it to the right
-                        $("#osci_more_wrapper").trigger({
-                            type : "osci_more_toggle",
-                            osci_more_close : true
-                        })
-                        .css({
+                        amplify.publish("osci_more_toggle", {osci_more_close : true});
+                        
+//                        $("#osci_more_wrapper").trigger({
+//                            type : "osci_more_toggle",
+//                            osci_more_close : true
+//                        })
+                        $("#osci_more_wrapper").css({
                         	"-webkit-transform" : "translate(" + toc.outerWidth() + "px, 300px)",
                         	"-moz-transform" : "translate(" + toc.outerWidth() + "px, 300px)",
                         	"transform" : "translate(" + toc.outerWidth() + "px, 300px)"
 	                    });
                         
-                        $("#osci_note_panel_wrapper").trigger({
-                            type : "osci_note_toggle",
-                            osci_note_close : true
-                        });
+                        amplify.publish("osci_note_toggle", {osci_note_close : true});
+                        
+//                        $("#osci_note_panel_wrapper").trigger({
+//                            type : "osci_note_toggle",
+//                            osci_note_close : true
+//                        });
                         break;
                     case "close":
                         toc.css({
@@ -331,10 +360,12 @@
                         	"transform" : "translate(0px, 300px)"
 	                    });
                         
-                        $("#osci_note_panel_wrapper").trigger({
-                            type : "osci_note_toggle",
-                            osci_note_open : true
-                        });
+                        amplify.publish("osci_note_toggle", {osci_note_open : true});
+                        
+//                        $("#osci_note_panel_wrapper").trigger({
+//                            type : "osci_note_toggle",
+//                            osci_note_open : true
+//                        });
                         break;
                 }
             },
@@ -350,8 +381,7 @@
 
                         var data = $(content.data),
                             footnotes = data.find("#field_osci_footnotes").remove(),
-                            figures = data.find("#field_osci_figures").find(".figureThumbnail").remove(),
-                            more = $("#osci_more_wrapper").data("osci.more");
+                            figures = data.find("#field_osci_figures").find(".figureThumbnail").remove();
 
                         //Do the layout
                         $.osci.layout(data, {
@@ -360,7 +390,7 @@
                         });
                         
                         //Add footnotes to the more bar
-                        more.add_content("footnotes", $(".footnote", footnotes), true, 1);
+                        $.osci.more.add_content("footnotes", $(".footnote", footnotes), true, 1);
                         
                         //Remove plate image thumbnail
                         figures = figures.filter(function(){
@@ -372,7 +402,7 @@
                         });
                         
                         //Add figures to the more bar
-                        more.add_content("figures", figures, true, undefined, function(tab){
+                        $.osci.more.add_content("figures", figures, true, undefined, function(tab){
                             $(".figureThumbnail", tab).each(function(i, elem){
                                 var $elem = $(elem),
                                     img = $elem.find("img"),
@@ -387,10 +417,12 @@
                                         
                                         findAndGotoElement("a[href='#" + id + "']");
 
-                                        $("#osci_more_wrapper").trigger({
-                                            type : "osci_more_toggle",
-                                            osci_more_close : true
-                                        });
+                                        amplify.publish("osci_more_toggle", {osci_more_close : true});
+                                        
+//                                        $("#osci_more_wrapper").trigger({
+//                                            type : "osci_more_toggle",
+//                                            osci_more_close : true
+//                                        });
                                     },
                                     title : "goto figure in context",
                                     "class" : gotoClass
@@ -400,7 +432,10 @@
                                     e.preventDefault();
                                     var id = $(this).data("figure_id");
                                     
-                                    $("#" + id, "#osci_pages").trigger({
+                                    amplify.publish("osci_figure_load", {figure_id : "#" + id});
+                                    //amplify.publish("osci_figure_fullscreen", {figure_id : id});
+                                    
+                                    $("#osci_pages").find("#" + id).trigger({
                                         type : "osci_figure_fullscreen"
                                     });
                                 });
@@ -410,11 +445,14 @@
                                     href : "#",
                                     click : function(e) {
                                         e.preventDefault();
-                                        var id = $("img", $(this).parent()).data("figure_id");
+                                        var id = $(this).parent().find("img").data("figure_id");
                                         
-                                        $("#" + id, "#osci_pages").trigger({
+                                        amplify.publish("osci_figure_load", {figure_id : "#" + id});
+                                        
+                                        $("#osci_pages").find("#" + id).trigger({
                                             type : "osci_figure_fullscreen"
                                         });
+                                        //amplify.publish("osci_figure_fullscreen", {figure_id : id});
                                     },
                                     title : "view fullscreen",
                                     "class" : "figure_fullscreen"
@@ -437,11 +475,13 @@
                 link += query;
             }
             
-            $(document).trigger({
-                type : "osci_navigation",
-                osci_to : "node",
-                osci_value : link
-            });
+            amplify.publish("osci_navigation", {osci_to : "node", osci_value : link});
+            
+//            $(document).trigger({
+//                type : "osci_navigation",
+//                osci_to : "node",
+//                osci_value : link
+//            });
         });
         
         //make footnotes link to footnote text in more bar
@@ -449,11 +489,13 @@
             e.preventDefault();
             var $this = $(this);
 
-            $("#osci_more_wrapper").trigger({
-                type : "osci_more_goto",
-                tab_name : "footnotes",
-                selector : $this.attr("href")
-            });
+            amplify.publish("osci_more_goto", {tab_name : "footnotes", selector : $this.attr("href")});
+            
+//            $("#osci_more_wrapper").trigger({
+//                type : "osci_more_goto",
+//                tab_name : "footnotes",
+//                selector : $this.attr("href")
+//            });
         });
         
         //make footnotes link in more bar to position in text
@@ -463,10 +505,12 @@
             
             findAndGotoElement("a[href='#" + id + "']");
 
-            $("#osci_more_wrapper").trigger({
-                type : "osci_more_toggle",
-                osci_more_close : true
-            });
+            amplify.publish("osci_more_toggle", {osci_more_close : true});
+            
+//            $("#osci_more_wrapper").trigger({
+//                type : "osci_more_toggle",
+//                osci_more_close : true
+//            });
         });
         
         //make figure links open the fullscreen view
@@ -478,29 +522,37 @@
             visible = $($this.attr("href") + ":visible", "#osci_pages");
 
             if (visible.length) {
-                $(document).trigger({
-                    type : "osci_navigation",
-                    osci_to : "selector",
-                    osci_value : $this.attr("href")
-                });
+                amplify.publish("osci_navigation", {osci_to : "selector", osci_value : $this.attr("href")});
+                
+//                $(document).trigger({
+//                    type : "osci_navigation",
+//                    osci_to : "selector",
+//                    osci_value : $this.attr("href")
+//                });
             } else {
-                $($this.attr("href"), "#osci_pages").trigger({
-                    type : "osci_figure_fullscreen"
-                });
+                amplify.publish("osci_figure_fullscreen", {figure_id : $this.attr("href")});
+               
+//                $($this.attr("href"), "#osci_pages").trigger({
+//                    type : "osci_figure_fullscreen"
+//                });
             }
         });
         
         //make more & navigation bars close when viewer is clicked
         $("#" + Drupal.settings.osci_layout.viewer_id).click(function(e){
-            $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
-                type : "osci_nav_toggle",
-                osci_nav_close : true
-            });
+            amplify.publish("osci_nav_toggle", {osci_nav_close : true});
             
-            $("#osci_more_wrapper").trigger({
-                type : "osci_more_toggle",
-                osci_more_close : true
-            });
+//            $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
+//                type : "osci_nav_toggle",
+//                osci_nav_close : true
+//            });
+            
+            amplify.publish("osci_more_toggle", {osci_more_close : true});
+            
+//            $("#osci_more_wrapper").trigger({
+//                type : "osci_more_toggle",
+//                osci_more_close : true
+//            });
         });
         
         $(".osci_reference_image_link").live("click",function(e){

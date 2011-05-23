@@ -36,17 +36,25 @@
                 to : {operation : operation, value : value}
             };
             
-            $(document).bind({
-            	//update the navigation when layout is complete
-                osci_layout_complete : function() {
-
-                    _reset_navigation();
-                },
-                //bind navigation to the document so it can be easily triggered
-                osci_navigation : function(e) {
-                    base.navigateTo(e.osci_to, e.osci_value);
-                }
+            amplify.subscribe("osci_layout_complete", function() {
+                _reset_navigation();
             });
+            
+            amplify.subscribe("osci_navigation", function(data) {
+                base.navigateTo(data.osci_to, data.osci_value);
+            });
+            
+//            $(document).bind({
+//            	//update the navigation when layout is complete
+//                osci_layout_complete : function() {
+//
+//                    _reset_navigation();
+//                },
+//                //bind navigation to the document so it can be easily triggered
+//                osci_navigation : function(e) {
+//                    base.navigateTo(e.osci_to, e.osci_value);
+//                }
+//            });
             
             //bind function for handling html5 history back button
             $(window).bind("popstate",function(e){
@@ -181,7 +189,9 @@
             _update_title();
             _update_reference_image();
             _create_section_navigation_bar();
-            $("#" + base.options.tocId).trigger({type:"osci_toc_update"});
+            amplify.publish("osci_toc_update");
+            
+            //$("#" + base.options.tocId).trigger({type:"osci_toc_update"});
             base.navigateTo(base.data.to.operation, base.data.to.value);
         }
         
@@ -206,19 +216,35 @@
                         thumbUrl = tocData.plate_image[imagePreset];
                     }
                     
+//                    $elem.empty().append($("<a>", {
+//                        "class" : "osci_reference_image_link",
+//                        href : largeUrl,
+//                        html : $("<img>",{ src : thumbUrl }).bind("osci_reference_image_alter", function(e){
+//                            var $this = $(this);
+//                            
+//                            if (e.osci_nav_hover_image) {
+//                                $this.attr("src", e.osci_nav_hover_image);
+//                            } else {
+//                                $this.attr("src", $this.data("default_src"));
+//                            }
+//                        })
+//                    }));
+                    
                     $elem.empty().append($("<a>", {
                         "class" : "osci_reference_image_link",
                         href : largeUrl,
-                        html : $("<img>",{ src : thumbUrl }).bind("osci_reference_image_alter", function(e){
-                            var $this = $(this);
-                            
-                            if (e.osci_nav_hover_image) {
-                                $this.attr("src", e.osci_nav_hover_image);
-                            } else {
-                                $this.attr("src", $this.data("default_src"));
-                            }
-                        })
+                        html : $("<img>",{ src : thumbUrl })
                     }));
+                    
+                    amplify.subscribe("osci_reference_image_alter", function(data) {
+                        var image = $("a.osci_reference_image_link").find("img");
+                        
+                        if (data.osci_nav_hover_image) {
+                            image.attr("src", data.osci_nav_hover_image);
+                        } else {
+                            image.attr("src", image.data("default_src"));
+                        }
+                    });
                 });
             }
         }
@@ -412,7 +438,8 @@
                 "transform" : "translate(" + newOffset + "px, 0)"
             });
             
-            $(document).trigger("osci_navigation_complete", base.data.currentPage);
+            amplify.publish("osci_navigation_complete", { page : base.data.currentPage});
+            //$(document).trigger("osci_navigation_complete", base.data.currentPage);
         };
         
         //create the paging navigation bar
@@ -440,11 +467,17 @@
                 }).hide().appendTo(container);
                 
                 //bind an event to update the navigation
-                $(document).bind("osci_navigation_complete", function(e, page){
+                amplify.subscribe("osci_navigation_complete", function(data) {
                     var secNav = $("#osci_navigation_section_list");
                     secNav.find("li").removeClass("active");
-                    secNav.find("li:eq(" + (page - 1) + ")").addClass("active");
+                    secNav.find("li:eq(" + (data.page - 1) + ")").addClass("active");
                 });
+                
+//                $(document).bind("osci_navigation_complete", function(e, page){
+//                    var secNav = $("#osci_navigation_section_list");
+//                    secNav.find("li").removeClass("active");
+//                    secNav.find("li:eq(" + (page - 1) + ")").addClass("active");
+//                });
                 
                 navBar.delegate("li", "click", function(e){
                     e.preventDefault();
@@ -524,43 +557,79 @@
                     width : "100%"
                 }).appendTo(tocWrapper);
                 
-                container.bind({
-                    "osci_nav_toggle" : function(e){
-                        var $this = $(this), i, eventLen;
-
-                        if (($this.hasClass("open") && !e.osci_nav_open) || e.osci_nav_close) {
-                            if (base.options.tocToggleCallback !== undefined) {
-                                base.options.tocToggleCallback($this, "close");
-                            }
-                            $this.removeClass("open");
-                        } else {
-                            if (base.options.tocToggleCallback !== undefined) {
-                                base.options.tocToggleCallback($this, "open");
-                            }
-                            $this.addClass("open");
+                amplify.subscribe("osci_nav_toggle", function(data) {
+                    var toc = $("#" + base.options.tocId);
+                    
+                    if ((toc.hasClass("open") && !data.osci_nav_open) || data.osci_nav_close) {
+                        if (base.options.tocToggleCallback !== undefined) {
+                            base.options.tocToggleCallback(toc, "close");
                         }
-                        
-                        if (!base.options.tocOverlay) {
-                            base.navigateTo("page", base.data.currentPage + 1);
+                        toc.removeClass("open");
+                    } else {
+                        if (base.options.tocToggleCallback !== undefined) {
+                            base.options.tocToggleCallback(toc, "open");
                         }
-                    }, 
-                    "osci_toc_update" : function(e){
-                        var $this = $(this),
-                            toc = $this.find("#osci_navigation_toc"),
-                            activeLi = toc.find("#osci_toc_node_" + base.data.nid);
-                        
-                        toc.find("li, a").removeClass("active");
-                        
-                        activeLi.addClass("active");
-                        activeLi.parents("li").addClass("active");
-                        
-                        toc.find("li.active").children("a").addClass("active");
+                        toc.addClass("open");
                     }
-                }).addClass("open");
+                    
+                    if (!base.options.tocOverlay) {
+                        base.navigateTo("page", base.data.currentPage);
+                    }
+                });
+                
+                amplify.subscribe("osci_toc_update", function(data) {
+                    var container = $("#" + base.options.tocId),
+                    toc = container.find("#osci_navigation_toc"),
+                    activeLi = toc.find("#osci_toc_node_" + base.data.nid);
+                
+                    toc.find("li, a").removeClass("active");
+                    
+                    activeLi.addClass("active");
+                    activeLi.parents("li").addClass("active");
+                    
+                    toc.find("li.active").children("a").addClass("active");
+                });
+                
+                container.addClass("open");
+                
+//                container.bind({
+//                    "osci_nav_toggle" : function(e){
+//                        var $this = $(this), i, eventLen;
+//
+//                        if (($this.hasClass("open") && !e.osci_nav_open) || e.osci_nav_close) {
+//                            if (base.options.tocToggleCallback !== undefined) {
+//                                base.options.tocToggleCallback($this, "close");
+//                            }
+//                            $this.removeClass("open");
+//                        } else {
+//                            if (base.options.tocToggleCallback !== undefined) {
+//                                base.options.tocToggleCallback($this, "open");
+//                            }
+//                            $this.addClass("open");
+//                        }
+//                        
+//                        if (!base.options.tocOverlay) {
+//                            base.navigateTo("page", base.data.currentPage + 1);
+//                        }
+//                    }, 
+//                    "osci_toc_update" : function(e){
+//                        var $this = $(this),
+//                            toc = $this.find("#osci_navigation_toc"),
+//                            activeLi = toc.find("#osci_toc_node_" + base.data.nid);
+//                        
+//                        toc.find("li, a").removeClass("active");
+//                        
+//                        activeLi.addClass("active");
+//                        activeLi.parents("li").addClass("active");
+//                        
+//                        toc.find("li.active").children("a").addClass("active");
+//                    }
+//                }).addClass("open");
   
                 container.find(".osci_table_of_contents_handle").click(function(e){
                     e.preventDefault();
-                    container.trigger({type : "osci_nav_toggle"});
+                    amplify.publish("osci_nav_toggle", {});
+                    //container.trigger({type : "osci_nav_toggle"});
                 });
                 
                 toc.delegate("a", "click", function(e){
@@ -609,10 +678,11 @@
                             data = $this.parent("li").data();
                                 
                             if (data.plate_image && data.plate_image.thumbnail_165w_url) {
-                                plateContainer.trigger({
-                                    type : "osci_reference_image_alter",
-                                    osci_nav_hover_image : data.plate_image.thumbnail_165w_url
-                                });
+                                amplify.publish("osci_reference_image_alter", { osci_nav_hover_image : data.plate_image.thumbnail_165w_url });
+//                                plateContainer.trigger({
+//                                    type : "osci_reference_image_alter",
+//                                    osci_nav_hover_image : data.plate_image.thumbnail_165w_url
+//                                });
                             } else {
                                 parents = $this.parents("li");
     
@@ -621,10 +691,12 @@
                                         data = $(elem).data();
     
                                         if (data.plate_image && data.plate_image.thumbnail_165w_url) {
-                                            plateContainer.trigger({
-                                                type : "osci_reference_image_alter",
-                                                osci_nav_hover_image : data.plate_image.thumbnail_165w_url
-                                            });
+                                            amplify.publish("osci_reference_image_alter", { osci_nav_hover_image : data.plate_image.thumbnail_165w_url });
+                                            
+//                                            plateContainer.trigger({
+//                                                type : "osci_reference_image_alter",
+//                                                osci_nav_hover_image : data.plate_image.thumbnail_165w_url
+//                                            });
                                             return false;
                                         }
                                     });
@@ -632,9 +704,11 @@
                             }
                             break;
                         case "mouseleave":
-                            plateContainer.trigger({
-                                type : "osci_reference_image_alter"
-                            });
+                            amplify.publish("osci_reference_image_alter");
+                            
+//                            plateContainer.trigger({
+//                                type : "osci_reference_image_alter"
+//                            });
                             break;
                     }
                 });
@@ -682,7 +756,8 @@
                 }
             });
             
-            container.trigger("osci_nav_toggle");
+            amplify.publish("osci_nav_toggle", {});
+//            container.trigger("osci_nav_toggle");
             
 //            toc.data("full_height", toc.height());
             

@@ -513,10 +513,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
  * Build IIP maps on layout complete
  */
 
-(function($) {
-	$(document).bind("osci_layout_complete", function()
-	{
-	    $("#osci_viewer").find('div.iipmap').each(function(){ iipmap($(this)); });	
-	});	
-
-}) (jQuery);
+//(function($) {
+//	$(document).bind("osci_layout_complete", function()
+//	{
+//	    $("#osci_viewer").find('div.iipmap').each(function(){ iipmap($(this)); });	
+//	});	
+//
+//}) (jQuery);

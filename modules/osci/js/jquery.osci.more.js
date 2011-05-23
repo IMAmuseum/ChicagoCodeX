@@ -4,14 +4,14 @@
         $.osci = {};
     }
 
-    $.osci.more = function(el, options)
+    $.osci.more = function(options)
     {
-        var base = this;
+        var base = this.more;
 
-        base.$el = $(el);
-        base.el = el;
-
-        base.$el.data("osci.more", base);
+//        base.$el = $(el);
+//        base.el = el;
+//
+//        base.$el.data("osci.more", base);
         base.tab_map = {};
         
         base.init = function()
@@ -19,64 +19,109 @@
             var tabs
             
             base.options = $.extend({}, $.osci.more.defaultOptions, options);
+            base.container = $("#" + base.options.containerId);
             
-            base.$el.bind({
-                "osci_more_toggle" : function(e){
-                    var $this = $(this);
-
-                    if (($this.hasClass("open") && !e.osci_more_open) || e.osci_more_close) {
-                        if (base.options.moreToggleCallback !== undefined) {
-                            base.options.moreToggleCallback($this, "close");
-                        }
-                        $this.removeClass("open");
-                    } else {
-                        if (base.options.moreToggleCallback !== undefined) {
-                            base.options.moreToggleCallback($this, "open");
-                        }
-                        $this.addClass("open");
-                    }
-                },
-                "osci_more_goto" : function(e){
-                    var $this = $(this), tabNum, tabData, tab, itemNumber, gotoPage,
-                        tabs = $("#" + base.options.tabContainerId, base.$el);
-                    
-                    if (base.tab_map[e.tab_name] !== undefined) {
-                        tabNum = base.tab_map[e.tab_name];
-                        
-                        tabs.tabs("select", tabNum);
-                        
-                        tab = $("div.ui-tabs-panel:not(.ui-tabs-hide)", $this);
-                        tabData = tab.data();
-                        
-                        itemNumber = $(e.selector, tab).index();
-    
-                        if (tabData.osci_pager_per_page > 1) {
-                            gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page) - 1;
-                        } else {
-                            gotoPage = itemNumber;
-                        }
-                        $("li.osci_pager_item:eq(" + gotoPage + ")", tab).children().click();
-                        
-                        $this.trigger({ type : "osci_more_toggle", osci_more_open : true});
-                    }
+            amplify.subscribe("osci_more_toggle", function(data) {
+                if (!data) {
+                    data = {};
                 }
-            }).addClass("open");
+                
+                if ((base.container.hasClass("open") && !data.osci_more_open) || data.osci_more_close) {
+                    if (base.options.moreToggleCallback !== undefined) {
+                        base.options.moreToggleCallback(base.container, "close");
+                    }
+                    base.container.removeClass("open");
+                } else {
+                    if (base.options.moreToggleCallback !== undefined) {
+                        base.options.moreToggleCallback(base.container, "open");
+                    }
+                    base.container.addClass("open");
+                }
+            });
             
-            base.$el.find("a.osci_more_handle").click(function(e){
+            amplify.subscribe("osci_more_goto", function(data) {
+                var tabNum, tabData, tab, itemNumber, gotoPage,
+                tabs = base.container.find("#" + base.options.tabContainerId);
+            
+                if (base.tab_map[e.tab_name] !== undefined) {
+                    tabNum = base.tab_map[e.tab_name];
+                    
+                    tabs.tabs("select", tabNum);
+                    
+                    tab = $("div.ui-tabs-panel:not(.ui-tabs-hide)", $this);
+                    tabData = tab.data();
+                    
+                    itemNumber = $(data.selector, tab).index();
+    
+                    if (tabData.osci_pager_per_page > 1) {
+                        gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page) - 1;
+                    } else {
+                        gotoPage = itemNumber;
+                    }
+                    $("li.osci_pager_item:eq(" + gotoPage + ")", tab).children().click();
+                    
+                    amplify.publish("osci_more_toggle", {osci_more_open : true});
+                }
+            });
+            
+//            base.$el.bind({
+//                "osci_more_toggle" : function(e){
+//                    var $this = $(this);
+//
+//                    if (($this.hasClass("open") && !e.osci_more_open) || e.osci_more_close) {
+//                        if (base.options.moreToggleCallback !== undefined) {
+//                            base.options.moreToggleCallback($this, "close");
+//                        }
+//                        $this.removeClass("open");
+//                    } else {
+//                        if (base.options.moreToggleCallback !== undefined) {
+//                            base.options.moreToggleCallback($this, "open");
+//                        }
+//                        $this.addClass("open");
+//                    }
+//                },
+//                "osci_more_goto" : function(e){
+//                    var $this = $(this), tabNum, tabData, tab, itemNumber, gotoPage,
+//                        tabs = $("#" + base.options.tabContainerId, base.$el);
+//                    
+//                    if (base.tab_map[e.tab_name] !== undefined) {
+//                        tabNum = base.tab_map[e.tab_name];
+//                        
+//                        tabs.tabs("select", tabNum);
+//                        
+//                        tab = $("div.ui-tabs-panel:not(.ui-tabs-hide)", $this);
+//                        tabData = tab.data();
+//                        
+//                        itemNumber = $(e.selector, tab).index();
+//    
+//                        if (tabData.osci_pager_per_page > 1) {
+//                            gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page) - 1;
+//                        } else {
+//                            gotoPage = itemNumber;
+//                        }
+//                        $("li.osci_pager_item:eq(" + gotoPage + ")", tab).children().click();
+//                        
+//                        $this.trigger({ type : "osci_more_toggle", osci_more_open : true});
+//                    }
+//                }
+//            }).addClass("open");
+            
+            base.container.addClass("open").find("a.osci_more_handle").click(function(e){
                 e.preventDefault();
-                base.$el.trigger({type : "osci_more_toggle"});
+                amplify.publish("osci_more_toggle");
+                //base.container.trigger({type : "osci_more_toggle"});
             }).click();
             
             tabs = $("<div>", {
                 id : base.options.tabContainerId
-            }).append('<ul><li class="placeholder_tab"><a href="#osci_more_tab_1">placeholder</a></li></ul><div id="osci_more_tab_1"></div>').appendTo(base.$el).tabs();
+            }).append('<ul><li class="placeholder_tab"><a href="#osci_more_tab_1">placeholder</a></li></ul><div id="osci_more_tab_1"></div>').appendTo(base.container).tabs();
             tabs.tabs("remove", 0);
         };
         
         base.add_content = function(tabName, data, paginate, perPage, callback)
         {
             var tabNum, tabId = "osci_tab_" + tabName, tab, total, i, pager, item, maxPagesDisplay = 5, totalPages,
-                tabs = $("#" + base.options.tabContainerId, base.$el), tabWidth, calcWidth, pagerItemText, maxPagerItemText,
+                tabs = $("#" + base.options.tabContainerId, base.container), tabWidth, calcWidth, pagerItemText, maxPagerItemText,
                 pagerItems = [], hasPagerDisplayData = false;
 
             if (base.tab_map[tabName] !== undefined) {
@@ -307,17 +352,18 @@
     };
 
     $.osci.more.defaultOptions = {
+        containerId : "osci_more_wrapper",
         tabContainerId : "osci_more_tabs",
         defaultTabs : ["footnotes"],
         moreToggleCallback : undefined
     };
 
-    $.fn.osci_more = function( options )
-    {
-        return this.each(function()
-        {
-            (new $.osci.more(this, options)); 
-        });
-    };
+//    $.fn.osci_more = function( options )
+//    {
+//        return this.each(function()
+//        {
+//            (new $.osci.more(this, options)); 
+//        });
+//    };
 
 })(jQuery);

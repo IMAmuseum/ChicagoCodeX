@@ -17,7 +17,8 @@
         {
             var pCount = 0, dataCount = 0, i, isP, $elem, parentId;
             //Trigger event so we know layout is begining
-            $(document).trigger("osci_layout_start");
+            amplify.publish("osci_layout_start");
+            //$(document).trigger("osci_layout_start");
 
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.reader = $("#" + base.options.readerId);
@@ -57,43 +58,39 @@
             }
             
             //Trigger event to let other features know layout is complete
-            setTimeout(
-                function(){$(document).trigger("osci_layout_complete");},
-                10
-            );
-            
-            $(document).bind("osci_navigation_complete", function(e, page){
-                var page = $(".osci_page_" + page);
+//            setTimeout(
+//                function(){$(document).trigger("osci_layout_complete");},
+//                10
+//            );
+            amplify.subscribe("osci_navigation_complete", function(data) {
+            //$(document).bind("osci_navigation_complete", function(e, page){
+                var page = $(".osci_page_" + data.page);
                 
                 if (!page.hasClass("figures_processed")) {
-                    var figures = page.find("figure"),
+                    var figures = page.find("figure:not(.content_loaded)"),
                         numFigures = figures.length, i = 0;
                     
                     if (numFigures) {
                         for (i = 0; i < numFigures; i++) {
-                            var pageFigure = $(figures[i]),
-                                figureContent = base.figureContent["#" + pageFigure.attr("id")],
-                                figureType = pageFigure.data("figure_type");
-                            
-                            if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
-                                base.options.processFigureCallback[figureType](pageFigure, figureContent);
-                            } else {
-                                pageFigure.prepend(figureContent);
-                            }
+                            _load_figure_content(figures[i])
                         }
                     }
                     
                     page.addClass("figures_processed");
                 }
             });
-//          if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
-//          if (!base.options.processFigureCallback[figureType](figure, figureContent)) {
-//              figure.data("sized", false);
-//              _process_figure(figureId, page);
-//          }
-//      } else {
-//          figure.prepend(figureContent);
-//      }
+            
+            amplify.subscribe("osci_figure_load", function(data) {
+                var figure = $(data.figure_id + ":not(.content_loaded)");
+                
+                if (figure.length) {
+                    _load_figure_content(figure);
+                }
+                
+                return;
+            });
+            
+            amplify.publish("osci_layout_complete");
             
             //Remove base data
             delete base.data;
@@ -348,6 +345,22 @@
             page.data("column_data", pageColumnData);
            
             return overflow;
+        }
+        
+        //Wrapper function for loading the figure content
+        function _load_figure_content(figure)
+        {
+            var pageFigure = $(figure),
+                figureContent = base.figureContent["#" + pageFigure.attr("id")],
+                figureType = pageFigure.data("figure_type");
+            
+            if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
+                base.options.processFigureCallback[figureType](pageFigure, figureContent);
+            } else {
+                pageFigure.prepend(figureContent);
+            }
+            
+            pageFigure.addClass("content_loaded");
         }
 
         //process a figure
