@@ -413,7 +413,9 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('height', $(window).height() - 29 + "px")
 			.css('background-color', 'rgba(0,0,0,0.8)')
             .css('z-index', '9999');
-
+		
+		// Always provide interaction in fullscreen
+		options.interaction = true;
 		var new_figure = $('<figure>')
 			.attr('data-options', JSON.stringify(options))
 			.css('margin', '0')
