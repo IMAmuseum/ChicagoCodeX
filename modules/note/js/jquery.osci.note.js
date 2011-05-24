@@ -22,14 +22,7 @@
             $.template('noteLink', noteLinkMarkup);
 
             amplify.subscribe("osci_navigation_complete", function(data) {
-                $('.noteTitle').hide();
-                $('.osci_page_' + data.page).find('.highlight').each(function() {
-                    var pageHeight = $(this).parents('.osci_page').height();
-                    if ($(this).position().top > 0 && $(this).position().top < pageHeight) {
-                        var onid = $(this).data('onid');
-                        $('#note-link-' + onid).show();
-                    }
-                });
+                base.updatePageNotes(data.page);
             });
 
             amplify.subscribe("osci_layout_complete", function() {
@@ -254,6 +247,8 @@
                     $('.highlight-temp').addClass('highlight');
                     $('.highlight-temp').removeClass('highlight-temp');
 
+                    base.updatePageNotes($.osci.navigation.data.currentPage);
+
                 } 
             });
         }
@@ -269,6 +264,17 @@
             Drupal.attachBehaviors();
 
 
+        }
+
+        base.updatePageNotes = function(page) {
+            $('.noteTitle').hide();
+            $('.osci_page_' + page).find('.highlight').each(function() {
+                var pageHeight = $(this).parents('.osci_page').height();
+                if ($(this).position().top > 0 && $(this).position().top < pageHeight) {
+                    var onid = $(this).data('onid');
+                    $('#note-link-' + onid).show();
+                }
+            });
         }
 
         base.init();
