@@ -8,17 +8,11 @@
     {
         var base = this.layout;
 
-        //base.$el = $(el);
-        //base.el = el;
-
-        //base.$el.data("osci.layout", base);
-
         base.init = function()
         {
             var pCount = 0, dataCount = 0, i, isP, $elem, parentId;
             //Trigger event so we know layout is begining
             amplify.publish("osci_layout_start");
-            //$(document).trigger("osci_layout_start");
 
             base.options = $.extend({}, $.osci.layout.defaultOptions, options);
             base.reader = $("#" + base.options.readerId);
@@ -57,13 +51,7 @@
                 base.viewer.append(cache.data.content);
             }
             
-            //Trigger event to let other features know layout is complete
-//            setTimeout(
-//                function(){$(document).trigger("osci_layout_complete");},
-//                10
-//            );
             amplify.subscribe("osci_navigation_complete", function(data) {
-            //$(document).bind("osci_navigation_complete", function(e, page){
                 var page = $(".osci_page_" + data.page);
                 
                 if (!page.hasClass("figures_processed")) {
@@ -93,7 +81,7 @@
             amplify.subscribe("osci_layout_complete", function(data) {
                 //Store the layout in localstorage for faster load times
                 $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html(), figures : base.figures.html()}, base.options.layoutCacheTime);
-            });
+            }, 1);
 
             //Remove base data
             //delete base.render;
@@ -183,6 +171,7 @@
                         _renderPage();
                     }, 0);
                 } else {
+                    //Trigger event to let other features know layout is complete
                     amplify.publish("osci_layout_complete");
                 }
             }
@@ -772,13 +761,5 @@
         cacheId : null,
         layoutCacheTime : 86400
     };
-
-//    $.fn.osci_layout = function( data, options )
-//    {
-//        return this.each(function()
-//        {
-//            (new $.osci.layout(this, data, options)); 
-//        });
-//    };
 
 })(jQuery);
