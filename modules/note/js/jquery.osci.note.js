@@ -270,7 +270,8 @@
             $('.noteTitle').hide();
             $('.osci_page_' + page).find('.highlight').each(function() {
                 var pageHeight = $(this).parents('.osci_page').height();
-                if ($(this).position().top > 0 && $(this).position().top < pageHeight) {
+                // The highlight needs to be in the viewable plain, and the parent should be a paragraph
+                if ($(this).position().top >= 0 && $(this).position().top < pageHeight && $(this).parent().hasClass('osci_paragraph')) {
                     var onid = $(this).data('onid');
                     $('#note-link-' + onid).show();
                 }
