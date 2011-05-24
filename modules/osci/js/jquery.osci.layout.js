@@ -10,6 +10,8 @@
 
         base.init = function()
         {
+            ////console.time("osci_layout_init");
+            
             var pCount = 0, dataCount = 0, i, isP, $elem, parentId;
             //Trigger event so we know layout is begining
             amplify.publish("osci_layout_start");
@@ -89,6 +91,7 @@
             //delete base.viewer;
             //delete base.reader;
             //delete base.figures;
+            //console.timeEnd("osci_layout_init");
         };
 
         function _render()
@@ -129,7 +132,7 @@
             
             if (remainingContent || base.render.figureCarryover.length) {
                 base.render.page = _newPage().appendTo(base.viewer.pages);
-
+                //console.time("osci_page" + base.render.pageCount);
                 while (base.render.figureCarryover.length && _process_figure(base.render.figureCarryover.pop())) {
                     _reset_page();
                 }
@@ -175,6 +178,7 @@
                     amplify.publish("osci_layout_complete");
                 }
             }
+            //console.timeEnd("osci_page" + base.render.pageCount);
         }
 
         //Add content to the current page
@@ -264,14 +268,14 @@
                         $l.addClass("processed");
                         
                         //if a figure was processed and not carried over exit the loop
-                        if (figureProcessed) {
+                        if (figureProcessed === "processed") {
                             break;
                         }
                     }
                 }
 
                 //If a figure has been processed and not carried over, start the current page processing over
-                if (figureProcessed) {
+                if (figureProcessed === "processed") {
                     base.render.pageStatus = "restart";
                     return true;
                 }
@@ -361,7 +365,7 @@
             var figure, aspect, columns, position, verticalPosition, horizontalPosition, column, addLeftPadding = 0,
                 offsetLeft, offsetTop, width, height, captionHeight, columnCoverage = [], colStart, colEnd, pageFigures,
                 figureOffset, figureX, figureY, placed = false, placementAttempts = 0, pageData, i, checkWidth,
-                availableWidth, figureContent, figureType;
+                availableWidth, figureContent, figureType, processingStatus = "not_processed";
 
             //get the actual figure
             //figure = base.figures.filter(figureId);
@@ -383,6 +387,7 @@
             
             //if figure is not displayed in the content hide it (ignore placement and sizing code)
             if (position === 'n') {
+                processingStatus = "processed_no_display";
                 figure.hide();
             } else {
                 //Only process size data on first attempt to place this figure
@@ -538,17 +543,21 @@
                     placementAttempts++;
                 }
                 
+                processingStatus = "processed";
+                
                 //figure was not placed on page... carryover
                 if (!placed) {
+                    processingStatus = "not_processed";
                     figure.detach().prepend(figureContent);
                     base.render.figureCarryover.push(figure);
-                    return false;
                 }
             }
             
-            base.figureContent[figureId] = figureContent;
+            if (!base.figureContent[figureId]) {
+                base.figureContent[figureId] = figureContent;
+            }
             
-            return true;
+            return processingStatus;
         }
 
         //Calculate the constraints of the viewer area

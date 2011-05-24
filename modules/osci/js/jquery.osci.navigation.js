@@ -10,6 +10,7 @@
  
         base.init = function()
         {
+            //console.time("navigation_init");
             var toc, operation = "page", value = "first";
             
             //clear the layout cache
@@ -130,6 +131,7 @@
                 	base.loadContent(true);
                 }
             });
+            //console.timeEnd("navigation_init");
         };   
         
         //wrapper for the content loading function
