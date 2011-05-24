@@ -60,8 +60,10 @@
     	processNode = (processNode) ? processNode : false;
 
         $(obj).html($(obj).html()); // reset the dom 
+
         if (properties.start_node == properties.end_node) {
             var node = document.createTextNode(properties.start_node);
+
             $(obj).contents().each(function() {
                 var newElement;
                 if (node.nodeValue == this.nodeValue) { // Text
@@ -85,6 +87,7 @@
                 var isEndNode       = properties.end_node.indexOf($(node).text());
                 var start_offset    = 0;
                 var end_offset      = $(node).text().length;
+                var newElement;
 
                 // Find the start node
                 if (isStartNode == 0) {
@@ -101,13 +104,15 @@
                 }
 
                 if (this.nodeType == 1 && processNode === true) { // HTML
-                    $.highlighter.processHtmlNode(node, start_offset, end_offset);
+                    newElement = $.highlighter.processHtmlNode(node, start_offset, end_offset);
                 } else if (this.nodeType == 3 && processNode === true) { // Text
-                    $.highlighter.processTxtNode(node, start_offset, end_offset);
+                    newElement = $.highlighter.processTxtNode(node, start_offset, end_offset);
                 }
 
-                $($.highlighter.newElement).attr('data-onid', properties.onid);
-                $($.highlighter.newElement).addClass('note-' + properties.onid);
+                if (newElement) {
+                    $(newElement).attr('data-onid', properties.onid);
+                    $(newElement).addClass('note-' + properties.onid);
+                }
 
                 if (foundEnd === true) processNode = false; // We found the end so stop processing
             });
@@ -166,7 +171,6 @@
         var wrapper = document.createElement($.highlighter.settings.wrapperElement);
         wrapper.className = $.highlighter.settings.wrapperClass;
         wrapper.appendChild(txt);
-        //$.highlighter.newElement = wrapper;
         return wrapper;
     }
 
@@ -175,7 +179,6 @@
         var wrapper = document.createElement($.highlighter.settings.wrapperElement);
         wrapper.className = $.highlighter.settings.wrapperClass;
         wrapper.innerHTML = html;
-        //$.highlighter.newElement = wrapper;
         return wrapper;
     }
 

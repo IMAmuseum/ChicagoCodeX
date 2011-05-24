@@ -21,13 +21,22 @@
 
             $.template('noteLink', noteLinkMarkup);
 
+            amplify.subscribe("osci_navigation_complete", function(data) {
+                $('.noteTitle').hide();
+                $('.osci_page_' + data.page).find('.highlight').each(function() {
+                    var pageHeight = $(this).parents('.osci_page').height();
+                    if ($(this).position().top > 0 && $(this).position().top < pageHeight) {
+                        var onid = $(this).data('onid');
+                        $('#note-link-' + onid).show();
+                    }
+                });
+            });
+
             amplify.subscribe("osci_layout_complete", function() {
-            //$(document).bind("osci_layout_complete", function(e) {
 
                 /**
                 * Handle text highlighting
                 */
-        
                 $('#osci_viewer .osci_paragraph').highlight({
                     onSelection: function(obj, e, properties) {
                         $.osci.note.toolbar.appendTo($('body'));
@@ -258,6 +267,7 @@
 
             Drupal.detachBehaviors();
             Drupal.attachBehaviors();
+
 
         }
 
