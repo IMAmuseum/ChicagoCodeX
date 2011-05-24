@@ -149,6 +149,10 @@ body.page-node-reader {
     background: url("../images/bg-loading.gif") repeat-x 0 8px;   
 }
 
+#osci_navigation_section {
+    width: 100%;   
+}
+
 #osci_navigation_section_list {
     list-style-type: none;   
     display: inline-block;
