@@ -116,7 +116,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// Load in our image and define the tile loader for it
 	var image = po.image();
 	var tl = 'tile_loader_'+figure_id+' = function (c) { var iipsrv = "' + server_url + '"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return null; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
-	console.log(tl);
 	eval(tl);
 	image.url(window['tile_loader_'+figure_id]);
 	image.id('image');
