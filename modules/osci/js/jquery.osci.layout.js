@@ -49,7 +49,7 @@
                 //Collect the figures from the content
                 base.figures = data.children("#field_osci_figures").find("figure");
                 
-                base.render();
+                _render();
             } else {
                 //Cache found load layout from localstorage
                 base.options = cache.data.options;
@@ -90,137 +90,136 @@
                 return;
             });
             
-            amplify.publish("osci_layout_complete");
-            
+            amplify.subscribe("osci_layout_complete", function(data) {
+                //Store the layout in localstorage for faster load times
+                $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html(), figures : base.figures.html()}, base.options.layoutCacheTime);
+            });
+
             //Remove base data
-            delete base.data;
-            delete base.viewer;
-            delete base.reader;
-            delete base.figures;
+            //delete base.render;
+            //delete base.data;
+            //delete base.viewer;
+            //delete base.reader;
+            //delete base.figures;
         };
 
-        base.render = function()
+        function _render()
         {
             var i = 0, totalElements = 0, page, currentElement, pageElementCount, 
                 figureLinks, overflow, contentOffset = 0, cache = null, heightRemain = 0, 
                 figureCarryover, figureCarryoverCount, figureCarryoverI = 0, plateFigure, parentId, originalElement;
 
             base.viewer.pages = $("<div>", {id : "osci_pages"}).appendTo(base.viewer);
-
-            if($.osci.fontSize) {
+            base.render = {
+                page : undefined,
+                pageCount : 0,
+                pageStatus : "processing",
+                pageMinHeight : parseInt(base.viewer.pages.css("line-height"), 10) * base.options.minLinesPerColumn,
+                figureCarryover : [],
+                contentOffset : 0,
+                column : undefined,
+                currentColumn : 0
+            };
+            
+            if ($.osci.fontSize) {
             	// apply user defined font size
-            	$("#osci_pages").css("font-size", $.osci.fontSize + "%");
+                base.viewer.pages.css("font-size", $.osci.fontSize + "%");
             }            
             
             //Add the plate figure if found
             plateFigure = base.figures.filter("#osci_plate_fig");
             if (plateFigure.length) {
-                figureCarryover = ["#osci_plate_fig"];
+                base.render.figureCarryover.push(base.figures.filter("#osci_plate_fig"));
             }
             
-            totalElements = base.data.length;
-            //Loop over the elements to add them to the layout
-            while (i < totalElements) {
-                originalElement = $(base.data[i]);
-                currentElement = originalElement.clone();
-                
-                parentId = originalElement.parents("section[id]").attr("id");
-                if (parentId) {
-                    currentElement.addClass(parentId);
-                }
-                delete originalElement;
+            _renderPage();
+        };
+        
+        function _renderPage()
+        {
+            var remainingContent = base.data.length, i = 0, pageElementCount = 0;
+            
+            if (remainingContent || base.render.figureCarryover.length) {
+                base.render.page = _newPage().appendTo(base.viewer.pages);
 
-                //If no page is defined or the page is full create a new page
-                if (page === undefined || page.data("process") === 'done') {
-                    //If a previous page is defined and content overflowed the page set the starting offset
-                    if (page !== undefined) {
-                        contentOffset = page.data("contentNextOffset");
-                        figureCarryover = page.data("figure_carryover");
+                while (base.render.figureCarryover.length && _process_figure(base.render.figureCarryover.pop())) {
+                    _reset_page();
+                }
+                
+                while (i < remainingContent && base.render.pageStatus === "processing") {
+                    var originalElement = $(base.data[i]);
+                    var currentElement = originalElement.clone();
+                  
+                    var parentId = originalElement.parents("section[id]").attr("id");
+                    if (parentId) {
+                        currentElement.addClass(parentId);
                     }
+                    delete originalElement;
                     
-                    //Get a new page and append it to the viewer
-                    page = _newPage().appendTo(base.viewer.pages);
-
-                    page.data({
-                        contentStartOffset : contentOffset,
-                        current_column : 0
-                    });
-                    pageElementCount = 0;
+                    overflow = _renderContent(currentElement);
                     
-                    //Add any figures that were carried over from the previous page
-                    if (figureCarryover !== undefined && figureCarryover.length) {
-                        figureCarryoverCount = figureCarryover.length;
-                        for (figureCarryoverI = 0; figureCarryoverI < figureCarryoverCount; figureCarryoverI++) {
-                            _process_figure(figureCarryover[figureCarryoverI], page);
-                        }
-                        _reset_page(page);
+                    //If there was no overflow continue to the next element
+                    if (!overflow) {
+                        i++;
+                        pageElementCount++;
+                    }
+                      
+                    //Restart page processing if necessary (if a figure was processed)
+                    if (base.render.pageStatus === "restart") {
+                        //Reset the page data
+                        _reset_page();
+                        //Backup the counter to the first element processed on this page
+                        i = i - pageElementCount;
+                        pageElementCount = 0;
+                        base.render.pageStatus = "processing";
                     }
                 }
+            
+                base.render.contentOffset = base.render.columnData[base.render.currentColumn].heightRemain;
+                base.data.splice(0, pageElementCount);
                 
-                //Add element to the page
-                overflow = _addPageContent(currentElement, page);
-                
-                //If there was no overflow continue to the next element
-                if (!overflow) {
-                    i++;
-                    pageElementCount++;
-                }
-
-                //Restart page processing if necessary (if a figure was processed)
-                if (page.data("process") === "restart") {
-                    //Reset the page data
-                    _reset_page(page);
-                    //Backup the counter to the first element processed on this page
-                    i = i - pageElementCount;
-                    pageElementCount = 0;
+                if (base.data.length) {
+                    setTimeout(function(){
+                        _renderPage();
+                    }, 0);
                 } else {
-                    //Determine if we are at the end of a page
-                    heightRemain = page.data("column_data")[page.data("current_column")].heightRemain;
-                    page.data("contentNextOffset", heightRemain);
-                    
-                    if (parseInt(page.data("current_column"), 10) === (base.options.columnsPerPage - 1) && heightRemain <= 0) {
-                        page.data("process", "done");
-                    }
+                    amplify.publish("osci_layout_complete");
                 }
             }
-
-            //Store the layout in localstorage for faster load times
-            $.osci.storage.set('osci_layout_cache:' + base.options.cacheId, {options : base.options, content : base.viewer.html(), figures : base.figures.html()}, base.options.layoutCacheTime);
-        };
+        }
 
         //Add content to the current page
-        function _addPageContent(content, page)
+        function _renderContent(content)
         {
             var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, 
                 lineHeight, colHeight, overflow = false, paragraphIdentifier, figureProcessed = false, columnContentCount, isP = true,
                 numLines, visibleLines, figureLinks, contentHeight, i, contentMargin, contentPosition, contentOffset, columnPosition, columnOffset,
-                topBound, bottomBound, completeLines;
+                topBound, bottomBound, completeLines, countFigureLinks;
             
             isP = content.is("p");
             
             //Determine which column to put content into
-            pageColumnData = page.data("column_data");
-            pageColumnDataCount = pageColumnData.length;
-            for (var i = 0; i < pageColumnDataCount; i++) {
+            pageColumnDataCount = base.render.columnData.length;
+            for (i = 0; i < pageColumnDataCount; i++) {
                 //If there is height remaining in the column, get it
-                if (pageColumnData[i].heightRemain > 0) {
+                if (base.render.columnData[i].heightRemain > 0) {
                     //check for existing column
-                    column = page.find("div.column_" + i);
+                    column = base.render.page.find("div.column_" + i);
                     pageColumnNumber = i;
-                    page.data("current_column", pageColumnNumber);
-                    //if column doesnt exist, create it
+                    base.render.currentColumn = pageColumnNumber;
+                    //if column doesn't exist, create it
                     if (!column.length) {
                         //create the column
-                        column = _newColumn(page).appendTo(page);
+                        column = _newColumn().appendTo(base.render.page);
                         //if not first column, use offset from previous column. first column, use offset from previous page
                         for(i = (pageColumnNumber - 1); i >= -1; i--) {
                             if (i === -1) {
-                                offset = page.data("contentStartOffset");
+                                offset = base.render.contentOffset;
                                 break;
                             }
                             
-                            if (pageColumnData[i].height > 0) {
-                                offset = pageColumnData[i].heightRemain;
+                            if (base.render.columnData[i].height > 0) {
+                                offset = base.render.columnData[i].heightRemain;
                                 break;
                             }
                         }
@@ -231,7 +230,7 @@
 
             //if no column found page is full
             if (column === undefined) {
-                page.data("process", "done");
+                base.render.pageStatus = "done";
                 return true;
             }
 
@@ -244,8 +243,7 @@
             //If all of the content is overflowing the column remove it and move to next column
             if ((column.height() - content.position().top) < lineHeight) {
                 content.remove();
-                pageColumnData[pageColumnNumber].heightRemain = heightRemain;
-                page.data("column_data", pageColumnData);
+                base.render.columnData[pageColumnNumber].heightRemain = heightRemain;
                 return true;
             }
             
@@ -259,15 +257,17 @@
 
             //find figure references and process the figure
             figureLinks = content.find("a.figure-link:not(.processed)");
-            if (figureLinks.length) {
-                figureLinks.each(function(i, l){
-                    var linkLocation, $l = $(l);
+            countFigureLinks = figureLinks.length;
+            if (countFigureLinks) {
+                var linkLocation, $l;
+                for (i = 0; i < countFigureLinks; i++) {
+                    $l = $(figureLinks[i]);
 
                     //make sure the figure link is in the viewable area of the current column
                     linkLocation = $l.position().top;
-                    if (linkLocation >= 0 && linkLocation <= pageColumnData[pageColumnNumber].height) {
+                    if (linkLocation >= 0 && linkLocation <= base.render.columnData[pageColumnNumber].height) {
                         //process the figure
-                        figureProcessed = _process_figure($l.attr("href"), page);
+                        figureProcessed = _process_figure(base.figures.filter($l.attr("href")));
 
                         //Add a class to the figure link (in current content and the prerendered content) so it is only processed once
                         //$("a[href=" + $l.attr("href") + "]", base.prerender).addClass("processed");
@@ -276,14 +276,14 @@
                         
                         //if a figure was processed and not carried over exit the loop
                         if (figureProcessed) {
-                            return false;
+                            break;
                         }
                     }
-                });
+                }
 
                 //If a figure has been processed and not carried over, start the current page processing over
                 if (figureProcessed) {
-                    page.data("process", "restart");
+                    base.render.pageStatus = "restart";
                     return true;
                 }
             }
@@ -297,16 +297,16 @@
             // Position Paragraph Identifiers in the gutter
             paragraphIdentifier = content.find("a.osci_paragraph_identifier").remove();
             if (paragraphIdentifier.length) {
-                if (page.find("a.osci_paragraph_" + paragraphIdentifier.data("paragraph_id")).length === 0) {
+                if (base.render.page.find("a.osci_paragraph_" + paragraphIdentifier.data("paragraph_id")).length === 0) {
                     paragraphIdentifier.css({
                         "margin-left" : (parseFloat(column.css("margin-left")) - Math.ceil(base.options.gutterWidth / 2) - 4) + "px",
                         "margin-top" : contentPosition.top + parseInt(column.css("margin-top"), 10) + "px"
-                    }).appendTo(page);
+                    }).appendTo(base.render.page);
                 }
             }
             
             //Update how much vertical height remains in the column
-            heightRemain = pageColumnData[pageColumnNumber].heightRemain - content.outerHeight(true);
+            heightRemain = base.render.columnData[pageColumnNumber].heightRemain - content.outerHeight(true);
             if (heightRemain > 0 && heightRemain < lineHeight) {
                 heightRemain = 0;
             } else if (heightRemain < 0 && heightRemain >= (contentMargin * -1)) {
@@ -316,13 +316,13 @@
             //If we have negative height remaining, the content must be repeated in the next column
             if (heightRemain < 0) {
                 var topBound = columnOffset.top > contentOffset.top ? columnOffset.top : contentOffset.top,
-                    bottomBound = (columnOffset.top + pageColumnData[pageColumnNumber].height) < (contentOffset.top + contentHeight - contentMargin) ? 
-                                      (columnOffset.top + pageColumnData[pageColumnNumber].height) : (contentOffset.top + contentHeight - contentMargin),
+                    bottomBound = (columnOffset.top + base.render.columnData[pageColumnNumber].height) < (contentOffset.top + contentHeight - contentMargin) ? 
+                                      (columnOffset.top + base.render.columnData[pageColumnNumber].height) : (contentOffset.top + contentHeight - contentMargin),
                     completeLines = Math.floor((bottomBound - contentOffset.top) / lineHeight);
                
                 //Adjust the column height so partial lines of text are removed
                 numLines = Math.floor((contentHeight - contentMargin) / lineHeight);
-                colHeight = pageColumnData[pageColumnNumber].height - ((pageColumnData[pageColumnNumber].height - (contentOffset.top - columnOffset.top)) % lineHeight);
+                colHeight = base.render.columnData[pageColumnNumber].height - ((base.render.columnData[pageColumnNumber].height - (contentOffset.top - columnOffset.top)) % lineHeight);
                 visibleLines = Math.floor((bottomBound - topBound) / lineHeight);
                 column.height(colHeight + "px");
 
@@ -341,9 +341,12 @@
                 overflow = true;
             }
             
-            pageColumnData[pageColumnNumber].heightRemain = heightRemain;
-            page.data("column_data", pageColumnData);
+            base.render.columnData[pageColumnNumber].heightRemain = heightRemain;
            
+            if (base.render.currentColumn === (base.options.columnsPerPage - 1) && heightRemain <= 0) {
+                base.render.pageStatus = "done";
+            }
+            
             return overflow;
         }
         
@@ -351,7 +354,7 @@
         function _load_figure_content(figure)
         {
             var pageFigure = $(figure),
-                figureContent = base.figureContent["#" + pageFigure.attr("id")],
+                figureContent = base.figureContent[pageFigure.attr("id")],
                 figureType = pageFigure.data("figure_type");
             
             if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
@@ -364,7 +367,7 @@
         }
 
         //process a figure
-        function _process_figure(figureId, page)
+        function _process_figure(figure)
         {
             var figure, aspect, columns, position, verticalPosition, horizontalPosition, column, addLeftPadding = 0,
                 offsetLeft, offsetTop, width, height, captionHeight, columnCoverage = [], colStart, colEnd, pageFigures,
@@ -372,7 +375,8 @@
                 availableWidth, figureContent, figureType;
 
             //get the actual figure
-            figure = base.figures.filter(figureId);
+            //figure = base.figures.filter(figureId);
+            var figureId = figure.attr("id");
 
             //Get figure layout hint data from data attributes on the figure element
             columns = figure.data("columns");
@@ -386,7 +390,7 @@
             figureContent = figure.find("div.figureContent").remove();
 
             //add new figure to the page
-            figure.appendTo(page);
+            figure.appendTo(base.render.page);
             
             //if figure is not displayed in the content hide it (ignore placement and sizing code)
             if (position === 'n') {
@@ -455,11 +459,11 @@
                         break;
                     //In the current column
                     default:
-                        column = page.data("current_column");
+                        column = base.render.currentColumn;
                 }
                 
                 //Get the figures currently on the page to check if current figure can fit
-                pageFigures = page.find("figure:not(#" + figureId + "):visible");
+                pageFigures = base.render.page.find("figure:not(#" + figureId + "):visible");
                 
                 while (!placed && placementAttempts < base.options.columnsPerPage) {
                     //Detemine the left offset start column and width of the figure
@@ -485,7 +489,7 @@
                     figure.css("top", offsetTop + "px");
         
                     //Determine which columns this figure will occupy and add it to the figure data
-                    for (var i = 0; i < base.options.columnsPerPage; i++) {
+                    for (i = 0; i < base.options.columnsPerPage; i++) {
                         colStart = (base.options.columnWidth * i) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
                         colEnd = (base.options.columnWidth * (i + 1)) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
         
@@ -502,8 +506,9 @@
                     if (pageFigures.length) {
                         figureX = [offsetLeft, offsetLeft + figure.outerWidth()];
                         figureY = [offsetTop, offsetTop + figure.outerHeight()];
-                        pageFigures.each(function(i, elem) {
-                            var $elem = $(elem),
+                        
+                        for (i = 0; i < pageFigures.length; i++) {
+                            var $elem = $(pageFigures[i]),
                                 position = $elem.position(),
                                 elemX = [position.left, position.left + $elem.outerWidth()],
                                 elemY = [position.top, position.top + $elem.outerHeight()];
@@ -536,9 +541,9 @@
                                             column = 0;
                                         }
                                 }
-                                return false;
+                                break;
                             }
-                        });
+                        }
                     }
     
                     placementAttempts++;
@@ -547,27 +552,12 @@
                 //figure was not placed on page... carryover
                 if (!placed) {
                     figure.detach().prepend(figureContent);
-                    pageData = page.data();
-                    if (pageData.figure_carryover !== undefined) {
-                        pageData.figure_carryover.push(figureId);
-                    } else {
-                        pageData.figure_carryover = [figureId];
-                    }
-                    page.data(pageData);
+                    base.render.figureCarryover.push(figure);
                     return false;
                 }
             }
             
             base.figureContent[figureId] = figureContent;
-            
-//            if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
-//                if (!base.options.processFigureCallback[figureType](figure, figureContent)) {
-//                    figure.data("sized", false);
-//                    _process_figure(figureId, page);
-//                }
-//            } else {
-//                figure.prepend(figureContent);
-//            }
             
             return true;
         }
@@ -612,40 +602,45 @@
         //Calculate the height information to remove any vertical scrolling
         function _updateHeights()
         {
-            var viewerHeight = 0;
+            var viewerHeight = 0,
+                absoluteElements,
+                absoluteElementCount = 0,
+                i;
 
             //Set the height of the container to the window height minus any margin on the container element
             base.reader.height($(window).height() - (base.reader.outerHeight() - base.reader.height()));
             
             //Calc viewer height by taking the height of the container minus all non-absolute positioned children inside the container.
             viewerHeight = base.reader.height();
-            base.reader.children(":not(#" + base.viewer.attr("id") + ")").each(function(i, elem){
-                var $elem = $(elem);
-                if ($elem.css("position") !== "absolute") {
-                    viewerHeight -= $elem.outerHeight(true);
+            absoluteElements = base.reader.children(":not(#" + base.viewer.attr("id") + ")");
+            absoluteElementCount = absoluteElements.length;
+            
+            if (absoluteElementCount) {
+                for (i = 0; i < absoluteElementCount; i++) {
+                    var $elem = $(absoluteElements[i]);
+                    if ($elem.css("position") !== "absolute") {
+                        viewerHeight -= $elem.outerHeight(true);
+                    }
                 }
-            });
+            }
             
             //Set the height of the viewer to the calculated height
             base.viewer.height(viewerHeight);
         }
 
         //Create a new column
-        function _newColumn(page)
+        function _newColumn()
         {
-            var topOffset, leftOffset, pageFigures, heightLength = 0, colNumber = 1, columnData, height;
-
-            //Get the column data stored on the page
-            columnData = page.data("column_data");
+            var topOffset, leftOffset, pageFigures, heightLength = 0, colNumber = 1, height, i;
 
             //Loop over page column data to determine if a column can be created with height remaining
-            heightLength = columnData.length;
-            for(var i = 0; i < heightLength; i++) {
-                if (columnData[i].heightRemain > 0) {
+            heightLength = base.render.columnData.length;
+            for (i = 0; i < heightLength; i++) {
+                if (base.render.columnData[i].heightRemain > 0) {
                     colNumber = i;
                     leftOffset = (i * base.options.columnWidth) + (base.options.gutterWidth * i) + base.options.innerPageGutter[3];
-                    topOffset = columnData[i].topOffset;
-                    height = columnData[i].height;
+                    topOffset = base.render.columnData[i].topOffset;
+                    height = base.render.columnData[i].height;
                     break;
                 }
             }
@@ -653,7 +648,6 @@
             //create the column
             return $("<div>", {
                 "class" : "column column_" + colNumber,
-//                data : {column : colNumber},
                 css : {
                     width : base.options.columnWidth + "px",
                     "margin-left" : leftOffset + "px",
@@ -667,31 +661,32 @@
         //Create a new page
         function _newPage()
         {
-            var data, colDataArray, leftGutterOffset = base.options.outerPageGutter[3];
+            var leftGutterOffset = base.options.outerPageGutter[3], i;
 
             //New page being created so up the page count
             base.options.pageCount++;
+            
+            base.render.pageCount = base.options.pageCount;
+            base.render.pageStatus = "processing";
+            base.render.currentColumn = 0;
             
             //Determine where the left edge of the page should be
             if (base.options.pageCount > 1) {
                 leftGutterOffset = base.options.outerPageGutter[3] + ((base.options.outerPageGutter[1] + base.options.outerPageGutter[3]) * (base.options.pageCount - 1));
             }
 
-            data = {
-                page : base.options.pageCount
-            };
-
             //Set base column data
-            colDataArray = [];
-            for (var i = 0; i < base.options.columnsPerPage; i++) {
-                colDataArray[i] = {height : base.options.innerPageHeight, topOffset : base.options.innerPageGutter[0], heightRemain : base.options.innerPageHeight};
+            base.render.columnData = [];
+            for (i = 0; i < base.options.columnsPerPage; i++) {
+                base.render.columnData[i] = {height : base.options.innerPageHeight, topOffset : base.options.innerPageGutter[0], heightRemain : base.options.innerPageHeight};
             }
-            data.column_data = colDataArray;
-
+            
             //Create and return the page div
             return $("<div>",{
                 "class" : "osci_page osci_page_" + base.options.pageCount,
-                data : data,
+                data : {
+                    page : base.options.pageCount
+                },
                 css : {
                     width : base.options.pageWidth + "px",
                     left : ((base.options.pageCount - 1) * base.options.pageWidth) + leftGutterOffset + "px",
@@ -703,46 +698,40 @@
         }
 
         //Reset page data for processing
-        function _reset_page(page)
+        function _reset_page()
         {
-            var data, figures, columnCoverage, height, topOffset, pageNum = page.data("page"), lineHeight, minHeight, colDataArray;
-
-            lineHeight = parseInt(page.css("line-height"), 10);
-            minHeight = lineHeight * base.options.minLinesPerColumn;
-
-            data = {
-                page : pageNum,
-                process : "start"
-            };
+            var data, figures, columnCoverage, height, topOffset, 
+                i, j, $fig, numFigures, figHeight;
 
             //Remove all columns and identifiers
-            $("div.column", page).remove();
-            $("span.osci_paragraph_identifier", page).remove();
+            base.render.page.find("div.column, a.osci_paragraph_identifier").remove();
 
             //Grab all of the figures currently on the page
-            figures = $("figure:visible", page);
+            figures = base.render.page.find("figure:visible");
+            numFigures = figures.length;
 
             //Loop for number of columns per page to setup layout data
-            colDataArray = [];
-            for (var i = 0; i < base.options.columnsPerPage; i++) {
+            base.render.columnData = [];
+            for (i = 0; i < base.options.columnsPerPage; i++) {
                 height = base.options.innerPageHeight;
                 topOffset = base.options.innerPageGutter[0];
 
                 //Determine where figures are placed on the page and adjust column heights accordingly
-                if (figures.length) {
-                    figures.each(function(j, fig) {
-                        var $fig = $(fig);
+                if (numFigures) {
+                    for (j = 0; j < numFigures; j++) {
+                        $fig = $(figures[j]);
                         columnCoverage = $fig.data("column_coverage");
+                        figHeight = $fig.height();
 
                         //If figure is located in the current column adjust the height
                         if (columnCoverage[i]) {
                             //Remove figure height from the column
-                            height = height - ($fig.height() + base.options.innerPageGutter[0]);
+                            height = height - (figHeight + base.options.innerPageGutter[0]);
 
                             //Don't allow text if minHeight not met
-                            if (height < minHeight) {
+                            if (height < base.render.pageMinHeight) {
                                 height = 0;
-                                return;
+                                continue;
                             }
 
                             //Adjust column top offset based on vertical location of the figure
@@ -751,7 +740,7 @@
                                 case 't':
                                 //fullpage
                                 case 'p':
-                                    topOffset = topOffset + $fig.height() + base.options.innerPageGutter[0];
+                                    topOffset = topOffset + figHeight + base.options.innerPageGutter[0];
                                     break;
                                 //bottom
                                 case 'b':
@@ -760,16 +749,12 @@
                             }
 
                         }
-                    });
+                    }
                 }
                 
                 //Add column data to array
-                colDataArray[i] = {height : height, topOffset : topOffset, heightRemain : height};
+                base.render.columnData[i] = {height : height, topOffset : topOffset, heightRemain : height};
             }
-            
-            //reset the page data with the new values
-            data.column_data = colDataArray;
-            page.data(data);
         }
 
         base.init();
@@ -788,12 +773,12 @@
         layoutCacheTime : 86400
     };
 
-    $.fn.osci_layout = function( data, options )
-    {
-        return this.each(function()
-        {
-            (new $.osci.layout(this, data, options)); 
-        });
-    };
+//    $.fn.osci_layout = function( data, options )
+//    {
+//        return this.each(function()
+//        {
+//            (new $.osci.layout(this, data, options)); 
+//        });
+//    };
 
 })(jQuery);

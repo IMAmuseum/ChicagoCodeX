@@ -469,8 +469,10 @@
                 //bind an event to update the navigation
                 amplify.subscribe("osci_navigation_complete", function(data) {
                     var secNav = $("#osci_navigation_section_list");
-                    secNav.find("li").removeClass("active");
-                    secNav.find("li:eq(" + (data.page - 1) + ")").addClass("active");
+                    if (secNav.length) {
+                        secNav.find("li").removeClass("active");
+                        secNav.find("li:eq(" + (data.page - 1) + ")").addClass("active");
+                    }
                 });
                 
 //                $(document).bind("osci_navigation_complete", function(e, page){
