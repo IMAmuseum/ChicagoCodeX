@@ -1,6 +1,13 @@
 <?php
 
 
+function osci_iip_init() {
+	drupal_add_js(array('osci_iip' => array(
+		'server_url' => variable_get('osci_iip_server_url', ''),
+		'base_path' => variable_get('osci_iip_base_path', '')
+	)), 'setting');
+}
+
 function osci_iip_menu() {
     $items = array();
 
@@ -9,8 +16,35 @@ function osci_iip_menu() {
         'page callback'     => 'osci_iip_demo',
         'access arguments'  => array('access content'),
     );
+    
+    $items['admin/config/services/iip'] = array(
+    	'title'             => 'IIP Settings',
+        'description'       => 'IIP integration settings',
+        'page callback'     => 'drupal_get_form',
+        'page arguments'    => array('osci_iip_admin'),
+        'access arguments'  => array('access administration pages'),
+        'type'              => MENU_NORMAL_ITEM
+    );
 
     return $items;
+}
+
+function osci_iip_admin() {
+	$form['osci_iip_server_url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('IIP Server URL'),
+        '#description' => t('The URL for the IIP server (i.e. http://cmog.org/fcgi-bin/iipsrv.fcgi)'),
+        '#default_value' => variable_get('osci_iip_server_url','')
+    );
+    
+	$form['osci_iip_base_path'] = array(
+        '#type' => 'textfield',
+        '#title' => t('IIP Base Path'),
+        '#description' => t('The directory on the server where IIP PTIF images reside (i.e. /var/www/images)'),
+        '#default_value' => variable_get('osci_iip_base_path','')
+    );
+
+    return system_settings_form($form);
 }
 
 function osci_iip_demo() {
@@ -129,8 +163,8 @@ function _osci_iip_save_aspect_ratio($node) {
 
 function _osci_iip_get_image($node) {
 	// Get the image data by calling the iip server and asking for a whole jpeg
-	$iipSrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
-	$command = "FIF={$node->field_ptiff['und'][0]['value']}&CVT=jpeg";
+	$iipSrv = variable_get('osci_iip_server_url', '') . "?";
+	$command = "FIF=" . variable_get('osci_iip_base_path', '') . "/" . $node->field_ptiff['und'][0]['value'] . "&CVT=jpeg";
 	$curl = curl_init($iipSrv.$command);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 	$output = curl_exec($curl);
@@ -145,11 +179,11 @@ function _osci_iip_get_image($node) {
 
 function _osci_iip_get_image_attr($node) {
 	if (!is_numeric($node->nid)) return false;
-	$iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi?";
+	$iipsrv = variable_get('osci_iip_server_url', '') . "?";
 	$ptiff = $node->field_ptiff['und'][0]['value'];
 	// Get image data as a text response from the IIP server
 	// Must supply the fif parameter
-	$url = $iipsrv.'FIF='.$ptiff.'&OBJ=Basic-info';
+	$url = $iipsrv . 'FIF=' . variable_get('osci_iip_base_path', '') . "/" . $ptiff . '&OBJ=Basic-info';
 	$curl = curl_init($url);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 	$res = curl_exec($curl);

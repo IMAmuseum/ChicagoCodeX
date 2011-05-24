@@ -57,14 +57,14 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var node = div.attr('data-node');
 	var collapsed = div.attr('data-collapsed');
 	var figure_id = div.attr('data-figure-id');
-	var ptiff = div.attr('data-ptiff');
+	var ptiff = Drupal.settings.osci_iip.base_path + "/" + div.attr('data-ptiff');
+	var ptiff_overlay = Drupal.settings.osci_iip.base_path + "/" + div.attr('data-overlay');
 	var image_h = div.attr('data-ih');
 	var image_w = div.attr('data-iw');
 	var center_lat = div.attr('data-center-lat');
 	var center_lon = div.attr('data-center-lon');
 	var fullscreen_zoom = div.attr('data-fullscreen-zoom');
 	var svg_path = div.attr('data-svg');
-	var ptiff_overlay = div.attr('data-overlay');
 	var editing = div.attr('data-editing');
 	var options = $.parseJSON(div.parents('figure:first').attr('data-options'));
 	// set up some sensible defaults if the figure didn't provide any options
@@ -73,6 +73,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	}
 	var tile_size = 256;
 	var overlay_opacity = '0';
+	var server_url = Drupal.settings.osci_iip.server_url;
 
 	
 	
@@ -114,7 +115,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	// Load in our image and define the tile loader for it
 	var image = po.image();
-	var tl = 'tile_loader_'+figure_id+' = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://stanley.imamuseum.org/osci/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+	var tl = 'tile_loader_'+figure_id+' = function (c) { var iipsrv = "' + server_url + '"; var ptiff = "'+ptiff+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return null; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+	console.log(tl);
 	eval(tl);
 	image.url(window['tile_loader_'+figure_id]);
 	image.id('image');
@@ -124,7 +126,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// and make it transparent
 	if (ptiff_overlay) {
 		var overlay = po.image();
-		var tlo = 'tile_loader_'+figure_id+'_overlay = function (c) { var iipsrv = "http://stanley.imamuseum.org/fcgi-bin/iipsrv.fcgi"; var ptiff = "'+ptiff_overlay+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return "http://stanley.imamuseum.org/osci/sites/default/modules/osci/images/null.png"; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
+		var tlo = 'tile_loader_'+figure_id+'_overlay = function (c) { var iipsrv = "' + server_url + '"; var ptiff = "'+ptiff_overlay+'"; var image_h = '+image_h+'; var image_w = '+image_w+'; var zoom_max = '+zoom_max+' - 1; var tile_size = 256; var scale = Math.pow(2, zoom_max - c.zoom); var mw = Math.round(image_w / scale); var mh = Math.round(image_h / scale); var tw = Math.ceil(mw / tile_size); var th = Math.ceil(mh / tile_size); if (c.row < 0 || c.row >= th || c.column < 0 || c.column >= tw) return null; if (c.row == (th - 1)) { c.element.setAttribute("height", mh % tile_size);} if (c.column == (tw - 1)) { c.element.setAttribute("width", mw % tile_size);} return iipsrv+"?fif="+ptiff+"&jtl="+c.zoom+","+((c.row * tw) + c.column);}';			
 		eval(tlo);
 		overlay.url(window['tile_loader_'+figure_id+'_overlay']);
 		overlay.id('overlay_'+figure_id);
