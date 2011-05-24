@@ -66,7 +66,28 @@ div.note div.links {
     float: right;
 }
 
+#edit-citation-options ul,
+#edit-citation-options ul li,
 div.note div.links ul,
 div.note div.links ul li {
     display: inline;
 }
+
+#edit-citation-options {
+    margin-bottom: 0;
+}
+
+#edit-citation-options label {
+    width: auto !important;
+    margin-right: 10px;
+}
+
+#edit-citation-options ul li.active {
+    background-color: #999;
+    padding: 5px;
+}
+#edit-citation-options ul li.active a {
+    text-decoration: underline;
+}
+
+#edit-citation-url { width: 98%; }

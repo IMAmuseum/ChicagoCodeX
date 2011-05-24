@@ -18,8 +18,19 @@
             var noteLinkMarkup = '{{if body}}<div id="note-link-${onid}" data-onid=${onid} class="noteTitle">' +
                 '<a class="use-ajax" href="' + Drupal.settings.basePath + 'ajax/note/load/${onid}">${body}</a>' +
                 '</div>{{/if}}';
-
             $.template('noteLink', noteLinkMarkup);
+
+            // APA Style
+            var citationAPA = '1. ${author}. (${pubDate}). ${articleTitle} In ${bookTitle} (${publisher}) para: ${paragraph}';
+            $.template('citationAPA', citationAPA);
+
+            // MLA Style
+            var citationMLA = '${author}. "${articleTitle}" ${bookTitle}. para ${paragraph}. ${publisher}, ${pubDate}';
+            $.template('citationMLA', citationMLA);
+
+            // Chicago style
+            var citationChicago = '${author}. ${pubDate} ${articleTitle}. In ${bookTitle}, ${paragraph}. ${publisher}';
+            $.template('citationChicago', citationChicago);
 
             amplify.subscribe("osci_navigation_complete", function(data) {
                 base.updatePageNotes(data.page);
@@ -135,7 +146,39 @@
                             $("input[name='start_offset']").val($.osci.note.selection.start_offset);
                             break;
                         case 'citation-form':
-                            $('#edit-citation-text').html($.osci.note.selection.selection);
+                            var data = {
+                                author: 'Jill Shaw',
+                                pubDate: '2011, May 21',
+                                bookTitle: 'get the parent node',
+                                publisher: 'University of Chicago Press',
+                                articleTitle: $.osci.navigation.data.nid,
+                                paragraph: $.osci.note.selection.paragraph_id
+                            };
+
+                            $('a[href$="#citation-format-apa"]').click(function(e) {
+                                e.preventDefault();
+                                $('#edit-citation-text').html($.tmpl('citationAPA', data));
+                                $('#edit-citation-options ul li').removeClass('active');
+                                $(this).parent().addClass('active');
+                            });
+
+                            $('a[href$="#citation-format-apa"]').click(); //default
+
+                            $('a[href$="#citation-format-mla"]').click(function(e) {
+                                e.preventDefault();
+                                $('#edit-citation-text').html($.tmpl('citationMLA', data));
+                                $('#edit-citation-options ul li').removeClass('active');
+                                $(this).parent().addClass('active');
+                            });
+
+                            $('a[href$="#citation-format-chicago"]').click(function(e) {
+                                e.preventDefault();
+                                $('#edit-citation-text').html($.tmpl('citationChicago', data));
+                                $('#edit-citation-options ul li').removeClass('active');
+                                $(this).parent().addClass('active');
+                            });
+
+                            $('#edit-citation-selection').html($.osci.note.selection.selection);
                             $('#edit-citation-url').val($('a.osci_paragraph_' + $.osci.note.selection.paragraph_id).attr('href'));
                             $('#edit-citation-text, #edit-citation-url').click(function(e) {
                                 e.preventDefault();

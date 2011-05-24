@@ -330,15 +330,37 @@ function note_form_submit($form, &$form_state) {
 function citation_form() {
     $form = array();
 
+    $items = array(
+        l('APA', $_GET['q'], array(
+            'fragment' => 'citation-format-apa', 
+        )),
+        l('MLA', $_GET['q'], array(
+            'fragment' => 'citation-format-mla', 
+        )),
+        l('Chicago', $_GET['q'], array(
+            'fragment' => 'citation-format-chicago', 
+        )),
+    );
+    $format_links = theme('item_list', array('items' => $items)); 
+
+    $form['citation_options'] = array(
+        '#type'     => 'item',
+        '#title'    => t('Format'),
+        '#markup'   => $format_links,
+    );
+
     $form['citation_text'] = array(
         '#type'     => 'textarea',
-        '#default_value'    => t('John D. Kelly in Gloria Groom et al., Paintings and Drawings by the Impressionist Circle in the Collection of the Art Institute of Chicago: Monet (Chicago: The Art Institute of Chicago, 2013), cat. 19, para. 6, doi: xx.xxxx/xxxxxx'),
     );    
 
     $form['citation_url'] = array(
         '#type'     => 'textfield',
-        '#title'    => 'URL Citation',
-        '#default_value'    => t('http://oremipsumdolor.org/sitamet/consectetur-adipiscing-elit'),
+        '#title'    => 'Paragraph URL',
+    );
+
+    $form['citation_selection'] = array(
+        '#type'     => 'textarea',
+        '#title'    => t('Selected Text'),
     );
 
     $form['citation_helper'] = array(
@@ -358,6 +380,13 @@ function note_preprocess_osci_viewer(&$vars) {
                 'type'      => 'fixed',
                 'width'     => 500,
                 'height'    => 350,
+            ),
+        ),
+        'citation-modal' => array(
+            'modalSize' => array(
+                'type'      => 'fixed',
+                'width'     => 500,
+                'height'    => 500,
             ),
         ),
     ), 'setting');
@@ -381,7 +410,7 @@ function note_preprocess_osci_viewer(&$vars) {
         l('Cite', 'ajax/citation',
             array(
                 'attributes' => array(
-                    'class' => array('ctools-use-modal', 'ctools-modal-fixed-modal'),
+                    'class' => array('ctools-use-modal', 'ctools-modal-citation-modal'),
                 ),
             )
         )
