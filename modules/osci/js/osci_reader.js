@@ -45,12 +45,7 @@
             if (thisOccur === occurence && offset.top <= columnBottom && offset.top >= columnOffset.top) {
                 page = $this.parents('.osci_page').data('page');
                 amplify.publish("osci_navigation", {osci_to : "page", osci_value : page});
-                
-//                $(document).trigger({
-//                    type : "osci_navigation",
-//                    osci_to : "page",
-//                    osci_value: page 
-//                });
+
                 pulsateText($this);
                 validItem = $this;
                 return false;
@@ -123,52 +118,28 @@
     }
     
     $(document).ready(function() {
+        var $doc = $(this),
+            reader = $("#" + Drupal.settings.osci_navigation.reader_id);
+        
         amplify.subscribe("osci_layout_start", function(data) {
-            $("<div>", {
-                id : "osci_loading"
-            }).appendTo("body");
-        });
+//            $("<div>", {
+//                id : "osci_loading"
+//            }).appendTo("body");
+            
+            $("#osci_navigation_section").addClass("loading");
+        },1);
         
         amplify.subscribe("osci_layout_complete", function(data) {
-            $("#osci_loading").remove();
-            
-            var figureImages = $("figure.image", "#osci_pages");
-            // Prevents fancybox from closing the tray
-            $('.figureContent > a').click(function(e) {
-                e.stopPropagation();
-            });
-
-            figureImages.bind("osci_figure_fullscreen", function(e) {
-                $('.figureContent > a', this).click();
-            });
+            //$("#osci_loading").remove();
+            $("#osci_navigation_section").removeClass("loading");
         });
         
-    	$(document).bind({
-//    	    "osci_layout_start" : function(e){
-//        	    $("<div>", {
-//        	        id : "osci_loading"
-//        	    }).appendTo("body");
-//        	},
+    	$doc.bind({
         	"touchmove" : function(e) {
         	    e.preventDefault();
         	}
-//        	},
-//        	"osci_layout_complete" : function(e) {
-//                $("#osci_loading").remove();
-//                
-//                var figureImages = $("figure.image", "#osci_pages");
-//                // Prevents fancybox from closing the tray
-//                $('.figureContent > a').click(function(e) {
-//                    e.stopPropagation();
-//                });
-//
-//                figureImages.bind("osci_figure_fullscreen", function(e) {
-//                    $('.figureContent > a', this).click();
-//                });
-//            }
     	});
         
-        //$("#osci_more_wrapper").osci_more({
         $.osci.more({
             moreToggleCallback : function(more, state)
             {
@@ -176,10 +147,6 @@
                     case "open":
                         // Ensure the toc tab is closed
                         amplify.publish("osci_nav_toggle", {osci_nav_close : true});
-//                        $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
-//                            type : "osci_nav_toggle",
-//                            osci_nav_close : true
-//                        });
                         
                         more.css({
                             "-webkit-transform" : "translate(0, 0)",
@@ -237,6 +204,15 @@
                     }
                     
                     figure.prepend(content);
+                    
+                    // Prevents fancybox from closing the tray
+                    content.find("a").click(function(e) {
+                        e.stopPropagation();
+                    });
+
+                    figure.bind("osci_figure_fullscreen", function(e) {
+                        $('.figureContent > a', this).click();
+                    });
                     
                     return true;
                 },
@@ -328,10 +304,6 @@
                         // close the more tab and slide it to the right
                         amplify.publish("osci_more_toggle", {osci_more_close : true});
                         
-//                        $("#osci_more_wrapper").trigger({
-//                            type : "osci_more_toggle",
-//                            osci_more_close : true
-//                        })
                         $("#osci_more_wrapper").css({
                         	"-webkit-transform" : "translate(" + toc.outerWidth() + "px, 300px)",
                         	"-moz-transform" : "translate(" + toc.outerWidth() + "px, 300px)",
@@ -340,10 +312,6 @@
                         
                         amplify.publish("osci_note_toggle", {osci_note_close : true});
                         
-//                        $("#osci_note_panel_wrapper").trigger({
-//                            type : "osci_note_toggle",
-//                            osci_note_close : true
-//                        });
                         break;
                     case "close":
                         toc.css({
@@ -362,10 +330,6 @@
                         
                         amplify.publish("osci_note_toggle", {osci_note_open : true});
                         
-//                        $("#osci_note_panel_wrapper").trigger({
-//                            type : "osci_note_toggle",
-//                            osci_note_open : true
-//                        });
                         break;
                 }
             },
@@ -418,11 +382,6 @@
                                         findAndGotoElement("a[href='#" + id + "']");
 
                                         amplify.publish("osci_more_toggle", {osci_more_close : true});
-                                        
-//                                        $("#osci_more_wrapper").trigger({
-//                                            type : "osci_more_toggle",
-//                                            osci_more_close : true
-//                                        });
                                     },
                                     title : "goto figure in context",
                                     "class" : gotoClass
@@ -433,7 +392,6 @@
                                     var id = $(this).data("figure_id");
                                     
                                     amplify.publish("osci_figure_load", {figure_id : "#" + id});
-                                    //amplify.publish("osci_figure_fullscreen", {figure_id : id});
                                     
                                     $("#osci_pages").find("#" + id).trigger({
                                         type : "osci_figure_fullscreen"
@@ -452,7 +410,6 @@
                                         $("#osci_pages").find("#" + id).trigger({
                                             type : "osci_figure_fullscreen"
                                         });
-                                        //amplify.publish("osci_figure_fullscreen", {figure_id : id});
                                     },
                                     title : "view fullscreen",
                                     "class" : "figure_fullscreen"
@@ -465,7 +422,8 @@
         });
         
         //make cross linking work
-        $("a.cross-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
+        reader.find("a.cross-link").live("click", function(e){
+        //$("a.cross-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
             var $this = $(this),
                 query = $this.data("query"),
@@ -476,26 +434,15 @@
             }
             
             amplify.publish("osci_navigation", {osci_to : "node", osci_value : link});
-            
-//            $(document).trigger({
-//                type : "osci_navigation",
-//                osci_to : "node",
-//                osci_value : link
-//            });
         });
         
         //make footnotes link to footnote text in more bar
-        $("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
+        reader.find("a.footnote-link").live("click", function(e){
+        //$("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
             var $this = $(this);
 
             amplify.publish("osci_more_goto", {tab_name : "footnotes", selector : $this.attr("href")});
-            
-//            $("#osci_more_wrapper").trigger({
-//                type : "osci_more_goto",
-//                tab_name : "footnotes",
-//                selector : $this.attr("href")
-//            });
         });
         
         //make footnotes link in more bar to position in text
@@ -506,53 +453,30 @@
             findAndGotoElement("a[href='#" + id + "']");
 
             amplify.publish("osci_more_toggle", {osci_more_close : true});
-            
-//            $("#osci_more_wrapper").trigger({
-//                type : "osci_more_toggle",
-//                osci_more_close : true
-//            });
         });
         
         //make figure links open the fullscreen view
-        $("a.figure-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
+        reader.find("a.figure-link").live("click", function(e){
+        //$("a.figure-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
             var $this = $(this),
-                visible;
+                figure;
 
-            visible = $($this.attr("href") + ":visible", "#osci_pages");
+            figure = $("#osci_pages").find($this.attr("href"));
 
-            if (visible.length) {
+            if (figure.is(":visible")) {
                 amplify.publish("osci_navigation", {osci_to : "selector", osci_value : $this.attr("href")});
-                
-//                $(document).trigger({
-//                    type : "osci_navigation",
-//                    osci_to : "selector",
-//                    osci_value : $this.attr("href")
-//                });
             } else {
-                amplify.publish("osci_figure_fullscreen", {figure_id : $this.attr("href")});
-               
-//                $($this.attr("href"), "#osci_pages").trigger({
-//                    type : "osci_figure_fullscreen"
-//                });
+                figure.trigger({
+                    type : "osci_figure_fullscreen"
+                });
             }
         });
         
         //make more & navigation bars close when viewer is clicked
         $("#" + Drupal.settings.osci_layout.viewer_id).click(function(e){
             amplify.publish("osci_nav_toggle", {osci_nav_close : true});
-            
-//            $("#" + Drupal.settings.osci_navigation.toc_id).trigger({
-//                type : "osci_nav_toggle",
-//                osci_nav_close : true
-//            });
-            
             amplify.publish("osci_more_toggle", {osci_more_close : true});
-            
-//            $("#osci_more_wrapper").trigger({
-//                type : "osci_more_toggle",
-//                osci_more_close : true
-//            });
         });
         
         $(".osci_reference_image_link").live("click",function(e){
@@ -573,7 +497,7 @@
         });
         
         var checkKey = false;
-        $(document).keydown(function(e) {
+        $doc.keydown(function(e) {
             if (e.keyCode == 70 && e.ctrlKey === true && checkKey === false) {
                 checkKey = true;
                 $(".everpresent a").click();

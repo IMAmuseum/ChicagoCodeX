@@ -145,6 +145,10 @@ body.page-node-reader {
     top: -10px;
 }
 
+#osci_navigation_tools .loading{
+    background: url("../images/bg-loading.gif") repeat-x 0 8px;   
+}
+
 #osci_navigation_section_list {
     list-style-type: none;   
     display: inline-block;
@@ -689,7 +693,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
 	opacity:1.0;	
 }
 .footnote { 
-	padding: 40px !important; 
+	padding: 0 40px !important; 
 	line-height:1.6em;
 }
 

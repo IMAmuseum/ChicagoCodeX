@@ -8,10 +8,6 @@
     {
         var base = this.more;
 
-//        base.$el = $(el);
-//        base.el = el;
-//
-//        base.$el.data("osci.more", base);
         base.tab_map = {};
         
         base.init = function()
@@ -43,12 +39,12 @@
                 var tabNum, tabData, tab, itemNumber, gotoPage,
                 tabs = base.container.find("#" + base.options.tabContainerId);
             
-                if (base.tab_map[e.tab_name] !== undefined) {
-                    tabNum = base.tab_map[e.tab_name];
+                if (base.tab_map[data.tab_name] !== undefined) {
+                    tabNum = base.tab_map[data.tab_name];
                     
                     tabs.tabs("select", tabNum);
                     
-                    tab = $("div.ui-tabs-panel:not(.ui-tabs-hide)", $this);
+                    tab = tabs.find("div.ui-tabs-panel:not(.ui-tabs-hide)");
                     tabData = tab.data();
                     
                     itemNumber = $(data.selector, tab).index();
@@ -64,52 +60,9 @@
                 }
             });
             
-//            base.$el.bind({
-//                "osci_more_toggle" : function(e){
-//                    var $this = $(this);
-//
-//                    if (($this.hasClass("open") && !e.osci_more_open) || e.osci_more_close) {
-//                        if (base.options.moreToggleCallback !== undefined) {
-//                            base.options.moreToggleCallback($this, "close");
-//                        }
-//                        $this.removeClass("open");
-//                    } else {
-//                        if (base.options.moreToggleCallback !== undefined) {
-//                            base.options.moreToggleCallback($this, "open");
-//                        }
-//                        $this.addClass("open");
-//                    }
-//                },
-//                "osci_more_goto" : function(e){
-//                    var $this = $(this), tabNum, tabData, tab, itemNumber, gotoPage,
-//                        tabs = $("#" + base.options.tabContainerId, base.$el);
-//                    
-//                    if (base.tab_map[e.tab_name] !== undefined) {
-//                        tabNum = base.tab_map[e.tab_name];
-//                        
-//                        tabs.tabs("select", tabNum);
-//                        
-//                        tab = $("div.ui-tabs-panel:not(.ui-tabs-hide)", $this);
-//                        tabData = tab.data();
-//                        
-//                        itemNumber = $(e.selector, tab).index();
-//    
-//                        if (tabData.osci_pager_per_page > 1) {
-//                            gotoPage = Math.ceil(itemNumber / tabData.osci_pager_per_page) - 1;
-//                        } else {
-//                            gotoPage = itemNumber;
-//                        }
-//                        $("li.osci_pager_item:eq(" + gotoPage + ")", tab).children().click();
-//                        
-//                        $this.trigger({ type : "osci_more_toggle", osci_more_open : true});
-//                    }
-//                }
-//            }).addClass("open");
-            
             base.container.addClass("open").find("a.osci_more_handle").click(function(e){
                 e.preventDefault();
                 amplify.publish("osci_more_toggle");
-                //base.container.trigger({type : "osci_more_toggle"});
             }).click();
             
             tabs = $("<div>", {
@@ -147,7 +100,8 @@
             if (data.length) {
                 if (paginate === true) {   
                     total = data.length;
-                    tab.append($("<div>",{"class" : "osci_pager_display_item"}).append(data).overscroll());
+                    //tab.append($("<div>",{"class" : "osci_pager_display_item"}).append(data).overscroll());
+                    tab.append($("<div>",{"class" : "osci_pager_display_item"}).append(data));
                     
                     if (perPage === undefined) {
                         tabWidth = tab.width();
@@ -357,13 +311,5 @@
         defaultTabs : ["footnotes"],
         moreToggleCallback : undefined
     };
-
-//    $.fn.osci_more = function( options )
-//    {
-//        return this.each(function()
-//        {
-//            (new $.osci.more(this, options)); 
-//        });
-//    };
 
 })(jQuery);
