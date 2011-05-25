@@ -408,7 +408,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		// Strip the iip base path off, it'll get readded on instantiation
 		// plus 1 is for the '/' we attached
 		ptiff = ptiff.substring(Drupal.settings.osci_iip.base_path.length + 1);
-		console.log(ptiff);
 		var fs_wrap = $('<div id="fs_wrap" />')
 			.css('position', 'absolute')
 			.css('top', '26px')
