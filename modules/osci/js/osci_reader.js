@@ -2,22 +2,28 @@
     
     function pulsateText(element)
     {
-        var temp = element.clone(),
-            offset = element.offset();
+        //var temp = element.clone(),
+        var offset = element.offset(),
+            width = element.width(),
+            temp = $("<div>", {
+                css : {
+                    position : "absolute",
+                    top : (offset.top - 62) + "px",
+                    left : offset.left - 40 + (width / 2) + "px",
+                    margin : 0,
+                    width : "80px",
+                    height : "80px",
+                    border : "6px solid #F00",
+                    "border-radius" : "46px",
+                    "-webkit-animation-duration" : "400ms", 
+                    "-webkit-animation-iteration-count" : "3",
+                    "-webkit-animation-name" : "pulse",
+                    "-webkit-animation-direction" : "normal",
+                    "-webkit-box-shadow": "0px 0px 10px #888"
+                }
+            }).appendTo("#osci_viewer");
         
-        temp.appendTo("#osci_viewer");
-        
-        temp.css({
-            position: "absolute",
-            top : offset.top - 28 + "px",
-            left : offset.left + "px",
-            "-webkit-animation-duration" : "0.5s", 
-            "-webkit-animation-iteration-count" : "3",
-            "-webkit-animation-name" : "pulse",
-            "text-shadow" : "0px 0px 3px #CCC"
-        });
-        
-        setTimeout(function(){temp.remove();}, 1500);
+        setTimeout(function(){temp.remove();}, 1100);
     }
     
     function findAndGotoElement(selector, occurence) {

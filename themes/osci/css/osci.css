@@ -984,8 +984,8 @@ div.ctools-modal-content input.form-submit {
       -webkit-transform: scale(1.0);
       animation-timing-function: ease-out;
     }
-    50% {
-      -webkit-transform: scale(2);
+    75% {
+      -webkit-transform: scale(0);
       animation-timing-function: ease-in;
     }
     to { 
