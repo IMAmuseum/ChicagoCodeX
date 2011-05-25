@@ -147,11 +147,11 @@
                             break;
                         case 'citation-form':
                             var data = {
-                                author: 'Jill Shaw',
+                                author: 'Jane Doe',
                                 pubDate: '2011, May 21',
-                                bookTitle: 'get the parent node',
+                                bookTitle: $('.osci_book_title').text(),
                                 publisher: 'University of Chicago Press',
-                                articleTitle: $.osci.navigation.data.nid,
+                                articleTitle: $('.osci_book_section_title').text(),
                                 paragraph: $.osci.note.selection.paragraph_id
                             };
 
@@ -180,7 +180,7 @@
 
                             $('#edit-citation-selection').html($.osci.note.selection.selection);
                             $('#edit-citation-url').val($('a.osci_paragraph_' + $.osci.note.selection.paragraph_id).attr('href'));
-                            $('#edit-citation-text, #edit-citation-url').click(function(e) {
+                            $('#edit-citation-text, #edit-citation-url, #edit-citation-selection').click(function(e) {
                                 e.preventDefault();
                                 $(this).select();
                             });
