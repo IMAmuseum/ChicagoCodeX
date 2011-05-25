@@ -10,7 +10,7 @@
 
         base.init = function()
         {
-            //console.time("osci_layout_init");
+//console.time("osci_layout_init");
             
             var pCount = 0, dataCount = 0, i, isP, $elem, parentId, cache = null;
             //Trigger event so we know layout is begining
@@ -37,6 +37,26 @@
             
             base.figureContent = {};
             
+            amplify.subscribe("osci_navigation_complete", function(data) {
+                _processPageFigures(data.page);
+            });
+            
+            amplify.subscribe("osci_figure_load", function(data) {
+                var figure = $(data.figure_id + ":not(.content_loaded)");
+                
+                if (figure.length) {
+                    _load_figure_content(figure);
+                }
+                
+                return;
+            });
+            
+            amplify.subscribe("osci_layout_page_complete", function(data) {
+                if (data.page === 1) {
+                    _processPageFigures(data.page);
+                }
+            });
+            
             //No cache process content for layout
             if (cache === null) {
                 //Get the data from the HTML body copy output we only want section content
@@ -53,33 +73,6 @@
                 base.viewer.append(cache.data.content);
             }
             
-            amplify.subscribe("osci_navigation_complete", function(data) {
-                var page = $(".osci_page_" + data.page);
-                
-                if (!page.hasClass("figures_processed")) {
-                    var figures = page.find("figure:not(.content_loaded)"),
-                        numFigures = figures.length, i = 0;
-                    
-                    if (numFigures) {
-                        for (i = 0; i < numFigures; i++) {
-                            _load_figure_content(figures[i])
-                        }
-                    }
-                    
-                    page.addClass("figures_processed");
-                }
-            });
-            
-            amplify.subscribe("osci_figure_load", function(data) {
-                var figure = $(data.figure_id + ":not(.content_loaded)");
-                
-                if (figure.length) {
-                    _load_figure_content(figure);
-                }
-                
-                return;
-            });
-            
             //not working yet
             //amplify.subscribe("osci_layout_complete", function(data) {
                 //Store the layout in localstorage for faster load times
@@ -92,7 +85,7 @@
             //delete base.viewer;
             //delete base.reader;
             //delete base.figures;
-            //console.timeEnd("osci_layout_init");
+//console.timeEnd("osci_layout_init");
         };
 
         function _render()
@@ -176,6 +169,10 @@
                 for (pId in base.render.pageParagraphIdentifiers) {
                     base.render.pageParagraphIdentifiers[pId].appendTo(base.render.page);
                 }
+
+                setTimeout(function(){
+                    amplify.publish("osci_layout_page_complete", {page : base.render.pageCount});
+                }, 0);
                 
                 if (base.data.length) {
                     setTimeout(function(){
@@ -583,6 +580,24 @@
             }
       
             return processingStatus;
+        }
+        
+        function _processPageFigures(pageNum)
+        {
+            var page = $(".osci_page_" + pageNum);
+            
+            if (!page.hasClass("figures_processed")) {
+                page.addClass("figures_processed");
+                
+                var figures = page.find("figure:not(.content_loaded)"),
+                    numFigures = figures.length, i = 0;
+                
+                if (numFigures) {
+                    for (i = 0; i < numFigures; i++) {
+                        _load_figure_content(figures[i])
+                    }
+                }
+            }
         }
 
         //Calculate the constraints of the viewer area

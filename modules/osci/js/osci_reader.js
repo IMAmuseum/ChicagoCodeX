@@ -2,7 +2,6 @@
     
     function pulsateText(element)
     {
-        //var temp = element.clone(),
         var offset = element.offset(),
             width = element.width(),
             temp = $("<div>", {
