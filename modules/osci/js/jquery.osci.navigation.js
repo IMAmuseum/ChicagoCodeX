@@ -10,7 +10,7 @@
  
         base.init = function()
         {
-            //console.time("navigation_init");
+            console.time("navigation_init");
             var toc, operation = "page", value = "first";
             
             //clear the layout cache
@@ -118,7 +118,7 @@
                     window.resizeTimer = setTimeout(_osci_resize, 100);
                 });
             }
-            
+     
             //get the table of contents and load the content of the current section
             $.osci.storage.getUrl({
                 url : base.options.apiEndpoint + base.options.nid + "/book.json",
@@ -131,7 +131,6 @@
                 	base.loadContent(true);
                 }
             });
-            //console.timeEnd("navigation_init");
         };   
         
         //wrapper for the content loading function
@@ -191,7 +190,7 @@
                 tocData = $("#osci_toc_node_" + nid).data(),
                 navImageWrapper = $(".osci_reference_image"),
                 largeUrl = "#", thumbUrl = "";
-            
+
             //make sure we have a place for the image
             if (navImageWrapper.length) {
             	//loop over each image placeholder
@@ -423,9 +422,10 @@
                 partWidth = Math.floor(container.width() / parts),
                 //determine if we have pixels left over
                 addPixels = Math.abs(Math.round(container.width() - (parts * partWidth))),
-                navBar, i, classes = "", heightRemain = 0, li, finalWidth,
+                navBar, i, classes = "", heightRemain = 0, finalWidth,
                 //add or subtract pixels
-                addSubPixels = (container.width() - (parts * partWidth)) > 0 ? 1 : -1;
+                addSubPixels = (container.width() - (parts * partWidth)) > 0 ? 1 : -1,
+                liString = "", addSubPixelLowerBound, addSubPixelUpperBound;
            
             //get the navbar
             navBar = container.find("#osci_navigation_section_list");
@@ -435,7 +435,8 @@
                 navBar = $("<ul>", {
                     id : "osci_navigation_section_list",
                     width : "100%"
-                }).hide().appendTo(container);
+                }).hide();
+                container.append(navBar);
                 
                 //bind an event to update the navigation
                 amplify.subscribe("osci_navigation_complete", function(data) {
@@ -462,8 +463,9 @@
             navBar.hide().empty();
             
             //create each navbar part
-            i = 1;
-            while (i <= parts) {
+            addSubPixelUpperBound = parts - Math.floor(addPixels / 2);
+            addSubPixelLowerBound = 1 + Math.ceil(addPixels / 2);
+            for (i = 1; i <= parts; i++) {
                 classes = "";
                 //first part add classes
                 if (i === 1) {
@@ -476,53 +478,51 @@
                 }
                 
                 //update the width of the part if there were leftover pixels
-                if (i > (parts - Math.floor(addPixels / 2)) || i < (1 + Math.ceil(addPixels / 2))) {
+                if (i > addSubPixelUpperBound || i < addSubPixelLowerBound) {
                     finalWidth = partWidth + addSubPixels;
                 } else {
                     finalWidth = partWidth;
                 }
                 
                 //create the li
-                li = $("<li>",{
-                    css : { width : finalWidth + "px" },
-                    data : { navigateTo : i },
-                    "class" : classes
-                }).appendTo(navBar);
-                
-                i++;
+                liString += '<li style="width:' + finalWidth + 'px" data-navigateTo="' + i + '" class="' + classes + '"></li>';
             }
             
-            navBar.show();
+            navBar.append(liString).show();
         }
         
         function _create_table_of_contents()
         {
             var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, 
-                j, subItem, subItemCount, tocWrapper;
+                j, subItem, subItemCount, tocWrapper, subMenuItems, createdMenus = {};
 
             toc = container.find("#osci_navigation_toc");
+
             if (!toc.length) {
-                $("<h2>", {
-                    text : "Reference Image"
-                }).appendTo(container);
+                tocWrapper = $("<div>",{id : "osci_navigation_toc_wrapper"});
                 
-                $("<div>", {
-                    "class" : "osci_reference_image",
-                    data : {
-                        image_preset : base.options.referenceImagePreset
-                    }
-                }).appendTo(container);
-                
-                $("<h2>",{
-                    text : "Navigation"
-                }).appendTo(container);
-                
-                tocWrapper = $("<div>",{id : "osci_navigation_toc_wrapper"}).appendTo(container);
+                container.append(
+                    $("<h2>", {
+                        text : "Reference Image"
+                    })
+                ).append(
+                    $("<div>", {
+                        "class" : "osci_reference_image",
+                        data : {
+                            image_preset : base.options.referenceImagePreset
+                        }
+                    })
+                ).append(
+                    $("<h2>",{
+                        text : "Navigation"
+                    })
+                ).append(tocWrapper);
                 
                 toc = $("<ul>", {
                     id : "osci_navigation_toc",
                     width : "100%"
-                }).appendTo(tocWrapper);
+                });
+                tocWrapper.append(toc);
                 
                 amplify.subscribe("osci_nav_toggle", function(data) {
                     var toc = $("#" + base.options.tocId);
@@ -546,8 +546,8 @@
                 
                 amplify.subscribe("osci_toc_update", function(data) {
                     var container = $("#" + base.options.tocId),
-                    toc = container.find("#osci_navigation_toc"),
-                    activeLi = toc.find("#osci_toc_node_" + base.data.nid);
+                        toc = container.find("#osci_navigation_toc"),
+                        activeLi = toc.find("#osci_toc_node_" + base.data.nid);
                 
                     toc.find("li, a").removeClass("active");
                     
@@ -632,8 +632,11 @@
                     }
                 });
             }
-            toc.empty();
-
+            toc.hide().empty();
+            
+            //hide the navigation
+            amplify.publish("osci_nav_toggle", {});
+            
             for (i in base.data.toc) {
                 node = base.data.toc[i];
                 
@@ -641,54 +644,46 @@
                     rootNid = node.nid;
                     continue;
                 }
-                
+             
                 tocItem = _create_menu_item(node);
-                                
+                             
                 if (rootNid === node.parent.nid) {
                     toc.append(tocItem);
                 } else {
-                    subMenu = toc.find("#osci_toc_node_" + node.parent.nid + "_submenu");
-                    if (!(subMenu.length)) {
+                    if (!createdMenus["#osci_toc_node_" + node.parent.nid + "_submenu"]) {
                         subMenu = _create_sub_menu(node.parent.nid);
+                        $("#osci_toc_node_" + node.parent.nid).append(subMenu);
+                        createdMenus["#osci_toc_node_" + node.parent.nid + "_submenu"] = subMenu;
                     }
                     
-                    subMenu.append(tocItem);
+                    createdMenus["#osci_toc_node_" + node.parent.nid + "_submenu"].append(tocItem);
                 }
                 
                 if (node.sub_sections && node.sub_sections.length) {
-                    subMenu = toc.find("#osci_toc_node_" + node.nid + "_submenu");
-                    if (!(subMenu.length)) {
+                    if (!createdMenus["#osci_toc_node_" + node.nid + "_submenu"]) {
                         subMenu = _create_sub_menu(node.nid);
+                        tocItem.append(
+                            $("<a>", {
+                                "class" : "osci_toc_arrow",
+                                href : "#",
+                                text : "+"
+                             })
+                        ).append(subMenu);
+                        createdMenus["#osci_toc_node_" + node.nid + "_submenu"] = subMenu;
                     }
                     
                     subItemCount = node.sub_sections.length;
+                    subMenuItems = [];
                     for (j = 0; j < subItemCount; j++) {
-                        subMenu.append(_create_menu_item(node.sub_sections[j]));
+                        subMenuItems.push(_create_menu_item(node.sub_sections[j]));
                     }
+                    createdMenus["#osci_toc_node_" + node.nid + "_submenu"].append.apply(createdMenus["#osci_toc_node_" + node.nid + "_submenu"], subMenuItems);
                 }
             }
-            
-            $("a.osci_toc_arrow", toc).each(function(i, elem){
-                var $this = $(elem);
-                if (!$this.siblings("ul").length) {
-                    $this.remove();
-                }
-            });
-            
-            amplify.publish("osci_nav_toggle", {});
-//            container.trigger("osci_nav_toggle");
-            
-//            toc.data("full_height", toc.height());
-            
-//            $("ul", toc).each(function(i, elem){
-//                var $elem = $(elem);
-//                $elem.data("full_height", $elem.height());
-//                //$elem.overscroll({showThumbs: false}).trigger("osci_toc_update_heights");
-//            });
-         
+      
             //tocWrapper.height(($(window).height() - tocWrapper.position().top - 40) + "px").overscroll({direction : "vertical", showThumbs : true});
             tocWrapper.height(($(window).height() - tocWrapper.position().top - 40) + "px");
-            toc.find("ul").hide();
+            toc.show();
         }
         
         function _create_menu_item(node)
@@ -711,12 +706,6 @@
                     data : {
                         nid : link
                     }
-                })
-            ).append(
-                $("<a>", {
-                   "class" : "osci_toc_arrow",
-                   href : "#",
-                   text : "+"
                 })
             );
             
@@ -744,7 +733,7 @@
 //                    }
 //                }
 //            });
-            }).hide().appendTo($("#osci_toc_node_" + nid));
+            }).hide();
 //            }).appendTo($("#osci_toc_node_" + nid));
             
             return subMenu;

@@ -10,8 +10,6 @@
 
         base.init = function()
         {
-//console.time("osci_layout_init");
-            
             var pCount = 0, dataCount = 0, i, isP, $elem, parentId, cache = null;
             //Trigger event so we know layout is begining
             amplify.publish("osci_layout_start");
@@ -85,7 +83,6 @@
             //delete base.viewer;
             //delete base.reader;
             //delete base.figures;
-//console.timeEnd("osci_layout_init");
         };
 
         function _render()
@@ -143,23 +140,30 @@
                     }
                     delete originalElement;
                     
-//console.time("*****renderContent");
                     overflow = _renderContent(currentElement);
-//console.timeEnd("*****renderContent");
+
                     //If there was no overflow continue to the next element
                     if (!overflow) {
                         i++;
                         pageElementCount++;
                     }
                       
-                    //Restart page processing if necessary (if a figure was processed)
-                    if (base.render.pageStatus === "restart") {
-                        //Reset the page data
-                        _reset_page();
-                        //Backup the counter to the first element processed on this page
-                        i = i - pageElementCount;
-                        pageElementCount = 0;
-                        base.render.pageStatus = "processing";
+                    switch (base.render.pageStatus) {
+                        //Restart page processing if necessary (if a figure was processed)
+                        case "restart": 
+                            //Reset the page data
+                            _reset_page();
+                            //Backup the counter to the first element processed on this page
+                            i = i - pageElementCount;
+                            pageElementCount = 0;
+                            base.render.pageStatus = "processing";
+                            break;
+                            
+                        default:
+                            if (base.render.currentColumn === (base.options.columnsPerPage - 1) && base.render.columnData[base.render.currentColumn].heightRemain <= 0) {
+                                base.render.pageStatus = "done";
+                            }
+                            break;
                     }
                 }
             
@@ -197,7 +201,7 @@
                 topBound, bottomBound, completeLines, countFigureLinks;
             
             isP = content.is("p");
-//console.time("column");            
+         
             //Determine which column to put content into
             pageColumnDataCount = base.render.columnData.length;
             for (i = 0; i < pageColumnDataCount; i++) {
@@ -235,26 +239,25 @@
                     break;
                 }
             }
-//console.timeEnd("column");     
+    
             //if no column found page is full
             if (column === undefined) {
                 base.render.pageStatus = "done";
                 return true;
             }
-//console.time("pre-figure");
+
             //Add content to the column
             column.append(content);
-            contentHeight = content.outerHeight(true);
-
             lineHeight = parseFloat(content.css("line-height"));
 
             //If all of the content is overflowing the column remove it and move to next column
             if ((base.render.columnData[pageColumnNumber].height - content.position().top) < lineHeight) {
                 content.remove();
                 base.render.columnData[pageColumnNumber].heightRemain = heightRemain;
-//console.timeEnd("pre-figure");
                 return true;
             }
+            
+            contentHeight = content.outerHeight(true);
             
             //If offset defined (should always be negative) add it to the height of the content to get the correct top margin
             if (offset < 0) {
@@ -263,9 +266,8 @@
                 //Set the top margin
                 content.css("margin-top", "-" + offset + "px");
             }
-//console.timeEnd("pre-figure");
+
             //find figure references and process the figure
-//console.time("process_figures");
             figureLinks = content.find("a.figure-link:not(.processed)");
             countFigureLinks = figureLinks.length;
             if (countFigureLinks) {
@@ -300,8 +302,7 @@
                     return true;
                 }
             }
-//console.timeEnd("process_figures");
-//console.time("post-figure");
+
             contentPosition = content.position();
             contentOffset = content.offset();
             columnPosition = column.data("columnPosition");
@@ -357,11 +358,7 @@
             }
             
             base.render.columnData[pageColumnNumber].heightRemain = heightRemain;
-           
-            if (base.render.currentColumn === (base.options.columnsPerPage - 1) && heightRemain <= 0) {
-                base.render.pageStatus = "done";
-            }
-//console.timeEnd("post-figure");
+
             return overflow;
         }
         
@@ -741,7 +738,6 @@
         //Reset page data for processing
         function _reset_page()
         {
-//console.time("resetting");
             var data, figures, columnCoverage, height, topOffset, 
                 i, j, $fig, numFigures, figHeight;
 
@@ -798,7 +794,6 @@
                 //Add column data to array
                 base.render.columnData[i] = {height : height, topOffset : topOffset, heightRemain : height};
             }
-//console.timeEnd("resetting");
         }
 
         base.init();
