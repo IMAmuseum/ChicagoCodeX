@@ -57,8 +57,8 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var node = div.attr('data-node');
 	var collapsed = div.attr('data-collapsed');
 	var figure_id = div.attr('data-figure-id');
-	var ptiff = Drupal.settings.osci_iip.base_path + "/" + div.attr('data-ptiff');
-	var ptiff_overlay = Drupal.settings.osci_iip.base_path + "/" + div.attr('data-overlay');
+	var ptiff = div.attr('data-ptiff');
+	var ptiff_overlay = div.attr('data-overlay');
 	var image_h = div.attr('data-ih');
 	var image_w = div.attr('data-iw');
 	var center_lat = div.attr('data-center-lat');
@@ -405,9 +405,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	function make_fullscreen() {
 		var center = map.center();
-		// Strip the iip base path off, it'll get readded on instantiation
-		// plus 1 is for the '/' we attached
-		ptiff = ptiff.substring(Drupal.settings.osci_iip.base_path.length + 1);
 		var fs_wrap = $('<div id="fs_wrap" />')
 			.css('position', 'absolute')
 			.css('top', '26px')
