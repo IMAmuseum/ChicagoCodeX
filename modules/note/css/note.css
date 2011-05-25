@@ -39,12 +39,10 @@ div#osci-note-dialog {
 
 ul.selection-toolbar {
     position: absolute;
-    left: 50%;
-    top: 20%;
     background-color: #fff;
+    display: none;
     padding: 10px !important;
 }
-ul.selection-toolbar,
 ul.selection-toolbar li {
     display: inline;
 }

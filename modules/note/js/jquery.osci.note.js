@@ -127,6 +127,7 @@
                 // Hide toolbar on load
                 if (!$.osci.note.toolbar) {
                     $.osci.note.toolbar = $('ul.selection-toolbar').detach();
+                    $.osci.note.toolbar.css('display', 'inline');
                 }
 
                 /**
