@@ -405,7 +405,10 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	function make_fullscreen() {
 		var center = map.center();
-
+		// Strip the iip base path off, it'll get readded on instantiation
+		// plus 1 is for the '/' we attached
+		ptiff = ptiff.substring(Drupal.settings.osci_iip.base_path.length + 1);
+		console.log(ptiff);
 		var fs_wrap = $('<div id="fs_wrap" />')
 			.css('position', 'absolute')
 			.css('top', '26px')
@@ -423,7 +426,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			.css('height', '100%')
 			.css('width', '100%')
 			.appendTo(fs_wrap);
-		
+
 		var new_div = $('<div id="iip_fullscreen" class="iipmap" />')
 			.css('position', 'relative')
 			.css('margin', 'auto')
