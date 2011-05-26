@@ -39,6 +39,9 @@ body.page-node-reader {
 	text-align:center!important;
 	font-family:Arial, Helvetica, sans-serif;
 }
+#osci_header h2.osci_book_section_title p {
+	display:inline;	
+}
 
 #osci_header h1 {
     font-size: 14px; 
