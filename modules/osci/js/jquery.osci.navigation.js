@@ -39,6 +39,11 @@
             
             amplify.subscribe("osci_layout_complete", function() {
                 _reset_navigation();
+                base.enableNavigation();
+            });
+            
+            amplify.subscribe("osci_layout_start", function() {
+                base.disableNavigation();
             });
             
             amplify.subscribe("osci_navigation", function(data) {
@@ -118,6 +123,8 @@
                     window.resizeTimer = setTimeout(_osci_resize, 100);
                 });
             }
+            
+            base.disableNavigation();
      
             //get the table of contents and load the content of the current section
             $.osci.storage.getUrl({
@@ -150,6 +157,20 @@
                 base.navigateTo(navAfterLoadTo, navAfterLoadValue);
             }
         };
+        
+        base.disableNavigation = function()
+        {
+            $("#" + base.options.sectionNavId).hide();
+            $("#" + base.options.prevLinkId).hide();
+            $("#" + base.options.nextLinkId).hide();
+        }
+        
+        base.enableNavigation = function()
+        {
+            $("#" + base.options.sectionNavId).show();
+            $("#" + base.options.prevLinkId).show();
+            $("#" + base.options.nextLinkId).show();
+        }
         
         //function to call when the browser is resized
         function _osci_resize()
