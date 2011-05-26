@@ -143,7 +143,7 @@
         	"touchmove" : function(e) {
         	    e.preventDefault();
         	}
-    	});
+    	});    	
         
         $.osci.more({
             moreToggleCallback : function(more, state)
@@ -169,6 +169,19 @@
                 }
             }
         });
+        
+        var isIphone = false;
+        if ((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
+            isIphone = true;
+            Drupal.settings.osci_layout.inner_page_gutter = [4,4,4,4];
+            Drupal.settings.osci_layout.outer_page_gutter = [6,6,30,30];
+            $("h2.osci_book_section_title").hide();
+            $("#osci_navigation_tools").hide();
+            $("#osci_note_panel_wrapper").hide();
+            $("#osci_header_controls").hide();
+            $("#osci_nav_prev").css("top", "10px");
+            $("#osci_nav_next").css("top", "10px");
+        }
         
         $.osci.layout.defaultOptions = {
             minColumnWidth : Drupal.settings.osci_layout.min_column_width,
@@ -274,13 +287,15 @@
             }
         };
 
-        $.osci.note({
-            notePanelId : "osci_note_panel_wrapper",
-            panelPixelsClosed : 20,
-            userNoteCallback : Drupal.settings.basePath + 'ajax/note',
-            noteAddCallback : Drupal.settings.basePath + 'ajax/note/add',
-            noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save',
-        });
+        if (!isIphone) {
+            $.osci.note({
+                notePanelId : "osci_note_panel_wrapper",
+                panelPixelsClosed : 20,
+                userNoteCallback : Drupal.settings.basePath + 'ajax/note',
+                noteAddCallback : Drupal.settings.basePath + 'ajax/note/add',
+                noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save',
+            });
+        }
         
         $.osci.navigation({
             readerId : Drupal.settings.osci_navigation.reader_id,
