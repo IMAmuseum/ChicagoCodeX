@@ -10,7 +10,6 @@
  
         base.init = function()
         {
-            console.time("navigation_init");
             var toc, operation = "page", value = "first";
             
             //clear the layout cache
@@ -619,6 +618,12 @@
                     if (!isExpander) {
                         base.navigateTo("node", $(this).data("nid") + "#osci_plate_fig");
                     }
+                    
+                    if ($.browser.webkit) {
+                        setTimeout(function(){
+                            base.data.tocScroll.refresh();
+                        },1000);
+                    }
                 });
                 
                 toc.delegate("a", "hover", function(e){
@@ -705,6 +710,15 @@
             //tocWrapper.height(($(window).height() - tocWrapper.position().top - 40) + "px").overscroll({direction : "vertical", showThumbs : true});
             tocWrapper.height(($(window).height() - tocWrapper.position().top - 40) + "px");
             toc.show();
+            
+            if ($.browser.webkit) {
+                base.data.tocScroll = new iScroll('osci_navigation_toc_wrapper');
+            } else {
+                tocWrapper.css({
+                    "overflow-x" : "none",
+                    "overflow-y" : "auto"
+                });
+            }
         }
         
         function _create_menu_item(node)
