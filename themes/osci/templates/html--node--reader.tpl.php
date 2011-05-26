@@ -48,7 +48,10 @@
 <head profile="<?php print $grddl_profile; ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="apple-touch-icon" href="<?php print base_path() . drupal_get_path('theme', 'osci'); ?>/images/touch-icon-57x57.png" />
+  <link rel="apple-touch-icon" sizes="72x72" href="<?php print base_path() . drupal_get_path('theme', 'osci'); ?>/images/touch-icon-72x72.png" />
+  <link rel="apple-touch-icon" sizes="114x114" href="<?php print base_path() . drupal_get_path('theme', 'osci'); ?>/images/touch-icon-114x114.png" />
   <?php print $head; ?>
   <title><?php print $head_title; ?></title>
   <?php print $styles; ?>
