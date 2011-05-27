@@ -678,7 +678,13 @@
                 } else {
                     if (!createdMenus["#osci_toc_node_" + node.parent.nid + "_submenu"]) {
                         subMenu = _create_sub_menu(node.parent.nid);
-                        $("#osci_toc_node_" + node.parent.nid).append(subMenu);
+                        $("#osci_toc_node_" + node.parent.nid).append(
+                            $("<a>", {
+                                "class" : "osci_toc_arrow",
+                                href : "#",
+                                text : "+"
+                             })
+                        ).append(subMenu);
                         createdMenus["#osci_toc_node_" + node.parent.nid + "_submenu"] = subMenu;
                     }
                     
