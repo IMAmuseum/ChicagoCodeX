@@ -735,7 +735,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
 	margin-left:10px !important;
 	margin-right:10px!important;
 	background-color:#FFB51A;
-	font-size:11px;
+	font-size:11px!important;
 	padding:5px!important;
 	display:block;	
 	margin-bottom:5px!important;
