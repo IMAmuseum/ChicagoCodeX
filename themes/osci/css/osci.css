@@ -1044,3 +1044,7 @@ div.ctools-modal-content input.form-submit {
       background: url('../images/icon-figref-close.png') no-repeat left top;
 	  left:71px;
 }
+
+#osci_navigation_toc .field_osci_tombstone {
+    display: none;
+}
