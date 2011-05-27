@@ -734,7 +734,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
 .noteTitle a.ajax-processed {
 	margin-left:10px !important;
 	margin-right:10px!important;
-	background:#FFB51A url('../images/icon-maximize.png') no-repeat right top;
+	background:#FFB51A;
 	font-size:11px!important;
 	padding:5px!important;
 	display:block;	
@@ -745,7 +745,8 @@ a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
 	height:30px;overflow:hidden;
 }
 .noteTitle a.ajax-processed:hover {
-	opacity:1.0;	
+	opacity:1.0;
+	background:#FFB51A url('../images/icon-maximize.png') no-repeat right top;	
 }
 
 /* note link icon buttons */
