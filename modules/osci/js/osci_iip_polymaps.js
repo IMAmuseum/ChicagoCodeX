@@ -1870,7 +1870,7 @@ po.touch = function() {
       angle,
       locations = {}; // touch identifier -> location
 
-  container.addEventListener("touchmove", touchmove, false);
+  window.addEventListener("touchmove", touchmove, false);
 
   function touchstart(e) {
     var i = -1,
