@@ -257,7 +257,7 @@
     		textareas.each(function() {
     			// Find all editor instances and destroy them
                 var instance = $(this).data('ckeditorInstance');
-                if (instance !== undefined && instance.destroy && $.isFunction(instance.destroy)) {
+                if (instance !== undefined && instance !== null && instance.destroy && $.isFunction(instance.destroy)) {
                     instance.destroy();
                 }
     		});
