@@ -186,10 +186,22 @@
 			        		  // close the modal
 			        		  if (thumbFileField.val() == "") {
 			        			  modal.dialog('destroy');
+			        			  // flag as set - this is observed in the getPreviewDiv function
 			        		  }
-			        	  }
-			          }
-			]
+			        		  
+			        		  if (dest.find('.figure_warning').length == 0) {
+			        			  var warn = $('<div>')
+				        		  	.addClass('figure_warning')
+						  		 	.html("Figure Options Set<br>Don't forget to save this node")
+						  			.css({
+						  				'font-size': 'smaller',
+				    			  		'color' : '#F00'
+						  			});
+						  		  warn.prependTo(dest);
+			        		  }
+					  	}
+			        }
+			  ]
 		});
 		// make the polymap live
 		$('.iipmap', modal).each(function(){ iipmap($(this)); });
@@ -218,7 +230,7 @@
 					imageElem.attr('src', Drupal.settings.basePath + previewUrl);
 				}
 				
-				// place a figure options breakout button
+				// build a figure options breakout button
 				var button = $('<input type="button">');
 				button.val('Figure Options')
 					.css('float', 'right')
