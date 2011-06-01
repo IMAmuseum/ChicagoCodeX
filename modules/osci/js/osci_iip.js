@@ -11,7 +11,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			return false;
 		}
 		// jQuery is in no conflict mode - get our dollars back!
-		$ = jQuery;
+		var $ = jQuery;
 	}
 	
 	// We need Polymaps
