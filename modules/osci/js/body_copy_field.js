@@ -109,7 +109,20 @@
 			          },
 			          {
 			        	  text: 'Finish', 
-			        	  click: function() {
+			        	  click: function(event) {
+			        		  var button = $(event.currentTarget);
+			        		  // is the button already locked? 
+			        		  var locked = button.attr('data-locked');
+			        		  if (locked) {
+			        			  return false;
+			        		  }
+			        		  else {
+			        			  // lock the button
+			        			  button.attr('data-locked', 1);
+			        			  // make the button appear disabled
+			        			  button.css('background', '#333');
+			        			  button.text('Uploading ...');
+			        		  }
 			        		  // if a thumbnail was specified, upload it and get back the file path
 			        		  // inlcude the path in the options below
 			        		  if (thumbFileField.val() != "") {
