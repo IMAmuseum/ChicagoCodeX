@@ -1,5 +1,4 @@
 function iipmap (div) { // div should be a jQuery object of our map div element
-	
 	/*
 	 * Prerequisites
 	 */
@@ -7,7 +6,6 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	// We need jQuery magic
 	if ($ === undefined) {
 		if (jQuery === undefined) {
-			alert("IIP - requires jQuery");
 			return false;
 		}
 		// jQuery is in no conflict mode - get our dollars back!
@@ -42,13 +40,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		};
 	}
 	else {
-		alert("IIP - requires Polymaps");
 		return false;
 	}
 	
 	// Ensure we have something to work on
 	if (div.length < 1) {
-		alert("IIP - Passed element not valid");
 		return false;
 	}
 	
@@ -77,7 +73,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	
 	// die if we're missing vital information
 	if (!image_h || !image_w) {
-		return;
+		return false;
 	}
 	
 	
