@@ -198,7 +198,7 @@
             var column, pageColumnData, pageColumnDataCount = 0, pageColumnNumber = 0, heightRemain = 0, offset = 0, 
                 lineHeight, colHeight, overflow = false, paragraphIdentifier, figureProcessed = false, columnContentCount, isP = true,
                 numLines, visibleLines, figureLinks, contentHeight, i, contentMargin, contentPosition, contentOffset, columnPosition, columnOffset,
-                topBound, bottomBound, completeLines, countFigureLinks;
+                topBound, bottomBound, completeLines, countFigureLinks, paraIdWidth = 0;
             
             isP = content.is("p");
          
@@ -310,11 +310,13 @@
             contentMargin = parseInt(contentHeight - content.height(), 10);
 
             // Position Paragraph Identifiers in the gutter
-            paragraphIdentifier = content.find("a.osci_paragraph_identifier").remove();
+            paragraphIdentifier = content.find("a.osci_paragraph_identifier");
             if (paragraphIdentifier.length) {
+                paraIdWidth = paragraphIdentifier.outerWidth(true);
+                paragraphIdentifier.remove();
                 if(!base.render.pageParagraphIdentifiers[paragraphIdentifier.data("paragraph_id")]) {
                     paragraphIdentifier.css({
-                        "left" : (column.data("columnMarginLeft") - base.options.gutterPlacementOffset) + "px",
+                        "left" : (column.data("columnMarginLeft") - paraIdWidth - 6) + "px",
                         "top" : contentPosition.top + column.data("columnMarginTop") + "px"
                     });
                     base.render.pageParagraphIdentifiers[paragraphIdentifier.data("paragraph_id")] = paragraphIdentifier;

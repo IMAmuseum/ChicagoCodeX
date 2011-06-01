@@ -103,4 +103,5 @@
 #osci_viewer a.osci_paragraph_identifier {
     position: absolute;
     color: #BBB;
+    text-align: right;
 }
