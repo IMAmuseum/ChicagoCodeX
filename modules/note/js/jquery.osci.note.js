@@ -188,6 +188,14 @@
 
                             break;
                     }
+
+                    /**
+                     * Prevent pagination when modal is open
+                     */
+                    $('#modalContent').keydown(function(e) {
+                        console.log('hi');
+                        e.stopPropagation();
+                    });
                 });
 
                 /**
@@ -221,6 +229,7 @@
                     e.preventDefault();
                     $(this).remove();
                 });
+
             });
             
             amplify.subscribe("osci_note_toggle", function(data) {
