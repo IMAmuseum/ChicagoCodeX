@@ -508,7 +508,7 @@
                     scroll : 'no'
                 };
                 
-            if ($this.hasClass("everpresent")) {
+            if ($this.parent().hasClass("everpresent")) {
                 fancyOptions.title = '<a target="_blank" href="' + $this.attr('href') + '">Open in new window</a>';
             }
                 
