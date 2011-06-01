@@ -449,7 +449,7 @@
                 query = $this.data("query"),
                 link = $this.data("nid");
 
-            if (query.length > 0) {
+            if (query !== undefined && query.length > 0) {
                 link += query;
             }
             
