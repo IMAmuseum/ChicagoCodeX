@@ -74,7 +74,11 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 	var tile_size = 256;
 	var overlay_opacity = '0';
 	var server_url = Drupal.settings.osci_iip.server_url;
-
+	
+	// die if we're missing vital information
+	if (!image_h || !image_w) {
+		return;
+	}
 	
 	
 	/*
