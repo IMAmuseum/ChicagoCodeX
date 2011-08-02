@@ -219,7 +219,7 @@
                         imagePreset = $elem.data("image_preset");
                     
                     //update the link and image with the current section plate image data
-                    if (tocData.plate_image && tocData.plate_image.full_image_url && tocData.plate_image[imagePreset]) {
+                    if (tocData && tocData.plate_image && tocData.plate_image.full_image_url && tocData.plate_image[imagePreset]) {
                         largeUrl = tocData.plate_image.full_image_url;
                         thumbUrl = tocData.plate_image[imagePreset];
                     }
