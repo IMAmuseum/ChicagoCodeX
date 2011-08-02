@@ -3,7 +3,7 @@
         var buttons = [ CKEDITOR.dialog.okButton, CKEDITOR.dialog.cancelButton ];
         var footnotes = $('#' + editor.name)
             .parents('.field-type-osci-body-copy')
-            .find('.footnote-wrapper:not(:last)');
+            .find('.footnote-wrapper:not(:first)');
         var items = [['', '']];
     
         footnotes.each(function(idx) {
