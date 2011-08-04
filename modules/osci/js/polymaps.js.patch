@@ -1,0 +1,14 @@
+496c496,498
+<       if (p.tabIndex >= 0) return p;
+---
+>       if (p.className.match) {
+>         if (p.className.match(/iipmap/)) return p;
+>       }
+1871c1873
+<   window.addEventListener("touchmove", touchmove, false);
+---
+>   //window.addEventListener("touchmove", touchmove, false);
+1930a1933
+>       container.removeEventListener("touchmove", touchmove, false);
+1935a1939
+>       container.addEventListener("touchmove", touchmove, false);

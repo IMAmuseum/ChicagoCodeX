@@ -1,0 +1,125 @@
+<?php 
+
+
+function osci_conservation_menu() {
+	$items = array();
+
+	$items['conservation-demo'] = array(
+        'title'             => t('Conservation Demo'),
+        'page callback'     => 'osci_conservation_demo',
+        'access arguments'  => array('access content'),
+	);
+	
+	$items['admin/config/system/iip'] = array(
+	        'title'             => t('IIP Settings'),
+	        'page callback'     => 'drupal_get_form',
+			'page arguments'    => array('osci_conservation_iip_admin_form'),
+	        'access arguments'  => array('administer site configuration'),
+	        'file'				=> 'osci_conservation.admin.inc'
+	);
+
+	return $items;
+}
+
+function osci_conservation_demo() {
+	drupal_add_library('system', 'ui.slider');
+	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/polymaps.js');
+	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/osci_conservation.js');
+}
+
+function osci_conservation_form_alter(&$form, &$form_state, $form_id) {
+	if ($form_id == 'iip_asset_node_form') {	
+		// hide the image field, we populate it automatically from the IIP server
+		$form['field_image']['#attributes']['style'] = "display:none;";
+		
+		// add the callback to grab the image after submission
+		array_unshift($form['actions']['submit']['#submit'], '_osci_conservation_get_iip_image');
+		
+		// get the options from the drupal variable
+		$hosts = variable_get('osci_conservation_iip_hosts', array());
+		foreach($hosts as $host) {
+			$form['field_iip_server']['und']['#options'] = array();
+			$form['field_iip_server']['und']['#options'][$host['name']] = $host['name'];
+		}
+	}
+	
+	if ($form_id == 'conservation_asset_node_form') {
+		// add the annotation flag checkbox
+		foreach($form['field_assets']['und'] as $key => $value) {
+			if (is_numeric($key)) {
+				// get default value
+				if (isset($form_state['node']->field_assets['und'][$key])) {
+					$default = (bool) $form_state['node']->field_assets['und'][$key]['annotation_flag'];
+				}
+				else {
+					$default = false;
+				}
+				// set the field
+				$form['field_assets']['und'][$key]['annotation_flag'] = array(
+					'#type'				=> 'checkbox',
+					'#title'			=> 'Annotation Asset',
+					'#default_value'	=> $default,
+					'#weight'			=> 100
+				);
+			}
+		}
+		// hide the field_annotation_flags
+		$form['field_annotation_flags']['#attributes']['style'] = "display:none;";
+	}
+}
+
+function osci_conservation_node_presave($node) {
+	if ($node->type == 'conservation_asset') {
+		// form the serialized field_annotation_flags
+		$nids = array();
+		foreach ($node->field_assets['und'] as $key => $value) {
+			$nids[] = $value;
+		}
+		$serialized_nids = serialize($nids);
+		$node->field_annotation_flags['und'][0]['value'] = $serialized_nids;
+	}
+}
+
+function osci_conservation_node_load($nodes, $types) {
+	foreach ($nodes as &$node) {
+		if ($node->type == 'conservation_asset') {
+			// get serialized flag data
+			$flags = unserialize($node->field_annotation_flags['und'][0]['value']);
+			$assets = $node->field_assets['und'];
+			// apply for each flag to the field_assets field
+			foreach ($flags as $flag) {
+				foreach ($assets as $key => $asset) {
+					if ($flag['nid'] == $asset['nid']) {
+						$node->field_assets['und'][$key]['annotation_flag'] = $flag['annotation_flag'];
+					}
+				}
+			}
+		}
+	}
+}
+
+// retrieves the full image from the iip server and saves it to the node as the static image
+function _osci_conservation_get_iip_image($form, &$form_state) {
+	$iip_host = _osci_conservation_iip_host_url($form_state['values']['field_iip_server']['und'][0]['value']);
+	$command = "?FIF=" . $form_state['node']->field_ptiff_path['und'][0]['value'] . "&CVT=jpeg";
+	$curl = curl_init($iip_host.$command);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	$output = curl_exec($curl);
+	// Save the file with the new Drupal 7 File API
+	$fo = file_save_data($output, "public://iip_thumbs/iip_image_node_".$form_state['node']->nid.".jpg", FILE_EXISTS_REPLACE);
+	if ($fo)
+	{
+		$form_state['values']['field_image']['und'][0] = (array)$fo;
+	}
+}
+
+// turns an iip host name into an iip host url
+function _osci_conservation_iip_host_url($host_name) {
+	$avail_hosts = variable_get('osci_conservation_iip_hosts');
+	// find the host url
+	foreach ($avail_hosts as $host) {
+		if ($host['name'] == $host_name) {
+			return $host['url'];
+		}
+	}
+}
