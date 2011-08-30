@@ -576,7 +576,13 @@ ConservationAsset.prototype.resetZoomRange = function(zoomMin) {
 	var zoomMax = 0;
 	for (var i=0; i < this.layers.length; i++) {
 		if (this.layers[i].zoom_levels > zoomMax) {
-			zoomMax = this.layers[i].zoom_levels - 1;
+			if (this.layers[i].type == 'iip') {
+				zoomMax = this.layers[i].zoom_levels - 1;
+			}
+			else {
+				zoomMax = this.layers[i].zoom_levels;
+			}
+			
 		}
 	}
 	console.log(zoomMin, zoomMax, 'resetZoomRange zoomMin/Max')
