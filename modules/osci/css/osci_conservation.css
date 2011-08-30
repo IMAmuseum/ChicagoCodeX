@@ -4,6 +4,7 @@
 	background: #444;
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	font-size: 12px;
+	user-select: none;
 }
 
 .ca-ui-controlbar {

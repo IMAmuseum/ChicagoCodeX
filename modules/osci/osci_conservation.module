@@ -165,7 +165,6 @@ function _osci_conservation_get_ptiff_attr($form, &$form_state) {
 	$curl = curl_init($url);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 	$res = curl_exec($curl);
-	dpm($res);
 	if ($res != false && !stristr($res, 'error')) {
 		// Parse the image maximum dimensions and the number of zoom layers
 		preg_match('/Max-size:(\d+) (\d+)/', $res, $matches);
