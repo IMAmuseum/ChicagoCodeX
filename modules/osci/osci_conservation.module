@@ -30,7 +30,7 @@ function osci_conservation_demo() {
 	foreach ($nodes as $nid) {
 		$node = node_load($nid);
 		// build conservation asset div
-		$ret .= "<h2>The Beach at Sainte-Adresse</h2>";
+		$ret .= "<h2>$node->title</h2>";
 		$ret .= '<div style="width:640px; height:480px;">';
 		$ret .= _osci_conservation_get_conservation_html($node->nid);
 		$ret .= '</div>';
