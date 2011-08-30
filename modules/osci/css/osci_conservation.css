@@ -11,6 +11,10 @@
 	-o-user-select: none;
 }
 
+.conservation-asset .ui-slider-handle {
+    outline: none;
+}
+
 .ca-ui-controlbar {
 	position: absolute;
 	bottom: 15px;
