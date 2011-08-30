@@ -575,15 +575,19 @@ ConservationAsset.prototype.resetZoomRange = function(zoomMin) {
 	zoomMin = zoomMin || 0;
 	var zoomMax = 0;
 	for (var i=0; i < this.layers.length; i++) {
-		if (this.layers[i].zoom_levels > zoomMax) {
-			if (this.layers[i].type == 'iip') {
+		
+		if (this.layers[i].type == 'iip') {
+			if (this.layers[i].zoom_levels - 1 > zoomMax) {
 				zoomMax = this.layers[i].zoom_levels - 1;
 			}
-			else {
+		}
+		else {
+			if (this.layers[i].zoom_levels > zoomMax) {
 				zoomMax = this.layers[i].zoom_levels;
 			}
-			
 		}
+			
+		
 	}
 	console.log(zoomMin, zoomMax, 'resetZoomRange zoomMin/Max')
 	this.map.zoomRange([zoomMin, zoomMax]);
