@@ -494,7 +494,7 @@ po.map = function() {
   map.focusableParent = function() {
     for (var p = container; p; p = p.parentNode) {
       if (p.className.match) {
-        if (p.className.match(/iipmap/)) return p;
+        if (p.className.match(/conservation-asset/)) return p;
       }
     }
     return window;

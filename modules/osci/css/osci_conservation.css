@@ -1,0 +1,250 @@
+.conservation-asset {
+	position: relative;
+	line-height: 1em;
+	background: #444;
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+.ca-ui-controlbar {
+	position: absolute;
+	bottom: 15px;
+	right: 15px;
+	height: 30px;
+	background: #000;
+	opacity: 0.75;
+	margin: 0;
+	border-radius: 5px;
+}
+
+.ca-ui-annotation {
+	padding: 5px 5px 5px 5px;
+	float: right;
+	width: 20px;
+	height: 20px;
+	background: url('../images/icon-annotation.png') center no-repeat;
+	border-right: 1px solid #888;
+}
+
+.ca-ui-reset {
+	padding: 5px 5px 5px 5px;
+	float: right;
+	width: 20px;
+	height: 20px;
+	background: url('../images/icon-reset.png') center no-repeat;
+	border-right: 1px solid #888;
+}
+
+.ca-ui-fullscreen {
+	padding: 5px 5px 5px 5px;
+	float: right;
+	width: 20px;
+	height: 20px;
+}
+
+.ca-ui-layer {
+	padding: 5px 5px 5px 5px;
+	float: right;
+	height: 20px;
+	color: #fff;
+	font-size: 12px;
+	line-height: 12px;
+	border-right: 1px solid #888;
+}
+
+.ca-ui-layer span {
+	display: block;
+	float: left;
+	vertical-align: middle;
+	text-align: center;
+	padding: 4px 8px 0px 5px;
+}
+
+.ca-ui-down-arrow {
+	background: url('../images/icon-down-arrow.png') center no-repeat;
+	float: left;
+	width: 16px;
+	height: 16px;
+	padding-top: 3px;
+}
+
+.ca-ui-right-arrow {
+	background: url('../images/icon-right-arrow.png') center no-repeat;
+	float: left;
+	width: 16px;
+	height: 16px;
+	padding-top: 3px;
+}
+
+.ca-ui-fullscreen.collapsed {
+	background: url('../images/icon-fullscreen.png') center no-repeat;
+}
+
+.ca-ui-fullscreen.expanded {
+	background: url('../images/icon-fullscreen.png') center no-repeat;
+}
+
+.ca-ui-zoom {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	background: #000;
+	opacity: 0.75;
+	width: 20px;
+	border-radius: 5px;
+}
+
+.ca-ui-zoom-in {
+	background: url('../images/icon-zoom-in.png') center no-repeat;
+	width: 16px;
+	height: 16px;
+	padding: 0px 2px 3px 2px;
+	border-bottom: 1px solid #888;
+}
+
+.ca-ui-zoom-slider {
+	height: 75px;
+	width: 5px;
+	background: #444;
+	margin: 10px auto;
+}
+
+.ca-ui-zoom-slider .ui-slider-handle {
+	width: 12px;
+	height: 6px;
+	background: #ccc;
+	left: -4px;
+	margin-bottom: -5px;
+}
+
+.ca-ui-zoom-out {
+	background: url('../images/icon-zoom-out.png') center no-repeat;
+	width: 16px;
+	height: 16px;
+	padding: 3px 2px 0px 2px;
+	border-top: 1px solid #888;
+}
+
+.ca-ui-viewfinder {
+	position: absolute;
+	top: 15px;
+	right: 40px;
+}
+
+.ca-ui-viewfinder.viewfinder-closed {
+	width: 20px;
+	height: 16px;
+	background: #000 url('../images/icon-viewfinder-big.png') center no-repeat;
+	opacity: 0.75;
+}
+
+.ca-ui-fullscreen-wrap {
+	position: absolute;
+	top: 26px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+}
+
+.ca-ui-annotation-selector {
+	position: absolute;
+	background: #000;
+	opacity: 0.75;
+	margin: 0;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.ca-ui-annotation-selector-list {
+	list-style: none;
+	margin: 0px !important;
+	padding: 10px 10px 10px 10px !important;
+}
+
+.ca-ui-annotation-selector-list li {
+	color: #fff;
+	height: 15px;
+	font-size: 12px;
+}
+
+.ca-ui-annotation-selector-list li span {
+	float: left;
+	padding-left: 5px;
+	text-align: middle;
+}
+
+.ca-ui-annotation-selector-list hr {
+	border: 1px solid gray;
+	height: 0px;
+}
+
+.ca-ui-annotation-selector-item-box {
+	float: left;
+	height: 11px;
+	width: 11px;
+	border: 1px solid #fff;
+	text-align: middle;
+}
+
+.ca-ui-annotation-selector-item-box.empty {
+	background-color: #000;
+}
+
+.ca-ui-annotation-selector-item-box.filled {
+	background-color: #fff;
+}
+
+.ca-ui-layer-selector-popup {
+	position: absolute;
+	background: #000;
+	opacity: 0.75;
+	margin: 0;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.ca-ui-layer-selector-popup hr {
+	border: 1px solid gray;
+	height: 0px;
+}
+
+.ca-ui-layer-selector-popup ul {
+	list-style: none;
+	margin: 0px !important;
+	padding: 10px 10px 10px 10px !important;
+}
+
+.ca-ui-layer-selector-popup li {
+	color: #fff;
+	height: 15px;
+	font-size: 11px;
+}
+
+.ca-ui-layer-selector-popup span {
+	float: left;
+	padding-left: 5px;
+	text-align: middle;
+}
+
+.ca-ui-layer-slider-container {
+	padding: 5px 5px 5px 5px;
+	float: right;
+	width: 100px;
+	height: 20px;
+	border-right: 1px solid #888;
+}
+
+.ca-ui-layer-slider {
+	height: 5px;
+	width: 75px;
+	background: #444;
+	margin: 7px auto;
+}
+
+.ca-ui-layer-slider .ui-slider-handle {
+	width: 6px;
+	height: 12px;
+	background: #ccc;
+}
+

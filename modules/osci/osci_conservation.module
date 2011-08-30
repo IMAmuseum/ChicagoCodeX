@@ -27,7 +27,6 @@ function osci_conservation_demo() {
 	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/osci_conservation.js');
 	
 	$node = node_load(169);
-	dpm($node, 'conservation asset');
 	
 	// build conservation asset div
 	$ret .= "<h2>The Beach at Sainte-Adresse</h2>";
@@ -98,7 +97,6 @@ function osci_conservation_form_alter(&$form, &$form_state, $form_id) {
 		// hide the field_data
 		$form['field_data']['#attributes']['style'] = "display:none;";
 		
-		dpm($form);
 	}
 }
 
@@ -111,7 +109,6 @@ function osci_conservation_node_presave($node) {
 		}
 		$serialized_nids = serialize($nids);
 		$node->field_data['und'][0]['value'] = $serialized_nids;
-		dpm($node, 'node presave');
 	}
 }
 
@@ -140,7 +137,6 @@ function _osci_conservation_get_ptiff_image($form, &$form_state) {
 	$iip_host = _osci_conservation_iip_host_url($form_state['values']['field_iip_server']['und'][0]['value']);
 	$command = "?FIF={$form_state['values']['field_ptiff_path']['und'][0]['value']}&CVT=jpeg";
 	$curl = curl_init($iip_host.$command);
-	dpm($iip_host.$command, 'get_ptiff_image command');
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 	$output = curl_exec($curl);
 	// Save the file with the new Drupal 7 File API
@@ -168,6 +164,7 @@ function _osci_conservation_get_ptiff_attr($form, &$form_state) {
 	$curl = curl_init($url);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 	$res = curl_exec($curl);
+	dpm($res);
 	if ($res != false && !stristr($res, 'error')) {
 		// Parse the image maximum dimensions and the number of zoom layers
 		preg_match('/Max-size:(\d+) (\d+)/', $res, $matches);
@@ -180,7 +177,7 @@ function _osci_conservation_get_ptiff_attr($form, &$form_state) {
 		$attr = array(
 				'width' => $iw,
 				'height' => $ih,
-				'zoom_layers' => $zl,
+				'zoom_levels' => $zl,
 		);
 		// place attributes into proper field, serialized
 		$form_state['values']['field_ptiff_attr']['und'][0]['value'] = serialize($attr);
@@ -207,16 +204,29 @@ function _osci_conservation_get_conservation_html($nid) {
 	if (!is_numeric($nid)) return;
 	$node = node_load($nid);
 	
+	// ensure the supporting css is loaded
+	drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css');
+	
+	// create a unique id for this conservation asset
+	$id = "conservation-asset-" . preg_replace('/\./', '', ((string) microtime(TRUE)));
+	
 	// build a list of the layers
 	$layers = "";
+	$num_layers = 1;
 	foreach ($node->field_assets['und'] as $asset) {
-		dpm($asset);
+		// dpm($asset);
 		// load in the referenced asset
 		$layer_node = node_load($asset['nid']);
 		$data = array();
 		
-		dpm($layer_node, 'layer node');
+		// dpm($layer_node, 'layer node');
 		
+		// set layer number, parent, and id
+		$data['layer_num'] = $num_layers;
+		$data['parent_asset'] = $id;
+		$data['id'] = "{$id}-layer-{$num_layers}";
+		$num_layers++;
+				
 		// set normalized type according to asset type
 		switch ($layer_node->type) {
 			case "iip_asset":
@@ -228,7 +238,12 @@ function _osci_conservation_get_conservation_html($nid) {
 		}
 		
 		// set the annotation flag
-		$data['annotation'] = $asset['annotation_flag'];
+		if ($asset['annotation_flag'] > 0) {
+			$data['annotation'] = "true";
+		}
+		else {
+			$data['annotation'] = "false";
+		}
 		
 		// set the title if provided, or use the layer node's title
 		if (!empty($asset['title'])) {
@@ -242,20 +257,20 @@ function _osci_conservation_get_conservation_html($nid) {
 		if ($data['type'] == 'iip') {
 			// some of the needed information is serialized
 			$attr = unserialize($layer_node->field_ptiff_attr['und'][0]['value']);
-			dpm($attr, 'attr');
-			$data['ptiff-path'] 		= $layer_node->field_ptiff_path['und'][0]['value'];
-			$data['ptiff-width'] 		= $attr['width'];
-			$data['ptiff-height'] 		= $attr['height'];
-			$data['ptiff-zoom-layers'] 	= $attr['zoom_layers'];
+			$data['ptiff_server']		= _osci_conservation_iip_host_url($layer_node->field_iip_server['und'][0]['value']);
+			$data['ptiff_path'] 		= $layer_node->field_ptiff_path['und'][0]['value'];
+			$data['width'] 				= $attr['width'];
+			$data['height'] 			= $attr['height'];
+			$data['zoom_levels'] 		= $attr['zoom_levels'];
 		}
 		
 		// set the image specific values
 		if ($data['type'] == 'image') {
 			$size = getimagesize(drupal_realpath($layer_node->field_image['und'][0]['uri']));
 			
-			$data['image-path'] 	= file_create_url($layer_node->field_image['und'][0]['uri']);
-			$data['image-width'] 	= $size[0];
-			$data['image-height'] 	= $size[1];
+			$data['image_path'] 	= file_create_url($layer_node->field_image['und'][0]['uri']);
+			$data['width'] 			= $size[0];
+			$data['height'] 		= $size[1];
 		}
 		
 		// form our data attributes string
@@ -269,7 +284,7 @@ function _osci_conservation_get_conservation_html($nid) {
 	}
 	
 	$ret = 
-		 '<div class="conservation-asset" data-collasped="1">'
+		 '<div class="conservation-asset" data-collapsed="true" id="'.$id.'">'
 		.	'<ul class="conservation-layers">'
 		.		$layers
 		.	'</ul>'
