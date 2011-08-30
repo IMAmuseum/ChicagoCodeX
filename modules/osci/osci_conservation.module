@@ -25,8 +25,7 @@ function osci_conservation_demo() {
 	drupal_add_library('system', 'ui.slider');
 	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/polymaps.js');
 	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/osci_conservation.js');
-	
-	$node = node_load(169);
+	$node = node_load(variable_get('osci_conservation_demo_node_1'));
 	
 	// build conservation asset div
 	$ret .= "<h2>The Beach at Sainte-Adresse</h2>";
