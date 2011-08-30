@@ -25,15 +25,17 @@ function osci_conservation_demo() {
 	drupal_add_library('system', 'ui.slider');
 	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/polymaps.js');
 	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/osci_conservation.js');
-	$node = node_load(variable_get('osci_conservation_demo_node_1'));
+	$nodes = variable_get('osci_conservation_demo_nodes');
 	
-	// build conservation asset div
-	$ret .= "<h2>The Beach at Sainte-Adresse</h2>";
-	$ret .= '<div style="width:640px; height:480px;">';
-	$ret .= _osci_conservation_get_conservation_html($node->nid);
-	$ret .= '</div>';
-	$ret .= '<p>&nbsp;</p>';
-	
+	foreach ($nodes as $nid) {
+		$node = node_load($nid);
+		// build conservation asset div
+		$ret .= "<h2>The Beach at Sainte-Adresse</h2>";
+		$ret .= '<div style="width:640px; height:480px;">';
+		$ret .= _osci_conservation_get_conservation_html($node->nid);
+		$ret .= '</div>';
+	}
+		
 	return $ret;
 }
 
