@@ -408,7 +408,7 @@ ConservationAsset.prototype.createUI = function() {
     .appendTo(this.container);
     
     // store references to the control elements, so they can be manipulated as a collection
-    this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder];
+    this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder, this.ui.currentPopup];
     
     // configure events to show/hide controls
     this.container.bind('mousemove', function(event) {
@@ -429,6 +429,7 @@ ConservationAsset.prototype.createUI = function() {
                 
                 if (container.attr('data-controls-lock') != 'true') {
                     container.attr('data-controls', 'false');
+                    CA.clearPopups();
                     CA.toggleControls();
                 }
             }
@@ -436,13 +437,15 @@ ConservationAsset.prototype.createUI = function() {
     });
     // mousing over a control locks them "on"
     $.each(this.ui.controls, function() {
-        this.bind('mouseenter', function() {
-            CA.container.attr('data-controls-lock', 'true');
-        });
-        this.bind('mouseleave', function() {
-            CA.container.attr('data-controls-lock', 'false');
-
-        });
+        // test if this is still around.  we include popups, and other transients
+        if (this.bind == 'function') {
+            this.bind('mouseenter', function() {
+                CA.container.attr('data-controls-lock', 'true');
+            });
+            this.bind('mouseleave', function() {
+                CA.container.attr('data-controls-lock', 'false');
+            });
+        }
     });
 }
 
@@ -565,6 +568,12 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
             right: right, 
             bottom: bottom
         })
+        .bind('mouseenter', function() {
+            CA.container.attr('data-controls-lock', 'true');
+        })
+        .bind('mouseleave', function() {
+            CA.container.attr('data-controls-lock', 'false');
+        })
         .append(layerList)
         .appendTo(CA.container);
         CA.ui.currentPopup = CA.ui[layerSelectorPopup];
@@ -638,6 +647,12 @@ ConservationAsset.prototype.toggleAnnotationSelector = function() {
         }
         // append the finished selector box
         this.ui.annotationSelector
+        .bind('mouseenter', function() {
+            CA.container.attr('data-controls-lock', 'true');
+         })
+         .bind('mouseleave', function() {
+            CA.container.attr('data-controls-lock', 'false');
+         })
         .append(this.ui.annotationSelectorList)
         .appendTo(this.container);
         this.ui.currentPopup = this.ui.annotationSelector;
@@ -650,7 +665,6 @@ ConservationAsset.prototype.resetZoomRange = function(zoomMin) {
     zoomMin = zoomMin || 0;
     var zoomMax = 0;
     for (var i=0; i < this.layers.length; i++) {
-		
         if (this.layers[i].type == 'iip') {
             if (this.layers[i].zoom_levels - 1 > zoomMax) {
                 zoomMax = this.layers[i].zoom_levels - 1;
@@ -661,8 +675,6 @@ ConservationAsset.prototype.resetZoomRange = function(zoomMin) {
                 zoomMax = this.layers[i].zoom_levels;
             }
         }
-			
-		
     }
     this.map.zoomRange([zoomMin, zoomMax]);
 
@@ -719,9 +731,14 @@ ConservationAsset.prototype.realignLayers = function() {
 
 
 ConservationAsset.prototype.clearPopups = function() {
+    var CA = this;
+    
     if (this.ui.currentPopup) {
-        this.ui.currentPopup.remove();
-        this.ui.currentPopup = false;
+        this.ui.currentPopup.fadeOut(400, function() {
+            CA.ui.currentPopup.remove();
+            CA.ui.currentPopup = false;
+        });
+        
     }
 };
 
@@ -730,8 +747,11 @@ ConservationAsset.prototype.toggleControls = function(duration) {
     duration = duration || 400;
     var $ = this.$;
     
-    $.each(this.ui.controls, function() { 
-        this.fadeToggle(duration); 
+    $.each(this.ui.controls, function() {
+        // do this test, the popup could be false
+        if (typeof this.fadeToggle == 'function') {
+            this.fadeToggle(duration); 
+        }
     });
 };
 
