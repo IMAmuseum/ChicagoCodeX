@@ -1,4 +1,6 @@
 var ConservationAsset = function(container) { // container should be a html element
+    var i, layerData;
+    
     // check prereqs
     if (jQuery != undefined) { 
         var $ = this.$ = jQuery; 
@@ -31,7 +33,7 @@ var ConservationAsset = function(container) { // container should be a html elem
     this.layers = [];
     var layerContainer = this.container.find('.conservation-layers');
     var layerItems = layerContainer.find('li');
-    for (var i=0; i < layerItems.length; i++) {
+    for (i=0; i < layerItems.length; i++) {
         var layerMarkup = $(layerItems[i]);
         this.layers.push(layerMarkup.data());
     }
@@ -46,13 +48,13 @@ var ConservationAsset = function(container) { // container should be a html elem
         if (!layer1 && layer2) return -1;
         return 0;
     });
-
+    
     // we must order their layer_num properties
     // also create separate arrays of base and annotation layers for convenience
     this.baseLayers = [];
     this.annotationLayers = [];
-    for (var i=0; i < this.layers.length; i++) {
-        var layerData = this.layers[i];
+    for (i=0; i < this.layers.length; i++) {
+        layerData = this.layers[i];
         layerData.layer_num = i + 1;
         if (layerData.annotation) {
             this.annotationLayers.push(layerData);
@@ -69,6 +71,14 @@ var ConservationAsset = function(container) { // container should be a html elem
         x: 256, 
         y: 256
     });
+
+    // calculate zoom levels if not already present
+    for (i=0; i < this.layers.length; i++) {
+        layerData = this.layers[i];
+        if (!layerData.zoom_levels) {
+            layerData.zoom_levels = this.getZoomLevels(layerData.width, layerData.height);
+        }
+    }
 
     // create first layer, second layer, and make second transparent
     this.createLayer(this.baseLayers[0]);
@@ -89,6 +99,7 @@ var ConservationAsset = function(container) { // container should be a html elem
 ConservationAsset.prototype.createLayer = function(layerData) {
     // alias jquery
     var $ = this.$;
+    var layer;
 
     // provide zoom_levels if missing
     if (!layerData.zoom_levels) {
@@ -98,11 +109,11 @@ ConservationAsset.prototype.createLayer = function(layerData) {
     // determine type of layer
     if (layerData.type == 'image'){
         // calculate zoom layers and put it on the layer data
-        var layer = this.createLayerImage(layerData);
+        layer = this.createLayerImage(layerData);
     }
     if (layerData.type == 'iip') {
         // Load in our image and define the tile loader for it
-        var layer = this.createLayerIIP(layerData);
+        layer = this.createLayerIIP(layerData);
     }
 
     // flag the layer as visible and 
@@ -188,12 +199,18 @@ ConservationAsset.prototype.createLayerImage = function(layerData) {
 ConservationAsset.prototype.zoomToContainer = function() {
     // always calculate at the highest possible zoom, 18, 
     // for max fineness of alignment
-    var zoomToCalculateAt = 18;
+    var zoomToCalculateAt = 18
+    , i;
 
     // calculate tw and th for each layer
     for (var i=0; i < this.layers.length; i++) {
         var layerData = this.layers[i];
-        var scale = this.getScale(layerData.zoom_levels, zoomToCalculateAt);
+        console.log(layerData.zoom_levels);
+        var scale = this.getScale(layerData.zoom_levels - 0, zoomToCalculateAt);
+        // TODO: figure out why this is a special case:
+        if (layerData.type == 'iip') {
+            scale = this.getScale(layerData.zoom_levels - 1, zoomToCalculateAt);
+        }
         var mw = Math.round(layerData.width / scale);
         var mh = Math.round(layerData.height / scale);
         var tw = Math.ceil(mw / this.map.tileSize().x);
@@ -242,8 +259,9 @@ ConservationAsset.prototype.zoomToContainer = function() {
 
 ConservationAsset.prototype.createUI = function() {
     // local aliases
-    var $ = this.$;
-    var CA = this;
+    var $ = this.$
+    , CA = this
+    , fullscreenClass;
 
     // hook up polymap drag interaction
     this.map
@@ -268,10 +286,10 @@ ConservationAsset.prototype.createUI = function() {
 
     // fullscreen control
     if (this.settings.collapsed) {
-        var fullscreenClass = "collapsed";
+        fullscreenClass = "collapsed";
     }
     else {
-        var fullscreenClass = "expanded";
+        fullscreenClass = "expanded";
     }
     this.ui.fullscreen = $('<div class="ca-ui-fullscreen '+fullscreenClass+'"></div>')
     .bind('click', function() {
