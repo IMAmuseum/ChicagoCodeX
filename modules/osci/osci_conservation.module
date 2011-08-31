@@ -1,306 +1,301 @@
-<?php 
-
+<?php
 
 function osci_conservation_menu() {
-	$items = array();
+    $items = array();
 
-	$items['conservation-demo'] = array(
-        'title'             => t('Conservation Demo'),
-        'page callback'     => 'osci_conservation_demo',
-        'access arguments'  => array('access content'),
-	);
-	
-	$items['admin/config/system/iip'] = array(
-	        'title'             => t('IIP Settings'),
-	        'page callback'     => 'drupal_get_form',
-			'page arguments'    => array('osci_conservation_iip_admin_form'),
-	        'access arguments'  => array('administer site configuration'),
-	        'file'				=> 'osci_conservation.admin.inc'
-	);
+    $items['conservation-demo'] = array(
+        'title' => t('Conservation Demo'),
+        'page callback' => 'osci_conservation_demo',
+        'access arguments' => array('access content'),
+    );
 
-	return $items;
+    $items['admin/config/system/iip'] = array(
+        'title' => t('IIP Settings'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('osci_conservation_iip_admin_form'),
+        'access arguments' => array('administer site configuration'),
+        'file' => 'osci_conservation.admin.inc'
+    );
+
+    return $items;
 }
 
 function osci_conservation_demo() {
-	drupal_add_library('system', 'ui.slider');
-	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/polymaps.js');
-	drupal_add_js(drupal_get_path('module', 'osci_conservation').'/js/osci_conservation.js');
-	$nodes = variable_get('osci_conservation_demo_nodes');
-	
-	foreach ($nodes as $nid) {
-		$node = node_load($nid);
-		// build conservation asset div
-		$ret .= "<h2>$node->title</h2>";
-		$ret .= '<div style="width:640px; height:480px;">';
-		$ret .= _osci_conservation_get_conservation_html($node->nid);
-		$ret .= '</div>';
-	}
-		
-	return $ret;
+    drupal_add_library('system', 'ui.slider');
+    drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/polymaps.js');
+    drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/osci_conservation.js');
+    $nodes = variable_get('osci_conservation_demo_nodes');
+
+    foreach ($nodes as $nid) {
+        $node = node_load($nid);
+        // build conservation asset div
+        $ret .= "<h2>$node->title</h2>";
+        $ret .= '<div style="width:640px; height:480px;">';
+        $ret .= _osci_conservation_get_conservation_html($node->nid);
+        $ret .= '</div>';
+    }
+
+    return $ret;
 }
 
 function osci_conservation_form_alter(&$form, &$form_state, $form_id) {
-	if ($form_id == 'iip_asset_node_form') {	
-		// hide the image field, and the attributes field
-		// we populate it automatically from the IIP server
-		$form['field_image']['#attributes']['style'] = "display:none;";
-		$form['field_ptiff_attr']['#attributes']['style'] = "display:none;";
-		
-		// add the callback to grab the image after submission
-		array_unshift($form['#validate'], '_osci_conservation_get_ptiff_image');
-		array_unshift($form['#validate'], '_osci_conservation_get_ptiff_attr');
-		// get the options from the drupal variable
-		$hosts = variable_get('osci_conservation_iip_hosts', array());
-		$form['field_iip_server']['und']['#options'] = array();
-		foreach($hosts as $host) {
-			$form['field_iip_server']['und']['#options'][$host['name']] = $host['name'];
-		}
-	}
-	
-	if ($form_id == 'conservation_asset_node_form') {
-		// add the annotation flag checkbox
-		foreach($form['field_assets']['und'] as $key => $value) {
-			if (is_numeric($key)) {
-				
-				// add a title to the node reference, for asthetics
-				$form['field_assets']['und'][$key]['nid']['#title'] = 'Asset';
-				
-				// ANNOTATION FLAG
-				// get default value
-				if (isset($form_state['node']->field_assets['und'][$key])) {
-					$default = (bool) $form_state['node']->field_assets['und'][$key]['annotation_flag'];
-				}
-				else { $default = false; }
-				// expose the new field with the default
-				$form['field_assets']['und'][$key]['annotation_flag'] = array(
-					'#type'				=> 'checkbox',
-					'#title'			=> 'Annotation Asset',
-					'#default_value'	=> $default,
-					'#weight'			=> 100
-				);
-				
-				// LAYER TITLE
-				// get default if set
-				if (isset($form_state['node']->field_assets['und'][$key])) {
-					$default = $form_state['node']->field_assets['und'][$key]['title'];
-				}
-				else { $default = ''; }
-				// expose the new field with the default
-				$form['field_assets']['und'][$key]['title'] = array(
-					'#type'				=> 'textfield',
-					'#title'			=> 'Layer Title',
-					'#default_value'	=> $default,
-					'#weight'			=> 99
-				);
-				
-			}
-		}
-		// hide the field_data
-		$form['field_data']['#attributes']['style'] = "display:none;";
-		
-	}
+    if ($form_id == 'iip_asset_node_form') {
+        // hide the image field, and the attributes field
+        // we populate it automatically from the IIP server
+        $form['field_image']['#attributes']['style'] = "display:none;";
+        $form['field_ptiff_attr']['#attributes']['style'] = "display:none;";
+
+        // add the callback to grab the image after submission
+        array_unshift($form['#validate'], '_osci_conservation_get_ptiff_image');
+        array_unshift($form['#validate'], '_osci_conservation_get_ptiff_attr');
+        // get the options from the drupal variable
+        $hosts = variable_get('osci_conservation_iip_hosts', array());
+        $form['field_iip_server']['und']['#options'] = array();
+        foreach ($hosts as $host) {
+            $form['field_iip_server']['und']['#options'][$host['name']] = $host['name'];
+        }
+    }
+
+    if ($form_id == 'conservation_asset_node_form') {
+        // add the annotation flag checkbox
+        foreach ($form['field_assets']['und'] as $key => $value) {
+            if (is_numeric($key)) {
+
+                // add a title to the node reference, for asthetics
+                $form['field_assets']['und'][$key]['nid']['#title'] = 'Asset';
+
+                // ANNOTATION FLAG
+                // get default value
+                if (isset($form_state['node']->field_assets['und'][$key])) {
+                    $default = (bool) $form_state['node']->field_assets['und'][$key]['annotation_flag'];
+                } else {
+                    $default = false;
+                }
+                // expose the new field with the default
+                $form['field_assets']['und'][$key]['annotation_flag'] = array(
+                    '#type' => 'checkbox',
+                    '#title' => 'Annotation Asset',
+                    '#default_value' => $default,
+                    '#weight' => 100
+                );
+
+                // LAYER TITLE
+                // get default if set
+                if (isset($form_state['node']->field_assets['und'][$key])) {
+                    $default = $form_state['node']->field_assets['und'][$key]['title'];
+                } else {
+                    $default = '';
+                }
+                // expose the new field with the default
+                $form['field_assets']['und'][$key]['title'] = array(
+                    '#type' => 'textfield',
+                    '#title' => 'Layer Title',
+                    '#default_value' => $default,
+                    '#weight' => 99
+                );
+            }
+        }
+        // hide the field_data
+        $form['field_data']['#attributes']['style'] = "display:none;";
+        dpm($form);
+    }
 }
 
 function osci_conservation_node_presave($node) {
-	if ($node->type == 'conservation_asset') {
-		// form the serialized field_data
-		$nids = array();
-		foreach ($node->field_assets['und'] as $key => $value) {
-			$nids[] = $value;
-		}
-		$serialized_nids = serialize($nids);
-		$node->field_data['und'][0]['value'] = $serialized_nids;
-	}
+    if ($node->type == 'conservation_asset') {
+        // form the serialized field_data
+        $nids = array();
+        foreach ($node->field_assets['und'] as $key => $value) {
+            $nids[] = $value;
+        }
+        $serialized_nids = serialize($nids);
+        $node->field_data['und'][0]['value'] = $serialized_nids;
+    }
 }
 
 function osci_conservation_node_load($nodes, $types) {
-	foreach ($nodes as &$node) {
-		if ($node->type == 'conservation_asset') {
-			// get serialized flag data
-			$flags = unserialize($node->field_data['und'][0]['value']);
-			$assets = $node->field_assets['und'];
-			// apply for each flag to the field_assets field
-			foreach ($flags as $flag) {
-				foreach ($assets as $key => $asset) {
-					if ($flag['nid'] == $asset['nid']) {
-						$node->field_assets['und'][$key]['annotation_flag'] = $flag['annotation_flag'];
-						$node->field_assets['und'][$key]['title'] = $flag['title'];
-					}
-				}
-			}
-		}
-	}
+    foreach ($nodes as &$node) {
+        if ($node->type == 'conservation_asset') {
+            // get serialized flag data
+            $flags = unserialize($node->field_data['und'][0]['value']);
+            $assets = $node->field_assets['und'];
+            // apply for each flag to the field_assets field
+            foreach ($flags as $flag) {
+                foreach ($assets as $key => $asset) {
+                    if ($flag['nid'] == $asset['nid']) {
+                        $node->field_assets['und'][$key]['annotation_flag'] = $flag['annotation_flag'];
+                        $node->field_assets['und'][$key]['title'] = $flag['title'];
+                    }
+                }
+            }
+        }
+    }
 }
 
 // called as a form verification callback
 // retrieves the full image from the iip server and saves it to the node as the static image
 function _osci_conservation_get_ptiff_image($form, &$form_state) {
-	$iip_host = _osci_conservation_iip_host_url($form_state['values']['field_iip_server']['und'][0]['value']);
-	$command = "?FIF={$form_state['values']['field_ptiff_path']['und'][0]['value']}&CVT=jpeg";
-	$curl = curl_init($iip_host.$command);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	$output = curl_exec($curl);
-	// Save the file with the new Drupal 7 File API
-	$fo = file_save_data($output, "public://iip_thumbs/iip_image_node_".$form_state['node']->nid.".jpg", FILE_EXISTS_REPLACE);
-	if ($fo && getimagesize($fo->uri))
-	{
-		$form_state['values']['field_image']['und'][0] = (array)$fo;
-	}
-	else {
-		if ($fo) file_delete($fo);
-		form_set_error('field_ptiff_path', 'Could not retrieve an image thumbnail.  Please check the path and server');
-	}
+    $iip_host = _osci_conservation_iip_host_url($form_state['values']['field_iip_server']['und'][0]['value']);
+    $command = "?FIF={$form_state['values']['field_ptiff_path']['und'][0]['value']}&CVT=jpeg";
+    $curl = curl_init($iip_host . $command);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($curl);
+    // Save the file with the new Drupal 7 File API
+    $fo = file_save_data($output, "public://iip_thumbs/iip_image_node_" . $form_state['node']->nid . ".jpg", FILE_EXISTS_REPLACE);
+    if ($fo && getimagesize($fo->uri)) {
+        $form_state['values']['field_image']['und'][0] = (array) $fo;
+    } else {
+        if ($fo)
+            file_delete($fo);
+        form_set_error('field_ptiff_path', 'Could not retrieve an image thumbnail.  Please check the path and server');
+    }
 }
 
 // called as a form verification callback
 // retrieves the image attributes from the iip server and saves it serialized in field_ptiff_attr
 function _osci_conservation_get_ptiff_attr($form, &$form_state) {
-	// gather the server url and the ptiff path
-	$iip_srv_url = _osci_conservation_iip_host_url($form_state['values']['field_iip_server']['und'][0]['value']);
-	$ptiff_path = $form_state['values']['field_ptiff_path']['und'][0]['value'];
-	
-	// Get image data as a text response from the IIP server
-	// Must supply the fif parameter
-	$url = "{$iip_srv_url}?FIF={$ptiff_path}&OBJ=Basic-info";
-	$curl = curl_init($url);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-	$res = curl_exec($curl);
-	if ($res != false && !stristr($res, 'error')) {
-		// Parse the image maximum dimensions and the number of zoom layers
-		preg_match('/Max-size:(\d+) (\d+)/', $res, $matches);
-		$iw = $matches[1];
-		$ih = $matches[2];
-		preg_match('/Resolution-number:(\d+)/', $res, $matches);
-		$zl = $matches[1];
-	
-		// Craft our attributes array
-		$attr = array(
-				'width' => $iw,
-				'height' => $ih,
-				'zoom_levels' => $zl,
-		);
-		// place attributes into proper field, serialized
-		$form_state['values']['field_ptiff_attr']['und'][0]['value'] = serialize($attr);
-	}
-	else {
-		form_set_error('field_ptiff_path', 'Could not retrieve image information.  Please check path and server');
-	}
-	
+    // gather the server url and the ptiff path
+    $iip_srv_url = _osci_conservation_iip_host_url($form_state['values']['field_iip_server']['und'][0]['value']);
+    $ptiff_path = $form_state['values']['field_ptiff_path']['und'][0]['value'];
+
+    // Get image data as a text response from the IIP server
+    // Must supply the fif parameter
+    $url = "{$iip_srv_url}?FIF={$ptiff_path}&OBJ=Basic-info";
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+    $res = curl_exec($curl);
+    if ($res != false && !stristr($res, 'error')) {
+        // Parse the image maximum dimensions and the number of zoom layers
+        preg_match('/Max-size:(\d+) (\d+)/', $res, $matches);
+        $iw = $matches[1];
+        $ih = $matches[2];
+        preg_match('/Resolution-number:(\d+)/', $res, $matches);
+        $zl = $matches[1];
+
+        // Craft our attributes array
+        $attr = array(
+            'width' => $iw,
+            'height' => $ih,
+            'zoom_levels' => $zl,
+        );
+        // place attributes into proper field, serialized
+        $form_state['values']['field_ptiff_attr']['und'][0]['value'] = serialize($attr);
+    } else {
+        form_set_error('field_ptiff_path', 'Could not retrieve image information.  Please check path and server');
+    }
 }
 
 // turns an iip host name into an iip host url by comparing with 
 // the list of hosts stored in the admin setting
 function _osci_conservation_iip_host_url($host_name) {
-	$avail_hosts = variable_get('osci_conservation_iip_hosts');
-	// find the host url
-	foreach ($avail_hosts as $host) {
-		if ($host['name'] == $host_name) {
-			return $host['url'];
-		}
-	}
+    $avail_hosts = variable_get('osci_conservation_iip_hosts');
+    // find the host url
+    foreach ($avail_hosts as $host) {
+        if ($host['name'] == $host_name) {
+            return $host['url'];
+        }
+    }
 }
 
 function _osci_conservation_get_conservation_html($nid) {
-	if (!is_numeric($nid)) return;
-	$node = node_load($nid);
-	
-	// ensure the supporting css is loaded
-	drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css');
-	
-	// create a unique id for this conservation asset
-	$id = "conservation-asset-" . preg_replace('/\./', '', ((string) microtime(TRUE)));
-	
-	// build a list of the layers
-	$layers = "";
-	$num_layers = 1;
-	foreach ($node->field_assets['und'] as $asset) {
-		// dpm($asset);
-		// load in the referenced asset
-		$layer_node = node_load($asset['nid']);
-		$data = array();
-		
-		// dpm($layer_node, 'layer node');
-		
-		// set layer number, parent, and id
-		$data['layer_num'] = $num_layers;
-		$data['parent_asset'] = $id;
-		$data['id'] = "{$id}-layer-{$num_layers}";
-		$num_layers++;
-				
-		// set normalized type according to asset type
-		switch ($layer_node->type) {
-			case "iip_asset":
-				$data['type'] = 'iip';
-				break;
-			case "image_asset":
-				$data['type'] = 'image';
-				break;
-		}
-		
-		// set the annotation flag
-		if ($asset['annotation_flag'] > 0) {
-			$data['annotation'] = "true";
-		}
-		else {
-			$data['annotation'] = "false";
-		}
-		
-		// set the title if provided, or use the layer node's title
-		if (!empty($asset['title'])) {
-			$data['title'] = $asset['title'];
-		}
-		else {
-			$data['title'] = $layer_node->title;
-		}
-		
-		// set the ptiff specific values
-		if ($data['type'] == 'iip') {
-			// some of the needed information is serialized
-			$attr = unserialize($layer_node->field_ptiff_attr['und'][0]['value']);
-			$data['ptiff_server']		= _osci_conservation_iip_host_url($layer_node->field_iip_server['und'][0]['value']);
-			$data['ptiff_path'] 		= $layer_node->field_ptiff_path['und'][0]['value'];
-			$data['width'] 				= $attr['width'];
-			$data['height'] 			= $attr['height'];
-			$data['zoom_levels'] 		= $attr['zoom_levels'];
-		}
-		
-		// set the image specific values
-		if ($data['type'] == 'image') {
-			$size = getimagesize(drupal_realpath($layer_node->field_image['und'][0]['uri']));
-			
-			$data['image_path'] 	= file_create_url($layer_node->field_image['und'][0]['uri']);
-			$data['width'] 			= $size[0];
-			$data['height'] 		= $size[1];
-		}
-		
-		// form our data attributes string
-		$data_string = "";
-		foreach ($data as $key => $value) {
-			$data_string .= 'data-'.$key.'="'.$value.'" ';
-		}
-		
-		// form our output for this asset
-		$layers .= '<li class="conservation-layer" '.$data_string.'></li>';
-	}
-	
-	$ret = 
-		 '<div class="conservation-asset" data-collapsed="true" id="'.$id.'">'
-		.	'<ul class="conservation-layers">'
-		.		$layers
-		.	'</ul>'
-		.'</div>';
-	
-	return $ret;
-	
-	/*  OLD FUNCTION FROM OSCI_IIP.MODULE
-	$ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
-	$ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zlm="'.$attr['zl'].'" ';
-	$ret .= 'data-ptiff="'.$field_ptiff.'" data-figure-id="'.$figure_id.'" ';
-	$ret .= 'data-svg="'.$field_svg.'" data-overlay="'.$field_overlay.'" ';
-	$ret .= 'data-collapsed="true" style="width: 100%; height: 100%; position:relative; background-color: rgba(0,0,0,.8);"></div>';
-	$ret .= "<style>.layer path { fill: none; stroke: #00FF00; stroke-width: 3; vector-effect: non-scaling-stroke;}</style>";
-	$ret .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
-	$ret .= '<style> .compass .zoom { position: absolute; top: 5px;} .compass .pan {position: absolute; top:40px}</style>';
-	return $ret;
-	*/
+    if (!is_numeric($nid))
+        return;
+    $node = node_load($nid);
+
+    // ensure the supporting css is loaded
+    drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css');
+
+    // create a unique id for this conservation asset
+    $id = "conservation-asset-" . preg_replace('/\./', '', ((string) microtime(TRUE)));
+
+    // build a list of the layers
+    $layers = "";
+    $num_layers = 1;
+    foreach ($node->field_assets['und'] as $asset) {
+        // dpm($asset);
+        // load in the referenced asset
+        $layer_node = node_load($asset['nid']);
+        $data = array();
+
+        // dpm($layer_node, 'layer node');
+        // set layer number, parent, and id
+        $data['layer_num'] = $num_layers;
+        $data['parent_asset'] = $id;
+        $data['id'] = "{$id}-layer-{$num_layers}";
+        $num_layers++;
+
+        // set normalized type according to asset type
+        switch ($layer_node->type) {
+            case "iip_asset":
+                $data['type'] = 'iip';
+                break;
+            case "image_asset":
+                $data['type'] = 'image';
+                break;
+        }
+
+        // set the annotation flag
+        if ($asset['annotation_flag'] > 0) {
+            $data['annotation'] = "true";
+        } else {
+            $data['annotation'] = "false";
+        }
+
+        // set the title if provided, or use the layer node's title
+        if (!empty($asset['title'])) {
+            $data['title'] = $asset['title'];
+        } else {
+            $data['title'] = $layer_node->title;
+        }
+
+        // set the ptiff specific values
+        if ($data['type'] == 'iip') {
+            // some of the needed information is serialized
+            $attr = unserialize($layer_node->field_ptiff_attr['und'][0]['value']);
+            $data['ptiff_server'] = _osci_conservation_iip_host_url($layer_node->field_iip_server['und'][0]['value']);
+            $data['ptiff_path'] = $layer_node->field_ptiff_path['und'][0]['value'];
+            $data['width'] = $attr['width'];
+            $data['height'] = $attr['height'];
+            $data['zoom_levels'] = $attr['zoom_levels'];
+        }
+
+        // set the image specific values
+        if ($data['type'] == 'image') {
+            $size = getimagesize(drupal_realpath($layer_node->field_image['und'][0]['uri']));
+
+            $data['image_path'] = file_create_url($layer_node->field_image['und'][0]['uri']);
+            $data['width'] = $size[0];
+            $data['height'] = $size[1];
+        }
+
+        // form our data attributes string
+        $data_string = "";
+        foreach ($data as $key => $value) {
+            $data_string .= 'data-' . $key . '="' . $value . '" ';
+        }
+
+        // form our output for this asset
+        $layers .= '<li class="conservation-layer" ' . $data_string . '></li>';
+    }
+
+    $ret =
+            '<div class="conservation-asset" data-collapsed="true" id="' . $id . '">'
+            . '<ul class="conservation-layers">'
+            . $layers
+            . '</ul>'
+            . '</div>';
+
+    return $ret;
+
+    /*  OLD FUNCTION FROM OSCI_IIP.MODULE
+      $ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
+      $ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zlm="'.$attr['zl'].'" ';
+      $ret .= 'data-ptiff="'.$field_ptiff.'" data-figure-id="'.$figure_id.'" ';
+      $ret .= 'data-svg="'.$field_svg.'" data-overlay="'.$field_overlay.'" ';
+      $ret .= 'data-collapsed="true" style="width: 100%; height: 100%; position:relative; background-color: rgba(0,0,0,.8);"></div>';
+      $ret .= "<style>.layer path { fill: none; stroke: #00FF00; stroke-width: 3; vector-effect: non-scaling-stroke;}</style>";
+      $ret .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
+      $ret .= '<style> .compass .zoom { position: absolute; top: 5px;} .compass .pan {position: absolute; top:40px}</style>';
+      return $ret;
+     */
 }

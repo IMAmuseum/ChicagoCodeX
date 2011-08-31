@@ -203,9 +203,8 @@ ConservationAsset.prototype.zoomToContainer = function() {
     , i;
 
     // calculate tw and th for each layer
-    for (var i=0; i < this.layers.length; i++) {
+    for (i=0; i < this.layers.length; i++) {
         var layerData = this.layers[i];
-        console.log(layerData.zoom_levels);
         var scale = this.getScale(layerData.zoom_levels - 0, zoomToCalculateAt);
         // TODO: figure out why this is a special case:
         if (layerData.type == 'iip') {
@@ -223,7 +222,7 @@ ConservationAsset.prototype.zoomToContainer = function() {
     // scan the layers and find the greatest extents
     var tiles_wide = 0;
     var tiles_high = 0;
-    for (var i=0; i < this.layers.length; i++) {
+    for (i=0; i < this.layers.length; i++) {
         if (this.layers[i].tiles_high > tiles_high) {
             tiles_high = this.layers[i].tiles_high;
         }
@@ -407,7 +406,44 @@ ConservationAsset.prototype.createUI = function() {
     // viewfinder control
     this.ui.viewfinder = $('<div class="ca-ui-viewfinder viewfinder-closed"></div>')
     .appendTo(this.container);
+    
+    // store references to the control elements, so they can be manipulated as a collection
+    this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder];
+    
+    // configure events to show/hide controls
+    this.container.bind('mousemove', function(event) {
+        var container = CA.container;
+        var date = new Date();
+        
+        container.attr('data-controls-time', date.getTime());
+        var controlState = container.attr('data-controls') || 'false';
+        if (controlState == 'false') {
+            container.attr('data-controls', 'true'); 
+            CA.toggleControls(); 
+        }
+        CA.ui.controlsTimeout = setTimeout(function() {
+            var date = new Date();
+            // check if the mouse is over a control, if it is, don't hide
+            if (container.attr('data-controls') == 'true' 
+                && (date.getTime() - container.attr('data-controls-time')) >= 1750) {
+                
+                if (container.attr('data-controls-lock') != 'true') {
+                    container.attr('data-controls', 'false');
+                    CA.toggleControls();
+                }
+            }
+        }, 2000);
+    });
+    // mousing over a control locks them "on"
+    $.each(this.ui.controls, function() {
+        this.bind('mouseenter', function() {
+            CA.container.attr('data-controls-lock', 'true');
+        });
+        this.bind('mouseleave', function() {
+            CA.container.attr('data-controls-lock', 'false');
 
+        });
+    });
 }
 
 
@@ -628,7 +664,6 @@ ConservationAsset.prototype.resetZoomRange = function(zoomMin) {
 			
 		
     }
-    console.log(zoomMin, zoomMax, 'resetZoomRange zoomMin/Max')
     this.map.zoomRange([zoomMin, zoomMax]);
 
     // set the range of the ui slider to match
@@ -638,9 +673,9 @@ ConservationAsset.prototype.resetZoomRange = function(zoomMin) {
 
 
 ConservationAsset.prototype.getZoomLevels = function(width, height) {
-    tileSize = this.map.tileSize().x;
+    var tileSize = this.map.tileSize().x;
     // there is always at least one zoom level
-    zoomLevels = 1;
+    var zoomLevels = 1;
     while (width > tileSize || height > tileSize) {
         zoomLevels++;
         width = width / 2;
@@ -656,7 +691,8 @@ ConservationAsset.prototype.getScale = function(zoom_levels, zoom) {
 
 
 ConservationAsset.prototype.realignLayers = function() {
-    var $ = this.$;
+    var $ = this.$
+    , i;
 	
     // grab the layers out of the dom
     var map = this.container.find('svg.map');
@@ -664,14 +700,14 @@ ConservationAsset.prototype.realignLayers = function() {
 	
     // sort the layers
     // find the first layer
-    for (var i=0; i < layers.length; i++) {
+    for (i=0; i < layers.length; i++) {
         if ($(layers[i]).attr('id') == this.settings.currentLayer1.id) {
             map.append(layers[i]);
             layers.splice(i,1);
         }
     }
     // find the second layer
-    for (var i=0; i < layers.length; i++) {
+    for (i=0; i < layers.length; i++) {
         if ($(layers[i]).attr('id') == this.settings.currentLayer2.id) {
             map.append(layers[i]);
             layers.splice(i, 1);
@@ -687,10 +723,17 @@ ConservationAsset.prototype.clearPopups = function() {
         this.ui.currentPopup.remove();
         this.ui.currentPopup = false;
     }
-}
+};
 
 
-
+ConservationAsset.prototype.toggleControls = function(duration) {
+    duration = duration || 400;
+    var $ = this.$;
+    
+    $.each(this.ui.controls, function() { 
+        this.fadeToggle(duration); 
+    });
+};
 
 
 window.addEventListener('load', function() {

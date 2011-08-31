@@ -5,10 +5,6 @@
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	font-size: 12px;
 	user-select: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-o-user-select: none;
 }
 
 .conservation-asset .ui-slider-handle {
@@ -24,6 +20,7 @@
 	opacity: 0.75;
 	margin: 0;
 	border-radius: 5px;
+        display: none;
 }
 
 .ca-ui-annotation {
@@ -101,6 +98,7 @@
 	opacity: 0.75;
 	width: 20px;
 	border-radius: 5px;
+        display: none;
 }
 
 .ca-ui-zoom-in {
@@ -138,6 +136,7 @@
 	position: absolute;
 	top: 15px;
 	right: 40px;
+        display: none;
 }
 
 .ca-ui-viewfinder.viewfinder-closed {
@@ -180,7 +179,7 @@
 .ca-ui-annotation-selector-list li span {
 	float: left;
 	padding-left: 5px;
-	text-align: middle;
+	text-align: center;
 }
 
 .ca-ui-annotation-selector-list hr {
@@ -193,7 +192,7 @@
 	height: 11px;
 	width: 11px;
 	border: 1px solid #fff;
-	text-align: middle;
+	text-align: center;
 }
 
 .ca-ui-annotation-selector-item-box.empty {
@@ -233,7 +232,7 @@
 .ca-ui-layer-selector-popup span {
 	float: left;
 	padding-left: 5px;
-	text-align: middle;
+	text-align: center;
 }
 
 .ca-ui-layer-slider-container {
@@ -257,4 +256,3 @@
 	background: #ccc;
 	margin-top: -1px;
 }
-
