@@ -12,7 +12,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 		var $ = jQuery;
 	}
 	
-	// We need Polymaps
+	// We need Polymaps 
 	if (org.polymaps) {
 		po = org.polymaps;
 		

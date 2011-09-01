@@ -90,9 +90,23 @@ var ConservationAsset = function(container) { // container should be a html elem
     // create control interface
     this.createUI();
 
-    // fit to the map to its container
+    // fit to the map to its container and set the zoom range
     this.zoomToContainer();
-	
+    
+    // if initial extents were given, honor them
+    if (this.container.attr('data-extent-sw-lon')) {
+        var extents =  [
+            {
+                lon: this.container.attr('data-extent-sw-lon'),
+                lat: this.container.attr('data-extent-sw-lat')
+            },
+            {
+                lon: this.container.attr('data-extent-ne-lon'),
+                lat: this.container.attr('data-extent-ne-lat')
+            }
+        ];
+        this.map.extent(extents);
+    }
 }
 
 
@@ -471,6 +485,14 @@ ConservationAsset.prototype.fullscreen = function() {
         el.data('id', el.data('id') + '-fullscreen');
         el.data('parent_asset', el.data('parent_asset') + '-fullscreen');
     });
+     
+    // the extents of the current map should be restored on full screen
+    // use the same data attribute used for insets
+    var extents = this.map.extent();
+    markup.attr('data-extent-sw-lon', extents[0].lon);
+    markup.attr('data-extent-sw-lat', extents[0].lat);
+    markup.attr('data-extent-ne-lon', extents[1].lon);
+    markup.attr('data-extent-ne-lat', extents[1].lat);
 
     wrapper.append(markup).appendTo(document.body);
     new ConservationAsset(markup);
@@ -487,7 +509,6 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
     var layerSelectorPopup = 'layerSelector'+layerControlNum+'Popup';
     var currentLayer = CA.settings['currentLayer'+layerControlNum];
     var otherLayer = CA.settings['currentLayer'+layerControlOther];
-	
 	
     // if visible already, remove and set state
     if (CA.ui.currentPopup && CA.ui.currentPopup == CA.ui[layerSelectorPopup]) {
@@ -520,8 +541,7 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
                 numLayers++;
                 // create the list item and bind it
                 var listItem = $('<li>'+baseLayer.title+'</li>')
-                .bind('click', 
-                {
+                .bind('click', {
                     layerControlNum : layerControlNum,
                     newLayer: baseLayer, 
                     currentLayer: currentLayer,
@@ -557,8 +577,7 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
                     // remove the popup
                     CA.settings['layerSelector'+layerControlNum+'Visible'] = false;
                     CA.clearPopups();
-                }
-                ).appendTo(layerList);
+                }).appendTo(layerList);
             }
         }
 
