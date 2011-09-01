@@ -121,13 +121,14 @@ ConservationAsset.prototype.createLayer = function(layerData) {
     }
 
     // determine type of layer
-    if (layerData.type == 'image'){
-        // calculate zoom layers and put it on the layer data
+    if (layerData.type == 'image') {
         layer = this.createLayerImage(layerData);
     }
     if (layerData.type == 'iip') {
-        // Load in our image and define the tile loader for it
         layer = this.createLayerIIP(layerData);
+    }
+    if (layerData.type == 'svg') {
+        layer = this.createLayerSVG(layerData);
     }
 
     // flag the layer as visible and 
@@ -198,6 +199,30 @@ ConservationAsset.prototype.createLayerImage = function(layerData) {
         tile.element.setAttribute("width", layerData.width / scale);
         tile.element.setAttribute("height", layerData.height / scale);
         tile.element.setAttributeNS("http://www.w3.org/1999/xlink", "href", layerData.image_path);
+        tile.ready = true;
+    }
+
+    var unload = function(tile) {
+        if (tile.request) tile.request.abort(true);
+    }
+
+    var layer = this.polymaps.layer(load, unload).tile(false);
+    return layer;
+}
+
+
+ConservationAsset.prototype.createLayerSVG = function(layerData) {
+    // alias polymaps, as our load and unload functions change "this" inside
+    var CA = this;
+    var load = function(tile) {
+        var scale = CA.getScale(layerData.zoom_levels, tile.zoom);
+        tile.element = CA.polymaps.svg('image');
+        tile.element.setAttribute("preserveAspectRatio", "none");
+        tile.element.setAttribute("x", 0);
+        tile.element.setAttribute("y", 0);
+        tile.element.setAttribute("width", layerData.width / scale);
+        tile.element.setAttribute("height", layerData.height / scale);
+        tile.element.setAttributeNS("http://www.w3.org/1999/xlink", "href", layerData.svg_path);
         tile.ready = true;
     }
 

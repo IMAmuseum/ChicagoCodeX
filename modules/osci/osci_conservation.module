@@ -97,7 +97,12 @@ function osci_conservation_form_alter(&$form, &$form_state, $form_id) {
         }
         // hide the field_data
         $form['field_data']['#attributes']['style'] = "display:none;";
-        dpm($form);
+    }
+    
+    if ($form_id == 'field_ui_field_edit_form') {
+        if ($form['#field']['field_name'] == 'field_assets') {
+            $form['field']['settings']['referenceable_types']['#disabled'] = FALSE;
+        }
     }
 }
 
@@ -232,6 +237,9 @@ function _osci_conservation_get_conservation_html($nid) {
             case "image_asset":
                 $data['type'] = 'image';
                 break;
+            case "svg_asset":
+                $data['type'] = 'svg';
+                break;
         }
 
         // set the annotation flag
@@ -261,11 +269,22 @@ function _osci_conservation_get_conservation_html($nid) {
 
         // set the image specific values
         if ($data['type'] == 'image') {
-            $size = getimagesize(drupal_realpath($layer_node->field_image['und'][0]['uri']));
-
             $data['image_path'] = file_create_url($layer_node->field_image['und'][0]['uri']);
+            $size = getimagesize(drupal_realpath($layer_node->field_image['und'][0]['uri']));
             $data['width'] = $size[0];
             $data['height'] = $size[1];
+        }
+        
+        // set the svg specific values
+        if ($data['type'] == 'svg') {
+            $data['svg_path'] = file_create_url($layer_node->field_svg['und'][0]['uri']);
+            $attr = _osci_conservation_get_svg_attr(drupal_realpath($layer_node->field_svg['und'][0]['uri']));
+            $data['width'] = $attr->width;
+            $data['height'] = $attr->height;
+            
+            // TODO: svg color selection would go here
+            
+            dpm($data, 'svg data');
         }
 
         // form our data attributes string
@@ -286,16 +305,17 @@ function _osci_conservation_get_conservation_html($nid) {
             . '</div>';
 
     return $ret;
+}
 
-    /*  OLD FUNCTION FROM OSCI_IIP.MODULE
-      $ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
-      $ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zlm="'.$attr['zl'].'" ';
-      $ret .= 'data-ptiff="'.$field_ptiff.'" data-figure-id="'.$figure_id.'" ';
-      $ret .= 'data-svg="'.$field_svg.'" data-overlay="'.$field_overlay.'" ';
-      $ret .= 'data-collapsed="true" style="width: 100%; height: 100%; position:relative; background-color: rgba(0,0,0,.8);"></div>';
-      $ret .= "<style>.layer path { fill: none; stroke: #00FF00; stroke-width: 3; vector-effect: non-scaling-stroke;}</style>";
-      $ret .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
-      $ret .= '<style> .compass .zoom { position: absolute; top: 5px;} .compass .pan {position: absolute; top:40px}</style>';
-      return $ret;
-     */
+
+function _osci_conservation_get_svg_attr($file_path) {
+    // get the width and height from the viewBox attribute of the svg
+    $xml = simplexml_load_file($file_path);
+    $viewBox = explode(' ', (string) $xml->attributes()->viewBox);
+    
+    // form the object to return
+    $attr = new stdClass;
+    $attr->width = $viewBox[2] - $viewBox[0];
+    $attr->height = $viewBox[3] - $viewBox[1];
+    return $attr;
 }
