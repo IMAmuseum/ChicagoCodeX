@@ -24,6 +24,7 @@ var ConservationAsset = function(container) { // container should be a html elem
     this.settings = this.container.data();
     this.settings.zoomStep = this.settings.zoomStep || 0.1;
     this.settings.annotationSelectorVisible = false;
+    
 
     // store a copy of the original html - will be used to
     // regenerate markup for fullscreen
@@ -318,6 +319,7 @@ ConservationAsset.prototype.createUI = function() {
 
     // init ui object
     this.ui = {};
+    this.ui.legendItemsCount = 0;
 
     // init bottom control bar
     this.ui.controlbar = $('<div class="ca-ui-controlbar"></div>');
@@ -377,6 +379,7 @@ ConservationAsset.prototype.createUI = function() {
                 layerControlNum: 1, 
                 conservationAsset: this
             }, this.toggleLayerSelector);
+            
             this.ui.layerSelector2
             .bind('click', {
                 layerControlNum: 2, 
@@ -669,14 +672,30 @@ ConservationAsset.prototype.toggleAnnotationSelector = function() {
                 var layerItemBox = $(this).find('.ca-ui-annotation-selector-item-box');
                 if (layerData.visible) {
                     layerItemBox.removeClass('empty').addClass('filled');
+                    // if this is an annotation, use the selected color, and show  layer in legend
+                    if (layerData.annotation && layerData.type == 'svg') {
+                        layerItemBox.css('background-color', '#' + layerData.color);
+                        CA.addLegendItem(layerData);
+                    }
                 }
                 else {
                     layerItemBox.removeClass('filled').addClass('empty');
+                    // if annotation, reset the elements background color to fall back to stylesheet
+                    // and remove layer from legend
+                    if (layerData.annotation && layerData.type == 'svg') {
+                        layerItemBox.css('background-color', '');
+                        CA.removeLegendItem(layerData);
+                    }
                 }
             });
             var layerItemBox = $('<div class="ca-ui-annotation-selector-item-box"></div>')
             .addClass(layerData.visible ? 'filled' : 'empty');
-			
+			// add the custom layer color if applicable
+            if (layerData.visible && layerData.annotation) {
+                layerItemBox.css('background-color', '#'+layerData.color);
+            }
+            
+            
             // add horizontal divider if there will be more than one entry after appending this one
             if (this.ui.annotationSelectorList.children().length > 0) {
                 this.ui.annotationSelectorList.append('<hr />');
@@ -792,11 +811,63 @@ ConservationAsset.prototype.toggleControls = function(duration) {
     var $ = this.$;
     
     $.each(this.ui.controls, function() {
-        // do this test, the popup could be false
-        if (typeof this.fadeToggle == 'function') {
+        // do this test, this.currentPopup could be false making "this" the window
+        if (this != window) {
             this.fadeToggle(duration); 
         }
     });
+   
+};
+
+
+ConservationAsset.prototype.addLegendItem = function(layerData) {
+    var $ = this.$;
+    // if the legend does not exist yet, create it here
+    if (!this.ui.legend) {
+        // legend control
+        this.ui.legend = $('<div class="ca-ui-legend"><ul class="legendList"></ul></div>')
+        .css('display', 'block')
+        .appendTo(this.container);
+        this.ui.controls.push(this.ui.legend);
+    }
+    
+    var legendList = this.ui.legend.find('ul');
+    
+    var legendItem = $('<li data-layer_num="'+layerData.layer_num+'">'+layerData.title+'</li>')
+    .appendTo(legendList);
+    
+    var itemBox = $('<div class="item-box"></div>')
+    .css('background-color', '#'+layerData.color)
+    .appendTo(legendItem);
+    
+    this.ui.legendItemsCount++;
+};
+
+
+ConservationAsset.prototype.removeLegendItem = function(layerData) {
+    var $ = this.$;
+    var CA = this;
+    
+    var legendItems = this.ui.legend.find('ul').children();
+    // find the item with the matching layer num and remove it
+    legendItems.each(function() {
+       if ($(this).attr('data-layer_num') == layerData.layer_num) {
+           $(this).remove();
+           CA.ui.legendItemsCount--;
+       } 
+    });
+    
+    // if the legend is empty, remove it
+    if (this.ui.legendItemsCount <= 0) {
+        this.ui.legend.remove();
+        delete this.ui.legend;
+        // remove from control array
+        for (var i=0; i < this.ui.controls.length; i++) {
+            if ($(this.ui.controls[i]).hasClass('ca-ui-legend')) {
+                this.ui.controls.splice(i, 1);
+            }
+        }
+    }
 };
 
 

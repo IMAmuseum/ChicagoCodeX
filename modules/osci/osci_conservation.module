@@ -4,17 +4,24 @@ function osci_conservation_menu() {
     $items = array();
 
     $items['conservation-demo'] = array(
-        'title' => t('Conservation Demo'),
-        'page callback' => 'osci_conservation_demo',
-        'access arguments' => array('access content'),
+        'title'             => t('Conservation Demo'),
+        'page callback'     => 'osci_conservation_demo',
+        'access arguments'  => array('access content'),
     );
 
     $items['admin/config/system/iip'] = array(
-        'title' => t('IIP Settings'),
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('osci_conservation_iip_admin_form'),
-        'access arguments' => array('administer site configuration'),
-        'file' => 'osci_conservation.admin.inc'
+        'title'             => t('IIP Settings'),
+        'page callback'     => 'drupal_get_form',
+        'page arguments'    => array('osci_conservation_iip_admin_form'),
+        'access arguments'  => array('administer site configuration'),
+        'file'              => 'osci_conservation.admin.inc'
+    );
+    
+    $items['conservation/is-svg-asset'] = array(
+        'title'             => t('SVG Asset Callback'),
+        'page callback'     => 'osci_conservation_is_svg_asset',
+        'access arguments'  => array('access content'),
+        'type'              => MENU_CALLBACK
     );
 
     return $items;
@@ -57,6 +64,10 @@ function osci_conservation_form_alter(&$form, &$form_state, $form_id) {
     }
 
     if ($form_id == 'conservation_asset_node_form') {
+        // add the color picker javascript
+        drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/jscolor/jscolor.js');
+        drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css');
+        
         // add the annotation flag checkbox
         foreach ($form['field_assets']['und'] as $key => $value) {
             if (is_numeric($key)) {
@@ -66,32 +77,97 @@ function osci_conservation_form_alter(&$form, &$form_state, $form_id) {
 
                 // ANNOTATION FLAG
                 // get default value
-                if (isset($form_state['node']->field_assets['und'][$key])) {
+                $default = '';
+                $annotationState = FALSE;
+                if (isset($form_state['node']->field_assets['und'][$key]['annotation_flag'])) {
                     $default = (bool) $form_state['node']->field_assets['und'][$key]['annotation_flag'];
-                } else {
-                    $default = false;
+                    // store for later for the color selector
+                    $annotationState = $default;
                 }
-                // expose the new field with the default
+                // expose the new field with the default value
                 $form['field_assets']['und'][$key]['annotation_flag'] = array(
-                    '#type' => 'checkbox',
-                    '#title' => 'Annotation Asset',
-                    '#default_value' => $default,
-                    '#weight' => 100
+                    '#type'             => 'checkbox',
+                    '#title'            => 'Annotation Asset',
+                    '#default_value'    => $default,
+                    '#weight'           => 100
                 );
 
                 // LAYER TITLE
                 // get default if set
-                if (isset($form_state['node']->field_assets['und'][$key])) {
+                $default = '';
+                if (isset($form_state['node']->field_assets['und'][$key]['title'])) {
                     $default = $form_state['node']->field_assets['und'][$key]['title'];
-                } else {
-                    $default = '';
                 }
-                // expose the new field with the default
+                // expose the new field with the default value
                 $form['field_assets']['und'][$key]['title'] = array(
-                    '#type' => 'textfield',
-                    '#title' => 'Layer Title',
-                    '#default_value' => $default,
-                    '#weight' => 99
+                    '#type'             => 'textfield',
+                    '#title'            => 'Layer Title',
+                    '#default_value'    => $default,
+                    '#weight'           => 99
+                );
+                
+                // COLOR SELECTION
+                // should be hidden and only exposed when an svg node is 
+                // selected and annotation flag is set
+                $default = '';
+                if (isset($form_state['node']->field_assets['und'][$key]['color'])) {
+                    $default = $form_state['node']->field_assets['und'][$key]['color'];
+                }
+                $form['field_assets']['und'][$key]['color'] = array(
+                    '#type'             => 'textfield',
+                    '#required'         => FALSE,
+                    '#weight'           => 101,
+                    '#default_value'    => $default,
+                    '#field_suffix'     => '&nbsp;<label class="option">Color</label>',
+                    '#attributes'       => array(
+                        'class' => array(
+                            'color {pickerClosable:true}',
+                            'ca-edit-color'
+                        ),
+                    ),
+                );
+                // if the annotation state from above is true, show the picker
+                if ($annotationState) {
+                    unset($form['field_assets']['und'][$key]['color']['#attributes']['disabled']);
+                }
+                              
+                // add a bit of markup/script to automate the color picker
+                global $base_url; 
+                $script = 
+<<<SCRIPT
+<script>
+    jQuery(function(jQuery) {
+        var $ = jQuery;
+        var togglePicker = function() {
+            var checkBox = $(this);
+            if($(this).attr("checked")) {
+                var inputText = $('#edit-field-assets-und-{$key}-nid').val();
+                var matches = inputText.match(/\[nid:(\d+)\]/);
+                if (matches[1]) {
+                    var nid = parseInt(matches[1]);
+                } else return;
+                // send a request to drupal and determine if this is svg or not
+                $.post('{$base_url}/conservation/is-svg-asset', {nid: nid}, function(data) {
+                    if (data.is_svg_asset) {
+                        $("#edit-field-assets-und-{$key}-color").parent().css("display", "block");
+                    }
+                    else {
+                        $("#edit-field-assets-und-{$key}-color").parent().css("display", "none");
+                    }
+                }, 'json');
+            }
+            else {
+                $("#edit-field-assets-und-{$key}-color").parent().css("display", "none");
+            }
+        };
+        $("#edit-field-assets-und-{$key}-annotation-flag").each(togglePicker);
+        $("#edit-field-assets-und-{$key}-annotation-flag").bind("click", togglePicker);
+    });
+</script>
+SCRIPT;
+                $form['field_assets']['und'][$key]['colorpicker'] = array(
+                    '#weight' => 102,
+                    '#markup' => $script,
                 );
             }
         }
@@ -109,12 +185,12 @@ function osci_conservation_form_alter(&$form, &$form_state, $form_id) {
 function osci_conservation_node_presave($node) {
     if ($node->type == 'conservation_asset') {
         // form the serialized field_data
-        $nids = array();
+        $data = array();
         foreach ($node->field_assets['und'] as $key => $value) {
-            $nids[] = $value;
+            $data[] = $value;
         }
-        $serialized_nids = serialize($nids);
-        $node->field_data['und'][0]['value'] = $serialized_nids;
+        $serialized_data = serialize($data);
+        $node->field_data['und'][0]['value'] = $serialized_data;
     }
 }
 
@@ -130,12 +206,32 @@ function osci_conservation_node_load($nodes, $types) {
                     if ($flag['nid'] == $asset['nid']) {
                         $node->field_assets['und'][$key]['annotation_flag'] = $flag['annotation_flag'];
                         $node->field_assets['und'][$key]['title'] = $flag['title'];
+                        $node->field_assets['und'][$key]['color'] = $flag['color'];
                     }
                 }
             }
         }
     }
 }
+
+
+/*
+ * utility callback that determines if nid provided is an svg asset or not
+ * returns true/false
+ */
+function osci_conservation_is_svg_asset() {
+    $nid = (int) $_POST['nid'];
+    $node = node_load($nid);
+    $response = new stdClass();
+    if ($node && $node->type == 'svg_asset') {
+        $response->is_svg_asset = TRUE;
+    }
+    else {
+        $response->is_svg_asset = FALSE;
+    }
+    print json_encode($response);
+}
+
 
 // called as a form verification callback
 // retrieves the full image from the iip server and saves it to the node as the static image
@@ -155,6 +251,7 @@ function _osci_conservation_get_ptiff_image($form, &$form_state) {
         form_set_error('field_ptiff_path', 'Could not retrieve an image thumbnail.  Please check the path and server');
     }
 }
+
 
 // called as a form verification callback
 // retrieves the image attributes from the iip server and saves it serialized in field_ptiff_attr
@@ -217,7 +314,6 @@ function _osci_conservation_get_conservation_html($nid) {
     $layers = "";
     $num_layers = 1;
     foreach ($node->field_assets['und'] as $asset) {
-        // dpm($asset);
         // load in the referenced asset
         $layer_node = node_load($asset['nid']);
         $data = array();
@@ -281,10 +377,7 @@ function _osci_conservation_get_conservation_html($nid) {
             $attr = _osci_conservation_get_svg_attr(drupal_realpath($layer_node->field_svg['und'][0]['uri']));
             $data['width'] = $attr->width;
             $data['height'] = $attr->height;
-            
-            // TODO: svg color selection would go here
-            
-            dpm($data, 'svg data');
+            $data['color'] = $asset['color'];
         }
 
         // form our data attributes string

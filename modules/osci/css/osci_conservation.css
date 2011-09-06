@@ -98,7 +98,7 @@
 	opacity: 0.75;
 	width: 20px;
 	border-radius: 5px;
-        display: none;
+    display: none;
 }
 
 .ca-ui-zoom-in {
@@ -136,7 +136,7 @@
 	position: absolute;
 	top: 15px;
 	right: 40px;
-        display: none;
+    display: none;
 }
 
 .ca-ui-viewfinder.viewfinder-closed {
@@ -144,6 +144,36 @@
 	height: 16px;
 	background: #000 url('../images/icon-viewfinder-big.png') center no-repeat;
 	opacity: 0.75;
+}
+
+.ca-ui-legend {
+	position: absolute;
+	top: 35px;
+	right: 40px;
+    background: #000;
+    opacity: 0.75;
+    color: #fff;
+    border-radius: 5px;
+    display: none;
+}
+
+.ca-ui-legend ul {
+    list-style: none;
+    margin: 0px !important;
+	padding: 7px 7px 7px 7px !important;  
+}
+
+.ca-ui-legend li {
+    padding: 5px 0px 5px 0px !important;
+}
+
+.ca-ui-legend .item-box {
+	float: left;
+	height: 6px;
+	width: 12px;
+	
+	margin-top: 2px;
+    margin-right: 5px;
 }
 
 .ca-ui-fullscreen-wrap {
@@ -255,4 +285,18 @@
 	height: 12px;
 	background: #ccc;
 	margin-top: -1px;
+}
+
+/* for ca node edit form */
+.ca-edit-color {
+    float:left;
+    margin-left: 10px;
+    height: 12px;
+    width: 40px;
+    font-size: 10px;
+    border: 1px solid #888;
+}
+
+div[class$="annotation-flag"] {
+    float:left;
 }
