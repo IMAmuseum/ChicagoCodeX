@@ -9,11 +9,13 @@
 			neLon: extents[1].lon,
 			neLat: extents[1].lat
 		});
+        return coords;
 	}
 	
 	
 	function figureOptionsPolymap(data, dest, options, figureId) {
 		// determine best size to open dialog, based on figure size
+        // console.log(data, 'figureOptionsPolymap data');
 		var iw = $(data.ptiffDiv).data('iw');
 		var ih = $(data.ptiffDiv).data('ih');
 		var mapW, mapH;
@@ -211,7 +213,8 @@
 	function getPreviewDiv(id, target) {
 		// retrieve options
 		var options = $.parseJSON($('.figure_options', $(target).parents(".fieldset-wrapper:first")).val());
-		
+		// console.log(options, 'options');
+        
 		// check for the preview url if it's present
 		var previewUrl = false;
 		if (options.previewUrl && options.previewUrl != "") {
@@ -247,7 +250,7 @@
 				}
 				
 				// the figure options button fires off a modal dependent on the type of figure
-				if (data.ptiff == true) {
+				if (true) { // if (data.ptiff && data.ptiff == true) {
 					// polymap - use figureOptionsPolymap()
 					button.click(function() {
 						var figureId = dest.siblings('.figure_identifier:first').find('span')
@@ -381,7 +384,7 @@
         
         /**************************************************
          * Figure Preview
-         */
+         *
         $('.figure_reference_field').live({
         	'keyup': function(event) {
 	        	// wait a second to see if anything else was pressed
@@ -402,5 +405,6 @@
 	        	}, 500);
 	        }
         });
+        */
     });
 })(jQuery);

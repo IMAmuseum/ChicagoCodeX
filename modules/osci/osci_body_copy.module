@@ -3,8 +3,6 @@
 function osci_body_copy_init() {
 	$baseUrl = url("", array('absolute' => TRUE));
 	drupal_add_js(array('baseUrl' => $baseUrl), 'setting');
-    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_polymaps.js', 'file');
-    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip.js', 'file');
 	drupal_add_library('system', 'ui.dialog');
 }
 
@@ -878,6 +876,9 @@ function osci_body_copy_figure_preview($nid) {
 					.'</div>';
 			}
 			break;
+        case "conservation_asset":
+            $ret->div = _osci_conservation_get_conservation_html($node->nid);
+            break;
 	}
 	return drupal_json_output($ret);
 }
@@ -923,8 +924,7 @@ function osci_body_copy_figure_thumb_save() {
 function osci_body_copy_figure_reference($args) {
     $figs = db_select('node', 'n')
         ->fields('n', array('title', 'nid'))
-//        ->condition('type', 'image')
-        ->condition('type', array('image', 'html_figure'), 'IN')
+        ->condition('type', array('html_figure', 'conservation_asset'), 'IN')
         ->condition('status', 1)
         ->condition('title', '%'.db_like($args).'%', 'LIKE')
         ->orderBy('created', DESC)

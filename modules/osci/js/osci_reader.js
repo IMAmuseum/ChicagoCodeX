@@ -238,6 +238,13 @@
                     figure.prepend(content);
                     iipmap(content.find(".iipmap"));
                 },
+                conservation_asset: function(figure, content) {
+                    // console.log(figure, content);
+                    figure.prepend(content);
+                    content.find('.conservation-asset').each(function() {
+                       new ConservationAsset(this); 
+                    });
+                },
                 html_figure : function(figure, content) {
                     var contentHeight = 0, aspect = 0, contentWidth = 0, translate;
                     figure.prepend(content);

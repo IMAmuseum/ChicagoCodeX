@@ -184,8 +184,12 @@ SCRIPT;
 
 function osci_conservation_node_presave($node) {
     if ($node->type == 'conservation_asset') {
+        // get the aspect ratio for this conservation asset
+        $node->field_aspect_ratio['und'][0]['value'] = _osci_conservation_get_conservation_aspect($node);
+        
         // form the serialized field_data
         $data = array();
+        // grab the flags from each asset
         foreach ($node->field_assets['und'] as $key => $value) {
             $data[] = $value;
         }
@@ -210,6 +214,12 @@ function osci_conservation_node_load($nodes, $types) {
                     }
                 }
             }
+        }
+        if ($node->type == 'svg_asset') {
+            // get the attributes and attach to the node
+            $attr = _osci_conservation_get_svg_attr(drupal_realpath($node->field_svg['und'][0]['uri']));
+            $node->field_svg['und'][0]['width'] = $attr->width;
+            $node->field_svg['und'][0]['height'] = $attr->height;            
         }
     }
 }
@@ -374,9 +384,8 @@ function _osci_conservation_get_conservation_html($nid) {
         // set the svg specific values
         if ($data['type'] == 'svg') {
             $data['svg_path'] = file_create_url($layer_node->field_svg['und'][0]['uri']);
-            $attr = _osci_conservation_get_svg_attr(drupal_realpath($layer_node->field_svg['und'][0]['uri']));
-            $data['width'] = $attr->width;
-            $data['height'] = $attr->height;
+            $data['width'] = $layer_node->field_svg['und'][0]['width'];
+            $data['height'] = $layer_node->field_svg['und'][0]['height'];
             $data['color'] = $asset['color'];
         }
 
@@ -411,4 +420,51 @@ function _osci_conservation_get_svg_attr($file_path) {
     $attr->width = $viewBox[2] - $viewBox[0];
     $attr->height = $viewBox[3] - $viewBox[1];
     return $attr;
+}
+
+
+function _osci_conservation_get_conservation_aspect($node) {
+    if (!$node) return 1;
+    
+    // get the max bounds in pixels of all the layers in this asset
+    $width = $height = 0;
+    
+    foreach ($node->field_assets['und'] as $asset_pointer) {
+        $asset = node_load($asset_pointer['nid']);
+        
+        if ($asset->type == "image_asset") {
+            // get the dimensions of the image
+            $size = getimagesize(drupal_realpath($asset->field_image['und'][0]['uri']));
+            if ($size) {
+                if ($size[0] > $width) {
+                    $width = $size[0];
+                }
+                if ($size[1] > $height) {
+                    $height = $size[1];
+                }
+            }
+        }
+        
+        if ($asset->type == "iip_asset") {
+            $data = unserialize($asset->field_ptiff_attr['und'][0]['value']);
+            if ($data['width'] > $width) {
+                $width = $data['width'];
+            }
+            if ($data['height'] > $height) {
+                $height = $data['height'];
+            }
+        }
+        
+        if ($asset->type == "svg_asset") {
+            if ($asset->field_svg['und'][0]['width'] > $width) {
+                $width = $asset->field_svg['und'][0]['width'];
+            }
+            if ($asset->field_svg['und'][0]['height'] > $height) {
+                $height = $asset->field_svg['und'][0]['height'];
+            }
+        }
+    }
+
+    if ($width > 0 && $height > 0) return ($width / $height);
+    else return 1;
 }

@@ -22,7 +22,7 @@ function iipmap (div) { // div should be a jQuery object of our map div element
 			svgLayer.tile(false);
 			function load(tile) {
 				var scale = Math.pow(2, (zoom_max - 1) - tile.zoom);
-				console.log(zoom_max, image_w, image_h, tile.zoom, scale);
+				// console.log(zoom_max, image_w, image_h, tile.zoom, scale);
 
 				tile.element = po.svg('image');
 				tile.element.setAttribute("preserveAspectRatio", "none");

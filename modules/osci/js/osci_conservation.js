@@ -452,6 +452,7 @@ ConservationAsset.prototype.createUI = function() {
     // store references to the control elements, so they can be manipulated as a collection
     this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder, this.ui.currentPopup];
     
+    /*
     // configure events to show/hide controls
     this.container.bind('mousemove', function(event) {
         var container = CA.container;
@@ -489,6 +490,8 @@ ConservationAsset.prototype.createUI = function() {
             });
         }
     });
+    */
+    this.toggleControls();
 }
 
 

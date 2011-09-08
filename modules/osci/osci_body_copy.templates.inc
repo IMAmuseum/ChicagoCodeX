@@ -107,12 +107,18 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         case 'html_figure':
             $vars['content'] = check_markup($node->field_osci_figure_content['und'][0]['value'], $node->field_osci_figure_content['und'][0]['format']);
             break;
+        case 'conservation_asset':
+            $data['aspect'] = $node->field_aspect_ratio['und'][0]['value'];
+            $vars['content'] = _osci_conservation_get_conservation_html($node->nid);
+            break;
     }
     
     $vars['data'] = '';
+    print_r($data);
     foreach($data as $k => $v) {
         $vars['data'] .= 'data-'.$k.'="'.$v.'" ';
     }
+    print_r($vars['data']);
 }
 
 function osci_body_copy_preprocess_body_copy_figure_print(&$vars) {
