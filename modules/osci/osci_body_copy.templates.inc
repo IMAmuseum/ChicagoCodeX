@@ -114,11 +114,10 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     }
     
     $vars['data'] = '';
-    print_r($data);
     foreach($data as $k => $v) {
         $vars['data'] .= 'data-'.$k.'="'.$v.'" ';
     }
-    print_r($vars['data']);
+    
 }
 
 function osci_body_copy_preprocess_body_copy_figure_print(&$vars) {

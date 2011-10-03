@@ -739,8 +739,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             '#weight'       => ($id == 'figure_blank') ? -1 : $id,
             '#tree'         => true,
             'figure_preview' => array(
-                '#markup'	=> '<figure class="figure_reference_preview" '
-                	.'style="width:200px;float:right;" data-options='.htmlspecialchars($figure['figure_options']).'>&nbsp;</figure>',
+                '#markup'	=> '<figure class="figure_reference_preview">&nbsp;</figure>',
             ),
             'figure_id'     => array(
                 '#markup'   => '<div class="figure_identifier">' . $id . ' <span>[figure:' . $figId . ']</span> </div>'
@@ -877,7 +876,16 @@ function osci_body_copy_figure_preview($nid) {
 			}
 			break;
         case "conservation_asset":
-            $ret->div = _osci_conservation_get_conservation_html($node->nid);
+        	if (count($node->field_image) > 0) {
+        		// there is a representative image, return it in a div
+        		$ret->div = '<img class="preview_image" src="'.image_style_url('osci_thumbnail_100w', $node->field_image['und'][0]['uri']).'" />'
+        			. '<div style="display:none;" data-aspect="'._osci_conservation_get_conservation_aspect($node).'">'
+        			._osci_conservation_get_conservation_html($nid)
+        			.'</div>';
+        	}
+        	else {
+            	$ret->div = '<div class="preview_image">No Preview Available</div>';
+        	}
             break;
 	}
 	return drupal_json_output($ret);
@@ -916,7 +924,7 @@ function osci_body_copy_figure_thumb_save() {
 	file_put_contents($dir.$filename, $fileData);
 	// form the return
 	$ret = new stdClass;
-	$ret->url = "sites/default/files/previews/".$filename;
+	$ret->url = image_style_url('osci_thumbnail_100w', 'public://previews/' . $filename);
 	$ret->path = $dir.$filename;
 	print json_encode($ret);
 }

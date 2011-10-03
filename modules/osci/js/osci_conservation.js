@@ -1,3 +1,43 @@
+var CACollection = {
+	collection: [],
+	
+	add: function(asset) {
+		var i, found = false;
+		
+		// check that this asset isn't already in the collection
+		for (i=0; i < this.collection.length; i++) {
+			if (this.collection[i].id == asset.id) {
+				found = true;
+			}
+		}
+		if (found == false)  {
+			this.collection.push(asset);
+		}
+	},
+	
+	remove: function(asset) {
+		var i;
+		
+		// find this asset in the collection by id
+		for (i=0; i < this.collection.length; i++) {
+			if (this.collection[i].id == asset.id) {
+				this.collection.splice(i, 1);
+			}
+		}
+	},
+	
+	removeById: function(id) {
+		var i;
+		
+		// find this asset in the collection by id
+		for (i=0; i < this.collection.length; i++) {
+			if (this.collection[i].id == id) {
+				this.collection.splice(i, 1);
+			}
+		}
+	}
+};
+
 var ConservationAsset = function(container) { // container should be a html element
     var i, layerData;
     
@@ -18,13 +58,28 @@ var ConservationAsset = function(container) { // container should be a html elem
     if (this.container.length < 1) {
         return false;
     }
-
+    
+    // push this new asset into the registry
+    CACollection.add(this);
+    
     // load the conservation asset id and configuration
     this.id = this.container.attr('id');
     this.settings = this.container.data();
     this.settings.zoomStep = this.settings.zoomStep || 0.1;
     this.settings.annotationSelectorVisible = false;
     
+    // detect and incorporate figure options
+    var figure = this.container.parents('figure:first');
+    if (figure.length > 0) {
+    	this.figureOptions = $.parseJSON(figure.attr('data-options')) ;
+    }
+    // provide defaults if options not set
+    if (!this.figureOptions) {
+    	this.figureOptions = {
+    		interaction: true,
+    		annotation: true
+    	};
+    }
 
     // store a copy of the original html - will be used to
     // regenerate markup for fullscreen
@@ -49,7 +104,7 @@ var ConservationAsset = function(container) { // container should be a html elem
         if (!layer1 && layer2) return -1;
         return 0;
     });
-    
+
     // we must order their layer_num properties
     // also create separate arrays of base and annotation layers for convenience
     this.baseLayers = [];
@@ -108,6 +163,13 @@ var ConservationAsset = function(container) { // container should be a html elem
         ];
         this.map.extent(extents);
     }
+    
+    // event responders
+    this.container.bind('get_map', function(e) {
+    	if ($.isFunction(e.callback)){
+			e.callback(this.map);
+		}
+    });
 }
 
 
@@ -452,7 +514,8 @@ ConservationAsset.prototype.createUI = function() {
     // store references to the control elements, so they can be manipulated as a collection
     this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder, this.ui.currentPopup];
     
-    /*
+    /*  DISABLED FOR DEBUGGING - CODE BELOW WORKS
+     * 
     // configure events to show/hide controls
     this.container.bind('mousemove', function(event) {
         var container = CA.container;
@@ -874,12 +937,11 @@ ConservationAsset.prototype.removeLegendItem = function(layerData) {
 };
 
 
+
+// auto load any conservation assets 
 window.addEventListener('load', function() {
-    window.conservationAssets = [];
-    var assets = jQuery('.conservation-asset')
+    var assets = jQuery('.conservation-asset').not('.noload');
     for(var i=0; i < assets.length; i++) {
-        var conservationAsset = new ConservationAsset(assets[i]);
-        window.conservationAssets.push(conservationAsset);
+        new ConservationAsset(assets[i]);
     }
-// console.log(window.conservationAssets, 'conservation assets');
 }, false);

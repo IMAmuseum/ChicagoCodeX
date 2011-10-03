@@ -1,5 +1,16 @@
 <?php
 
+function osci_conservation_init() {
+	// jQuery tabs
+	drupal_add_library('system', 'ui.slider');
+	// Polymaps
+	drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/polymaps.js');
+	// Conservation Assets
+	drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/osci_conservation.js');
+	drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css');
+}
+
+
 function osci_conservation_menu() {
     $items = array();
 
@@ -28,18 +39,15 @@ function osci_conservation_menu() {
 }
 
 function osci_conservation_demo() {
-    drupal_add_library('system', 'ui.slider');
-    drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/polymaps.js');
-    drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/osci_conservation.js');
     $nodes = variable_get('osci_conservation_demo_nodes');
 
     foreach ($nodes as $nid) {
         $node = node_load($nid);
         // build conservation asset div
         $ret .= "<h2>$node->title</h2>";
-        $ret .= '<div style="width:640px; height:480px;">';
+        $ret .= '<figure style="width:640px; height:480px;">';
         $ret .= _osci_conservation_get_conservation_html($node->nid);
-        $ret .= '</div>';
+        $ret .= '</figure>';
     }
 
     return $ret;
@@ -313,10 +321,7 @@ function _osci_conservation_get_conservation_html($nid) {
     if (!is_numeric($nid))
         return;
     $node = node_load($nid);
-
-    // ensure the supporting css is loaded
-    drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css');
-
+    
     // create a unique id for this conservation asset
     $id = "conservation-asset-" . preg_replace('/\./', '', ((string) microtime(TRUE)));
 
@@ -399,9 +404,8 @@ function _osci_conservation_get_conservation_html($nid) {
         $layers .= '<li class="conservation-layer" ' . $data_string . '></li>';
     }
 
-    $ret =
-            '<div class="conservation-asset" data-collapsed="true" id="' . $id . '">'
-            . '<ul class="conservation-layers">'
+    $ret =    '<div class="conservation-asset" data-collapsed="true" id="' . $id . '">'
+            . '<ul class="conservation-layers" style="display:none;">'
             . $layers
             . '</ul>'
             . '</div>';
@@ -411,14 +415,18 @@ function _osci_conservation_get_conservation_html($nid) {
 
 
 function _osci_conservation_get_svg_attr($file_path) {
+	$attr = new stdClass;
     // get the width and height from the viewBox attribute of the svg
     $xml = simplexml_load_file($file_path);
-    $viewBox = explode(' ', (string) $xml->attributes()->viewBox);
-    
-    // form the object to return
-    $attr = new stdClass;
-    $attr->width = $viewBox[2] - $viewBox[0];
-    $attr->height = $viewBox[3] - $viewBox[1];
+    if (is_object($xml)) {
+	    $viewBox = explode(' ', (string) $xml->attributes()->viewBox);
+	    $attr->width = $viewBox[2] - $viewBox[0];
+	    $attr->height = $viewBox[3] - $viewBox[1];
+    }
+    else {
+    	$attr->width = 0;
+    	$attr->height = 0;
+    }
     return $attr;
 }
 
