@@ -108,7 +108,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
             $vars['content'] = check_markup($node->field_osci_figure_content['und'][0]['value'], $node->field_osci_figure_content['und'][0]['format']);
             break;
         case 'conservation_asset':
-            $data['aspect'] = $node->field_aspect_ratio['und'][0]['value'];
+            $data['aspect'] = _osci_conservation_get_conservation_aspect($node);
             $vars['content'] = _osci_conservation_get_conservation_html($node->nid);
             break;
     }
