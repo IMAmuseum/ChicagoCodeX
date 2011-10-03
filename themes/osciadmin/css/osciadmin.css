@@ -17,8 +17,15 @@
 }
 
 .figure_reference_preview {
-	margin:0;padding:0;
-	float:right;
-	width:200px;
-	margin-top:10px;	
+	float: right;
+	margin: 8x 8px 8px 8px;
+}
+
+fieldset.figure_options {
+	padding: 8px;
+}
+
+fieldset.figure_options input[type="checkbox"] {
+    float: left;
+    margin: 5px 5px 5px 0px;
 }
