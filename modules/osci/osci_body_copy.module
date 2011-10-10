@@ -888,7 +888,10 @@ function osci_body_copy_figure_preview($nid) {
         			.'</div>';
         	}
         	else {
-            	$ret->div = '<div class="preview_image">No Preview Available</div>';
+            	$ret->div = '<div class="preview_image">No Preview Available</div>'
+            		. '<div style="display:none;" data-aspect="'._osci_conservation_get_conservation_aspect($node).'">'
+        			._osci_conservation_get_conservation_html($nid)
+        			.'</div>';
         	}
             break;
 	}
