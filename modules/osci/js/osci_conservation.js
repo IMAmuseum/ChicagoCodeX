@@ -642,7 +642,7 @@ ConservationAsset.prototype.createUI = function() {
     
     /*  DISABLED FOR DEBUGGING - CODE BELOW WORKS
      *
-     */
+     
     // configure events to show/hide controls
     this.container.bind('mousemove', function(event) {
         var container = CA.container;
@@ -680,7 +680,7 @@ ConservationAsset.prototype.createUI = function() {
             });
         }
     });
-    
+    */
     this.toggleControls();
 }
 
