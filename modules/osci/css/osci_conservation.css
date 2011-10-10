@@ -189,6 +189,10 @@
 	z-index: 9999;
 }
 
+#osci_viewer_wrapper .ca-ui-fullscreen-wrap figure, .ca-ui-fullscreen-wrap figure {
+	margin: 0px;
+}
+
 #osci_viewer_wrapper .ca-ui-annotation-selector, .ca-ui-annotation-selector {
 	position: absolute;
 	background: #000;
@@ -303,4 +307,18 @@
 
 div[class$="annotation-flag"] {
     float:left;
+}
+
+.thumbContainer {
+	
+}
+
+.thumbContainer img {
+    padding: 5px 0px;
+}
+
+img.image_opaque { 
+	filter: alpha(opacity=50) !important;
+    -moz-opacity: 0.50 !important; 
+    opacity: 0.50 !important;
 }

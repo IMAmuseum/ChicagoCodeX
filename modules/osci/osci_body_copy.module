@@ -875,10 +875,14 @@ function osci_body_copy_figure_preview($nid) {
 					.'</div>';
 			}
 			break;
+		case 'iip_asset':
+		case 'svg_asset':
+		case 'image_asset':
+			$node->field_assets['und'][0]['nid'] = $node->nid;
         case "conservation_asset":
         	if (count($node->field_image) > 0) {
         		// there is a representative image, return it in a div
-        		$ret->div = '<img class="preview_image" src="'.image_style_url('osci_thumbnail_100w', $node->field_image['und'][0]['uri']).'" />'
+        		$ret->div = '<img class="preview_image" src="'.image_style_url('osci_thumbnail_165w', $node->field_image['und'][0]['uri']).'" />'
         			. '<div style="display:none;" data-aspect="'._osci_conservation_get_conservation_aspect($node).'">'
         			._osci_conservation_get_conservation_html($nid)
         			.'</div>';
@@ -924,7 +928,7 @@ function osci_body_copy_figure_thumb_save() {
 	file_put_contents($dir.$filename, $fileData);
 	// form the return
 	$ret = new stdClass;
-	$ret->url = image_style_url('osci_thumbnail_100w', 'public://previews/' . $filename);
+	$ret->url = image_style_url('osci_thumbnail_165w', 'public://previews/' . $filename);
 	$ret->path = $dir.$filename;
 	print json_encode($ret);
 }
@@ -932,7 +936,7 @@ function osci_body_copy_figure_thumb_save() {
 function osci_body_copy_figure_reference($args) {
     $figs = db_select('node', 'n')
         ->fields('n', array('title', 'nid'))
-        ->condition('type', array('html_figure', 'conservation_asset'), 'IN')
+        ->condition('type', array('html_figure', 'conservation_asset', 'image_asset', 'iip_asset', 'svg_asset'), 'IN')
         ->condition('status', 1)
         ->condition('title', '%'.db_like($args).'%', 'LIKE')
         ->orderBy('created', DESC)

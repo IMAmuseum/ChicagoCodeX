@@ -26,7 +26,8 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $vars['caption'] = (empty($figure['caption'])) ? '' : trim(check_markup($figure['caption'], $figure['format']));
     $title = isset($figure['number_template']) ? $figure['number_template'] : '';
     $title = trim(strip_tags($title . $vars['caption']));
-    switch ($node->type) {
+    $nodeType = $node->type;
+    switch ($nodeType) {
     	
         case 'image':
         	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]) || $vars['osci_static_image'])
@@ -91,25 +92,63 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         	} else {
         	    $thumbnailPath = $node->field_image['und'][0]['uri'];
         	}
-        	    
-    		$vars['thumbnail'] = theme_image_style(array(
-        	    'style_name' => "osci_thumbnail_165w",
-    			'path' => $thumbnailPath,
-        	    'alt' => $node->title,
-    			'attributes' => array(
-        	        'data-figure_id' => $figure['id'],
-        	        'data-figure_number' => $figure['figCount'],
-    		        'data-occurences' => $figure['figOccurences']
-        	    )
-			));      	
+
+        	// if the figure has a its own thumbnail, use that
+        	if (isset($options->previewUrl)) {
+        		$vars['thumbnail'] = $options->previewUrl;
+        	}
+        	else {
+        		$vars['thumbnail'] = theme_image_style(array(
+        			'style_name' => "osci_thumbnail_165w",
+        			'path' => $thumbnailPath,
+        			'alt' => $node->title,
+        			'attributes' => array(
+        				'data-figure_id' => $figure['id'],
+        			    'data-figure_number' => $figure['figCount'],
+        			    'data-occurences' => $figure['figOccurences']
+        			)
+        		));
+        	}
+	    		    	
         	
     		break;
+        
         case 'html_figure':
             $vars['content'] = check_markup($node->field_osci_figure_content['und'][0]['value'], $node->field_osci_figure_content['und'][0]['format']);
             break;
+        
+        case 'iip_asset':
+        case 'svg_asset':
+        case 'image_asset':
+        	$node->field_assets['und'][0]['nid'] = $node->nid;
         case 'conservation_asset':
             $data['aspect'] = _osci_conservation_get_conservation_aspect($node);
             $vars['content'] = _osci_conservation_get_conservation_html($node->nid);
+            
+            // if the figure has a its own thumbnail, use that
+            if (isset($options->previewUrl)) {
+            	$vars['thumbnail'] = theme_image(array(
+            		'path'		=> $options->previewUrl,
+            		'alt'		=> $node->title,
+            		'attributes' => array(
+            	    	'data-figure_id' => $figure['id'],
+            	        'data-figure_number' => $figure['figCount'],
+            	        'data-occurences' => $figure['figOccurences']
+            	    )
+            	));
+            }
+            else {
+            	$vars['thumbnail'] = theme_image_style(array(
+                    			'style_name' => "osci_thumbnail_165w",
+                    			'path' => $thumbnailPath,
+                    			'alt' => $node->title,
+                    			'attributes' => array(
+                    				'data-figure_id' => $figure['id'],
+                    			    'data-figure_number' => $figure['figCount'],
+                    			    'data-occurences' => $figure['figOccurences']
+            	)
+            	));
+            }
             break;
     }
     

@@ -336,6 +336,7 @@ function _osci_conservation_get_conservation_html($nid) {
         // dpm($layer_node, 'layer node');
         // set layer number, parent, and id
         $data['layer_num'] = $num_layers;
+        $data['layer_id'] = $layer_node->nid;
         $data['parent_asset'] = $id;
         $data['id'] = "{$id}-layer-{$num_layers}";
         $num_layers++;

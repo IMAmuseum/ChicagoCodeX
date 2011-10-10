@@ -1,45 +1,53 @@
-var CACollection = {
-	collection: [],
+var CACollection = function() {
+	var collection = [];
 	
-	add: function(asset) {
+	this.add = function(asset) {
 		var i, found = false;
 		
 		// check that this asset isn't already in the collection
-		for (i=0; i < this.collection.length; i++) {
-			if (this.collection[i].id == asset.id) {
-				found = true;
+		for (i=0; i < collection.length; i++) {
+			if (collection[i].id == asset.id) {
+				return false;
 			}
 		}
-		if (found == false)  {
-			this.collection.push(asset);
-		}
-	},
+		collection.push(asset);
+		return true;
+	}
 	
-	remove: function(asset) {
+	this.remove = function(asset) {
 		var i;
+		// allow an asset or a string id to be passed in
+		if (typeof asset == "string") {
+			asset = { id: asset };
+		}
 		
 		// find this asset in the collection by id
-		for (i=0; i < this.collection.length; i++) {
-			if (this.collection[i].id == asset.id) {
-				this.collection.splice(i, 1);
-			}
-		}
-	},
-	
-	removeById: function(id) {
-		var i;
-		
-		// find this asset in the collection by id
-		for (i=0; i < this.collection.length; i++) {
-			if (this.collection[i].id == id) {
-				this.collection.splice(i, 1);
+		for (i=0; i < collection.length; i++) {
+			if (collection[i].id == asset.id) {
+				collection.splice(i, 1);
 			}
 		}
 	}
+	
+	this.find = function(id) {
+		var i;
+		for (i=0; i < collection.length; i++) {
+			if (collection[i].id == id) {
+				return collection[i];
+			}
+		}
+		return false;
+	}
+	
+	this.list = function() {
+		return collection;
+	}
+
 };
+	
 
 var ConservationAsset = function(container) { // container should be a html element
-    var i, layerData;
+    var i, j, layerData;
     
     // check prereqs
     if (jQuery != undefined) { 
@@ -59,8 +67,10 @@ var ConservationAsset = function(container) { // container should be a html elem
         return false;
     }
     
-    // push this new asset into the registry
-    CACollection.add(this);
+    // push this new asset into the registry, only render if not already present
+    if (!window.caCollection.add(this)) {
+    	return;
+    };
     
     // load the conservation asset id and configuration
     this.id = this.container.attr('id');
@@ -70,8 +80,9 @@ var ConservationAsset = function(container) { // container should be a html elem
     
     // detect and incorporate figure options
     var figure = this.container.parents('figure:first');
-    if (figure.length > 0) {
-    	this.figureOptions = $.parseJSON(figure.attr('data-options')) ;
+    var optString = figure.attr('data-options');
+    if (figure.length > 0 && optString) {
+    	this.figureOptions = JSON.parse(optString);
     }
     // provide defaults if options not set
     if (!this.figureOptions) {
@@ -135,41 +146,66 @@ var ConservationAsset = function(container) { // container should be a html elem
             layerData.zoom_levels = this.getZoomLevels(layerData.width, layerData.height);
         }
     }
-
-    // create first layer, second layer, and make second transparent
-    this.createLayer(this.baseLayers[0]);
-    if (this.baseLayers[1]) {
-        this.createLayer(this.baseLayers[1]);
-        $('#' + this.baseLayers[1].id).css('opacity', 0);
+    // create the first two layers, using preset data if available
+    var baseLayerPreset = this.figureOptions.baseLayerPreset ? this.figureOptions.baseLayerPreset : [];
+    if (baseLayerPreset.length > 0) {
+    	this.createLayer(this.getLayerById(baseLayerPreset[0]));
+    	if (baseLayerPreset.length > 1) {
+    		var secondLayer = this.getLayerById(baseLayerPreset[1]);
+    		this.createLayer(secondLayer);
+    		$('#' + secondLayer.id).css('opacity', 0);
+    	}
     }
-
+    else {
+    	// create first layer, second layer, and make second transparent
+        this.createLayer(this.baseLayers[0]);
+	    if (this.baseLayers[1]) {
+	        this.createLayer(this.baseLayers[1]);
+	        $('#' + this.baseLayers[1].id).css('opacity', 0);
+	    }
+    }
+    
     // create control interface
     this.createUI();
+    
+    // if any annotation presets are present, display those layers
+    this.showAnnotationPresets();
 
     // fit to the map to its container and set the zoom range
     this.zoomToContainer();
     
-    // if initial extents were given, honor them
-    if (this.container.attr('data-extent-sw-lon')) {
-        var extents =  [
+    // if fullscreen extents are present, this CA needs to be positioned
+    // as its parent was
+    if (this.figureOptions.fullscreenExtents) {
+    	var extents = [
+    		{
+    			lon: this.figureOptions.fullscreenExtents.swLon,
+    	        lat: this.figureOptions.fullscreenExtents.swLat
+    	    },
+    	    {
+    	    	lon: this.figureOptions.fullscreenExtents.neLon,
+    	        lat: this.figureOptions.fullscreenExtents.neLat
+    	    }
+    	];
+    	this.setExtents(extents);
+    }
+    // else use the starting postion from the figure options markup
+    // - if initial extents were given, honor them
+    else if (this.figureOptions.swLat) {
+    	var extents =  [
             {
-                lon: this.container.attr('data-extent-sw-lon'),
-                lat: this.container.attr('data-extent-sw-lat')
+                lon: this.figureOptions.swLon,
+                lat: this.figureOptions.swLat,
             },
             {
-                lon: this.container.attr('data-extent-ne-lon'),
-                lat: this.container.attr('data-extent-ne-lat')
+                lon: this.figureOptions.neLon,
+                lat: this.figureOptions.neLat,
             }
         ];
-        this.map.extent(extents);
+        this.setExtents(extents);
     }
     
-    // event responders
-    this.container.bind('get_map', function(e) {
-    	if ($.isFunction(e.callback)){
-			e.callback(this.map);
-		}
-    });
+    console.log(this);
 }
 
 
@@ -362,23 +398,25 @@ ConservationAsset.prototype.createUI = function() {
     // local aliases
     var $ = this.$
     , CA = this
-    , fullscreenClass;
+    , fullscreenClass, currentLayer;
 
     // hook up polymap drag interaction
-    this.map
-    .add(this.polymaps.drag())
-    .add(this.polymaps.wheel())
-    .add(this.polymaps.dblclick());
+    if (this.figureOptions.interaction || this.figureOptions.editing) {
+    	this.map
+    		.add(this.polymaps.drag())
+    		.add(this.polymaps.wheel())
+    		.add(this.polymaps.dblclick());
 
-    // we need to augment the polymap event handlers, since the built in polymaps
-    // wheel interaction doesn't allow us to update our user interface controls
-    $(this.container).bind('mousewheel', function(event) {
-        CA.ui.zoomSlider.slider('value', CA.map.zoom());
-    });
-    $(this.container).bind('dblclick', function(event) {
-        CA.ui.zoomSlider.slider('value', CA.map.zoom());
-    });
-
+	    // we need to augment the polymap event handlers, since the built in polymaps
+	    // wheel interaction doesn't allow us to update our user interface controls
+	    $(this.container).bind('mousewheel', function(event) {
+	        CA.ui.zoomSlider.slider('value', CA.map.zoom());
+	    });
+	    $(this.container).bind('dblclick', function(event) {
+	        CA.ui.zoomSlider.slider('value', CA.map.zoom());
+	    });
+    }
+    
     // init ui object
     this.ui = {};
     this.ui.legendItemsCount = 0;
@@ -387,46 +425,116 @@ ConservationAsset.prototype.createUI = function() {
     this.ui.controlbar = $('<div class="ca-ui-controlbar"></div>');
 
     // fullscreen control
-    if (this.settings.collapsed) {
-        fullscreenClass = "collapsed";
-    }
-    else {
-        fullscreenClass = "expanded";
-    }
-    this.ui.fullscreen = $('<div class="ca-ui-fullscreen '+fullscreenClass+'"></div>')
-    .bind('click', function() {
-        if (CA.settings.collapsed) {
-            CA.fullscreen();
-        }
-        else {
-            $('.ca-ui-fullscreen-wrap').remove();
-            if (window.scrollOffset) {
-                window.scrollTo(window.scrollOffset[0], window.scrollOffset[1]);
-            }
-        }
-    })
-    .appendTo(this.ui.controlbar);
-
+	if (this.settings.collapsed) {
+	    fullscreenClass = "collapsed";
+	}
+	else {
+	    fullscreenClass = "expanded";
+	}
+	this.ui.fullscreen = $('<div class="ca-ui-fullscreen '+fullscreenClass+'"></div>')
+	.bind('click', function() {
+	    if (CA.settings.collapsed) {
+	        CA.fullscreen();
+	    }
+	    else {
+	    	window.caCollection.remove(CA);
+	        $('.ca-ui-fullscreen-wrap').remove();
+	        if (window.scrollOffset) {
+	            window.scrollTo(window.scrollOffset[0], window.scrollOffset[1]);
+	        }
+	    }
+	})
+	.appendTo(this.ui.controlbar);
+    
     // reset control
-    this.ui.reset = $('<div class="ca-ui-reset"></div>')
+	this.ui.reset = $('<div class="ca-ui-reset"></div>')
     .bind('click', function(event) {
-        CA.zoomToContainer();
-    })
-    .appendTo(this.ui.controlbar);
+    	var i;
+    	// reset to provided inset, or container bounds otherwise
+    	if (typeof CA.figureOptions.swLat != 'undefined' && !CA.figureOptions.editing) {
+    		var extents =  [
+    			{
+    				lon: CA.figureOptions.swLon,
+    				lat: CA.figureOptions.swLat,
+    			},
+    			{
+    				lon: CA.figureOptions.neLon,
+    				lat: CA.figureOptions.neLat,
+    			}
+    			];
+    		CA.map.extent(extents);
+    	}
+    	else {
+            CA.zoomToContainer();
+    	}
+    	// correct zoom control to reflect new zoom
+    	CA.ui.zoomSlider.slider('value', CA.map.zoom());
+    	// reset annotation layer visibility
+    	CA.showAnnotationPresets();
+    	// reset initial slider position
+    	if (CA.figureOptions.sliderPosition) {
+    		if (CA.ui.slider) {
+    			CA.ui.slider.slider('value', CA.figureOptions.sliderPosition);
+    		}
+    	}
+    	/*
+    	 * Reset original layer selection
+    	 */
+    	var baseLayers;
+    	if (CA.figureOptions.baseLayerPreset) {
+    		baseLayers = [];
+    		for (i=0; i < CA.figureOptions.baseLayerPreset.length; i++) {
+    			baseLayers.push(CA.getLayerById(CA.figureOptions.baseLayerPreset[i]));
+    		}
+    	}
+    	else {
+    		baseLayers = CA.baseLayers;
+    	}
+    	for (i = 0; i < baseLayers.length; i++) {
+			currentLayer = CA.settings['currentLayer' + (i + 1)];
+			// turn off current layer
+			CA.toggleLayer(currentLayer);
+			// turn on new
+			CA.toggleLayer(baseLayers[i]);
+			// upkeep state
+			CA.settings['currentLayer' + (i + 1)] = baseLayers[i];
+			// update layer selector ui
+			if (CA.ui['layerSelector' + (i + 1)]) {
+				CA.ui['layerSelector'+ (i + 1)].find('span').html(baseLayers[i].title);
+			}
+    	}
+    	// if more than one layer, restore transparency setting
+    	if (baseLayers.length > 1) {
+    		$('#'+CA.settings.currentLayer2.id).css('opacity', CA.ui.slider.slider('value') / 100);
+    	}
+    	// repaint visible annotaion layers to put them back on top
+    	var aIds = CA.getVisibleAnnotationIds();
+    	for (i=0; i < aIds.length; i++) {
+    		currentLayer = CA.getLayerById(aIds[i]);
+    		CA.toggleLayer(currentLayer);
+    		CA.toggleLayer(currentLayer);
+    	}
+    });
+    if (this.figureOptions.interaction || this.figureOptions.editing) {
+        this.ui.reset.appendTo(this.ui.controlbar);
+    }
 
     // annotation control
     if (this.annotationLayers.length > 0) {
         this.ui.annotation = $('<div class="ca-ui-annotation"></div>')
         .bind('click', function(event) {
             CA.toggleAnnotationSelector();
-        })
-        .appendTo(this.ui.controlbar);
+        });
+        if (this.figureOptions.annotation || this.figureOptions.editing) {
+        	this.ui.annotation.appendTo(this.ui.controlbar);
+        }
     }
-
+    
     // layer controls
-    if (this.baseLayers.length > 1) {
-        this.settings.currentLayer1 = this.baseLayers[0];
-        this.settings.currentLayer2 = this.baseLayers[1];
+    var baseLayers = this.getVisibleBaseLayers();
+    this.settings.currentLayer1 = baseLayers[0];
+    if (baseLayers.length > 1) {
+        this.settings.currentLayer2 = baseLayers[1];
 
         // layer selectors
         this.ui.layerSelector1 = $('<div class="ca-ui-layer"></div>')
@@ -448,10 +556,11 @@ ConservationAsset.prototype.createUI = function() {
                 conservationAsset: this
             }, this.toggleLayerSelector)
         }
-
-        this.ui.controlbar
-        .append(this.ui.layerSelector2)
-        .append(this.ui.layerSelector1);
+        if (this.figureOptions.interaction || this.figureOptions.editing) {
+        	this.ui.controlbar
+            .append(this.ui.layerSelector2)
+            .append(this.ui.layerSelector1);
+        }
 
         // opacity slider
         this.ui.sliderContainer = $('<div class="ca-ui-layer-slider-container"></div>');
@@ -463,15 +572,28 @@ ConservationAsset.prototype.createUI = function() {
                 var secondaryOpacity = ui.value / 100;
                 // $('#'+CA.settings.currentLayer1.id).css('opacity', primaryOpacity);
                 $('#'+CA.settings.currentLayer2.id).css('opacity', secondaryOpacity);
+            },
+            change: function(event, ui) {
+                var secondaryOpacity = ui.value / 100;
+                $('#'+CA.settings.currentLayer2.id).css('opacity', secondaryOpacity);
             }
         })
         .appendTo(this.ui.sliderContainer);
-        this.ui.layerSelector2.after(this.ui.sliderContainer);
-
+        
+        if (this.figureOptions.interaction || this.figureOptions.editing) {
+        	this.ui.layerSelector2.after(this.ui.sliderContainer);
+        }
+        // restore preset if available
+        console.log(this.figureOptions, 'figure Options');
+        if (this.figureOptions.sliderPosition) {
+        	this.ui.slider.slider('value', this.figureOptions.sliderPosition);
+        }
     }
-
+    
+    
     // add controlbar to container
     this.ui.controlbar.appendTo(this.container);
+   
 
     // zoom control
     this.ui.zoom = $('<div class="ca-ui-zoom"></div>');
@@ -505,11 +627,15 @@ ConservationAsset.prototype.createUI = function() {
         CA.map.zoom(newVal);
     })
     .appendTo(this.ui.zoom);
-    this.ui.zoom.appendTo(this.container);
+    if (this.figureOptions.interaction || this.figureOptions.editing) {
+    	this.ui.zoom.appendTo(this.container);
+    }
 
     // viewfinder control
     this.ui.viewfinder = $('<div class="ca-ui-viewfinder viewfinder-closed"></div>')
-    .appendTo(this.container);
+    if (this.figureOptions.interaction || this.figureOptions.editing) {
+    	this.ui.viewfinder.appendTo(this.container);
+    }
     
     // store references to the control elements, so they can be manipulated as a collection
     this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder, this.ui.currentPopup];
@@ -581,14 +707,18 @@ ConservationAsset.prototype.fullscreen = function() {
     });
      
     // the extents of the current map should be restored on full screen
-    // use the same data attribute used for insets
     var extents = this.map.extent();
-    markup.attr('data-extent-sw-lon', extents[0].lon);
-    markup.attr('data-extent-sw-lat', extents[0].lat);
-    markup.attr('data-extent-ne-lon', extents[1].lon);
-    markup.attr('data-extent-ne-lat', extents[1].lat);
-
-    wrapper.append(markup).appendTo(document.body);
+    this.figureOptions.fullscreenExtents = {
+    	swLon: extents[0].lon, 
+    	swLat: extents[0].lat, 
+    	neLon: extents[1].lon, 
+    	neLat: extents[1].lat 
+    }
+    
+    var figureWrapper = $('<figure></figure>')
+    	.append(markup)
+    	.attr('data-options', JSON.stringify(this.figureOptions));
+    wrapper.append(figureWrapper).appendTo(document.body);
     new ConservationAsset(markup);
 }
 
@@ -903,8 +1033,8 @@ ConservationAsset.prototype.addLegendItem = function(layerData) {
     .appendTo(legendList);
     
     var itemBox = $('<div class="item-box"></div>')
-    .css('background-color', '#'+layerData.color)
-    .appendTo(legendItem);
+    	.css('background-color', '#'+layerData.color)
+    	.appendTo(legendItem);
     
     this.ui.legendItemsCount++;
 };
@@ -936,11 +1066,114 @@ ConservationAsset.prototype.removeLegendItem = function(layerData) {
     }
 };
 
+// toggle on any annotation layer that's configured from the figure options 
+ConservationAsset.prototype.showAnnotationPresets = function() {
+	if (this.figureOptions.annotationPreset) {
+		// each preset is a layer_id for a layer in this.layers
+    	for (i=0; i < this.figureOptions.annotationPreset.length; i++) {
+    		var presetLayerId = this.figureOptions.annotationPreset[i];
+    		// step through the annotation layers
+    		for (j=0; j < this.annotationLayers.length; j++) {
+    			if (this.annotationLayers[j].layer_id == presetLayerId && !this.annotationLayers[j].visible) {
+    				this.toggleLayer(this.annotationLayers[j]);
+    				if (this.figureOptions.annotation || this.figureOptions.editing) {
+        				this.addLegendItem(this.annotationLayers[j]);
+    				}
+    			}
+    		}
+    	}
+    }
+}
+
+ConservationAsset.prototype.getVisibleBaseLayers = function() {
+	var i,
+		layers = [];
+	
+	for (i=0; i< this.baseLayers.length; i++) {
+		var layerData = this.baseLayers[i];
+		if (layerData.visible) {
+			layers.push(layerData);
+		}
+	}
+	
+	return layers;
+}
+
+ConservationAsset.prototype.getVisibleBaseLayerIds = function() {
+	var i,
+		layers = [];
+	
+	for (i=0; i< this.baseLayers.length; i++) {
+		var layerData = this.baseLayers[i];
+		if (layerData.visible) {
+			layers.push(layerData.layer_id);
+		}
+	}
+	
+	return layers;
+}
+
+
+ConservationAsset.prototype.getVisibleAnnotationIds = function() {
+	var i,
+		annotations = [];
+	
+	for (i=0; i < this.annotationLayers.length; i++) {
+		var layerData = this.annotationLayers[i];
+		if (layerData.visible) {
+			annotations.push(layerData.layer_id);
+		}
+	}
+	
+	return annotations;
+}
+
+
+ConservationAsset.prototype.getExtents = function() {
+	var extents = this.map.extent();
+	return { 
+		swLon: extents[0].lon, 
+	    swLat: extents[0].lat, 
+	    neLon: extents[1].lon, 
+	    neLat: extents[1].lat 
+	};
+}
+
+
+ConservationAsset.prototype.setExtents = function(extents) {
+	this.map.extent(extents);
+	// update zoom slider
+	if (this.ui.zoomSlider) {
+		this.ui.zoomSlider.slider('value', this.map.zoom());
+	}
+}
+
+
+ConservationAsset.prototype.getSliderPosition = function() {
+	if (typeof this.ui.slider != 'undefined') {
+		return this.ui.slider.slider('value');
+	}
+	else {
+		return 0;
+	}
+}
+
+
+ConservationAsset.prototype.getLayerById = function(id) {
+	for (var i=0; i < this.layers.length; i++) {
+		if (this.layers[i].layer_id && this.layers[i].layer_id == id) {
+			return this.layers[i];
+		}
+	}
+	return false;
+}
 
 
 // auto load any conservation assets 
 window.addEventListener('load', function() {
+	window.caCollection = new CACollection();
     var assets = jQuery('.conservation-asset').not('.noload');
+    console.log(assets);
     for(var i=0; i < assets.length; i++) {
         new ConservationAsset(assets[i]);
     }
