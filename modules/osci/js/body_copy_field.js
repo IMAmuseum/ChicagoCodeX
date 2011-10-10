@@ -136,7 +136,6 @@
 			// thumbRemove should disable the file input
 			thumbRemove.bind('click', function() {
 				var checkbox = $(this);
-				console.log(checkbox.attr('checked'));
 				if (checkbox.attr('checked')) {
 					thumbFileField.attr('disabled', true);
 					thumbImage.addClass('image_opaque');

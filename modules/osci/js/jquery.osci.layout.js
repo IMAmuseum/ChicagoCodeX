@@ -370,7 +370,6 @@
             var pageFigure = $(figure),
                 figureContent = base.figureContent[pageFigure.attr("id")],
                 figureType = pageFigure.data("figure_type");
-console.log(figureType);            
             if (base.options.processFigureCallback !== undefined && $.isFunction(base.options.processFigureCallback[figureType])) {
                 base.options.processFigureCallback[figureType](pageFigure, figureContent);
             } else {

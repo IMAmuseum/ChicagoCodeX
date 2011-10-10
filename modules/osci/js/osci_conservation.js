@@ -205,7 +205,7 @@ var ConservationAsset = function(container) { // container should be a html elem
         this.setExtents(extents);
     }
     
-    console.log(this);
+    // console.log(this);
 }
 
 
@@ -584,7 +584,6 @@ ConservationAsset.prototype.createUI = function() {
         	this.ui.layerSelector2.after(this.ui.sliderContainer);
         }
         // restore preset if available
-        console.log(this.figureOptions, 'figure Options');
         if (this.figureOptions.sliderPosition) {
         	this.ui.slider.slider('value', this.figureOptions.sliderPosition);
         }
@@ -640,7 +639,7 @@ ConservationAsset.prototype.createUI = function() {
     // store references to the control elements, so they can be manipulated as a collection
     this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder, this.ui.currentPopup];
     
-    /*  DISABLED FOR DEBUGGING - CODE BELOW WORKS
+    /*  DISABLED FOR DEBUGGING - CODE BELOW WORKS .. sometimes
      *
      
     // configure events to show/hide controls
@@ -1174,7 +1173,6 @@ ConservationAsset.prototype.getLayerById = function(id) {
 window.addEventListener('load', function() {
 	window.caCollection = new CACollection();
     var assets = jQuery('.conservation-asset').not('.noload');
-    console.log(assets);
     for(var i=0; i < assets.length; i++) {
         new ConservationAsset(assets[i]);
     }

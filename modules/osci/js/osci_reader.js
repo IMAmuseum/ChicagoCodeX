@@ -246,21 +246,18 @@
                     });
                 },
                 image_asset: function(figure, content) {
-                    console.log(figure, content);
                     figure.prepend(content);
                     content.find('.conservation-asset').each(function() {
                        new ConservationAsset(this); 
                     });
                 },
                 iip_asset: function(figure, content) {
-                    console.log(figure, content);
                     figure.prepend(content);
                     content.find('.conservation-asset').each(function() {
                        new ConservationAsset(this); 
                     });
                 },
                 svg_asset: function(figure, content) {
-                    console.log(figure, content);
                     figure.prepend(content);
                     content.find('.conservation-asset').each(function() {
                        new ConservationAsset(this); 
