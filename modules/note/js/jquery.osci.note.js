@@ -193,7 +193,6 @@
                      * Prevent pagination when modal is open
                      */
                     $('#modalContent').keydown(function(e) {
-                        console.log('hi');
                         e.stopPropagation();
                     });
                 });
@@ -288,7 +287,7 @@
 
                     if (data == null) return;
                 
-                    $('.highlight').each(function() {
+                    $('.highlight, .highlight-temp').each(function() {
                         $(this).replaceWith($(this).text());
                     });
 

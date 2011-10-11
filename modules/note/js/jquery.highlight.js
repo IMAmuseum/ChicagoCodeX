@@ -59,7 +59,8 @@
 	$.highlighter.highlightNode = function(obj, properties, processNode) {
     	processNode = (processNode) ? processNode : false;
 
-        $(obj).html($(obj).html()); // reset the dom 
+        // Clean DOM so it represents its original state
+        $(obj).html($(obj).html());
 
         if (properties.start_node == properties.end_node) {
             var node = document.createTextNode(properties.start_node);
@@ -186,7 +187,7 @@
         wrapperElement: 'span',
         wrapperClass: 'highlight-temp',
         eventListen: 'mouseup',
-        eventTarget: this,
+        eventTarget: '#osci_viewer',
         parentNode: 'p',
         onSelection: function() {},
         onEmptySelection: function() { return false; }
