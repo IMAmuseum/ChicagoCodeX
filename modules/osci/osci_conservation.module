@@ -39,8 +39,9 @@ function osci_conservation_menu() {
 }
 
 function osci_conservation_demo() {
-    $nodes = variable_get('osci_conservation_demo_nodes');
-
+    $nodes = variable_get('osci_conservation_demo_nodes', array());
+	$ret = "";
+	
     foreach ($nodes as $nid) {
         $node = node_load($nid);
         // build conservation asset div
@@ -321,6 +322,7 @@ function _osci_conservation_get_conservation_html($nid) {
     if (!is_numeric($nid))
         return;
     $node = node_load($nid);
+    $thumbStyle = 'osci_conservation_100w';
     
     // create a unique id for this conservation asset
     $id = "conservation-asset-" . preg_replace('/\./', '', ((string) microtime(TRUE)));
@@ -333,7 +335,6 @@ function _osci_conservation_get_conservation_html($nid) {
         $layer_node = node_load($asset['nid']);
         $data = array();
 
-        // dpm($layer_node, 'layer node');
         // set layer number, parent, and id
         $data['layer_num'] = $num_layers;
         $data['layer_id'] = $layer_node->nid;
@@ -377,6 +378,7 @@ function _osci_conservation_get_conservation_html($nid) {
             $data['width'] = $attr['width'];
             $data['height'] = $attr['height'];
             $data['zoom_levels'] = $attr['zoom_levels'];
+            $data['thumb'] = image_style_url($thumbStyle, $layer_node->field_image['und'][0]['uri']);
         }
 
         // set the image specific values
@@ -385,6 +387,7 @@ function _osci_conservation_get_conservation_html($nid) {
             $size = getimagesize(drupal_realpath($layer_node->field_image['und'][0]['uri']));
             $data['width'] = $size[0];
             $data['height'] = $size[1];
+            $data['thumb'] = image_style_url($thumbStyle, $layer_node->field_image['und'][0]['uri']);
         }
         
         // set the svg specific values
@@ -393,6 +396,7 @@ function _osci_conservation_get_conservation_html($nid) {
             $data['width'] = $layer_node->field_svg['und'][0]['width'];
             $data['height'] = $layer_node->field_svg['und'][0]['height'];
             $data['color'] = $asset['color'];
+            $data['thumb'] = image_style_url($thumbStyle, $layer_node->field_svg['und'][0]['uri']);
         }
 
         // form our data attributes string
@@ -405,7 +409,8 @@ function _osci_conservation_get_conservation_html($nid) {
         $layers .= '<li class="conservation-layer" ' . $data_string . '></li>';
     }
 
-    $ret =    '<div class="conservation-asset" data-collapsed="true" id="' . $id . '">'
+    $ret =    '<div class="conservation-asset" data-aspect="'._osci_conservation_get_conservation_aspect($node)
+    		. '" data-collapsed="true" id="'.$id.'">'
             . '<ul class="conservation-layers" style="display:none;">'
             . $layers
             . '</ul>'
