@@ -223,7 +223,7 @@ function _process_cross_link($text) {
         $query = "data-query=\"$query\"";
     }
 
-    return "<a href=\"{$url}\" class=\"cross-link\" data-nid=\"{$nid}\" {$query}>{$linkText}</a>";
+    return "<a href=\"{$url}\" class=\"cross-link\" target=\"_blank\" data-nid=\"{$nid}\" {$query}>{$linkText}</a>";
 }
 
 /**

@@ -318,7 +318,7 @@
                 panelPixelsClosed : 20,
                 userNoteCallback : Drupal.settings.basePath + 'ajax/note',
                 noteAddCallback : Drupal.settings.basePath + 'ajax/note/add',
-                noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save',
+                noteSaveCallback : Drupal.settings.basePath + 'ajax/note/save'
             });
         }
         
@@ -467,19 +467,19 @@
         });
         
         //make cross linking work
-        reader.find("a.cross-link").live("click", function(e){
-        //$("a.cross-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
-            e.preventDefault();
-            var $this = $(this),
-                query = $this.data("query"),
-                link = $this.data("nid");
-
-            if (query !== undefined && query.length > 0) {
-                link += query;
-            }
-            
-            amplify.publish("osci_navigation", {osci_to : "node", osci_value : link});
-        });
+//        reader.find("a.cross-link").live("click", function(e){
+//        //$("a.cross-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
+//            e.preventDefault();
+//            var $this = $(this),
+//                query = $this.data("query"),
+//                link = $this.data("nid");
+//
+//            if (query !== undefined && query.length > 0) {
+//                link += query;
+//            }
+//            
+//            amplify.publish("osci_navigation", {osci_to : "node", osci_value : link});
+//        });
         
         //make footnotes link to footnote text in more bar
         reader.find("a.footnote-link").live("click", function(e){
