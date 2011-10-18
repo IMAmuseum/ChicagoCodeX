@@ -258,8 +258,8 @@
             while (hasParent) {
                 titleParts.push(base.data.toc["nid_" + nid].title);
                 
-                if (base.data.toc["nid_" + nid].parent.nid) {
-                    nid = base.data.toc["nid_" + nid].parent.nid;
+                if (base.data.toc["nid_" + nid].parent) {
+                    nid = base.data.toc["nid_" + nid].parent;
                 } else {
                     hasParent = false;
                 }
@@ -294,7 +294,7 @@
                     window.history.replaceState({"nid":nid}, document.title);
                 } else {
                     tocData = base.data.toc["nid_" + nid]
-                    
+
                     window.history.pushState(
                         {"nid" : nid},
                         document.title, 
@@ -314,13 +314,15 @@
                 case "next":
                     base.data.currentPage++;
                     if (base.data.currentPage > base.data.pageCount) {
-                        tocData = base.data.toc["nid_" + base.data.nid].next;
-                        if (tocData.nid) {
+                        tocData = base.data.toc["nid_" + base.data.toc["nid_" + base.data.nid].next];
+                        if (tocData.nid && tocData.active) {
                             base.data.nid = tocData.nid;
                             base.data.to = {operation : "page", value : "first"};
+                            base.loadContent(true);
+                        } else {
+                            base.data.currentPage--;
                         }
 
-                        base.loadContent(true);
                         return;
                     }
                     break;
@@ -328,13 +330,15 @@
                 case "prev":
                     base.data.currentPage--;
                     if (base.data.currentPage < 1) {
-                        tocData = base.data.toc["nid_" + base.data.nid].prev;
-                        if (tocData.nid) {
+                        tocData = base.data.toc["nid_" + base.data.toc["nid_" + base.data.nid].prev];
+                        if (tocData.nid && tocData.active) {
                             base.data.nid = tocData.nid;
                             base.data.to = {operation : "page", value : "last"};
+                            base.loadContent(true);
+                        } else {
+                            base.data.currentPage++;
                         }
-
-                        base.loadContent(true);
+                        
                         return;
                     }
                     break;
@@ -614,7 +618,7 @@
                             }
                         }
                     }
-                    console.log($this.data());
+
                     if (!isExpander && $this.data("active")) {
                         var linkTo = $this.data("nid");
                         linkTo = linkTo.indexOf("#") > -1 ? linkTo : linkTo + "#osci_plate_fig";
@@ -630,8 +634,7 @@
                 });
                 
                 toc.delegate("a", "hover", function(e){
-                    var $this, data, parents,
-                        plateContainer = $("#" + base.options.tocId).find(".osci_reference_image img");
+                    var $this, data, parents;
                     
                     switch (e.type) {
                         case "mouseenter":
@@ -669,29 +672,29 @@
             for (i in base.data.toc) {
                 node = base.data.toc[i];
                 
-                if (!node.parent.nid) {
+                if (!node.parent) {
                     rootNid = node.nid;
                     continue;
                 }
              
                 tocItem = _create_menu_item(node);
                              
-                if (rootNid === node.parent.nid) {
+                if (rootNid === node.parent) {
                     toc.append(tocItem);
                 } else {
-                    if (!createdMenus["#osci_toc_node_" + node.parent.nid + "_submenu"]) {
-                        subMenu = _create_sub_menu(node.parent.nid);
-                        $("#osci_toc_node_" + node.parent.nid).append(
+                    if (!createdMenus["#osci_toc_node_" + node.parent + "_submenu"]) {
+                        subMenu = _create_sub_menu(node.parent);
+                        $("#osci_toc_node_" + node.parent).append(
                             $("<a>", {
                                 "class" : "osci_toc_arrow",
                                 href : "#",
                                 text : "+"
                              })
                         ).append(subMenu);
-                        createdMenus["#osci_toc_node_" + node.parent.nid + "_submenu"] = subMenu;
+                        createdMenus["#osci_toc_node_" + node.parent + "_submenu"] = subMenu;
                     }
                     
-                    createdMenus["#osci_toc_node_" + node.parent.nid + "_submenu"].append(tocItem);
+                    createdMenus["#osci_toc_node_" + node.parent + "_submenu"].append(tocItem);
                 }
                 
                 if (node.sub_sections && node.sub_sections.length) {

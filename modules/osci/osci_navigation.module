@@ -304,41 +304,50 @@ function _osci_navigation_clean_toc_iterate($toc)
                 $nids[] = $nid;
 
                 $id = 'nid_' . $nid;
-                $nextPage = array();
-                $prevPage = array();
-                $parentPage = array();
+//                $nextPage = array();
+//                $prevPage = array();
+//                $parentPage = array();
+                $nextPage = null;
+                $prevPage = null;
+                $parentPage = null;
                 if ($v['mlid']) {
                     if ($prev = book_prev($v)) {
-                        $prevPage = array(
-                            'href' => url($prev['href'] . '/reader'),
-                            'title' => check_plain($prev['title']),
-                            'mlid' => $prev['mlid'],
-                            'bodycopy' => url($prev['href'] . '/bodycopy'),
-                            'nid' => substr($prev['href'], strrpos($prev['href'], '/') + 1)
-                        );
-                        $nids[] = $prevPage['nid'];
+                        $prevPage = substr($prev['href'], strrpos($prev['href'], '/') + 1);
+                        $nids[] = $prevPage;
+//                        $prevPage = array(
+//                            'href' => url($prev['href'] . '/reader'),
+//                            'title' => check_plain($prev['title']),
+//                            'mlid' => $prev['mlid'],
+//                            'bodycopy' => url($prev['href'] . '/bodycopy'),
+//                            'nid' => substr($prev['href'], strrpos($prev['href'], '/') + 1)
+//                        );
+//                        $nids[] = $prevPage['nid'];
                     }
 
                     if ($v['plid'] && $parent = book_link_load($v['plid'])) {
-                        $parentPage = array(
-                            'href' => url($parent['href'] . '/reader'),
-                            'title' => check_plain($parent['title']),
-                            'mlid' => $parent['mlid'],
-                            'bodycopy' => url($parent['href'] . '/bodycopy'),
-                            'nid' => substr($parent['href'], strrpos($parent['href'], '/') + 1)
-                        );
-                        $nids[] = $parentPage['nid'];
+                        $parentPage = substr($parent['href'], strrpos($parent['href'], '/') + 1);
+                        $nids[] = $parentPage;
+//                        $parentPage = array(
+//                            'href' => url($parent['href'] . '/reader'),
+//                            'title' => check_plain($parent['title']),
+//                            'mlid' => $parent['mlid'],
+//                            'bodycopy' => url($parent['href'] . '/bodycopy'),
+//                            'nid' => substr($parent['href'], strrpos($parent['href'], '/') + 1)
+//                        );
+//                        $nids[] = $parentPage['nid'];
                     }
 
                     if ($next = book_next($v)) {
-                        $nextPage = array(
-                            'href' => url($next['href'] . '/reader'),
-                            'title' => check_plain($next['title']),
-                            'mlid' => $next['mlid'],
-                            'bodycopy' => url($next['href'] . '/bodycopy'),
-                            'nid' => substr($next['href'], strrpos($next['href'], '/') + 1)
-                        );
-                        $nids[] = $nextPage['nid'];
+                        $nextPage = substr($next['href'], strrpos($next['href'], '/') + 1);
+                        $nids[] = $nextPage;
+//                        $nextPage = array(
+//                            'href' => url($next['href'] . '/reader'),
+//                            'title' => check_plain($next['title']),
+//                            'mlid' => $next['mlid'],
+//                            'bodycopy' => url($next['href'] . '/bodycopy'),
+//                            'nid' => substr($next['href'], strrpos($next['href'], '/') + 1)
+//                        );
+//                        $nids[] = $nextPage['nid'];
                     }
                 }
 
@@ -488,29 +497,29 @@ function _osci_navigation_load_additional_toc_data(&$toc)
             $data['plate_image'] = $imageData[$nid];
         }
 
-        $nid = (int)$data['next']['nid'];
-        if (isset($imageData[$nid])) {
-            $data['next']['plate_image'] = $imageData[$nid];
-        } else {
-            $imageData[$nid] = _osci_navigation_get_image_data($nid);
-            $data['next']['plate_image'] = $imageData[$nid];
-        }
-
-        $nid = (int)$data['prev']['nid'];
-        if (isset($imageData[$nid])) {
-            $data['prev']['plate_image'] = $imageData[$nid];
-        } else {
-            $imageData[$nid] = _osci_navigation_get_image_data($nid);
-            $data['prev']['plate_image'] = $imageData[$nid];
-        }
-
-        $nid = (int)$data['parent']['nid'];
-        if (isset($imageData[$nid])) {
-            $data['parent']['plate_image'] = $imageData[$nid];
-        } else {
-            $imageData[$nid] = _osci_navigation_get_image_data($nid);
-            $data['parent']['plate_image'] = $imageData[$nid];
-        }
+//        $nid = (int)$data['next']['nid'];
+//        if (isset($imageData[$nid])) {
+//            $data['next']['plate_image'] = $imageData[$nid];
+//        } else {
+//            $imageData[$nid] = _osci_navigation_get_image_data($nid);
+//            $data['next']['plate_image'] = $imageData[$nid];
+//        }
+//
+//        $nid = (int)$data['prev']['nid'];
+//        if (isset($imageData[$nid])) {
+//            $data['prev']['plate_image'] = $imageData[$nid];
+//        } else {
+//            $imageData[$nid] = _osci_navigation_get_image_data($nid);
+//            $data['prev']['plate_image'] = $imageData[$nid];
+//        }
+//
+//        $nid = (int)$data['parent']['nid'];
+//        if (isset($imageData[$nid])) {
+//            $data['parent']['plate_image'] = $imageData[$nid];
+//        } else {
+//            $imageData[$nid] = _osci_navigation_get_image_data($nid);
+//            $data['parent']['plate_image'] = $imageData[$nid];
+//        }
 
         $toc[$tocId] = $data;
     }
