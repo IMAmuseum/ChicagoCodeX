@@ -88,7 +88,8 @@ var ConservationAsset = function(container) { // container should be a html elem
     if (!this.figureOptions) {
     	this.figureOptions = {
     		interaction: true,
-    		annotation: true
+    		annotation: true,
+    		sliderPosition: 0
     	};
     }
 
@@ -234,10 +235,14 @@ ConservationAsset.prototype.createLayer = function(layerData) {
     // give the layer a reference to its polymap object
     layerData.visible = true;
     layerData.polymapLayer = layer;
+    // console.log(layer, 'layer');
+	// console.log(layer.cache.size(), 'diag');
+	// console.log(this.map.centerRange(), 'center range');
 	
     // give the layer its id, and add it to the map
     layer.id(layerData.id);
     this.map.add(layer);
+    
 }
 
 
@@ -482,15 +487,17 @@ ConservationAsset.prototype.createUI = function() {
     	 */
     	var baseLayers;
     	if (CA.figureOptions.baseLayerPreset) {
+    		console.log('test1');
     		baseLayers = [];
     		for (i=0; i < CA.figureOptions.baseLayerPreset.length; i++) {
     			baseLayers.push(CA.getLayerById(CA.figureOptions.baseLayerPreset[i]));
     		}
     	}
     	else {
+    		console.log('test2');
     		baseLayers = CA.baseLayers;
     	}
-    	for (i = 0; i < baseLayers.length; i++) {
+    	for (i = 0; i < baseLayers.length && i < 2; i++) {
 			currentLayer = CA.settings['currentLayer' + (i + 1)];
 			// turn off current layer
 			CA.toggleLayer(currentLayer);
@@ -504,8 +511,12 @@ ConservationAsset.prototype.createUI = function() {
 			}
     	}
     	// if more than one layer, restore transparency setting
-    	if (baseLayers.length > 1) {
+    	if (baseLayers.length > 1 && CA.ui.slider) {
+    		console.log('setting');
     		$('#'+CA.settings.currentLayer2.id).css('opacity', CA.ui.slider.slider('value') / 100);
+    		if (CA.ui.viewfinderLayer2) {
+        		CA.ui.viewfinderLayer2.css('opacity', CA.ui.slider.slider('value') / 100);
+    		}
     	}
     	// repaint visible annotaion layers to put them back on top
     	var aIds = CA.getVisibleAnnotationIds();
@@ -572,10 +583,12 @@ ConservationAsset.prototype.createUI = function() {
                 var secondaryOpacity = ui.value / 100;
                 // $('#'+CA.settings.currentLayer1.id).css('opacity', primaryOpacity);
                 $('#'+CA.settings.currentLayer2.id).css('opacity', secondaryOpacity);
+                CA.refreshViewfinderOpacity(secondaryOpacity);
             },
             change: function(event, ui) {
                 var secondaryOpacity = ui.value / 100;
                 $('#'+CA.settings.currentLayer2.id).css('opacity', secondaryOpacity);
+                CA.refreshViewfinderOpacity(secondaryOpacity);
             }
         })
         .appendTo(this.ui.sliderContainer);
@@ -630,22 +643,38 @@ ConservationAsset.prototype.createUI = function() {
     	this.ui.zoom.appendTo(this.container);
     }
 
+    /*
     // viewfinder control
     this.ui.viewfinder = $('<div class="ca-ui-viewfinder viewfinder-closed"></div>')
     if (this.figureOptions.interaction || this.figureOptions.editing) {
     	this.ui.viewfinder.appendTo(this.container);
     }
+    this.ui.viewfinder.bind('click', function(event) {
+    	if (CA.ui.viewfinder.hasClass('viewfinder-open')) {
+    		// close
+    		CA.ui.viewfinder.empty().css('height', '');
+    		CA.ui.viewfinder.removeClass('viewfinder-open').addClass('viewfinder-closed');
+    		CA.ui.viewfinderViewport = null;
+    	}
+    	else {
+    		// open
+    		CA.ui.viewfinder.removeClass('viewfinder-closed').addClass('viewfinder-open');
+    		CA.refreshViewfinder();
+    	}
+    });
+	*/
     
     // store references to the control elements, so they can be manipulated as a collection
     this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder, this.ui.currentPopup];
     
     /*  DISABLED FOR DEBUGGING - CODE BELOW WORKS .. sometimes
      *
-     
+     */
     // configure events to show/hide controls
     this.container.bind('mousemove', function(event) {
         var container = CA.container;
         var date = new Date();
+        console.log('mousemove');
         
         container.attr('data-controls-time', date.getTime());
         var controlState = container.attr('data-controls') || 'false';
@@ -670,18 +699,112 @@ ConservationAsset.prototype.createUI = function() {
     // mousing over a control locks them "on"
     $.each(this.ui.controls, function() {
         // test if this is still around.  we include popups, and other transients
-        if (this.bind == 'function') {
+        if (typeof(this.bind) == 'function') {
             this.bind('mouseenter', function() {
+            	console.log('locking');
                 CA.container.attr('data-controls-lock', 'true');
             });
             this.bind('mouseleave', function() {
+            	console.log('unlocking');
                 CA.container.attr('data-controls-lock', 'false');
             });
         }
     });
-    */
-    this.toggleControls();
+    
 }
+
+
+ConservationAsset.prototype.refreshViewfinder = function() {
+	var $ = this.$;
+	var CA = this;
+	// first clear out any contents
+	this.ui.viewfinder.empty();
+	
+	// get image urls from current layers
+	var thumbUrl1 = this.settings.currentLayer1.thumb;
+	this.ui.viewfinderLayer1 = $('<div class="ca-ui-viewfinderLayer viewfinderLayer1"></div>');
+	$('<img />').attr('src', thumbUrl1).appendTo(this.ui.viewfinderLayer1);
+	this.ui.viewfinder.append(this.ui.viewfinderLayer1);
+	
+	if (this.settings.currentLayer2) {
+		var thumbUrl2 = this.settings.currentLayer2.thumb;
+		this.ui.viewfinderLayer2 = $('<div class="ca-ui-viewfinderLayer viewfinderLayer2"></div>');
+		$('<img />').attr('src', thumbUrl2).appendTo(this.ui.viewfinderLayer2);
+		this.ui.viewfinder.append(this.ui.viewfinderLayer2);
+		// set opacity to match 
+		this.ui.viewfinderLayer2.css('opacity', this.ui.slider.slider("value") / 100);
+	}
+	
+	// set height based on width and aspect
+	var vfWidth = this.ui.viewfinder.width();
+	var vfHeight = Math.floor(vfWidth / this.settings.aspect);
+	this.ui.viewfinder.height(vfHeight);
+	
+	// bounds div
+    this.refreshViewfinderViewport();
+    
+    // - hook up drag events so the div can be dragged
+	// - when dragged reflect the change on the map
+	// - when the map is panned, refresh the position of the bounds div
+};
+
+
+ConservationAsset.prototype.refreshViewfinderViewport = function() {
+	var $ = this.$;
+	var vfWidth = this.ui.viewfinder.width();
+	var vfHeight = Math.floor(vfWidth / this.settings.aspect);
+	
+	// calculate inset percentage on all sides
+	var pointSW = this.map.locationPoint(this.settings.containerFitSW);
+    var pointNE = this.map.locationPoint(this.settings.containerFitNE);
+    // prevent viewport from expanding passed bounds of viewfinder
+    if (pointSW.x > 0) pointSW.x = 0;
+    if (pointSW.y < 0) pointSW.y = 0;
+    if (pointNE.x < 0) pointNE.x = 0;
+    if (pointNE.y > 0) pointNE.y = 0;
+    
+    console.log([pointSW, pointNE], 'pointSW, pointNE');
+    
+    var width = this.baseLayers[0].width;
+    var height = this.baseLayers[0].height;
+    
+    // find extents as percentages of whole image
+    var topP = Math.abs(pointNE.y) / height;
+    var rightP = (pointNE.x - this.map.size().x) / width;
+    var bottomP = (pointSW.y - this.map.size().y) / height;
+    var leftP = Math.abs(pointSW.x) / width;
+    console.log([topP, rightP, bottomP, leftP], 'topP, rightP, bottomP, leftP');
+    
+    
+    
+    // translate percentages to pixels
+    var top = Math.floor(vfHeight * topP); 
+    var right = Math.floor(vfWidth * rightP);
+    var bottom = Math.floor(vfHeight * bottomP);
+    var left = Math.floor(vfWidth * leftP); 
+    console.log([top, right, bottom, left], 'top, right, bottom, left');
+    
+    // - draw the div and position it
+    console.log(vfWidth, vfHeight, 'viewport dimensions');
+    if (!this.ui.viewfinderViewport) {
+		this.ui.viewfinderViewport = $('<div class="ca-ui-viewfinder-viewport">&nbsp;</div>').appendTo(this.ui.viewfinder);
+    }
+    
+	this.ui.viewfinderViewport.css({
+		'top': top + 'px',
+		'right': right + 'px',
+		'bottom': bottom + 'px',
+		'left': left + 'px'
+	});
+		
+}
+
+
+ConservationAsset.prototype.refreshViewfinderOpacity = function(opacity) {
+	if (this.ui.viewfinderLayer2) {
+		this.ui.viewfinderLayer2.css('opacity', opacity);
+	}
+};
 
 
 ConservationAsset.prototype.fullscreen = function() {
@@ -720,7 +843,7 @@ ConservationAsset.prototype.fullscreen = function() {
     	.attr('data-options', JSON.stringify(this.figureOptions));
     wrapper.append(figureWrapper).appendTo(document.body);
     new ConservationAsset(markup);
-}
+};
 
 
 ConservationAsset.prototype.toggleLayerSelector = function(event) {
@@ -801,6 +924,7 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
                     // remove the popup
                     CA.settings['layerSelector'+layerControlNum+'Visible'] = false;
                     CA.clearPopups();
+                    CA.container.attr('data-controls-lock', 'false');
                 }).appendTo(layerList);
             }
         }
@@ -821,7 +945,7 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
         .appendTo(CA.container);
         CA.ui.currentPopup = CA.ui[layerSelectorPopup];
     }
-}
+};
 
 
 ConservationAsset.prototype.toggleAnnotationSelector = function() {
@@ -916,7 +1040,7 @@ ConservationAsset.prototype.toggleAnnotationSelector = function() {
         .appendTo(this.container);
         this.ui.currentPopup = this.ui.annotationSelector;
     }
-}
+};
 
 
 ConservationAsset.prototype.resetZoomRange = function(zoomMin) {
