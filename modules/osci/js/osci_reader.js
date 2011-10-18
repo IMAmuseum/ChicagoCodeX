@@ -509,13 +509,13 @@
 
             figure = $("#osci_pages").find($this.attr("href"));
 
-            if (figure.is(":visible")) {
-                amplify.publish("osci_navigation", {osci_to : "selector", osci_value : $this.attr("href")});
-            } else {
+//            if (figure.is(":visible")) {
+//                amplify.publish("osci_navigation", {osci_to : "selector", osci_value : $this.attr("href")});
+//            } else {
                 figure.trigger({
                     type : "osci_figure_fullscreen"
                 });
-            }
+            //}
         });
         
         //make more & navigation bars close when viewer is clicked
