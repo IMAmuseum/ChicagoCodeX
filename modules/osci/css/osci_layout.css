@@ -11,7 +11,6 @@
 
 #osci_viewer_wrapper h1 {
     margin: 0 0 1em;
-    width 100%;
     border-bottom: 2px solid #444;
 }
 
@@ -87,7 +86,7 @@
 #osci_viewer figure figcaption {
     display: block;
     color: #AAA;
-    font-size: 1em;
+    font-size: .8em;
 }
 
 #osci_viewer figure figcaption p {
