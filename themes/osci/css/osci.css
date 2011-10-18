@@ -359,6 +359,7 @@ ul#osci_navigation_toc li a {
     color: #CCC;
     margin: 10px 0 0;
     border: none;
+    display: none;
 }
 
 #osci_table_of_contents_wrapper .osci_table_of_contents_handle {
@@ -385,9 +386,10 @@ ul#osci_navigation_toc li a {
 	/*text-transform:uppercase;*/
 }
 
-.osci_reference_image {
+#osci_viewer_wrapper .osci_reference_image {
     text-align: center;   
     height: 180px;
+    margin: 20px 0;
 }
 
 .osci_reference_image img {
