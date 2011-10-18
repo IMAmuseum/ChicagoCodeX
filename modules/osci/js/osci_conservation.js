@@ -487,14 +487,12 @@ ConservationAsset.prototype.createUI = function() {
     	 */
     	var baseLayers;
     	if (CA.figureOptions.baseLayerPreset) {
-    		console.log('test1');
     		baseLayers = [];
     		for (i=0; i < CA.figureOptions.baseLayerPreset.length; i++) {
     			baseLayers.push(CA.getLayerById(CA.figureOptions.baseLayerPreset[i]));
     		}
     	}
     	else {
-    		console.log('test2');
     		baseLayers = CA.baseLayers;
     	}
     	for (i = 0; i < baseLayers.length && i < 2; i++) {
@@ -512,7 +510,6 @@ ConservationAsset.prototype.createUI = function() {
     	}
     	// if more than one layer, restore transparency setting
     	if (baseLayers.length > 1 && CA.ui.slider) {
-    		console.log('setting');
     		$('#'+CA.settings.currentLayer2.id).css('opacity', CA.ui.slider.slider('value') / 100);
     		if (CA.ui.viewfinderLayer2) {
         		CA.ui.viewfinderLayer2.css('opacity', CA.ui.slider.slider('value') / 100);
@@ -674,7 +671,6 @@ ConservationAsset.prototype.createUI = function() {
     this.container.bind('mousemove', function(event) {
         var container = CA.container;
         var date = new Date();
-        console.log('mousemove');
         
         container.attr('data-controls-time', date.getTime());
         var controlState = container.attr('data-controls') || 'false';
@@ -701,11 +697,9 @@ ConservationAsset.prototype.createUI = function() {
         // test if this is still around.  we include popups, and other transients
         if (typeof(this.bind) == 'function') {
             this.bind('mouseenter', function() {
-            	console.log('locking');
                 CA.container.attr('data-controls-lock', 'true');
             });
             this.bind('mouseleave', function() {
-            	console.log('unlocking');
                 CA.container.attr('data-controls-lock', 'false');
             });
         }
@@ -763,8 +757,6 @@ ConservationAsset.prototype.refreshViewfinderViewport = function() {
     if (pointNE.x < 0) pointNE.x = 0;
     if (pointNE.y > 0) pointNE.y = 0;
     
-    console.log([pointSW, pointNE], 'pointSW, pointNE');
-    
     var width = this.baseLayers[0].width;
     var height = this.baseLayers[0].height;
     
@@ -773,19 +765,14 @@ ConservationAsset.prototype.refreshViewfinderViewport = function() {
     var rightP = (pointNE.x - this.map.size().x) / width;
     var bottomP = (pointSW.y - this.map.size().y) / height;
     var leftP = Math.abs(pointSW.x) / width;
-    console.log([topP, rightP, bottomP, leftP], 'topP, rightP, bottomP, leftP');
-    
-    
     
     // translate percentages to pixels
     var top = Math.floor(vfHeight * topP); 
     var right = Math.floor(vfWidth * rightP);
     var bottom = Math.floor(vfHeight * bottomP);
     var left = Math.floor(vfWidth * leftP); 
-    console.log([top, right, bottom, left], 'top, right, bottom, left');
     
     // - draw the div and position it
-    console.log(vfWidth, vfHeight, 'viewport dimensions');
     if (!this.ui.viewfinderViewport) {
 		this.ui.viewfinderViewport = $('<div class="ca-ui-viewfinder-viewport">&nbsp;</div>').appendTo(this.ui.viewfinder);
     }
