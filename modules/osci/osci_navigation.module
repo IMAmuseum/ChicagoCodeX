@@ -433,28 +433,49 @@ function _osci_navigation_get_node_content_length($nids)
 function _osci_navigation_load_additional_toc_data(&$toc)
 {
     $imageData = array();
-
+    $inactiveIds = array();
+    
     foreach($toc as $tocId => $data) {
         $nid = (int)$data['nid'];
-
+        $active = true;
+        
+        //if parent is inactive remove from toc
+        if (count($data['parent']) && in_array($data['parent']['nid'], $inactiveIds))
+        {
+            unset($toc[$tocId]);
+            $inactiveIds[] = $nid;
+            continue;
+        }
+        
         $node = node_load($nid);
-        $view = node_view($node, "body_copy");
+
+        if (!isset($node->field_active['und']) || $node->field_active['und'][0]['value'] == 0) {
+            $inactiveIds[] = $nid;
+            $active = false;
+        }
 
         if (isset($node->field_osci_navigation_title['und'][0]['value'])) {
             $data['title'] = check_markup($node->field_osci_navigation_title['und'][0]['value'], $node->field_osci_navigation_title['und'][0]['format']);
         }
 
         $subSections = array();
-        foreach($view as $k => $v) {
-            if (is_array($v) && isset($v['#weight']) && $k !== 'field_osci_plate_image' && strlen($v[0]['#markup'])) {
-                $subSections[$v['#weight']] = array(
-                    'title' => $v['#title'],
-                    'field' => $v['#field_name'],
-                    'nid' => $nid
-                );
+        if ($active) 
+        {
+            $view = node_view($node, "body_copy");
+        
+            foreach($view as $k => $v) {
+                if (is_array($v) && isset($v['#weight']) && $k !== 'field_osci_plate_image' && strlen($v[0]['#markup'])) {
+                    $subSections[$v['#weight']] = array(
+                        'title' => $v['#title'],
+                        'field' => $v['#field_name'],
+                        'nid' => $nid
+                    );
+                }
             }
         }
 
+        $data['active'] = $active ? 1 : 0;
+        
         if ($subSections) {
             ksort($subSections);
             $data['sub_sections'] = array_values($subSections);

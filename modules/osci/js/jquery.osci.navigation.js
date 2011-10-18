@@ -614,9 +614,12 @@
                             }
                         }
                     }
-                    
-                    if (!isExpander) {
-                        base.navigateTo("node", $(this).data("nid") + "#osci_plate_fig");
+                    console.log($this.data());
+                    if (!isExpander && $this.data("active")) {
+                        var linkTo = $this.data("nid");
+                        linkTo = linkTo.indexOf("#") > -1 ? linkTo : linkTo + "#osci_plate_fig";
+                        
+                        base.navigateTo("node", linkTo);
                     }
                     
                     if ($.browser.webkit) {
@@ -729,23 +732,29 @@
         
         function _create_menu_item(node)
         {
-            var tocItem, id = node.nid, link = node.nid;
+            var tocItem, id = node.nid, link = node.nid, liClass = "", active = false;
             
             if (node.field) {
                 id = node.nid + "_" + node.field;
                 link = node.nid + "#" + node.field + "_anchor";
+                liClass += node.field;
+                active = true;
+            } else {
+                liClass += node.active ? "" : "inactive";
+                active = node.active;
             }
 
             tocItem = $("<li>", {
                 id : "osci_toc_node_" + id,
-                "class" : node.field,
+                "class" : liClass,
                 data : node
             }).append(
                 $("<a>", {
                     html : node.title,
                     href : "#",
                     data : {
-                        nid : link
+                        nid : link,
+                        active : active
                     }
                 })
             );

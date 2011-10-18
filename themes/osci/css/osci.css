@@ -304,6 +304,10 @@ ul#osci_navigation_toc li a:hover {
     text-decoration: none;   
 }
 
+ul#osci_navigation_toc li.inactive a:hover {
+    cursor: not-allowed; 
+}
+
 ul#osci_navigation_toc li a.osci_toc_arrow {
     position: absolute;
     top: 0;
