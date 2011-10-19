@@ -132,44 +132,44 @@ function osci_navigation_services_resources()
                         'default' => false
                     )
                 ),
-                'access callback' => 'user_access',
-                'access arguments' => array('access content'),
-                'access arguments append' => false
+                'access callback' => true,
+                //'access arguments' => array('access content'),
+                //'access arguments append' => false
             ),
             'index' => array(
                 'callback' => '_osci_navigation_get_books',
-                'access callback' => 'user_access',
-                'access arguments' => array('access content'),
-                'access arguments append' => false
+                'access callback' => true,
+                //'access arguments' => array('access content'),
+                //'access arguments append' => false
             ),
             'relationships' => array(
                 'next' => array(
                     'callback' => '_osci_navigation_next',
                     'args' => array(),
-                    'access callback' => 'user_access',
-                    'access arguments' => array('access content'),
-                    'access arguments append' => false
+                    'access callback' => true,
+                    //'access arguments' => array('access content'),
+                    //'access arguments append' => false
                 ),
                 'prev' => array(
                     'callback' => '_osci_navigation_prev',
                     'args' => array(),
-                    'access callback' => 'user_access',
-                    'access arguments' => array('access content'),
-                    'access arguments append' => false
+                    'access callback' => true,
+                    //'access arguments' => array('access content'),
+                    //'access arguments append' => false
                 ),
                 'parent' => array(
                     'callback' => '_osci_navigation_parent',
                     'args' => array(),
-                    'access callback' => 'user_access',
-                    'access arguments' => array('access content'),
-                    'access arguments append' => false
+                    'access callback' => true,
+                    //'access arguments' => array('access content'),
+                    //'access arguments append' => false
                 ),
                 'book' => array(
                     'callback' => '_osci_navigation_get_book_toc',
                     'args' => array(),
-                    'access callback' => 'user_access',
-                    'access arguments' => array('access content'),
-                    'access arguments append' => false
+                    'access callback' => true,
+                    //'access arguments' => array('access content'),
+                    //'access arguments append' => false
                 )
             )
         )
