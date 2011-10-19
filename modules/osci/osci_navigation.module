@@ -145,31 +145,55 @@ function osci_navigation_services_resources()
             'relationships' => array(
                 'next' => array(
                     'callback' => '_osci_navigation_next',
-                    'args' => array(),
+                    'args' => array(
+                        array(
+                            'name' => 'nid',
+                            'optional' => false,
+                            'type' => 'int',
+                            'description' => 'The nid to load the table of contents for.',
+                            'source' => array('path' => '0')
+                        ),
+                    ),
                     'access callback' => "_osci_navigation_check_access",
-                    //'access arguments' => array('access content'),
-                    //'access arguments append' => false
                 ),
                 'prev' => array(
                     'callback' => '_osci_navigation_prev',
-                    'args' => array(),
+                    'args' => array(
+                        array(
+                            'name' => 'nid',
+                            'optional' => false,
+                            'type' => 'int',
+                            'description' => 'The nid to load the table of contents for.',
+                            'source' => array('path' => '0')
+                        ),
+                    ),
                     'access callback' => "_osci_navigation_check_access",
-                    //'access arguments' => array('access content'),
-                    //'access arguments append' => false
                 ),
                 'parent' => array(
                     'callback' => '_osci_navigation_parent',
-                    'args' => array(),
+                    'args' => array(
+                        array(
+                            'name' => 'nid',
+                            'optional' => false,
+                            'type' => 'int',
+                            'description' => 'The nid to load the table of contents for.',
+                            'source' => array('path' => '0')
+                        ),
+                    ),
                     'access callback' => "_osci_navigation_check_access",
-                    //'access arguments' => array('access content'),
-                    //'access arguments append' => false
                 ),
                 'book' => array(
                     'callback' => '_osci_navigation_get_book_toc',
-                    'args' => array(),
+                    'args' => array(
+                        array(
+                            'name' => 'nid',
+                            'optional' => false,
+                            'type' => 'int',
+                            'description' => 'The nid to load the table of contents for.',
+                            'source' => array('path' => '0')
+                        ),
+                    ),
                     'access callback' => "_osci_navigation_check_access",
-                    //'access arguments' => array('access content'),
-                    //'access arguments append' => false
                 )
             )
         )
