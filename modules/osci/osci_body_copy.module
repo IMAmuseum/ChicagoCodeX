@@ -944,6 +944,7 @@ function osci_body_copy_figure_reference($args) {
         ->addTag('node_access')
         ->range(0, 100)
         ->execute();
+    $matches = array();
     foreach($figs as $result) {
         $matches[$result->nid] = $result->title;
     }
