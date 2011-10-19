@@ -173,12 +173,20 @@ function _filter_figure_tips() {
  */
 function _process_args($text) {
     $data = array();
-    list($data['id'], $args) = explode('|', $text);
-    $args = explode(',', $args);
+    $temp = explode('|', $text);
+    if (isset($temp[0])) {
+        $data['id'] = $temp[0];
+    }
+    
+    if (isset($temp[1])) {
+        $args = explode(',', $temp[1]);
 
-    foreach ($args as $val) {
-        $arg = explode('=', $val);
-        $data['args'][$arg[0]] = $arg[1];
+        foreach ($args as $val) {
+            $arg = explode('=', $val);
+            if (isset($arg[0]) && isset($arg[1])) {
+                $data['args'][$arg[0]] = $arg[1];
+            }
+        }
     }
 
     return $data;

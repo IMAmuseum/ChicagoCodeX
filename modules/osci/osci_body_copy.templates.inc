@@ -5,15 +5,26 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $node = node_load($figure['figure_reference']);
     node_build_content($node);
 
+    $vars['content'] = "";
+    
+    if (!isset($figure['figCount'])) {
+        $figure['figCount'] = 0;
+        $vars['figure']['figCount'] = 0;
+    }
+    
+    if (!isset($figure['catalogNumber'])) {
+        $vars['figure']['catalogNumber'] = 0;
+    }
+    
     $data = array(
     	'position' => $figure['position'],
     	'columns' => $figure['columns'],
-    	'aspect' => $node->field_aspect_ratio['und'][0]['value'],
+    	'aspect' => isset($node->field_aspect_ratio) ? $node->field_aspect_ratio['und'][0]['value'] : 1,
         'vertical_position' => substr($figure['position'], 0, 1),
         'horizontal_position' => strlen($figure['position']) > 1 ? substr($figure['position'], 1, 1) : "na",
         'figure_type' => $node->type,
     	'options' => htmlspecialchars($figure['figure_options']),
-        'occurences' => $figure['figOccurences']
+        'occurences' => isset($figure['figOccurences']) ? $figure['figOccurences'] : 1
     );
     // store the options as they are, then strip out the url since it's
     // only needed on the thumbnail
@@ -30,7 +41,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     switch ($nodeType) {
     	
         case 'image':
-        	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]) || $vars['osci_static_image'])
+        	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]) || isset($vars['osci_static_image']))
         	{
         	    $image = array();
         		// ptiff is empty, use the image field for display
@@ -87,7 +98,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         	}
         	
         	// test is a preview url is available.  If so, use it in the thumbnail below
-        	if ($options && $options->previewUrl && $options->previewUrl != '') {
+        	if ($options && isset($options->previewUrl) && $options->previewUrl != '') {
         	    $thumbnailPath = 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl);
         	} else {
         	    $thumbnailPath = $node->field_image['und'][0]['uri'];
@@ -105,7 +116,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         			'attributes' => array(
         				'data-figure_id' => $figure['id'],
         			    'data-figure_number' => $figure['figCount'],
-        			    'data-occurences' => $figure['figOccurences']
+        			    'data-occurences' => isset($figure['figOccurences']) ? $figure['figOccurences'] : 1
         			)
         		));
         	}

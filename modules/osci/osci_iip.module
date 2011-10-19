@@ -216,7 +216,7 @@ function _osci_iip_create_iip_div($node, $figure_id) {
 
 	$ptiff_base = variable_get('osci_iip_base_path', '') . '/';
 	$field_ptiff = $ptiff_base . $node->field_ptiff['und'][0]['value'];
-	if ($node->field_ptiff_overlay['und'][0]['value']) {
+	if (isset($node->field_ptiff_overlay['und']) && $node->field_ptiff_overlay['und'][0]['value']) {
 		$field_overlay = $ptiff_base . $node->field_ptiff_overlay['und'][0]['value'];
 	}
 	else { $field_overlay = ""; }
