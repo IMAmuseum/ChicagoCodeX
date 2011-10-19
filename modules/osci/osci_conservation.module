@@ -360,7 +360,7 @@ function _osci_conservation_get_conservation_html($nid) {
         }
 
         // set the annotation flag
-        if ($asset['annotation_flag'] > 0) {
+        if (isset($asset['annotation_flag']) && $asset['annotation_flag'] > 0) {
             $data['annotation'] = "true";
         } else {
             $data['annotation'] = "false";
