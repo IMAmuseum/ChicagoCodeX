@@ -384,7 +384,7 @@ function osci_body_copy_render_layout($nid)
         );
     }
 
-    if (count($figures)) {
+    if (count($figures) || $plateNid) {
         $finalFigures = array();
 
         if ($plateNid) {
