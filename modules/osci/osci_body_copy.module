@@ -920,9 +920,7 @@ function osci_body_copy_figure_thumb_save() {
 	$dirHandle = opendir($dir);
 	while (($file = readdir($dirHandle)) !== FALSE) {
 		if (strstr($file, $figureId)) {
-			$drupalFile = new stdClass();
-			$drupalFile->uri = "public://previews/".$file;
-			file_delete($drupalFile);
+			unlink(drupal_realpath("public://previews/".$file));
 		}
 	}
 	
