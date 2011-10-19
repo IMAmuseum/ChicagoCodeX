@@ -3,6 +3,11 @@
 function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     $figure = $vars['figure'];
     $node = node_load($figure['figure_reference']);
+    
+    if (!isset($node->nid)) {
+        watchdog("osci_body_copy", "invalid figure reference " . $figure['figure_reference']);
+        return;
+    }
     node_build_content($node);
 
     $vars['content'] = "";
