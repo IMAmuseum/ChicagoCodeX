@@ -288,7 +288,7 @@ function osci_body_copy_render_layout($nid)
         unset($elements['field_osci_plate_image']);
     }
 
-    $catalogNumber = (isset($node->field_osci_catalogue_number) && $node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
+    $catalogNumber = (isset($node->field_osci_catalogue_number['und']) && $node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
     $bodyCopyElements = osci_body_copy_sort_elements($elements);
 
     $paragraphCount = 0;
