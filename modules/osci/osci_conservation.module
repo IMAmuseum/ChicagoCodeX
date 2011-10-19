@@ -212,6 +212,10 @@ function osci_conservation_node_load($nodes, $types) {
         if ($node->type == 'conservation_asset') {
             // get serialized flag data
             $flags = unserialize($node->field_data['und'][0]['value']);
+            if (!is_array($flags)) {
+            	watchdog('osci_conservation', 'Invalid file flags on '.$node->nid);
+            	return;
+            }
             $assets = $node->field_assets['und'];
             // apply for each flag to the field_assets field
             foreach ($flags as $flag) {
