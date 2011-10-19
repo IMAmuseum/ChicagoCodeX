@@ -865,8 +865,8 @@ function osci_body_copy_figure_preview($nid) {
 					.theme_image_style(array(
                 	    'style_name' => 'osci_image_256',
             			'path' => $node->field_image['und'][0]['uri'],
-                	    'alt' => $title,
-        		    	'title' => $title,
+                	    'alt' => $node->title,
+        		    	'title' => $node->title,
             			'attributes' => array(
         		           	'class' => 'preview_image',
 							'style' => 'width:100%;'
