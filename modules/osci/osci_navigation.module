@@ -530,7 +530,7 @@ function _osci_navigation_get_image_data($nid)
     $imageData = array();
 
     $node = node_load($nid);
-    if ($node->field_osci_plate_image['und'][0]['nid']) {
+    if (isset($node->field_osci_plate_image['und']) && $node->field_osci_plate_image['und'][0]['nid']) {
         $imageNode = node_load($node->field_osci_plate_image['und'][0]['nid']);
         $fullImageUrl = file_create_url($imageNode->field_image['und'][0]['uri']);
         $thumbnail165Url = image_style_url('osci_thumbnail_165w', $imageNode->field_image['und'][0]['uri']);

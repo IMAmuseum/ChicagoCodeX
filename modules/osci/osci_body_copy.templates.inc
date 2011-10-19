@@ -23,7 +23,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         'vertical_position' => substr($figure['position'], 0, 1),
         'horizontal_position' => strlen($figure['position']) > 1 ? substr($figure['position'], 1, 1) : "na",
         'figure_type' => $node->type,
-    	'options' => htmlspecialchars($figure['figure_options']),
+    	'options' => isset($figure['figure_options']) ? htmlspecialchars($figure['figure_options']) : null,
         'occurences' => isset($figure['figOccurences']) ? $figure['figOccurences'] : 1
     );
     // store the options as they are, then strip out the url since it's
@@ -149,6 +149,13 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
             	));
             }
             else {
+                // test is a preview url is available.  If so, use it in the thumbnail below
+                if ($options && isset($options->previewUrl) && $options->previewUrl != '') {
+                    $thumbnailPath = 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl);
+                } else {
+                    $thumbnailPath = $node->field_image['und'][0]['uri'];
+                }
+                
             	$vars['thumbnail'] = theme_image_style(array(
                     			'style_name' => "osci_thumbnail_165w",
                     			'path' => $thumbnailPath,

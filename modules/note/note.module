@@ -428,6 +428,8 @@ function note_preprocess_osci_viewer(&$vars) {
 
 function user_notes($node) {
     global $user;
+    $rows = null;
+    
     $query = db_select('note', 'c')
         ->fields('c')
         ->condition('uid', $user->uid)
