@@ -942,7 +942,7 @@ function osci_body_copy_figure_reference($args) {
         ->condition('type', array('html_figure', 'conservation_asset', 'image_asset', 'iip_asset', 'svg_asset'), 'IN')
         ->condition('status', 1)
         ->condition('title', '%'.db_like($args).'%', 'LIKE')
-        ->orderBy('created', DESC)
+        ->orderBy('created', 'DESC')
         ->addTag('node_access')
         ->range(0, 100)
         ->execute();
