@@ -16,6 +16,8 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         $vars['figure']['catalogNumber'] = 0;
     }
     
+    $figure['figOccurences'] = isset($figure['figOccurences']) ? $figure['figOccurences'] : 1;
+    
     $data = array(
     	'position' => $figure['position'],
     	'columns' => $figure['columns'],
@@ -116,7 +118,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         			'attributes' => array(
         				'data-figure_id' => $figure['id'],
         			    'data-figure_number' => $figure['figCount'],
-        			    'data-occurences' => isset($figure['figOccurences']) ? $figure['figOccurences'] : 1
+        			    'data-occurences' => $figure['figOccurences']
         			)
         		));
         	}
