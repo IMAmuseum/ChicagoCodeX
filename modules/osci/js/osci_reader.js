@@ -239,10 +239,15 @@
                     iipmap(content.find(".iipmap"));
                 },
                 conservation_asset: function(figure, content) {
-                    // console.log(figure, content);
                     figure.prepend(content);
                     content.find('.conservation-asset').each(function() {
                        new ConservationAsset(this); 
+                    });
+
+                    figure.bind("osci_figure_fullscreen", function(e) {
+                        var assetId = $(this).find('.conservation-asset').attr("id");
+                        var asset = window.caCollection.find(assetId);
+                        asset.fullscreen();
                     });
                 },
                 image_asset: function(figure, content) {
@@ -250,17 +255,35 @@
                     content.find('.conservation-asset').each(function() {
                        new ConservationAsset(this); 
                     });
+                    
+                    figure.bind("osci_figure_fullscreen", function(e) {
+                        var assetId = $(this).find('.conservation-asset').attr("id");
+                        var asset = window.caCollection.find(assetId);
+                        asset.fullscreen();
+                    });
                 },
                 iip_asset: function(figure, content) {
                     figure.prepend(content);
                     content.find('.conservation-asset').each(function() {
                        new ConservationAsset(this); 
                     });
+                    
+                    figure.bind("osci_figure_fullscreen", function(e) {
+                        var assetId = $(this).find('.conservation-asset').attr("id");
+                        var asset = window.caCollection.find(assetId);
+                        asset.fullscreen();
+                    });
                 },
                 svg_asset: function(figure, content) {
                     figure.prepend(content);
                     content.find('.conservation-asset').each(function() {
                        new ConservationAsset(this); 
+                    });
+                    
+                    figure.bind("osci_figure_fullscreen", function(e) {
+                        var assetId = $(this).find('.conservation-asset').attr("id");
+                        var asset = window.caCollection.find(assetId);
+                        asset.fullscreen();
                     });
                 },
                 html_figure : function(figure, content) {
