@@ -555,8 +555,7 @@
         });
         
         $("#user_link").tooltip({
-            position : "bottom center",
-            
+            position : "bottom center"            
         });
         
     });
