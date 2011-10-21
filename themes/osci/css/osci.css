@@ -72,7 +72,7 @@ body.page-node-reader {
     background: #464646 url('../images/bg-header-bar-right.png') no-repeat right;   
     float: right;
     height: 26px;
-    width: 250px;
+    width: 220px;
 }
 
 #osci_increase_font {
@@ -91,6 +91,16 @@ body.page-node-reader {
 	cursor: pointer;
 	float: left;
 	padding-top: 3px;
+}
+
+#user_link {
+    background: #464646 url('../images/user-icon.png') no-repeat 4px 7px;
+	width: 21px;
+	height: 21px;
+	cursor: pointer;
+	float: left;
+	padding-top: 3px;
+    margin: 0 0 0 6px;
 }
 
 #osci_viewer_wrapper {
@@ -1054,3 +1064,23 @@ div.ctools-modal-content input.form-submit {
 #osci_navigation_toc .field_osci_tombstone {
     display: none;
 }
+
+#osci_viewer_wrapper .tooltip {
+	display:none;
+	background:#464646;
+	padding: 10px;
+	font-size:11px;
+	color:#fff;
+    z-index: 1000;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 2px 2px #888;
+}
+
+#osci_viewer_wrapper .tooltip a {
+    color: #D8D8D8;
+    font-size: 120%;
+}
+
+#osci_viewer_wrapper .tooltip a.logout-link {
+    margin: 0 10px 0 0;
+} 

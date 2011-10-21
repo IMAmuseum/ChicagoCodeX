@@ -6,7 +6,7 @@
 	function getPreviewDiv(id, target) {
 		// retrieve options
 		var options = $.parseJSON($('.figure_options', $(target).parents(".fieldset-wrapper:first")).val());
-		
+
 		// send nid to server to fetch preview
 		$.get(Drupal.settings.baseUrl + 'ajax/figurepreview/' + id,
 			function (data) {
@@ -412,6 +412,44 @@
 	        'blur': function(event) {
 	        	setTimeout( function() {
 	        		var currentVal = event.target.value;
+	            	if (currentVal == parseInt(currentVal)) {
+	            		// remove figure options and get new preview
+	            		jQuery(event.target).parents('.figure-wrapper').find('.figure_options').val("{}");
+	            		getPreviewDiv(currentVal, event.target);
+	            	}
+	        	}, 500);
+	        }
+        });
+        
+        $("#edit-field-osci-plate-image-und-0-nid").bind({
+            'keyup': function(event) {
+	        	// wait a second to see if anything else was pressed
+	        	var origVal = event.target.value.match(/nid:([0-9]*)/);
+                if (origVal[1]) {
+                    origVal = origVal[1];
+                }
+	        	setTimeout(function() {
+	        		var currentVal = event.target.value.match(/nid:([0-9]*)/);
+                    if (currentVal[1]) {
+                        currentVal = currentVal[1];
+                    }
+                    console.log(currentVal);
+	        		if (currentVal == origVal && currentVal != "" && currentVal == parseInt(currentVal)) {
+	        			// remove figure options and get new preview
+	            		jQuery(event.target).parents('.figure-wrapper').find('.figure_options').val("{}");
+	            		getPreviewDiv(currentVal, event.target);
+
+	        		}
+	        	}, 1250);
+        	},
+	        'blur': function(event) {
+	        	setTimeout( function() {
+	        		//var currentVal = event.target.value;
+                    var currentVal = event.target.value.match(/nid:([0-9]*)/);
+                    if (currentVal[1]) {
+                        currentVal = currentVal[1];
+                    }
+                    console.log(currentVal);
 	            	if (currentVal == parseInt(currentVal)) {
 	            		// remove figure options and get new preview
 	            		jQuery(event.target).parents('.figure-wrapper').find('.figure_options').val("{}");

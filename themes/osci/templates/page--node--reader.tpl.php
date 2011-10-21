@@ -85,9 +85,25 @@
  * @see bartik_process_page()
  */
 ?>
-  <?php if ($messages): ?>
-    <div id="messages"><div class="section">
-      <?php print $messages; ?>
-    </div></div> <!-- /.section, /#messages -->
-  <?php endif; ?>
-  <?php print render($page['content']); ?>
+<?php if ($messages): ?>
+<div id="messages">
+    <div class="section">
+        <?php print $messages; ?>
+    </div>
+</div> <!-- /.section, /#messages -->
+<?php endif; ?>
+<?php print render($page['content']); ?>
+<!--<div id="login_items">
+<?php
+//    $loginBlock = block_load("user", "login");
+//    $loginBlock->visibility = 1;
+//    dpm($loginBlock);
+//    print drupal_render(_block_get_renderable_array(_block_render_blocks(array($loginBlock))));
+//
+//    $userMenu = block_load("menu", "system_user-menu");
+//    $userMenu->visibility = 1;
+//    dpm($userMenu);
+//    $temp =  drupal_render(_block_get_renderable_array(_block_render_blocks(array($userMenu))));
+//    dpm($temp);
+?>
+</div>-->

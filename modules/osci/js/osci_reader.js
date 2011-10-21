@@ -553,5 +553,11 @@
                 e.preventDefault();
             }
         });
+        
+        $("#user_link").tooltip({
+            position : "bottom center",
+            
+        });
+        
     });
 })(jQuery);

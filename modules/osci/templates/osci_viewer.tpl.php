@@ -5,6 +5,15 @@
         <div id="osci_header_controls">
         	<div id="osci_increase_font"></div>
         	<div id="osci_decrease_font"></div>
+            <div id="user_link"></div>
+            <div class="tooltip">
+                <?php if(user_is_logged_in()): ?>
+                    <a href="/user/logout?destination=<?php print current_path(); ?>" class="logout-link">Logout</a>
+                    <a href="/user/<?php print $user->uid; ?>" class="profile-link">Profile</a>
+                <?php else: ?>
+                    <a href="/user/login?destination=<?php print current_path(); ?>" class="login-link">Login</a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
     <div id="osci_table_of_contents_wrapper">
