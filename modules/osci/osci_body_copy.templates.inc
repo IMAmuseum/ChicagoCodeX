@@ -21,8 +21,13 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         $vars['figure']['catalogNumber'] = 0;
     }
     
-    $figure['figOccurences'] = isset($figure['figOccurences']) ? $figure['figOccurences'] : 1;
+    if ($figure['id'] === "osci_plate_fig")
+    {
+        $figure['figure_options'] = '{"interaction":false,"annotation":false}';
+    }
     
+    $figure['figOccurences'] = isset($figure['figOccurences']) ? $figure['figOccurences'] : 1;
+
     $data = array(
     	'position' => $figure['position'],
     	'columns' => $figure['columns'],
