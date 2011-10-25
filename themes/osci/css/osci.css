@@ -719,6 +719,8 @@ a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
 .footnote { 
 	padding: 0 40px !important; 
 	line-height:1.6em;
+    overflow-y: auto;
+    height: 200px;
 }
 
 #osci_viewer {
@@ -1084,3 +1086,11 @@ div.ctools-modal-content input.form-submit {
 #osci_viewer_wrapper .tooltip a.logout-link {
     margin: 0 10px 0 0;
 } 
+
+#forthcoming {
+    z-index: 1000;
+    width: 200px;
+    padding: 10px;
+    background: #444;
+    color: #FFF;
+}
