@@ -94,6 +94,7 @@
                 page : undefined,
                 pageCount : 0,
                 pageStatus : "processing",
+                pageHasContent : false,
                 pageMinHeight : parseInt(base.viewer.pages.css("line-height"), 10) * base.options.minLinesPerColumn,
                 figureCarryover : [],
                 contentOffset : 0,
@@ -123,6 +124,7 @@
             
             if (remainingContent || base.render.figureCarryover.length) {
                 base.render.page = _newPage().appendTo(base.viewer.pages);
+                base.render.pageHasContent = false;
 
                 var unprocessed = [], 
                     carryOverCount = base.render.figureCarryover.length;
@@ -177,10 +179,11 @@
                     }
                 }
 
-                //if (pageElementCount > 0) {
+                if (base.render.pageHasContent) {
                     base.render.contentOffset = base.render.columnData[base.render.currentColumn].heightRemain;
-                    base.data.splice(0, pageElementCount);
-                //}
+                }
+                    
+                base.data.splice(0, pageElementCount);
                 
                 for (var pId in base.render.pageParagraphIdentifiers) {
                     base.render.pageParagraphIdentifiers[pId].appendTo(base.render.page);
@@ -366,6 +369,8 @@
                 content.remove();
                 heightRemain = 0;
                 overflow = true;
+            } else {
+                base.render.pageHasContent = true;
             }
             
             base.render.columnData[pageColumnNumber].heightRemain = heightRemain;
