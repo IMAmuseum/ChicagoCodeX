@@ -146,7 +146,7 @@ $.osci.getURL({
     $.osci.storage.defaultSettings = {
         url:    '',
         expire: 86400, // One day
-        type:   'html',
+        type:   'text',
         clear:  false,
         key:    'url',
         callback : function(data) {return data;}
