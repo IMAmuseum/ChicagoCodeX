@@ -92,6 +92,8 @@ var ConservationAsset = function(container) { // container should be a html elem
     		sliderPosition: 0
     	};
     }
+    // detect and incorporate the caption if it exists
+    this.settings.captionMarkup = this.container.parents('figure:first').find('figcaption');
 
     // store a copy of the original html - will be used to
     // regenerate markup for fullscreen
@@ -196,11 +198,11 @@ var ConservationAsset = function(container) { // container should be a html elem
     	var extents =  [
             {
                 lon: this.figureOptions.swLon,
-                lat: this.figureOptions.swLat,
+                lat: this.figureOptions.swLat
             },
             {
                 lon: this.figureOptions.neLon,
-                lat: this.figureOptions.neLat,
+                lat: this.figureOptions.neLat
             }
         ];
         this.setExtents(extents);
@@ -460,11 +462,11 @@ ConservationAsset.prototype.createUI = function() {
     		var extents =  [
     			{
     				lon: CA.figureOptions.swLon,
-    				lat: CA.figureOptions.swLat,
+    				lat: CA.figureOptions.swLat
     			},
     			{
     				lon: CA.figureOptions.neLon,
-    				lat: CA.figureOptions.neLat,
+    				lat: CA.figureOptions.neLat
     			}
     			];
     		CA.map.extent(extents);
@@ -803,8 +805,13 @@ ConservationAsset.prototype.fullscreen = function() {
 
     // create a parent container that spans the full screen
     var wrapper = $('<div class="ca-ui-fullscreen-wrap"></div>');
-    wrapper.height(window.innerHeight - 29 + 'px');
-
+    wrapper.css({
+    	height: Math.round(window.innerHeight * 0.85) + 'px',
+    	top:	Math.round(window.innerHeight * 0.05) + 'px',
+    	width:	Math.round(window.innerWidth * 0.9) + 'px',
+    	left: 	Math.round(window.innerWidth * 0.05) + 'px'
+    });
+    console.log(Math.round(window.innerHeight * 0.9), 'height');
     // retrieve the original markup for this ConservationAsset and 
     // remap the IDs of the asset and its layers
     var markup = $(this.settings.originalMarkup);
@@ -828,7 +835,14 @@ ConservationAsset.prototype.fullscreen = function() {
     var figureWrapper = $('<figure></figure>')
     	.append(markup)
     	.attr('data-options', JSON.stringify(this.figureOptions));
-    wrapper.append(figureWrapper).appendTo(document.body);
+    wrapper.append(figureWrapper)
+    
+    // if a caption is present in the figure options, append it to the fullscreen
+    if (this.settings.captionMarkup) {
+    	wrapper.append(this.settings.captionMarkup);
+    }
+    
+    wrapper.appendTo(document.body);
     new ConservationAsset(markup);
 };
 
