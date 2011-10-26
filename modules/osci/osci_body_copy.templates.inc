@@ -151,26 +151,41 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
             // if the figure has a its own thumbnail, use that
             
             // test is a preview url is available.  If so, use it in the thumbnail below
+            $use_style = False;
             if ($options && isset($options->previewUri) && $options->previewUri != '') {
             	$thumbnailPath = $options->previewUri;
+            	$use_style = True;
             }
             elseif ($options && isset($options->previewUrl) && $options->previewUrl != '') {
             	$thumbnailPath = 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl);
             } 
             else {
             	$thumbnailPath = $node->field_image['und'][0]['uri'];
+            	$use_style = True;
            	}
-           	
-            $vars['thumbnail'] = theme_image_style(array(
-            	'style_name' => "osci_thumbnail_165w",
-                'path' => $thumbnailPath,
-                'alt' => $node->title,
-                'attributes' => array(
-                	'data-figure_id' => $figure['id'],
-                    'data-figure_number' => $figure['figCount'],
-                    'data-occurences' => $figure['figOccurences']
-            	)
-            ));
+           	if ($use_style) {
+	            $vars['thumbnail'] = theme_image_style(array(
+	            	'style_name' => "osci_thumbnail_165w",
+	                'path' => $thumbnailPath,
+	                'alt' => $node->title,
+	                'attributes' => array(
+	                	'data-figure_id' => $figure['id'],
+	                    'data-figure_number' => $figure['figCount'],
+	                    'data-occurences' => $figure['figOccurences']
+	            	)
+	            ));
+           	}
+           	else {
+	            $vars['thumbnail'] = theme_image(array(
+	                        		'path'		=> $options->previewUrl,
+	                        		'alt'		=> $node->title,
+	                        		'attributes' => array(
+	                        	    	'data-figure_id' => $figure['id'],
+	                        	        'data-figure_number' => $figure['figCount'],
+	                        	        'data-occurences' => $figure['figOccurences']
+	            )
+	            ));
+           	}
             break;
     }
     
