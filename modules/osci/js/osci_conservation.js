@@ -93,7 +93,7 @@ var ConservationAsset = function(container) { // container should be a html elem
     	};
     }
     // detect and incorporate the caption if it exists
-    this.settings.captionMarkup = this.container.parents('figure:first').find('figcaption');
+    this.settings.captionMarkup = this.container.parents('figure:first').find('figcaption').clone();
 
     // store a copy of the original html - will be used to
     // regenerate markup for fullscreen
@@ -445,7 +445,7 @@ ConservationAsset.prototype.createUI = function() {
 	    }
 	    else {
 	    	window.caCollection.remove(CA);
-	        $('.ca-ui-fullscreen-wrap').remove();
+	        $('.ca-ui-fullscreen-modal').remove();
 	        if (window.scrollOffset) {
 	            window.scrollTo(window.scrollOffset[0], window.scrollOffset[1]);
 	        }
@@ -677,6 +677,16 @@ ConservationAsset.prototype.createUI = function() {
         container.attr('data-controls-time', date.getTime());
         var controlState = container.attr('data-controls') || 'false';
         if (controlState == 'false') {
+        	// ensure no other CA has its controls up
+        	var assets = window.caCollection.list();
+        	for (var i=0; i < assets.length; i++) {
+        		var asset = assets[i];
+        		if (asset.container.attr('data-controls') == 'true') {
+        			asset.container.attr('data-controls', 'false');
+        			asset.toggleControls();
+        		}
+        	}
+        	// turn on this CA's controls
             container.attr('data-controls', 'true'); 
             CA.toggleControls(); 
         }
@@ -798,20 +808,28 @@ ConservationAsset.prototype.refreshViewfinderOpacity = function(opacity) {
 
 ConservationAsset.prototype.fullscreen = function() {
     var $ = this.$;
+    var CA = this;
 
     // store scroll position move to the top of the screen
     window.scrollOffset = [window.pageXOffset, window.pageYOffset];
     window.scrollTo(0,0);
 
     // create a parent container that spans the full screen
-    var wrapper = $('<div class="ca-ui-fullscreen-wrap"></div>');
+    var modal = $('<div class="ca-ui-fullscreen-modal"></div>');
+    // if the modal background is clicked, close the fullscreen mode
+    modal.bind('click', function(event) {
+    	if ($(event.target).hasClass('ca-ui-fullscreen-modal')) {
+    		$(this).find('.ca-ui-fullscreen').trigger('click');
+    	}
+    });
+    var wrapper = $('<div class="ca-ui-fullscreen-wrap"></div>').appendTo(modal);
     wrapper.css({
     	height: Math.round(window.innerHeight * 0.85) + 'px',
     	top:	Math.round(window.innerHeight * 0.05) + 'px',
     	width:	Math.round(window.innerWidth * 0.9) + 'px',
     	left: 	Math.round(window.innerWidth * 0.05) + 'px'
     });
-    console.log(Math.round(window.innerHeight * 0.9), 'height');
+    console.log(Math.round(window.innerHeight * 0.85), 'height');
     // retrieve the original markup for this ConservationAsset and 
     // remap the IDs of the asset and its layers
     var markup = $(this.settings.originalMarkup);
@@ -836,13 +854,19 @@ ConservationAsset.prototype.fullscreen = function() {
     	.append(markup)
     	.attr('data-options', JSON.stringify(this.figureOptions));
     wrapper.append(figureWrapper)
+    modal.appendTo(document.body);
     
     // if a caption is present in the figure options, append it to the fullscreen
     if (this.settings.captionMarkup) {
     	wrapper.append(this.settings.captionMarkup);
+    	wrapper.find('figure').height(wrapper.height());
+    	wrapper.height(wrapper.height() + this.settings.captionMarkup.outerHeight());
+    	console.log(this.settings.captionMarkup.outerHeight(), 'caption height');
+    	console.log(wrapper.height(), 'new wrapper height');
+    	console.log(modal);
     }
     
-    wrapper.appendTo(document.body);
+    
     new ConservationAsset(markup);
 };
 

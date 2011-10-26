@@ -91,7 +91,7 @@
 }
 
 #osci_viewer_wrapper .ca-ui-fullscreen.expanded, .ca-ui-fullscreen.expanded {
-	background: url('../images/icon-fullscreen.png') center no-repeat;
+	background: url('../images/icon-collapse.png') center no-repeat;
 }
 
 #osci_viewer_wrapper .ca-ui-zoom, .ca-ui-zoom {
@@ -195,9 +195,30 @@
 	float: left;
 	height: 6px;
 	width: 12px;
-	
 	margin-top: 2px;
     margin-right: 5px;
+}
+
+#osci_viewer_wrapper .ca-ui-fullscreen-modal, .ca-ui-fullscreen-modal {
+    position: absolute;
+    top: 26px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9990;
+    background: lightgray;
+}
+
+#osci_viewer_wrapper .ca-ui-fullscreen-wrap, .ca-ui-fullscreen-wrap {
+    position: absolute;
+    top: 26px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    -moz-box-shadow: 0px 0px 5px 5px #000;
+    -webkit-box-shadow: 0px 0px 5px 5px #000;
+    box-shadow: 0px 0px 5px 5px #000;
 }
 
 #osci_viewer_wrapper .ca-ui-fullscreen-wrap, .ca-ui-fullscreen-wrap {
@@ -207,6 +228,9 @@
 	width: 100%;
 	height: 100%;
 	z-index: 9999;
+	/*-moz-box-shadow: 5px 5px 5px 5px #000;
+    -webkit-box-shadow: 5px 5px 5px 5px #000;*/
+    box-shadow: 0px 0px 5px 5px #000;
 }
 
 #osci_viewer_wrapper .ca-ui-fullscreen-wrap figcaption, .ca-ui-fullscreen-wrap figcaption {
