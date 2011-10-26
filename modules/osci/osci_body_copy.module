@@ -300,7 +300,7 @@ function osci_body_copy_render_layout($nid)
         $v = $elements[$k];
         $elements[$k]['#theme'] = 'body_copy_field_html5';
 
-        if (strlen($v[0]['#markup'])) {
+        if (strlen(trim($v[0]['#markup']))) {
             $html = str_get_html($v[0]['#markup']);
             
             $paragraphs = $html->find('p');
@@ -356,6 +356,8 @@ function osci_body_copy_render_layout($nid)
             }
 
             $elements[$k][0]['#markup'] = $html->save();
+        } else {
+            unset($elements[$k]);
         }
 
         $footnotes += $v[0]['osci_footnotes'];
