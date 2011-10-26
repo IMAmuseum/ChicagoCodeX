@@ -217,9 +217,8 @@
 		        						// and resave the options to the dom.
 	        					  		var data = JSON.parse(data);
 	        					  		var figureOptions = JSON.parse(dest.siblings('.figure_options:first').val());
-	        					  		figureOptions.previewUrl = data.url;
+	        					  		figureOptions.previewUri = data.uri;
 	        					  		dest.siblings('.figure_options:first').val(JSON.stringify(figureOptions));
-	        					  		  
 	        					  		// swap out the original preview image
 	        					  		var imageElem = dest.find('img:first');
 	        					  		// force a timestamp here to force reload
@@ -250,7 +249,7 @@
                     	newOptions.sliderPosition	= ca.getSliderPosition();
                     	newOptions.baseLayerPreset	= ca.getVisibleBaseLayerIds();
                     	if (thumbRemove && thumbRemove.attr('checked')) {
-                    		newOptions.previewUrl = false;
+                    		newOptions.previewUri = false;
                     		dest.find('.preview_image').css('display', 'none');
                     	}
                     	newOptions = JSON.stringify(newOptions);
@@ -433,7 +432,6 @@
                     if (currentVal[1]) {
                         currentVal = currentVal[1];
                     }
-                    console.log(currentVal);
 	        		if (currentVal == origVal && currentVal != "" && currentVal == parseInt(currentVal)) {
 	        			// remove figure options and get new preview
 	            		jQuery(event.target).parents('.figure-wrapper').find('.figure_options').val("{}");
@@ -449,7 +447,6 @@
                     if (currentVal[1]) {
                         currentVal = currentVal[1];
                     }
-                    console.log(currentVal);
 	            	if (currentVal == parseInt(currentVal)) {
 	            		// remove figure options and get new preview
 	            		jQuery(event.target).parents('.figure-wrapper').find('.figure_options').val("{}");

@@ -483,6 +483,13 @@ function osci_body_copy_field_presave($entity_type, $entity, $field, $instance, 
                 if (empty($figure['figure_reference']) || $id == 'figure_index' || $id == 'figure-blank') {
                     continue;
                 }
+                
+                $opts = json_decode($figure['figure_options']);
+                if (isset($opts->previewUrl)) {
+                	unset($opts->previewUrl);
+                }
+                $figure['figure_options'] = json_encode($opts);
+                
                 $finalFigures[$uid] = $figure;
             }
         }
@@ -732,6 +739,17 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
     	}
         $figId = $fieldName . '_fig_' . $nid . '_' . $id;
         $class = ($id == 1) ? 'figure first' : 'figure';
+        
+        // set up figure defaults
+        $figDefault = isset($figure['figure_options']) ? $figure['figure_options'] : '{}';
+        
+        $figOpt = json_decode($figDefault);
+        if ($figOpt->previewUri) {
+        	$figOpt->previewUrl = image_style_url('osci_thumbnail_165w', $figOpt->previewUri);
+        }
+        $figDefault = json_encode($figOpt);
+        
+        
         $bodyCopy['figures'][$id] = array(
             '#title'        => $id . ' <span>[figure:' . $figId . ']</span>',
             '#type'         => 'fieldset',
@@ -748,7 +766,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
             ),
             'figure_options' => array(
             	'#type' => 'hidden',
-            	'#default_value' => isset($figure['figure_options']) ? $figure['figure_options'] : '{}',
+            	'#default_value' => $figDefault,
             	'#attributes' => array('class' => 'figure_options'),
             ),
             'figure_reference' => array(
@@ -932,7 +950,7 @@ function osci_body_copy_figure_thumb_save() {
 	// form the return
 	$ret = new stdClass;
 	$ret->url = image_style_url('osci_thumbnail_165w', 'public://previews/' . $filename);
-	$ret->path = $dir.$filename;
+	$ret->uri = 'public://previews/' . $filename;
 	print json_encode($ret);
 }
 

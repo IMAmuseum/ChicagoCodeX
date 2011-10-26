@@ -149,36 +149,28 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
             $vars['content'] = _osci_conservation_get_conservation_html($node->nid);
             
             // if the figure has a its own thumbnail, use that
-            if (isset($options->previewUrl)) {
-            	$vars['thumbnail'] = theme_image(array(
-            		'path'		=> $options->previewUrl,
-            		'alt'		=> $node->title,
-            		'attributes' => array(
-            	    	'data-figure_id' => $figure['id'],
-            	        'data-figure_number' => $figure['figCount'],
-            	        'data-occurences' => $figure['figOccurences']
-            	    )
-            	));
+            
+            // test is a preview url is available.  If so, use it in the thumbnail below
+            if ($options && isset($options->previewUri) && $options->previewUri != '') {
+            	$thumbnailPath = $options->previewUri;
             }
+            elseif ($options && isset($options->previewUrl) && $options->previewUrl != '') {
+            	$thumbnailPath = 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl);
+            } 
             else {
-                // test is a preview url is available.  If so, use it in the thumbnail below
-                if ($options && isset($options->previewUrl) && $options->previewUrl != '') {
-                    $thumbnailPath = 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl);
-                } else {
-                    $thumbnailPath = $node->field_image['und'][0]['uri'];
-                }
-                
-            	$vars['thumbnail'] = theme_image_style(array(
-                    			'style_name' => "osci_thumbnail_165w",
-                    			'path' => $thumbnailPath,
-                    			'alt' => $node->title,
-                    			'attributes' => array(
-                    				'data-figure_id' => $figure['id'],
-                    			    'data-figure_number' => $figure['figCount'],
-                    			    'data-occurences' => $figure['figOccurences']
+            	$thumbnailPath = $node->field_image['und'][0]['uri'];
+           	}
+           	
+            $vars['thumbnail'] = theme_image_style(array(
+            	'style_name' => "osci_thumbnail_165w",
+                'path' => $thumbnailPath,
+                'alt' => $node->title,
+                'attributes' => array(
+                	'data-figure_id' => $figure['id'],
+                    'data-figure_number' => $figure['figCount'],
+                    'data-occurences' => $figure['figOccurences']
             	)
-            	));
-            }
+            ));
             break;
     }
     
