@@ -48,7 +48,6 @@ $.osci.getURL({
         //no localstorage or expired
         $.ajax({
             url: settings.url,
-            cache: false,
             async: true,
             dataType: settings.type,
             success: function(data) {

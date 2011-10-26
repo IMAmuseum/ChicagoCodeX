@@ -142,6 +142,9 @@
         //wrapper for the content loading function
         base.loadContent = function(updateHistory, navAfterLoadTo, navAfterLoadValue)
         {
+            amplify.publish("osci_loading_content");
+            base.disableNavigation();
+            _update_title();
         	//check if user defined load function is a function and call it
             if ($.isFunction($.osci.navigation.options.loadFunction)) {
                 $.osci.navigation.options.loadFunction($.osci.navigation.data);
@@ -188,8 +191,6 @@
         //reset the navigation
         function _reset_navigation()
         {
-            var paragraphData, page
-
             base.data.currentPage = 1;
             base.data.pageCount = $.osci.layout.options.pageCount;
             base.data.layoutData = $.osci.layout.options;
@@ -281,7 +282,7 @@
 
             //put the title parts into the page
             $("h1.osci_book_title").html(bookTitle);
-            $("h2.osci_book_section_title").html(subTitle);
+            $("h2.osci_book_section_title").find("span.section_title").html(subTitle);
         }
         
         //update the HTML5 url history
@@ -731,6 +732,8 @@
                     "overflow-y" : "auto"
                 });
             }
+            
+            amplify.publish("osci_toc_complete");
         }
         
         function _create_menu_item(node)

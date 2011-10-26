@@ -126,17 +126,12 @@
         var $doc = $(this),
             reader = $("#" + Drupal.settings.osci_navigation.reader_id);
         
-        amplify.subscribe("osci_layout_start", function(data) {
-//            $("<div>", {
-//                id : "osci_loading"
-//            }).appendTo("body");
-            
-            $("#osci_navigation_section").addClass("loading");
+        amplify.subscribe("osci_loading_content", function(data) {
+            $("span.loading").css({display:"inline-block"});
         },1);
         
         amplify.subscribe("osci_layout_complete", function(data) {
-            //$("#osci_loading").remove();
-            $("#osci_navigation_section").removeClass("loading");
+            $("span.loading").hide();
         });
         
     	$doc.bind({
@@ -581,5 +576,21 @@
             position : "bottom center"            
         });
         
+        amplify.subscribe("osci_toc_complete", function() {
+            $("#osci_navigation_toc_wrapper").find("li.inactive > a").tipsy({
+                gravity : "w",
+                fade : true,
+                html : true,
+                title : function() {
+                    return "The complete version of <em>" + $("#osci_header").find(".osci_book_title").text() + "</em> will include entries for the following works of art.";
+                }
+            });
+        });
+        
+        $("#search").tipsy({
+            gravity : "n",
+            fade : true,
+            fallback : "The publication's search capability is currently in development"
+        });
     });
 })(jQuery);

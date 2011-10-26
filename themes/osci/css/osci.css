@@ -103,6 +103,14 @@ body.page-node-reader {
     margin: 0 0 0 6px;
 }
 
+#search {
+	width: 130px;
+	height: 21px;
+	float: left;
+	padding-top: 3px;
+    margin: 0 0 0 10px;
+}
+
 #osci_viewer_wrapper {
     position: relative;   
     overflow: hidden;
@@ -1087,10 +1095,10 @@ div.ctools-modal-content input.form-submit {
     margin: 0 10px 0 0;
 } 
 
-#forthcoming {
-    z-index: 1000;
-    width: 200px;
-    padding: 10px;
-    background: #444;
-    color: #FFF;
+#osci_viewer_wrapper h2.osci_book_section_title span.loading {
+    background: url(../images/loader.gif) left center no-repeat;
+    padding: 0 0 0 20px;
+    display: inline-block;
+    color: #444;
 }
+
