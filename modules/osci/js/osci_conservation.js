@@ -207,8 +207,6 @@ var ConservationAsset = function(container) { // container should be a html elem
         ];
         this.setExtents(extents);
     }
-    
-    // console.log(this);
 }
 
 
@@ -237,9 +235,6 @@ ConservationAsset.prototype.createLayer = function(layerData) {
     // give the layer a reference to its polymap object
     layerData.visible = true;
     layerData.polymapLayer = layer;
-    // console.log(layer, 'layer');
-	// console.log(layer.cache.size(), 'diag');
-	// console.log(this.map.centerRange(), 'center range');
 	
     // give the layer its id, and add it to the map
     layer.id(layerData.id);
@@ -829,7 +824,6 @@ ConservationAsset.prototype.fullscreen = function() {
     	width:	Math.round(window.innerWidth * 0.9) + 'px',
     	left: 	Math.round(window.innerWidth * 0.05) + 'px'
     });
-    console.log(Math.round(window.innerHeight * 0.85), 'height');
     // retrieve the original markup for this ConservationAsset and 
     // remap the IDs of the asset and its layers
     var markup = $(this.settings.originalMarkup);
@@ -861,9 +855,6 @@ ConservationAsset.prototype.fullscreen = function() {
     	wrapper.append(this.settings.captionMarkup);
     	wrapper.find('figure').height(wrapper.height());
     	wrapper.height(wrapper.height() + this.settings.captionMarkup.outerHeight());
-    	console.log(this.settings.captionMarkup.outerHeight(), 'caption height');
-    	console.log(wrapper.height(), 'new wrapper height');
-    	console.log(modal);
     }
     
     
