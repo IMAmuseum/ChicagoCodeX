@@ -182,8 +182,7 @@ body.page-node-reader {
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     background-color: #cbcbcb;
-    background: -moz-linear-gradient(100% 100% 90deg, #999999, #cbcbcb);
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cbcbcb), to(#999999));
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cbcbcb), to(#999999));
 }
 
 #osci_navigation_section_list li {
@@ -191,6 +190,8 @@ body.page-node-reader {
     height: 7px;
     float: left;
     cursor: pointer;
+    background-color: #cbcbcb;
+    background-image: linear-gradient(to bottom, #cbcbcb, #999999);
 }
 
 #osci_navigation_section_list li.first, #osci_navigation_section_list li.first.active {
