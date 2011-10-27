@@ -744,7 +744,7 @@ function osci_body_copy_field_widget_form(&$form, &$form_state, $field, $instanc
         $figDefault = isset($figure['figure_options']) ? $figure['figure_options'] : '{}';
         
         $figOpt = json_decode($figDefault);
-        if ($figOpt->previewUri) {
+        if (isset($figOpt->previewUri) && $figOpt->previewUri) {
         	$figOpt->previewUrl = image_style_url('osci_thumbnail_165w', $figOpt->previewUri);
         }
         $figDefault = json_encode($figOpt);
