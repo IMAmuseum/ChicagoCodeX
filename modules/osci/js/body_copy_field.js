@@ -307,7 +307,6 @@
          */
         $('.ui-tabs').live('tabsselect', function(e, ui) {
             initCKeditor(ui.tab.hash + ' textarea');
-            console.log(ui.tab.hash);
             var field = $('[id^="edit-field-osci-"]', ui.tab.hash).filter('[id$="figure-reference"]');
             var val = field.val();
             if (val == parseInt(val)) {
