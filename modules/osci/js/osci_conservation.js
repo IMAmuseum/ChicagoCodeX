@@ -1010,7 +1010,8 @@ ConservationAsset.prototype.toggleAnnotationSelector = function() {
                     layerItemBox.removeClass('empty').addClass('filled');
                     // if this is an annotation, use the selected color, and show  layer in legend
                     if (layerData.annotation && layerData.type == 'svg') {
-                        layerItemBox.css('background-color', '#' + layerData.color);
+                    	var bgColor = layerData.color || '#fff';
+                        layerItemBox.css('background-color', '#' + bgColor);
                         CA.addLegendItem(layerData);
                     }
                 }
@@ -1158,12 +1159,20 @@ ConservationAsset.prototype.toggleControls = function(duration) {
 
 ConservationAsset.prototype.addLegendItem = function(layerData) {
     var $ = this.$;
+    
+    // only show if there is color data
+    if (!layerData.color || layerData.color == '') {
+    	return;
+    }
+    
     // if the legend does not exist yet, create it here
     if (!this.ui.legend) {
         // legend control
         this.ui.legend = $('<div class="ca-ui-legend"><ul class="legendList"></ul></div>')
-        .css('display', 'block')
         .appendTo(this.container);
+        if (this.container.attr('data-controls') != 'true') {
+        	this.ui.legend.css('display', 'none');
+        }
         this.ui.controls.push(this.ui.legend);
     }
     

@@ -130,7 +130,7 @@ function osci_conservation_form_alter(&$form, &$form_state, $form_id) {
                     '#field_suffix'     => '&nbsp;<label class="option">Color</label>',
                     '#attributes'       => array(
                         'class' => array(
-                            'color {pickerClosable:true}',
+                            'color {pickerClosable:true,required:false}',
                             'ca-edit-color'
                         ),
                     ),

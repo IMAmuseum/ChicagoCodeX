@@ -150,6 +150,7 @@
 	background: transparent;
 	height: 100px;
 	border: 2px solid white;
+	background: #000 url('../images/icon-viewfinder-small.png') bottom left no-repeat;
 }
 
 #osci_viewer_wrapper .ca-ui-viewfinder.viewfinder-closed, .ca-ui-viewfinder.viewfinder-closed {
@@ -178,7 +179,7 @@
     opacity: 0.75;
     color: #fff;
     border-radius: 5px;
-    display: none;
+    display: block;
 }
 
 #osci_viewer_wrapper .ca-ui-legend ul, .ca-ui-legend ul {
