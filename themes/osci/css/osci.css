@@ -191,7 +191,6 @@ body.page-node-reader {
     float: left;
     cursor: pointer;
     background-color: #cbcbcb;
-    background-image: linear-gradient(to bottom, #cbcbcb, #999999);
 }
 
 #osci_navigation_section_list li.first, #osci_navigation_section_list li.first.active {
@@ -223,6 +222,7 @@ body.page-node-reader {
     border-bottom-right-radius: 3px;
     -moz-border-radius-bottomright: 3px;
     -webkit-border-bottom-right-radius: 3px;
+    background-color: #cbcbcb;
 }
 
 #osci_navigation_section_list li.active.last {
