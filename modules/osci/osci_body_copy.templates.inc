@@ -23,7 +23,7 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
     
     if ($figure['id'] === "osci_plate_fig")
     {
-        $figure['figure_options'] = '{"interaction":false,"annotation":false}';
+        $figure['figure_options'] = '{"interaction":true,"annotation":false}';
     }
     
     $figure['figOccurences'] = isset($figure['figOccurences']) ? $figure['figOccurences'] : 1;
