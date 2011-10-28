@@ -97,7 +97,7 @@ var ConservationAsset = function(container) { // container should be a html elem
 
     // store a copy of the original html - will be used to
     // regenerate markup for fullscreen
-    this.settings.originalMarkup = this.container[0].outerHTML;
+    this.settings.originalMarkup = outerHTML(this.container[0]);
 
     // extract the layer data
     this.layers = [];
@@ -1317,6 +1317,17 @@ ConservationAsset.prototype.getLayerById = function(id) {
 	return false;
 }
 
+function outerHTML(node){
+	// if IE, Chrome take the internal method otherwise build one
+	return node.outerHTML || (
+		function(n){
+			var div = document.createElement('div'), h;
+			div.appendChild( n.cloneNode(true) );
+			h = div.innerHTML;
+			div = null;
+			return h;
+		})(node);
+}
 
 // auto load any conservation assets 
 window.addEventListener('load', function() {
