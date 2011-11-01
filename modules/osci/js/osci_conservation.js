@@ -410,7 +410,8 @@ ConservationAsset.prototype.createUI = function() {
     	this.map
     		.add(this.polymaps.drag())
     		.add(this.polymaps.wheel())
-    		.add(this.polymaps.dblclick());
+    		.add(this.polymaps.dblclick())
+            .add(this.polymaps.touch());
 
 	    // we need to augment the polymap event handlers, since the built in polymaps
 	    // wheel interaction doesn't allow us to update our user interface controls
