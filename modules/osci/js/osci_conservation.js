@@ -2,10 +2,10 @@ var CACollection = function() {
 	var collection = [];
 	
 	this.add = function(asset) {
-		var i, found = false;
+		var i, count;
 		
 		// check that this asset isn't already in the collection
-		for (i=0; i < collection.length; i++) {
+		for (i=0, count = collection.length; i < count; i++) {
 			if (collection[i].id == asset.id) {
 				return false;
 			}
@@ -15,14 +15,14 @@ var CACollection = function() {
 	}
 	
 	this.remove = function(asset) {
-		var i;
+		var i, count;
 		// allow an asset or a string id to be passed in
 		if (typeof asset == "string") {
 			asset = { id: asset };
 		}
 		
 		// find this asset in the collection by id
-		for (i=0; i < collection.length; i++) {
+		for (i=0, count = collection.length; i < count; i++) {
 			if (collection[i].id == asset.id) {
 				collection.splice(i, 1);
 			}
@@ -30,8 +30,8 @@ var CACollection = function() {
 	}
 	
 	this.find = function(id) {
-		var i;
-		for (i=0; i < collection.length; i++) {
+		var i, count;
+		for (i=0, count = collection.length; i < count; i++) {
 			if (collection[i].id == id) {
 				return collection[i];
 			}
@@ -43,11 +43,12 @@ var CACollection = function() {
 		return collection;
 	}
 
+    this.userIsDraggingAsset = false;
 };
 	
 
 var ConservationAsset = function(container) { // container should be a html element
-    var i, j, layerData;
+    var i, count, layerData;
     
     // check prereqs
     if (jQuery != undefined) { 
@@ -77,6 +78,7 @@ var ConservationAsset = function(container) { // container should be a html elem
     this.settings = this.container.data();
     this.settings.zoomStep = this.settings.zoomStep || 0.1;
     this.settings.annotationSelectorVisible = false;
+    this.settings.dragging = undefined;
     
     // detect and incorporate figure options
     var figure = this.container.parents('figure:first');
@@ -103,7 +105,7 @@ var ConservationAsset = function(container) { // container should be a html elem
     this.layers = [];
     var layerContainer = this.container.find('.conservation-layers');
     var layerItems = layerContainer.find('li');
-    for (i=0; i < layerItems.length; i++) {
+    for (i=0, count = layerItems.length; i < count; i++) {
         var layerMarkup = $(layerItems[i]);
         this.layers.push(layerMarkup.data());
     }
@@ -123,7 +125,7 @@ var ConservationAsset = function(container) { // container should be a html elem
     // also create separate arrays of base and annotation layers for convenience
     this.baseLayers = [];
     this.annotationLayers = [];
-    for (i=0; i < this.layers.length; i++) {
+    for (i=0, count = this.layers.length; i < count; i++) {
         layerData = this.layers[i];
         layerData.layer_num = i + 1;
         if (layerData.annotation) {
@@ -143,7 +145,7 @@ var ConservationAsset = function(container) { // container should be a html elem
     });
 
     // calculate zoom levels if not already present
-    for (i=0; i < this.layers.length; i++) {
+    for (i=0, count = this.layers.length; i < count; i++) {
         layerData = this.layers[i];
         if (!layerData.zoom_levels) {
             layerData.zoom_levels = this.getZoomLevels(layerData.width, layerData.height);
@@ -179,8 +181,9 @@ var ConservationAsset = function(container) { // container should be a html elem
     
     // if fullscreen extents are present, this CA needs to be positioned
     // as its parent was
+    var extents = [];
     if (this.figureOptions.fullscreenExtents) {
-    	var extents = [
+    	extents = [
     		{
     			lon: this.figureOptions.fullscreenExtents.swLon,
     	        lat: this.figureOptions.fullscreenExtents.swLat
@@ -195,7 +198,7 @@ var ConservationAsset = function(container) { // container should be a html elem
     // else use the starting postion from the figure options markup
     // - if initial extents were given, honor them
     else if (this.figureOptions.swLat) {
-    	var extents =  [
+    	extents = [
             {
                 lon: this.figureOptions.swLon,
                 lat: this.figureOptions.swLat
@@ -340,10 +343,10 @@ ConservationAsset.prototype.zoomToContainer = function() {
     // always calculate at the highest possible zoom, 18, 
     // for max fineness of alignment
     var zoomToCalculateAt = 18
-    , i;
+    , i, count;
 
     // calculate tw and th for each layer
-    for (i=0; i < this.layers.length; i++) {
+    for (i=0, count = this.layers.length; i < count; i++) {
         var layerData = this.layers[i];
         var scale = this.getScale(layerData.zoom_levels - 0, zoomToCalculateAt);
         // TODO: figure out why this is a special case:
@@ -362,7 +365,7 @@ ConservationAsset.prototype.zoomToContainer = function() {
     // scan the layers and find the greatest extents
     var tiles_wide = 0;
     var tiles_high = 0;
-    for (i=0; i < this.layers.length; i++) {
+    for (i=0, count = this.layers.length; i < count; i++) {
         if (this.layers[i].tiles_high > tiles_high) {
             tiles_high = this.layers[i].tiles_high;
         }
@@ -411,11 +414,26 @@ ConservationAsset.prototype.createUI = function() {
 
 	    // we need to augment the polymap event handlers, since the built in polymaps
 	    // wheel interaction doesn't allow us to update our user interface controls
-	    $(this.container).bind('mousewheel', function(event) {
-	        CA.ui.zoomSlider.slider('value', CA.map.zoom());
-	    });
-	    $(this.container).bind('dblclick', function(event) {
-	        CA.ui.zoomSlider.slider('value', CA.map.zoom());
+	    $(this.container).bind({
+            'mousewheel' : function(event) {
+                CA.ui.zoomSlider.slider('value', CA.map.zoom());
+
+                //refresh the viewport if displayed
+                CA.refreshViewfinderViewport();
+            },
+            'dblclick' : function(event) {
+                CA.ui.zoomSlider.slider('value', CA.map.zoom());
+
+                //refresh the viewport if displayed
+                CA.refreshViewfinderViewport();
+            },
+            'mousedown' : function(event) {
+                CA.settings.dragging = {
+                    x: event.clientX,
+                    y: event.clientY
+                };
+                caCollection.userIsDraggingAsset = CA.id;
+            }
 	    });
     }
     
@@ -451,7 +469,7 @@ ConservationAsset.prototype.createUI = function() {
     // reset control
 	this.ui.reset = $('<div class="ca-ui-reset"></div>')
     .bind('click', function(event) {
-    	var i;
+    	var i, count;
     	// reset to provided inset, or container bounds otherwise
     	if (typeof CA.figureOptions.swLat != 'undefined' && !CA.figureOptions.editing) {
     		var extents =  [
@@ -485,14 +503,14 @@ ConservationAsset.prototype.createUI = function() {
     	var baseLayers;
     	if (CA.figureOptions.baseLayerPreset) {
     		baseLayers = [];
-    		for (i=0; i < CA.figureOptions.baseLayerPreset.length; i++) {
+    		for (i=0, count = CA.figureOptions.baseLayerPreset.length; i < count; i++) {
     			baseLayers.push(CA.getLayerById(CA.figureOptions.baseLayerPreset[i]));
     		}
     	}
     	else {
     		baseLayers = CA.baseLayers;
     	}
-    	for (i = 0; i < baseLayers.length && i < 2; i++) {
+    	for (i = 0, count = baseLayers.length; i < count && i < 2; i++) {
 			currentLayer = CA.settings['currentLayer' + (i + 1)];
 			// turn off current layer
 			CA.toggleLayer(currentLayer);
@@ -514,7 +532,7 @@ ConservationAsset.prototype.createUI = function() {
     	}
     	// repaint visible annotaion layers to put them back on top
     	var aIds = CA.getVisibleAnnotationIds();
-    	for (i=0; i < aIds.length; i++) {
+    	for (i=0, count = aIds.length; i < count; i++) {
     		currentLayer = CA.getLayerById(aIds[i]);
     		CA.toggleLayer(currentLayer);
     		CA.toggleLayer(currentLayer);
@@ -603,6 +621,7 @@ ConservationAsset.prototype.createUI = function() {
 
     // zoom control
     this.ui.zoom = $('<div class="ca-ui-zoom"></div>');
+    
     this.ui.zoomIn = $('<div class="ca-ui-zoom-in"></div>')
     .bind('click', function(event) {
         var currentVal = CA.ui.zoomSlider.slider('value');
@@ -611,6 +630,7 @@ ConservationAsset.prototype.createUI = function() {
         CA.map.zoom(newVal);
     })
     .appendTo(this.ui.zoom);
+    
     this.ui.zoomSlider = $('<div class="ca-ui-zoom-slider"></div>')
     .slider({ 
         step: this.settings.zoomStep,
@@ -624,6 +644,7 @@ ConservationAsset.prototype.createUI = function() {
         }
     })
     .appendTo(this.ui.zoom);
+    
     this.ui.zoomOut = $('<div class="ca-ui-zoom-out"></div>')
     .bind('click', function(event) {
         // get the current value, and add one to it
@@ -637,12 +658,13 @@ ConservationAsset.prototype.createUI = function() {
     	this.ui.zoom.appendTo(this.container);
     }
 
-    /*
     // viewfinder control
-    this.ui.viewfinder = $('<div class="ca-ui-viewfinder viewfinder-closed"></div>')
+    this.ui.viewfinder = $('<div class="ca-ui-viewfinder viewfinder-closed"></div>');
+    
     if (this.figureOptions.interaction || this.figureOptions.editing) {
     	this.ui.viewfinder.appendTo(this.container);
     }
+    
     this.ui.viewfinder.bind('click', function(event) {
     	if (CA.ui.viewfinder.hasClass('viewfinder-open')) {
     		// close
@@ -656,7 +678,6 @@ ConservationAsset.prototype.createUI = function() {
     		CA.refreshViewfinder();
     	}
     });
-	*/
     
     // store references to the control elements, so they can be manipulated as a collection
     this.ui.controls = [this.ui.controlbar, this.ui.zoom, this.ui.viewfinder, this.ui.currentPopup];
@@ -674,7 +695,7 @@ ConservationAsset.prototype.createUI = function() {
         if (controlState == 'false') {
         	// ensure no other CA has its controls up
         	var assets = window.caCollection.list();
-        	for (var i=0; i < assets.length; i++) {
+        	for (var i=0, count = assets.length; i < count; i++) {
         		var asset = assets[i];
         		if (asset.container.attr('data-controls') == 'true') {
         			asset.container.attr('data-controls', 'false');
@@ -711,7 +732,6 @@ ConservationAsset.prototype.createUI = function() {
             });
         }
     });
-    
 }
 
 
@@ -746,52 +766,46 @@ ConservationAsset.prototype.refreshViewfinder = function() {
     
     // - hook up drag events so the div can be dragged
 	// - when dragged reflect the change on the map
-	// - when the map is panned, refresh the position of the bounds div
 };
 
 
 ConservationAsset.prototype.refreshViewfinderViewport = function() {
-	var $ = this.$;
-	var vfWidth = this.ui.viewfinder.width();
-	var vfHeight = Math.floor(vfWidth / this.settings.aspect);
-	
-	// calculate inset percentage on all sides
-	var pointSW = this.map.locationPoint(this.settings.containerFitSW);
-    var pointNE = this.map.locationPoint(this.settings.containerFitNE);
-    // prevent viewport from expanding passed bounds of viewfinder
-    if (pointSW.x > 0) pointSW.x = 0;
-    if (pointSW.y < 0) pointSW.y = 0;
-    if (pointNE.x < 0) pointNE.x = 0;
-    if (pointNE.y > 0) pointNE.y = 0;
     
-    var width = this.baseLayers[0].width;
-    var height = this.baseLayers[0].height;
-    
-    // find extents as percentages of whole image
-    var topP = Math.abs(pointNE.y) / height;
-    var rightP = (pointNE.x - this.map.size().x) / width;
-    var bottomP = (pointSW.y - this.map.size().y) / height;
-    var leftP = Math.abs(pointSW.x) / width;
-    
-    // translate percentages to pixels
-    var top = Math.floor(vfHeight * topP); 
-    var right = Math.floor(vfWidth * rightP);
-    var bottom = Math.floor(vfHeight * bottomP);
-    var left = Math.floor(vfWidth * leftP); 
-    
-    // - draw the div and position it
-    if (!this.ui.viewfinderViewport) {
-		this.ui.viewfinderViewport = $('<div class="ca-ui-viewfinder-viewport">&nbsp;</div>').appendTo(this.ui.viewfinder);
+    if (this.ui.viewfinder.hasClass('viewfinder-open')) {
+        var $ = this.$;
+        var vfWidth = this.ui.viewfinder.width();
+        var vfHeight = Math.floor(vfWidth / this.settings.aspect);
+
+        // - draw the div and position it
+        if (!this.ui.viewfinderViewport) {
+            this.ui.viewfinderViewport = $('<div class="ca-ui-viewfinder-viewport">&nbsp;</div>').appendTo(this.ui.viewfinder);
+
+            if (this.settings.viewPortBorderWidth == undefined) {
+                this.settings.viewPortBorderWidth = parseInt(this.ui.viewfinderViewport.css("border-left-width"), 10);
+            }
+        }
+
+        // calculate inset percentage on all sides
+        var pointSW = this.map.locationPoint(this.settings.containerFitSW);
+        var pointNE = this.map.locationPoint(this.settings.containerFitNE);
+
+        //calculate the top left offsets
+        var offsetX = (((pointSW.x * -1.0) / (pointNE.x - pointSW.x)) * vfWidth) - this.settings.viewPortBorderWidth;
+        var offsetY = (((pointNE.y * -1.0) / (pointSW.y - pointNE.y)) * vfHeight) - this.settings.viewPortBorderWidth;
+
+        // calculate the height and width of the viewport
+        var ratio = this.map.size().x / (pointNE.x - pointSW.x);
+        var vpWidth = ratio * vfWidth;
+        var vpHeight = ratio * vfHeight;
+
+        this.ui.viewfinderViewport.css({
+            top : offsetY + "px",
+            left : offsetX + "px",
+            width : vpWidth + "px",
+            height : vpHeight + "px"
+        });
     }
-    
-	this.ui.viewfinderViewport.css({
-		'top': top + 'px',
-		'right': right + 'px',
-		'bottom': bottom + 'px',
-		'left': left + 'px'
-	});
-		
-}
+};
 
 
 ConservationAsset.prototype.refreshViewfinderOpacity = function(opacity) {
@@ -857,7 +871,6 @@ ConservationAsset.prototype.fullscreen = function() {
     	wrapper.height(wrapper.height() + this.settings.captionMarkup.outerHeight());
     }
     
-    
     new ConservationAsset(markup);
 };
 
@@ -893,7 +906,7 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
         // create a layer list, not including the current selected layer
         var layerList = $('<ul></ul>');
         var numLayers = 0;
-        for (var i=0; i < CA.baseLayers.length; i++) {
+        for (var i=0, count = CA.baseLayers.length; i < count; i++) {
             var baseLayer = CA.baseLayers[i];
             // only add the layer to the selectable list if the layer isn't
             // the current selection on either selector
@@ -993,7 +1006,7 @@ ConservationAsset.prototype.toggleAnnotationSelector = function() {
             bottom: bottom
         });
         this.ui.annotationSelectorList = $('<ul class="ca-ui-annotation-selector-list"></ul>');
-        for (var i=0; i < this.annotationLayers.length; i++) {
+        for (var i=0, count = this.annotationLayers.length; i < count; i++) {
             var layerData = this.annotationLayers[i];
 
             // add list item for annotation layer
@@ -1064,7 +1077,7 @@ ConservationAsset.prototype.resetZoomRange = function(zoomMin) {
     // set the zoom range
     zoomMin = zoomMin || 0;
     var zoomMax = 0;
-    for (var i=0; i < this.layers.length; i++) {
+    for (var i=0, count = this.layers.length; i < count; i++) {
         if (this.layers[i].type == 'iip') {
             if (this.layers[i].zoom_levels - 1 > zoomMax) {
                 zoomMax = this.layers[i].zoom_levels - 1;
@@ -1104,7 +1117,7 @@ ConservationAsset.prototype.getScale = function(zoom_levels, zoom) {
 
 ConservationAsset.prototype.realignLayers = function() {
     var $ = this.$
-    , i;
+    , i, count;
 	
     // grab the layers out of the dom
     var map = this.container.find('svg.map');
@@ -1112,14 +1125,14 @@ ConservationAsset.prototype.realignLayers = function() {
 	
     // sort the layers
     // find the first layer
-    for (i=0; i < layers.length; i++) {
+    for (i=0, count = layers.length; i < count; i++) {
         if ($(layers[i]).attr('id') == this.settings.currentLayer1.id) {
             map.append(layers[i]);
             layers.splice(i,1);
         }
     }
     // find the second layer
-    for (i=0; i < layers.length; i++) {
+    for (i=0, count = layers.length; i < count; i++) {
         if ($(layers[i]).attr('id') == this.settings.currentLayer2.id) {
             map.append(layers[i]);
             layers.splice(i, 1);
@@ -1207,7 +1220,7 @@ ConservationAsset.prototype.removeLegendItem = function(layerData) {
         this.ui.legend.remove();
         delete this.ui.legend;
         // remove from control array
-        for (var i=0; i < this.ui.controls.length; i++) {
+        for (var i=0, count = this.ui.controls.length; i < count; i++) {
             if ($(this.ui.controls[i]).hasClass('ca-ui-legend')) {
                 this.ui.controls.splice(i, 1);
             }
@@ -1219,10 +1232,10 @@ ConservationAsset.prototype.removeLegendItem = function(layerData) {
 ConservationAsset.prototype.showAnnotationPresets = function() {
 	if (this.figureOptions.annotationPreset) {
 		// each preset is a layer_id for a layer in this.layers
-    	for (i=0; i < this.figureOptions.annotationPreset.length; i++) {
+    	for (var i=0, count = this.figureOptions.annotationPreset.length; i < count; i++) {
     		var presetLayerId = this.figureOptions.annotationPreset[i];
     		// step through the annotation layers
-    		for (j=0; j < this.annotationLayers.length; j++) {
+    		for (var j=0, layerCount = this.annotationLayers.length; j < layerCount; j++) {
     			if (this.annotationLayers[j].layer_id == presetLayerId && !this.annotationLayers[j].visible) {
     				this.toggleLayer(this.annotationLayers[j]);
     				if (this.figureOptions.annotation || this.figureOptions.editing) {
@@ -1235,10 +1248,10 @@ ConservationAsset.prototype.showAnnotationPresets = function() {
 }
 
 ConservationAsset.prototype.getVisibleBaseLayers = function() {
-	var i,
+	var i, count,
 		layers = [];
 	
-	for (i=0; i< this.baseLayers.length; i++) {
+	for (i=0, count = this.baseLayers.length; i< count; i++) {
 		var layerData = this.baseLayers[i];
 		if (layerData.visible) {
 			layers.push(layerData);
@@ -1249,10 +1262,10 @@ ConservationAsset.prototype.getVisibleBaseLayers = function() {
 }
 
 ConservationAsset.prototype.getVisibleBaseLayerIds = function() {
-	var i,
+	var i, count,
 		layers = [];
 	
-	for (i=0; i< this.baseLayers.length; i++) {
+	for (i=0, count = this.baseLayers.length; i< count; i++) {
 		var layerData = this.baseLayers[i];
 		if (layerData.visible) {
 			layers.push(layerData.layer_id);
@@ -1264,10 +1277,10 @@ ConservationAsset.prototype.getVisibleBaseLayerIds = function() {
 
 
 ConservationAsset.prototype.getVisibleAnnotationIds = function() {
-	var i,
+	var i, count,
 		annotations = [];
 	
-	for (i=0; i < this.annotationLayers.length; i++) {
+	for (i=0, count = this.annotationLayers.length; i < count; i++) {
 		var layerData = this.annotationLayers[i];
 		if (layerData.visible) {
 			annotations.push(layerData.layer_id);
@@ -1309,7 +1322,7 @@ ConservationAsset.prototype.getSliderPosition = function() {
 
 
 ConservationAsset.prototype.getLayerById = function(id) {
-	for (var i=0; i < this.layers.length; i++) {
+	for (var i=0, count = this.layers.length; i < count; i++) {
 		if (this.layers[i].layer_id && this.layers[i].layer_id == id) {
 			return this.layers[i];
 		}
@@ -1333,7 +1346,39 @@ function outerHTML(node){
 window.addEventListener('load', function() {
 	window.caCollection = new CACollection();
     var assets = jQuery('.conservation-asset').not('.noload');
-    for(var i=0; i < assets.length; i++) {
+    for(var i=0, count = assets.length; i < count; i++) {
         new ConservationAsset(assets[i]);
     }
 }, false);
+
+// update the viewfinder if an asset is being dragged
+function conservationMousemove(e) {
+    if (window.caCollection && caCollection.userIsDraggingAsset) {
+        var asset = caCollection.find(caCollection.userIsDraggingAsset);
+
+        if (asset) {
+            if (!asset.settings.dragging) {
+                return;
+            }
+
+            asset.refreshViewfinderViewport();
+
+            if (e.conservationDraggingRemove) {
+                asset.settings.dragging = undefined;
+                caCollection.userIsDraggingAsset = false;
+            }
+        }
+    }
+}
+
+// update the viewfinder and remove the dragging flag when done dragging
+function conservationMouseup(e) {
+    if (window.caCollection && caCollection.userIsDraggingAsset) {
+        e.conservationDraggingRemove = true;
+        conservationMousemove(e);
+    }
+}
+
+// bind the mouse events for asset dragging and viewfinder updating
+window.addEventListener("mousemove", conservationMousemove, false);
+window.addEventListener("mouseup", conservationMouseup, false);

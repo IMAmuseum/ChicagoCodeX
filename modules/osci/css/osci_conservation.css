@@ -153,6 +153,8 @@
 	height: 100px;
 	border: 2px solid white;
 	background: #000 url('../images/icon-viewfinder-small.png') bottom left no-repeat;
+    overflow: hidden;
+    box-shadow: 0 0 2px #000;
 }
 
 #osci_viewer_wrapper .ca-ui-viewfinder.viewfinder-closed, .ca-ui-viewfinder.viewfinder-closed {
