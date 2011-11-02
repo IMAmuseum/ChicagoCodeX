@@ -42,7 +42,8 @@
                 //base.toolbar.css('display', 'inline');
                 
                 // Cleanup Toolbar
-                base.toolbar.find("a").click(function() {
+                base.toolbar.find("a").click(function(e) {
+                    e.preventDefault();
                     base.toolbar.hide();
                 });
             }
