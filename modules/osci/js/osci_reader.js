@@ -503,6 +503,7 @@
         reader.find("a.footnote-link").live("click", function(e){
         //$("a.footnote-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
+            e.stopPropagation();
             var $this = $(this);
 
             amplify.publish("osci_more_goto", {tab_name : "footnotes", selector : $this.attr("href")});
@@ -522,6 +523,7 @@
         reader.find("a.figure-link").live("click", function(e){
         //$("a.figure-link","#" + Drupal.settings.osci_navigation.reader_id).live("click", function(e){
             e.preventDefault();
+            e.stopPropagation();
             var $this = $(this),
                 figure;
 

@@ -63,7 +63,7 @@
 #osci_viewer .column {
     display: inline;
     position: absolute;
-    overflow: hidden;
+    overflow-y: hidden;
     top: 0;
     text-align: justify;
 }

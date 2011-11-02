@@ -118,7 +118,7 @@ function note_menu() {
 
     $items['ajax/citation'] = array(
         'page callback'     => 'citation_ajax',
-        'access arguments'  => array('create note'),
+        'access callback'   => true,
         'type'              => MENU_CALLBACK,
         'file'              => 'note.ajax.inc',
     );
@@ -360,7 +360,7 @@ function citation_form() {
 
     $form['citation_selection'] = array(
         '#type'     => 'textarea',
-        '#title'    => t('Selected Text'),
+        '#title'    => t('Paragraph Text'),
     );
 
     $form['citation_helper'] = array(
@@ -372,6 +372,8 @@ function citation_form() {
 }
 
 function note_preprocess_osci_viewer(&$vars) {
+    global $user;
+    
     ctools_include('modal');
     ctools_modal_add_js();
     drupal_add_js(array(
@@ -391,28 +393,35 @@ function note_preprocess_osci_viewer(&$vars) {
         ),
     ), 'setting');
 
-    $items = array(
-        l('Highlight', $_GET['q'], 
-            array(
-                'fragment' => 'note-highlight', 
-                'attributes' => array(
-                    'class' => array('note-highlight'),
-                )
-            )
-        ),
-        l('Note', 'ajax/note/add', 
+    
+    
+    $items = array();
+//        l('Highlight', $_GET['q'], 
+//            array(
+//                'fragment' => 'note-highlight', 
+//                'attributes' => array(
+//                    'class' => array('note-highlight'),
+//                )
+//            )
+//        ),
+    
+    if ($user->uid) 
+    {
+        $items[] = l('Note', 'ajax/note/add', 
             array(
                 'attributes' => array(
                     'class' => array('ctools-use-modal', 'ctools-modal-fixed-modal'),
                 )
             )
-        ),
-        l('Cite', 'ajax/citation',
-            array(
-                'attributes' => array(
-                    'class' => array('ctools-use-modal', 'ctools-modal-citation-modal'),
-                ),
-            )
+        );
+    }
+    
+    
+    $items[] = l('Cite', 'ajax/citation',
+        array(
+            'attributes' => array(
+                'class' => array('ctools-use-modal', 'ctools-modal-citation-modal'),
+            ),
         )
     );
 

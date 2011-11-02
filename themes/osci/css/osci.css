@@ -670,7 +670,8 @@ h1, h2, h3, h4, h5 { text-align:left!important; }
 #osci_viewer a.osci_paragraph_identifier {
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:11px;
-	padding-top:3px;	
+	padding:3px 2px 0 0;	
+    min-width: 16px;
 }
 #osci_viewer h4 {
 	font-size:16px!important;
@@ -756,8 +757,17 @@ a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
 	-moz-box-shadow: 0 1px 3px #000;
     -webkit-box-shadow: 0 1px 3px #000;
     box-shadow: 0 1px 3px #000;
-	
 }
+
+#osci_viewer a.osci_paragraph_identifier.has_note {
+    -moz-box-shadow: 0 1px 3px #000;
+    -webkit-box-shadow: 0 1px 3px #000;
+    box-shadow: 0 1px 3px #000;
+    background: #FFB51A;
+    opacity: .5;
+    color: #000;
+}
+
 .noteTitle a.ajax-processed {
 	margin-left:10px !important;
 	margin-right:10px!important;
@@ -771,7 +781,7 @@ a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
 	opacity:0.5;
 	height:30px;overflow:hidden;
 }
-.noteTitle a.ajax-processed:hover {
+.noteTitle a.ajax-processed:hover, .noteTitle.hover a.ajax-processed {
 	opacity:1.0;
 	background:#FFB51A url('../images/icon-maximize.png') no-repeat right top;	
 }
@@ -940,11 +950,12 @@ ul.selection-toolbar {
 	text-align:left!important;
 	/*width:300px!important;*/
 }
+/*
 ul.selection-toolbar li.first a {
 	background: url('../images/bg-doublearrows.png') no-repeat right 9px!important;	
 	padding-right:20px!important;
 }
-
+*/
 div.ctools-modal-content {
 background: white;
 color: black;

@@ -1,5 +1,14 @@
-.highlight-note {
-    background-color: #FFCC33 !important;
+#osci_viewer_wrapper p.osci_paragraph {
+    border-left: 2px solid transparent;
+    padding: 0 0 0 4px;
+}
+
+#osci_viewer_wrapper p.highlight-note {
+    border-left: 2px solid #DDD;
+}
+
+a.highlight-note {
+    background: #FFCC33;
 }
 
 .highlight-temp { 
@@ -29,6 +38,15 @@ div#osci-note-dialog {
 .cite-paragraph {
     /*border: 1px dashed #999;*/
     cursor: pointer;
+}
+
+#osci_viewer a.cite-paragraph {
+    color: #000 !important;
+    opacity: 1 !important;
+}
+
+#osci_viewer_wrapper p.cite-paragraph {
+    border-left: 2px solid #DDD;
 }
 
 .osci-note-dialog {
