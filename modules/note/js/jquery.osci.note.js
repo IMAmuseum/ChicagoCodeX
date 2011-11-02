@@ -91,7 +91,7 @@
                             bookTitle: $('.osci_book_title').text(),
                             publisher: 'University of Chicago Press',
                             articleTitle: $('.osci_book_section_title > .section_title').text(),
-                            paragraph: $.osci.note.selection.paragraph_id
+                            paragraph: base.selection.paragraph_id
                         };
 
                         $('a[href$="#citation-format-apa"]').click(function(e) {
@@ -117,8 +117,8 @@
                             $(this).parent().addClass('active');
                         });
 
-                        $('#edit-citation-selection').html($("p.osci_paragraph_" + $.osci.note.selection.paragraph_id + ":first").text());
-                        $('#edit-citation-url').val($('a.osci_paragraph_' + $.osci.note.selection.paragraph_id).attr('href'));
+                        $('#edit-citation-selection').html($("p.osci_paragraph_" + base.selection.paragraph_id + ":first").text());
+                        $('#edit-citation-url').val($('a.osci_paragraph_' + base.selection.paragraph_id).attr('href'));
                         $('#edit-citation-text, #edit-citation-url, #edit-citation-selection').click(function(e) {
                             e.preventDefault();
                             $(this).select();
@@ -164,7 +164,7 @@
 
                     var target = $(e.currentTarget);
                     if (target.is("p")) {
-                        $.osci.note.selection = {
+                        base.selection = {
                             selection:      null,
                             start_node:     null,
                             start_offset:   null,

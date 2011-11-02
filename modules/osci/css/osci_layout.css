@@ -1,3 +1,8 @@
+body {
+    width: 100%;
+    overflow: hidden;
+}
+
 #osci_viewer_wrapper * {
     margin: 0;
     padding: 0;

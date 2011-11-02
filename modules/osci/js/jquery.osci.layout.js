@@ -678,6 +678,8 @@
             absoluteElements = base.reader.children(":not(#" + base.viewer.attr("id") + ")");
             absoluteElementCount = absoluteElements.length;
             
+            $("body").height(viewerHeight);
+            
             if (absoluteElementCount) {
                 for (i = 0; i < absoluteElementCount; i++) {
                     var $elem = $(absoluteElements[i]);
