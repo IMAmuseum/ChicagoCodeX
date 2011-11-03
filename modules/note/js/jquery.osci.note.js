@@ -308,6 +308,8 @@
         };
         
         base.addNotes = function() {
+            $('.noteTitle').remove();
+            
             $.ajax({
                 url: base.options.userNoteCallback + '/' + $.osci.navigation.data.nid,
                 dataType: 'json',
@@ -337,8 +339,6 @@
         }
 
         base.processNotes = function(data) {
-            $('.noteTitle').remove();
-
             if (data == null) {
                 return;
             }
