@@ -49,7 +49,7 @@ $.osci.getURL({
         $.ajax({
             url: settings.url,
             async: true,
-            dataType: settings.type,
+            //dataType: settings.type,
             timeout : settings.timeout,
             success: function(data) {
                 var jsonItem, time = new Date();
