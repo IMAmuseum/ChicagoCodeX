@@ -27,7 +27,7 @@ $.osci.getURL({
 
     $.osci.storage.getUrl = function (config) 
     {
-        var time, start, key, item = null, finished,
+        var time, key, item = null, finished,
             settings = $.extend({}, $.osci.storage.defaultSettings, config);
 
         // return if a url is not set
@@ -50,6 +50,7 @@ $.osci.getURL({
             url: settings.url,
             async: true,
             dataType: settings.type,
+            timeout : settings.timeout,
             success: function(data) {
                 var jsonItem, time = new Date();
                 time = Math.floor(time.getTime() / 1000 + settings.expire);
@@ -148,7 +149,8 @@ $.osci.getURL({
         type:   'text',
         clear:  false,
         key:    'url',
-        callback : function(data) {return data;}
+        callback : function(data) {return data;},
+        timeout : 60000
     };
 })(jQuery);
 
