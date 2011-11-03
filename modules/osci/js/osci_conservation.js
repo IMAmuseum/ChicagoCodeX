@@ -1343,9 +1343,10 @@ function outerHTML(node){
 		})(node);
 }
 
+window.caCollection = new CACollection();
+
 // auto load any conservation assets 
 window.addEventListener('load', function() {
-	window.caCollection = new CACollection();
     var assets = jQuery('.conservation-asset').not('.noload');
     for(var i=0, count = assets.length; i < count; i++) {
         new ConservationAsset(assets[i]);
