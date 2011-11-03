@@ -409,7 +409,8 @@
 
                         var data = $(content.data),
                             footnotes = data.find("#field_osci_footnotes").remove(),
-                            figures = data.find("#field_osci_figures").find(".figureThumbnail").remove();
+                            figures = data.find("#field_osci_figures").find(".figureThumbnail").remove(),
+                            moreContainer = $("#" + $.osci.more.options.containerId).show();
 
                         //Do the layout
                         $.osci.layout(data, {
@@ -487,9 +488,9 @@
                         }
 
                         if (!footnotes.length && !figures.length) {
-                            $("#" + $.osci.more.options.containerId).hide();
+                            moreContainer.hide();
                         } else {
-                            $("#" + $.osci.more.options.containerId).show();
+                            moreContainer.show();
                         }
                     }
                 });
