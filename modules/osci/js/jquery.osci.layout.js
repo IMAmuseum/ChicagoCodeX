@@ -116,6 +116,8 @@
             }
             
             _renderPage();
+            
+            amplify.publish("osci_layout_complete");
         };
         
         function _renderPage()
@@ -194,15 +196,15 @@
                 }, 0);
                 
                 if (base.data.length) {
-                    setTimeout(function(){
+                    //setTimeout(function(){
                         _renderPage();
-                    }, 0);
-                } else {
+                    //}, 0);
+                } //else {
                     //Trigger event to let other features know layout is complete
-                    setTimeout(function(){
-                        amplify.publish("osci_layout_complete");
-                    }, 0);
-                }
+//                    setTimeout(function(){
+//                        amplify.publish("osci_layout_complete");
+//                    }, 0);
+//                }
             }
         }
 
