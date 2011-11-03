@@ -35,26 +35,6 @@
             
             base.figureContent = {};
             
-            amplify.subscribe("osci_navigation_complete", function(data) {
-                _processPageFigures(data.page);
-            });
-            
-            amplify.subscribe("osci_figure_load", function(data) {
-                var figure = $(data.figure_id + ":not(.content_loaded)");
-                
-                if (figure.length) {
-                    _load_figure_content(figure);
-                }
-                
-                return;
-            });
-            
-            amplify.subscribe("osci_layout_page_complete", function(data) {
-                if (data.page === 1) {
-                    _processPageFigures(data.page);
-                }
-            });
-            
             //No cache process content for layout
             if (cache === null) {
                 //Get the data from the HTML body copy output we only want section content
@@ -117,6 +97,7 @@
             
             _renderPage();
             
+            //Trigger event to let other features know layout is complete
             amplify.publish("osci_layout_complete");
         };
         
@@ -381,7 +362,7 @@
         }
         
         //Wrapper function for loading the figure content
-        function _load_figure_content(figure)
+        base.load_figure_content = function(figure)
         {
             var pageFigure = $(figure),
                 figureContent = base.figureContent[pageFigure.attr("id")],
@@ -607,7 +588,7 @@
             return processingStatus;
         }
         
-        function _processPageFigures(pageNum)
+        base.processPageFigures = function(pageNum)
         {
             var page = $(".osci_page_" + pageNum);
             
@@ -619,7 +600,7 @@
                 
                 if (numFigures) {
                     for (i = 0; i < numFigures; i++) {
-                        _load_figure_content(figures[i])
+                        base.load_figure_content(figures[i])
                     }
                 }
             }
@@ -840,5 +821,25 @@
         cacheId : null,
         layoutCacheTime : 86400
     };
+    
+    amplify.subscribe("osci_navigation_complete", function(data) {
+        $.osci.layout.processPageFigures(data.page);
+    });
+
+    amplify.subscribe("osci_figure_load", function(data) {
+        var figure = $(data.figure_id + ":not(.content_loaded)");
+
+        if (figure.length) {
+            $.osci.layout.load_figure_content(figure);
+        }
+
+        return;
+    });
+
+    amplify.subscribe("osci_layout_page_complete", function(data) {
+        if (data.page === 1) {
+            $.osci.layout.processPageFigures(data.page);
+        }
+    });
 
 })(jQuery);
