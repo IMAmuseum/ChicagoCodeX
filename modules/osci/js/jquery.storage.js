@@ -66,6 +66,7 @@ $.osci.getURL({
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 //console.log('An error has occurred');
+                var time = new Date();
                 time = Math.floor(time.getTime() / 1000 + settings.expire);
                 settings.callback({
                     data  : null,
