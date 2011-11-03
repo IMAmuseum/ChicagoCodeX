@@ -431,7 +431,6 @@ function osci_body_copy_render_layout($nid)
     unset($elements['#pre_render']);
 
     print render($elements);
-    //return render($elements);
 }
 
 function osci_body_copy_entity_info_alter(&$entity_info)

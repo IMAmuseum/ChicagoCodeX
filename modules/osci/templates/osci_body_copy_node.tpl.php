@@ -12,7 +12,6 @@
 <?php
     foreach ($element as $k => $v) {
         if (strpos($k, 'field_osci_') === 0) {
-//        if (is_array($v) && isset($v['#field_type']) && $v['#field_type'] === 'osci_body_copy') {
             print render($v);
         }
     }
