@@ -111,7 +111,7 @@ function note_menu() {
     $items['ajax/note/%node'] = array(
         'page callback'     => 'user_notes_ajax',
         'page arguments'    => array(2),
-        'access arguments'  => array('view own notes'),
+        'access callback'   => true,
         'type'              => MENU_CALLBACK,
         'file'              => 'note.ajax.inc',
     );

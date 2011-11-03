@@ -72,7 +72,14 @@ function note_ajax_delete($onid) {
 }
 
 function user_notes_ajax($node) {
-    return drupal_json_output(user_notes($node));
+    global $user;
+    $return = null;
+    
+    if (user_access("view own notes", $user)) {
+        $return = drupal_json_output(user_notes($node));
+    }
+    
+    return $return;
 }
 
 function citation_ajax() {
