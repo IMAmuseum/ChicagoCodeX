@@ -582,7 +582,7 @@
                     toc.find("li.active").children("a").addClass("active");
                 });
                 
-                container.addClass("open");
+                //container.addClass("open");
   
                 container.find(".osci_table_of_contents_handle").click(function(e){
                     e.preventDefault();
@@ -668,7 +668,7 @@
             toc.hide().empty();
             
             //hide the navigation
-            amplify.publish("osci_nav_toggle", {});
+            //amplify.publish("osci_nav_toggle", {});
             
             for (i in base.data.toc) {
                 node = base.data.toc[i];

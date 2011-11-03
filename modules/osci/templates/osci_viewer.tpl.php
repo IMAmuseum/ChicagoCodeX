@@ -1,7 +1,7 @@
 <div id="osci_viewer_wrapper">
     <div id="osci_header">
-        <h1 class="osci_book_title">Book Title</h1>
-        <h2 class="osci_book_section_title"><span class="loading">Loading -</span> <span class="section_title">Book Section Title</span></h2>
+        <h1 class="osci_book_title"></h1>
+        <h2 class="osci_book_section_title"><span class="loading">Loading</span> <span class="section_title"></span></h2>
         <div id="osci_header_controls">
         	<div id="osci_increase_font"></div>
         	<div id="osci_decrease_font"></div>

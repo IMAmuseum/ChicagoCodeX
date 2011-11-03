@@ -12,7 +12,7 @@
         
         base.init = function()
         {
-            var tabs
+            var tabs;
             
             base.options = $.extend({}, $.osci.more.defaultOptions, options);
             base.container = $("#" + base.options.containerId);

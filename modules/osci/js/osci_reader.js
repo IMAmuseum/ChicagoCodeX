@@ -357,10 +357,11 @@
             {
                 switch (state) {
                     case "open":
+                        var outerWidth = toc.outerWidth();
                         toc.css({
-                            "-webkit-transform" : "translate(0px, 0)",
-                            "-moz-transform" : "translate(0px, 0)",
-                            "transform" : "translate(0px, 0)"
+                            "-webkit-transform" : "translate(" + outerWidth + "px, 0)",
+                            "-moz-transform" : "translate(" + outerWidth + "px, 0)",
+                            "transform" : "translate(" + outerWidth + "px, 0)"
                         });
                         
                         // When the toc tab is opened:
@@ -378,9 +379,9 @@
                         break;
                     case "close":
                         toc.css({
-                            "-webkit-transform" : "translate(-" + toc.outerWidth() + "px, 0)",
-                            "-moz-transform" : "translate(-" + toc.outerWidth() + "px, 0)",
-                            "transform" : "translate(-" + toc.outerWidth() + "px, 0)"
+                            "-webkit-transform" : "translate(0px, 0)",
+                            "-moz-transform" : "translate(0, 0)",
+                            "transform" : "translate(0, 0)"
                         });
                         
                         // When the toc tab is closed:
@@ -417,68 +418,79 @@
                         });
                         
                         //Add footnotes to the more bar
-                        $.osci.more.add_content("footnotes", $(".footnote", footnotes), true, 1);
+                        footnotes = footnotes.find(".footnote");
+                        if (footnotes.length) {
+                            $.osci.more.add_content("footnotes", footnotes, true, 1);
+                        }
                         
-                        //Remove plate image thumbnail
-                        figures = figures.filter(function(){
-                            if ($(this).data("figure_id") == "osci_plate_fig") {
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        });
-                        
-                        //Add figures to the more bar
-                        $.osci.more.add_content("figures", figures, true, undefined, function(tab){
-                            $(".figureThumbnail", tab).each(function(i, elem){
-                                var $elem = $(elem),
-                                    img = $elem.find("img"),
-                                    gotoClass = (parseInt(img.data("occurences"), 10) > 1) ? "figure_goto-multi" : "figure_goto";
-                                
-                                $("<a>", {
-                                    text : "goto",
-                                    href : "#",
-                                    click : function(e) {
-                                        e.preventDefault();
-                                        var id = $("img", $(this).parent()).data("figure_id");
-                                        
-                                        findAndGotoElement("a[href='#" + id + "']");
+                        if (figures.length) {
+                            //Remove plate image thumbnail
+                            figures = figures.filter(function(){
+                                if ($(this).data("figure_id") == "osci_plate_fig") {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            });
 
-                                        amplify.publish("osci_more_toggle", {osci_more_close : true});
-                                    },
-                                    title : "goto figure in context",
-                                    "class" : gotoClass
-                                }).appendTo($elem);
-                                
-                                img.click(function(e){
-                                    e.preventDefault();
-                                    var id = $(this).data("figure_id");
-                                    
-                                    amplify.publish("osci_figure_load", {figure_id : "#" + id});
-                                    
-                                    $("#osci_pages").find("#" + id).trigger({
-                                        type : "osci_figure_fullscreen"
-                                    });
-                                });
-                                
-                                $("<a>", {
-                                    text : "fullscreen",
-                                    href : "#",
-                                    click : function(e) {
+                            //Add figures to the more bar
+                            $.osci.more.add_content("figures", figures, true, undefined, function(tab){
+                                $(".figureThumbnail", tab).each(function(i, elem){
+                                    var $elem = $(elem),
+                                        img = $elem.find("img"),
+                                        gotoClass = (parseInt(img.data("occurences"), 10) > 1) ? "figure_goto-multi" : "figure_goto";
+
+                                    $("<a>", {
+                                        text : "goto",
+                                        href : "#",
+                                        click : function(e) {
+                                            e.preventDefault();
+                                            var id = $("img", $(this).parent()).data("figure_id");
+
+                                            findAndGotoElement("a[href='#" + id + "']");
+
+                                            amplify.publish("osci_more_toggle", {osci_more_close : true});
+                                        },
+                                        title : "goto figure in context",
+                                        "class" : gotoClass
+                                    }).appendTo($elem);
+
+                                    img.click(function(e){
                                         e.preventDefault();
-                                        var id = $(this).parent().find("img").data("figure_id");
-                                        
+                                        var id = $(this).data("figure_id");
+
                                         amplify.publish("osci_figure_load", {figure_id : "#" + id});
-                                        
+
                                         $("#osci_pages").find("#" + id).trigger({
                                             type : "osci_figure_fullscreen"
                                         });
-                                    },
-                                    title : "view fullscreen",
-                                    "class" : "figure_fullscreen"
-                                }).appendTo($elem);
+                                    });
+
+                                    $("<a>", {
+                                        text : "fullscreen",
+                                        href : "#",
+                                        click : function(e) {
+                                            e.preventDefault();
+                                            var id = $(this).parent().find("img").data("figure_id");
+
+                                            amplify.publish("osci_figure_load", {figure_id : "#" + id});
+
+                                            $("#osci_pages").find("#" + id).trigger({
+                                                type : "osci_figure_fullscreen"
+                                            });
+                                        },
+                                        title : "view fullscreen",
+                                        "class" : "figure_fullscreen"
+                                    }).appendTo($elem);
+                                });
                             });
-                        });
+                        }
+
+                        if (!footnotes.length && !figures.length) {
+                            $("#" + $.osci.more.options.containerId).hide();
+                        } else {
+                            $("#" + $.osci.more.options.containerId).show();
+                        }
                     }
                 });
             }

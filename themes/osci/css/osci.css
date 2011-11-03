@@ -1,7 +1,6 @@
-body.page-node-reader {
+body.page-node-reader, body.page-reader {
     margin: 0;
-    padding: 0;
-	
+    padding: 0;	
 }
 
 .ui-widget {
@@ -21,7 +20,7 @@ body.page-node-reader {
     position: relative;
 }
 
-.page-node-reader .content, .page-node-reader #page-wrapper {
+.page-node-reader .content, .page-node-reader #page-wrapper, .page-reader .content, .page-reader #page-wrapper  {
     width: 100%;
     min-width: 10px;
     margin: 0;
@@ -241,7 +240,7 @@ body.page-node-reader {
     position: absolute;
     width: 180px;
     top: 0;
-    left: 0;   
+    left: -200px;   
     bottom: 0;
     z-index: 1000;
     padding: 0 10px;
