@@ -63,7 +63,7 @@ $.osci.getURL({
                 item.cache = 'false';
                 settings.callback(item);
             },
-            error: function(arg1, arg2) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 //console.log('An error has occurred');
                 return null;
             }
