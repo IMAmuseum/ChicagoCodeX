@@ -923,9 +923,13 @@ div.note {
     opacity: .7;
 }
 
+#osci_viewer figure.html_figure .figureContent {
+    overflow: auto;
+}
+
 /* table styles */
 .figureContent table {
-	
+	font-size: 90%;
 }
 .figureContent table tr {
 	
