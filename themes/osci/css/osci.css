@@ -537,6 +537,10 @@ ul#osci_navigation_toc li a {
     overflow : hidden;   
 }
 
+#osci_more_wrapper ul.osci_pager li.less, #osci_more_wrapper ul.osci_pager li.more {
+    width: 20px;
+}
+
 #osci_more_wrapper ul.osci_pager li.osci_pager_item {
     /*width: 16px; */
 }

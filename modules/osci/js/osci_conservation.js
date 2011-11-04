@@ -820,24 +820,24 @@ ConservationAsset.prototype.fullscreen = function() {
     var $ = this.$;
     var CA = this;
 
-    // store scroll position move to the top of the screen
-    window.scrollOffset = [window.pageXOffset, window.pageYOffset];
-    window.scrollTo(0,0);
-
     // create a parent container that spans the full screen
-    var modal = $('<div class="ca-ui-fullscreen-modal"></div>');
+    var modal = $('<div class="ca-ui-fullscreen-modal"></div>').appendTo(document.body);;
     // if the modal background is clicked, close the fullscreen mode
     modal.bind('click', function(event) {
     	if ($(event.target).hasClass('ca-ui-fullscreen-modal')) {
     		$(this).find('.ca-ui-fullscreen').trigger('click');
     	}
     });
-    var wrapper = $('<div class="ca-ui-fullscreen-wrap"></div>').appendTo(modal);
+    var wrapper = $('<div class="ca-ui-fullscreen-wrap"></div>').appendTo(modal),
+        modalOffset = modal.offset(),
+        modalHeight = modal.height() - modalOffset.top,
+        modalWidth = modal.outerWidth() - modalOffset.left;
+
     wrapper.css({
-    	height: Math.round(window.innerHeight * 0.85) + 'px',
-    	top:	Math.round(window.innerHeight * 0.05) + 'px',
-    	width:	Math.round(window.innerWidth * 0.9) + 'px',
-    	left: 	Math.round(window.innerWidth * 0.05) + 'px'
+    	height: Math.round(modalHeight * 0.9) + 'px',
+    	top:	Math.round(modalHeight * 0.05) + 'px',
+    	width:	Math.round(modalWidth * 0.9) + 'px',
+    	left: 	Math.round(modalWidth * 0.05) + 'px'
     });
     // retrieve the original markup for this ConservationAsset and 
     // remap the IDs of the asset and its layers
@@ -860,17 +860,29 @@ ConservationAsset.prototype.fullscreen = function() {
     }
     
     var figureWrapper = $('<figure></figure>')
-    	.append(markup)
-    	.attr('data-options', JSON.stringify(this.figureOptions));
-    wrapper.append(figureWrapper)
-    modal.appendTo(document.body);
+        .attr('data-options', JSON.stringify(this.figureOptions))
+        .css({
+            height : Math.round(modalHeight * 0.9) + 'px',
+            width : Math.round(modalWidth * 0.9) + 'px'
+        })
+        .appendTo(wrapper);
     
     // if a caption is present in the figure options, append it to the fullscreen
+    var captionHeight = 0;
     if (this.settings.captionMarkup) {
-    	wrapper.append(this.settings.captionMarkup);
-    	wrapper.find('figure').height(wrapper.height());
-    	wrapper.height(wrapper.height() + this.settings.captionMarkup.outerHeight());
+    	figureWrapper.append(this.settings.captionMarkup);
+        captionHeight = this.settings.captionMarkup.outerHeight(true);
     }
+    
+    $('<div>', {
+        'class' : 'figureContent',
+        css : {
+            'height' : (Math.round(modalHeight * 0.9) - captionHeight) + 'px',
+            'width' : Math.round(modalWidth * 0.9) + 'px'
+        }
+    })
+    .append(markup)
+    .prependTo(figureWrapper);
     
     new ConservationAsset(markup);
 };

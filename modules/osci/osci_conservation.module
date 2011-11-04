@@ -35,6 +35,13 @@ function osci_conservation_menu() {
         'type'              => MENU_CALLBACK
     );
 
+    $items['conservation/view/%'] = array(
+        'title'             => t('View a conservation asset as a standalone figure'),
+        'page callback'     => 'osci_conservation_view',
+        'access arguments'  => array('access content'),
+        'type'              => MENU_CALLBACK
+    );
+    
     return $items;
 }
 
@@ -485,4 +492,18 @@ function _osci_conservation_get_conservation_aspect($node) {
 
     if ($width > 0 && $height > 0) return ($width / $height);
     else return 1;
+}
+
+function osci_conservation_view($nid)
+{
+    drupal_add_library('system', 'ui.slider');
+
+    drupal_add_js(drupal_get_path('module', 'osci_reader') . '/js/amplify.core.js');
+    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_polymaps.js', 'file');
+    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip.js', 'file');
+    drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/osci_conservation.js', 'file');
+    drupal_add_css(drupal_get_path('module', 'osci_layout').'/css/osci_layout.css');
+    drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css', 'file');
+    
+    
 }

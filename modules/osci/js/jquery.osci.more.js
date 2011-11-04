@@ -75,7 +75,7 @@
         {
             var tabNum, tabId = "osci_tab_" + tabName, tab, total, i, pager, item, maxPagesDisplay = 5, totalPages,
                 tabs = $("#" + base.options.tabContainerId, base.container), tabWidth, calcWidth, pagerItemText, maxPagerItemText,
-                pagerItems = [], hasPagerDisplayData = false;
+                pagerItems = [], hasPagerDisplayData = false, pagerControlWidth = 0;
 
             if (base.tab_map[tabName] !== undefined) {
                 tabNum = base.tab_map[tabName];
@@ -102,9 +102,10 @@
                     total = data.length;
                     //tab.append($("<div>",{"class" : "osci_pager_display_item"}).append(data).overscroll());
                     tab.append($("<div>",{"class" : "osci_pager_display_item"}).append(data));
+                    tabWidth = tab.width();
                     
-                    if (perPage === undefined) {
-                        tabWidth = tab.width();
+                    if (perPage === undefined) 
+                    {
                         calcWidth = 0;
                         perPage = 0;
                         data.each(function(i, elem) {
@@ -134,30 +135,33 @@
                         "class" : "osci_pager"
                     });
                     
-                    pagerItems.push($("<li>", {
+                    var pagerNavFirst = $("<li>", {
                         html : $("<a>", {
                             text : "first",
                             data : {page_number : 0},
                             "class" : "osci_pager_nav_first"
                         }),
                         "class" : "osci_pager_nav_first"
-                    }));
+                    });
+                    pagerItems.push(pagerNavFirst);
                     
-                    pagerItems.push($("<li>", {
+                    var pagerNavPrev = $("<li>", {
                         html : $("<a>", {
                             text : "prev",
                             data : {page_number : -1},
                             "class" : "osci_pager_nav_prev"
                         }),
                         "class" : "osci_pager_nav_prev"
-                    }));
+                    });
+                    pagerItems.push(pagerNavPrev);
                     
-                    pagerItems.push($("<li>", {
+                    var pagerLess = $("<li>", {
                         html : $("<span>", {
                             text : "..."
                         }),
                         "class" : "less"
-                    }).hide());
+                    });
+                    pagerItems.push(pagerLess);
                     
                     for (i = 1; i <= totalPages; i++) {
                         if (hasPagerDisplayData) {
@@ -185,10 +189,6 @@
                             "class" : "osci_pager_item"
                         }).hide();
                         
-                        if (i <= maxPagesDisplay) {
-                            item.show();
-                        }
-                        
                         if (i === 1) {
                             item.addClass("first");
                         }
@@ -200,45 +200,47 @@
                         pagerItems.push(item);
                     } 
                     
-                    pagerItems.push($("<li>", {
+                    var pagerMore = $("<li>", {
                         html : $("<span>", {
                             text : "..."
                         }),
                         "class" : "more"
-                    }).hide());
+                    });
+                    pagerItems.push(pagerMore);
                     
-                    pagerItems.push($("<li>", {
+                    var pagerNext = $("<li>", {
                         html : $("<a>", {
                             text : "next",
                             data : {page_number : 1},
                             "class" : "osci_pager_nav_next"
                         }),
                         "class" : "osci_pager_nav_next"
-                    }));
+                    });
+                    pagerItems.push(pagerNext);
                     
-                    pagerItems.push($("<li>", {
+                    var pagerLast = $("<li>", {
                         html : $("<a>", {
                             text : "last",
                             data : {page_number : totalPages - 1},
                             "class" : "osci_pager_nav_last"
                         }),
                         "class" : "osci_pager_nav_last"
-                    }));
+                    });
+                    pagerItems.push(pagerLast);
                     
                     pager.append.apply(pager, pagerItems);
-                    
+                   
                     pager.delegate("a", "click", function(e) {
                         e.preventDefault();
                         var $this = $(this),
                             pageNum = $this.data("page_number"),
                             container = $this.parents(".ui-tabs-panel"),
                             currentPage = container.data("osci_pager_current_page"),
-                            totalItems = container.data("osci_pager_total_items"),
                             totalPages = container.data("osci_pager_total_pages"),
                             perPage = container.data("osci_pager_per_page"),
                             pagerItems = container.find("li.osci_pager_item"),
                             maxPagesDisplay = container.data("osci_pager_max_pages_display"),
-                            pagerItem, displayItem, startItem, endItem;
+                            pagerItem, startItem, endItem;
                         
                         if ($this.hasClass("osci_pager_nav_next")) {
                             pageNum = currentPage + 1;
@@ -251,47 +253,60 @@
                                 pageNum = 0;
                             }
                         }
-    
+
                         pagerItem = container.find("li.osci_pager_item:eq(" + pageNum + ")");
                         container.data("osci_pager_current_page", pageNum);
                         pagerItems.removeClass("active");
                         pagerItem.addClass("active");
-                        
+
                         if (pagerItem.css("display") == 'none') {
                             if (pageNum > currentPage) {
-                                pagerItems.hide().slice(pageNum - maxPagesDisplay + 1, pageNum  + 1).show();
+                                pagerItems.css({display:"none"}).slice(pageNum - maxPagesDisplay + 1, pageNum  + 1).removeAttr("style");
                             } else {
-                                pagerItems.hide().slice(pageNum, pageNum + maxPagesDisplay).show();
+                                pagerItems.css({display:"none"}).slice(pageNum, pageNum + maxPagesDisplay).removeAttr("style");
                             }
                         }
                         
                         if (pagerItems.filter(".last:visible").length){                   
-                            container.find("li.more").hide();
+                            container.find("li.more").text("");
                         } else {
-                            container.find("li.more").show();
+                            container.find("li.more").text("...");
                         }
                         
                         if (pagerItems.filter(".first:visible").length){
-                            container.find("li.less").hide();
+                            container.find("li.less").text("");
                         } else {
-                            container.find("li.less").show();
+                            container.find("li.less").text("...");
                         }
                         
                         startItem = pageNum * perPage;
                         endItem = startItem + perPage;
                         
-                        container.find("div.osci_pager_display_item").children().hide().slice(startItem, endItem).show();
+                        container.find("div.osci_pager_display_item").children().css({display:"none"}).slice(startItem, endItem).removeAttr("style");
                     });
                     
                     tab.data({
-                       osci_pager_total_items : total,
-                       osci_pager_total_pages : totalPages,
-                       osci_pager_per_page : perPage,
-                       osci_pager_current_page : 1,
-                       osci_pager_max_pages_display : maxPagesDisplay
-                   }).append(pager);
+                        osci_pager_total_items : total,
+                        osci_pager_total_pages : totalPages,
+                        osci_pager_per_page : perPage,
+                        osci_pager_current_page : 1,
+                        osci_pager_max_pages_display : maxPagesDisplay
+                    }).append(pager);
                     
-                    $("#" + tabId).find("a.osci_pager_nav_first").click();
+                    pagerControlWidth += pagerNavFirst.outerWidth(true);
+                    pagerControlWidth += pagerNavPrev.outerWidth(true);
+                    pagerControlWidth += pagerLess.outerWidth(true);
+                    pagerControlWidth += pagerMore.outerWidth(true);
+                    pagerControlWidth += pagerNext.outerWidth(true);
+                    pagerControlWidth += pagerLast.outerWidth(true);
+                    
+                    var availablePagerSpace = tabWidth - pagerControlWidth;
+                    maxPagesDisplay = Math.round(availablePagerSpace / 100);
+                    maxPagesDisplay = maxPagesDisplay < 1 ? 1 : maxPagesDisplay;
+                    maxPagesDisplay = maxPagesDisplay > 5 ? 5 : maxPagesDisplay;
+                    tab.data("osci_pager_max_pages_display", maxPagesDisplay);
+                    
+                    pagerNavFirst.find("a").click();
                 } else {
                     tab.html(data);
                 }
