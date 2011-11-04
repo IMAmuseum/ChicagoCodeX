@@ -735,6 +735,9 @@ a.figure_goto:hover, a.figure_fullscreen:hover, a.figure_goto-multi:hover {
     overflow-y: auto;
     height: 200px;
 }
+.footnote a {
+    color : #0071B3;
+}
 
 #osci_viewer {
 	background: url('../images/bg-body.png') repeat left top !important;
