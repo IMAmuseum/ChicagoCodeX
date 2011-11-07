@@ -434,9 +434,16 @@
         
                         //set new width and the new column coverage number
                         width = (height - captionHeight) * aspect;
+                        figure.css("width", width + "px");
+                        
+                        //update caption height at new width
+                        captionHeight = figure.find("figcaption").height();
+                        
+                        //calc width again to maintain proper aspect ratio
+                        width = (height - captionHeight) * aspect;
                         columns = Math.ceil((width + base.options.gutterWidth) / (base.options.gutterWidth + base.options.columnWidth));
                     }
-                    figure.css({ height :  height + "px", width : width + "px"});
+                    figure.css({ height : height + "px", width : width + "px"});
     
                     //Set the size of the figure content div inside the actual figure element
                     figureContent.css({
