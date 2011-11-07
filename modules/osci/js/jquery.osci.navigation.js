@@ -305,6 +305,46 @@
             }
         };
         
+        function _nextSection()
+        {
+            var active = false,
+                tocData = undefined,
+                checkId = base.data.toc["nid_" + base.data.nid].next;
+                
+            while (!active && checkId)
+            {
+                tocData = base.data.toc["nid_" + checkId];
+                if (tocData.nid && tocData.active) {
+                    active = true;
+                } else {
+                    checkId = tocData.next;
+                    tocData = undefined;
+                }
+            }
+            
+            return tocData;
+        };
+        
+        function _prevSection()
+        {
+            var active = false,
+                tocData = undefined,
+                checkId = base.data.toc["nid_" + base.data.nid].prev;
+                
+            while (!active && checkId)
+            {
+                tocData = base.data.toc["nid_" + checkId];
+                if (tocData.nid && tocData.active) {
+                    active = true;
+                } else {
+                    checkId = tocData.prev;
+                    tocData = undefined;
+                }
+            }
+            
+            return tocData;
+        };
+        
         //handle reader navigation
         base.navigateTo = function(to, value)
         {
@@ -315,7 +355,7 @@
                 case "next":
                     base.data.currentPage++;
                     if (base.data.currentPage > base.data.pageCount) {
-                        tocData = base.data.toc["nid_" + base.data.toc["nid_" + base.data.nid].next];
+                        tocData = _nextSection();
                         if (tocData.nid && tocData.active) {
                             base.data.nid = tocData.nid;
                             base.data.to = {operation : "page", value : "first"};
@@ -331,7 +371,7 @@
                 case "prev":
                     base.data.currentPage--;
                     if (base.data.currentPage < 1) {
-                        tocData = base.data.toc["nid_" + base.data.toc["nid_" + base.data.nid].prev];
+                        tocData = _prevSection();
                         if (tocData.nid && tocData.active) {
                             base.data.nid = tocData.nid;
                             base.data.to = {operation : "page", value : "last"};
