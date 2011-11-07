@@ -68,7 +68,7 @@ body {
 #osci_viewer .column {
     display: inline;
     position: absolute;
-    overflow-y: hidden;
+    overflow: hidden;
     top: 0;
     text-align: justify;
 }
