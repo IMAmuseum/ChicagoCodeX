@@ -65,11 +65,15 @@
 }
 
 #osci_viewer_wrapper .ca-ui-layer span, .ca-ui-layer span {
-	display: block;
+	display: inline-block;
 	float: left;
 	vertical-align: middle;
 	text-align: center;
 	padding: 4px 8px 0px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 20px;
 }
 
 #osci_viewer_wrapper .ca-ui-down-arrow, .ca-ui-down-arrow {
@@ -340,18 +344,18 @@
 }
 
 #osci_viewer_wrapper .ca-ui-layer-slider-container, .ca-ui-layer-slider-container {
-	padding: 5px 5px 5px 5px;
+	padding: 11px 12px 12px;
 	float: right;
-	width: 100px;
-	height: 20px;
+	min-width: 50px;
+    max-width: 100px;
 	border-right: 1px solid #888;
 }
 
 #osci_viewer_wrapper .ca-ui-layer-slider, .ca-ui-layer-slider {
 	height: 5px;
-	width: 75px;
+	min-width: 25px;
+    max-width: 50px;
 	background: #444;
-	margin: 7px auto;
 }
 
 #osci_viewer_wrapper .ca-ui-layer-slider .ui-slider-handle, .ca-ui-layer-slider .ui-slider-handle {
@@ -359,6 +363,7 @@
 	height: 12px;
 	background: #ccc;
 	margin-top: -1px;
+    margin-left: -4px;
 }
 
 /* for ca node edit form */

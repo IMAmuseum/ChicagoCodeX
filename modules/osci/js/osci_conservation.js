@@ -18,7 +18,7 @@ var CACollection = function() {
 		var i, count;
 		// allow an asset or a string id to be passed in
 		if (typeof asset == "string") {
-			asset = { id: asset };
+			asset = {id: asset};
 		}
 		
 		// find this asset in the collection by id
@@ -615,10 +615,9 @@ ConservationAsset.prototype.createUI = function() {
         }
     }
     
-    
     // add controlbar to container
     this.ui.controlbar.appendTo(this.container);
-   
+    this.resizeControlBar();
 
     // zoom control
     this.ui.zoom = $('<div class="ca-ui-zoom"></div>');
@@ -687,52 +686,54 @@ ConservationAsset.prototype.createUI = function() {
      *
      */
     // configure events to show/hide controls
-    this.container.bind('mousemove', function(event) {
-        var container = CA.container;
-        var date = new Date();
-        
-        container.attr('data-controls-time', date.getTime());
-        var controlState = container.attr('data-controls') || 'false';
-        if (controlState == 'false') {
-        	// ensure no other CA has its controls up
-        	var assets = window.caCollection.list();
-        	for (var i=0, count = assets.length; i < count; i++) {
-        		var asset = assets[i];
-        		if (asset.container.attr('data-controls') == 'true') {
-        			asset.container.attr('data-controls', 'false');
-        			asset.toggleControls();
-        		}
-        	}
-        	// turn on this CA's controls
-            container.attr('data-controls', 'true'); 
-            CA.toggleControls(); 
-        }
-        CA.ui.controlsTimeout = setTimeout(function() {
-            var date = new Date();
-            // check if the mouse is over a control, if it is, don't hide
-            if (container.attr('data-controls') == 'true' 
-                && (date.getTime() - container.attr('data-controls-time')) >= 1750) {
-                
-                if (container.attr('data-controls-lock') != 'true') {
-                    container.attr('data-controls', 'false');
-                    CA.clearPopups();
-                    CA.toggleControls();
-                }
-            }
-        }, 2000);
-    });
-    // mousing over a control locks them "on"
-    $.each(this.ui.controls, function() {
-        // test if this is still around.  we include popups, and other transients
-        if (typeof(this.bind) == 'function') {
-            this.bind('mouseenter', function() {
-                CA.container.attr('data-controls-lock', 'true');
-            });
-            this.bind('mouseleave', function() {
-                CA.container.attr('data-controls-lock', 'false');
-            });
-        }
-    });
+//    this.container.bind('mousemove', function(event) {
+//        var container = CA.container;
+//        var date = new Date();
+//        
+//        container.attr('data-controls-time', date.getTime());
+//        var controlState = container.attr('data-controls') || 'false';
+//        if (controlState == 'false') {
+//        	// ensure no other CA has its controls up
+//        	var assets = window.caCollection.list();
+//        	for (var i=0, count = assets.length; i < count; i++) {
+//        		var asset = assets[i];
+//        		if (asset.container.attr('data-controls') == 'true') {
+//        			asset.container.attr('data-controls', 'false');
+//        			asset.toggleControls();
+//        		}
+//        	}
+//        	// turn on this CA's controls
+//            container.attr('data-controls', 'true'); 
+//            CA.toggleControls(); 
+//        }
+//        CA.ui.controlsTimeout = setTimeout(function() {
+//            var date = new Date();
+//            // check if the mouse is over a control, if it is, don't hide
+//            if (container.attr('data-controls') == 'true' 
+//                && (date.getTime() - container.attr('data-controls-time')) >= 1750) {
+//                
+//                if (container.attr('data-controls-lock') != 'true') {
+//                    container.attr('data-controls', 'false');
+//                    CA.clearPopups();
+//                    CA.toggleControls();
+//                }
+//            }
+//        }, 2000);
+//    });
+//    // mousing over a control locks them "on"
+//    $.each(this.ui.controls, function() {
+//        // test if this is still around.  we include popups, and other transients
+//        if (typeof(this.bind) == 'function') {
+//            this.bind('mouseenter', function() {
+//                CA.container.attr('data-controls-lock', 'true');
+//            });
+//            this.bind('mouseleave', function() {
+//                CA.container.attr('data-controls-lock', 'false');
+//            });
+//        }
+//    });
+    
+    this.toggleControls();
 }
 
 
@@ -887,6 +888,30 @@ ConservationAsset.prototype.fullscreen = function() {
     new ConservationAsset(markup);
 };
 
+//resize the control bar so no wrapping occurs
+ConservationAsset.prototype.resizeControlBar = function()
+{
+    var containerWidth = this.container.outerWidth(),
+        controlBarWidth = this.ui.controlbar.outerWidth(),
+        maxWidth = containerWidth - (parseInt(this.ui.controlbar.css('right'), 10) * 2);
+        
+    //if controlbar is wider than asset width resize it
+    if (controlBarWidth > maxWidth) {
+//        var staticWidths = this.ui.annotation.outerWidth(true) + this.ui.fullscreen.outerWidth(true) + this.ui.reset.outerWidth(true),
+//            adjustableWidth = maxWidth - staticWidths;
+            
+        this.ui.controlbar.css({
+            'max-width' : maxWidth + 'px'
+        });
+        
+        //shrink layer names (only works nicely if a min-width set in css)
+        //this might need redone later depending on browser support and custom styles
+        this.ui.controlbar.find('.ca-ui-layer > span').css({
+            width: '1px'
+        });
+    }
+    
+};
 
 ConservationAsset.prototype.toggleLayerSelector = function(event) {
     // set up aliases and build dynamic variable names
@@ -910,10 +935,11 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
         // get the position of the selector's top right corner - this is where to bind the popup
         var parentOffset = layerSelector.offsetParent().position();
         var elOffset = layerSelector.position();
-        var elWidth = layerSelector.outerWidth();
-        var totalWidth = layerSelector.offsetParent().parent().width();
+        //var elWidth = layerSelector.outerWidth();
+        //var totalWidth = layerSelector.offsetParent().parent().width();
         var totalHeight = layerSelector.offsetParent().parent().height();
-        var right = totalWidth - parentOffset.left - elOffset.left - elWidth;
+        //var right = totalWidth - parentOffset.left - elOffset.left - elWidth;
+        var left = parentOffset.left + elOffset.left;
         var bottom = totalHeight - parentOffset.top - elOffset.top;
 
         // create a layer list, not including the current selected layer
@@ -974,7 +1000,7 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
         // create the popup
         CA.ui[layerSelectorPopup] = $('<div class="ca-ui-layer-selector-popup"></div>')
         .css({
-            right: right, 
+            left: left, 
             bottom: bottom
         })
         .bind('mouseenter', function() {
