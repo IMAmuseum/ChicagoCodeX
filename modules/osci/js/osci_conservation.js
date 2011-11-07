@@ -686,54 +686,52 @@ ConservationAsset.prototype.createUI = function() {
      *
      */
     // configure events to show/hide controls
-//    this.container.bind('mousemove', function(event) {
-//        var container = CA.container;
-//        var date = new Date();
-//        
-//        container.attr('data-controls-time', date.getTime());
-//        var controlState = container.attr('data-controls') || 'false';
-//        if (controlState == 'false') {
-//        	// ensure no other CA has its controls up
-//        	var assets = window.caCollection.list();
-//        	for (var i=0, count = assets.length; i < count; i++) {
-//        		var asset = assets[i];
-//        		if (asset.container.attr('data-controls') == 'true') {
-//        			asset.container.attr('data-controls', 'false');
-//        			asset.toggleControls();
-//        		}
-//        	}
-//        	// turn on this CA's controls
-//            container.attr('data-controls', 'true'); 
-//            CA.toggleControls(); 
-//        }
-//        CA.ui.controlsTimeout = setTimeout(function() {
-//            var date = new Date();
-//            // check if the mouse is over a control, if it is, don't hide
-//            if (container.attr('data-controls') == 'true' 
-//                && (date.getTime() - container.attr('data-controls-time')) >= 1750) {
-//                
-//                if (container.attr('data-controls-lock') != 'true') {
-//                    container.attr('data-controls', 'false');
-//                    CA.clearPopups();
-//                    CA.toggleControls();
-//                }
-//            }
-//        }, 2000);
-//    });
-//    // mousing over a control locks them "on"
-//    $.each(this.ui.controls, function() {
-//        // test if this is still around.  we include popups, and other transients
-//        if (typeof(this.bind) == 'function') {
-//            this.bind('mouseenter', function() {
-//                CA.container.attr('data-controls-lock', 'true');
-//            });
-//            this.bind('mouseleave', function() {
-//                CA.container.attr('data-controls-lock', 'false');
-//            });
-//        }
-//    });
-    
-    this.toggleControls();
+    this.container.bind('mousemove', function(event) {
+        var container = CA.container;
+        var date = new Date();
+        
+        container.attr('data-controls-time', date.getTime());
+        var controlState = container.attr('data-controls') || 'false';
+        if (controlState == 'false') {
+        	// ensure no other CA has its controls up
+        	var assets = window.caCollection.list();
+        	for (var i=0, count = assets.length; i < count; i++) {
+        		var asset = assets[i];
+        		if (asset.container.attr('data-controls') == 'true') {
+        			asset.container.attr('data-controls', 'false');
+        			asset.toggleControls();
+        		}
+        	}
+        	// turn on this CA's controls
+            container.attr('data-controls', 'true'); 
+            CA.toggleControls(); 
+        }
+        CA.ui.controlsTimeout = setTimeout(function() {
+            var date = new Date();
+            // check if the mouse is over a control, if it is, don't hide
+            if (container.attr('data-controls') == 'true' 
+                && (date.getTime() - container.attr('data-controls-time')) >= 1750) {
+                
+                if (container.attr('data-controls-lock') != 'true') {
+                    container.attr('data-controls', 'false');
+                    CA.clearPopups();
+                    CA.toggleControls();
+                }
+            }
+        }, 2000);
+    });
+    // mousing over a control locks them "on"
+    $.each(this.ui.controls, function() {
+        // test if this is still around.  we include popups, and other transients
+        if (typeof(this.bind) == 'function') {
+            this.bind('mouseenter', function() {
+                CA.container.attr('data-controls-lock', 'true');
+            });
+            this.bind('mouseleave', function() {
+                CA.container.attr('data-controls-lock', 'false');
+            });
+        }
+    });
 }
 
 
