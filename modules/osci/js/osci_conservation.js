@@ -671,10 +671,17 @@ ConservationAsset.prototype.createUI = function() {
     		CA.ui.viewfinder.empty().css('height', '');
     		CA.ui.viewfinder.removeClass('viewfinder-open').addClass('viewfinder-closed');
     		CA.ui.viewfinderViewport = null;
+            
+            //move legend back up if visible
+            CA.positionLegend();
     	}
     	else {
     		// open
     		CA.ui.viewfinder.removeClass('viewfinder-closed').addClass('viewfinder-open');
+            
+            //move legend down
+            CA.positionLegend();
+            
     		CA.refreshViewfinder();
     	}
     });
@@ -902,7 +909,7 @@ ConservationAsset.prototype.resizeControlBar = function()
             'max-width' : maxWidth + 'px'
         });
         
-        //shrink layer names (only works nicely if a min-width set in css)
+        //shrink layer names (only works nicely if a min-width set in css & overflow ellipsis)
         //this might need redone later depending on browser support and custom styles
         this.ui.controlbar.find('.ca-ui-layer > span').css({
             width: '1px'
@@ -1206,6 +1213,20 @@ ConservationAsset.prototype.toggleControls = function(duration) {
    
 };
 
+//move the legend so it does not overlap any other controls
+ConservationAsset.prototype.positionLegend = function()
+{
+    if (this.ui.legendItemsCount) 
+    {
+        var viewfinderHeight = parseInt(this.ui.viewfinder.outerHeight(), 10),
+            viewfinderTop = parseInt(this.ui.viewfinder.css('top'), 10);
+
+        this.ui.legend.css({
+            top : (viewfinderTop + viewfinderHeight + 4) + 'px'
+        });
+    }
+};
+
 
 ConservationAsset.prototype.addLegendItem = function(layerData) {
     var $ = this.$;
@@ -1236,6 +1257,8 @@ ConservationAsset.prototype.addLegendItem = function(layerData) {
     	.appendTo(legendItem);
     
     this.ui.legendItemsCount++;
+    
+    this.positionLegend();
 };
 
 
@@ -1278,7 +1301,9 @@ ConservationAsset.prototype.showAnnotationPresets = function() {
     				if (this.figureOptions.annotation || this.figureOptions.editing) {
         				this.addLegendItem(this.annotationLayers[j]);
     				}
-    			}
+    			} else if (this.annotationLayers[j].visible) {
+                    this.toggleLayer(this.annotationLayers[j]);
+                }
     		}
     	}
     }
