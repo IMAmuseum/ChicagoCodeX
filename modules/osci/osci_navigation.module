@@ -233,16 +233,28 @@ function _osci_navigation_get_toc($nid, $fullBook = false)
 function _osci_navigation_get_book_toc($nid)
 {
     $toc = null;
-    $node = node_load($nid);
+    $cacheKey = "osci_toc_" . $nid;
+    
+    $toc = &drupal_static($cacheKey);
+    if (!isset($toc)) {
+        if ($cache = cache_get($cacheKey)) {
+            $toc = $cache->data;
+        }
+        else {
+            $node = node_load($nid);
 
-    if (isset($node->book)) {
-        foreach (book_get_books() as $book_id => $book) {
-            if ($book['bid'] == $node->book['bid']) {
-                $toc = book_menu_subtree_data($book);
-                $toc = _osci_navigation_clean_toc($toc);
-                _osci_navigation_load_additional_toc_data($toc);
-                break;
+            if (isset($node->book)) {
+                foreach (book_get_books() as $book_id => $book) {
+                    if ($book['bid'] == $node->book['bid']) {
+                        $toc = book_menu_subtree_data($book);
+                        $toc = _osci_navigation_clean_toc($toc);
+                        _osci_navigation_load_additional_toc_data($toc);
+                        break;
+                    }
+                }
             }
+            
+            cache_set($cacheKey, $toc, 'cache');
         }
     }
 

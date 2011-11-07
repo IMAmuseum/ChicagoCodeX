@@ -116,6 +116,15 @@ function osci_body_copy_theme()
     );
 }
 
+function osci_body_copy_node_update($node)
+{
+    $cacheKey = "osci_body_copy_" . $node->nid;
+    cache_clear_all($cacheKey, 'cache');
+    
+    $cacheKey = "osci_toc_" . $node->nid;
+    cache_clear_all($cacheKey, 'cache');
+}
+
 function book_export_pdf($nid) {
     if (user_access('access printer-friendly version')) {
         $export_data = array();
@@ -269,168 +278,180 @@ function osci_body_copy_render_layout_print($nid)
 
 function osci_body_copy_render_layout($nid)
 {
-    include("includes/simple_html_dom.php");    
-    
-    $node = node_load($nid);
-    $elements = node_view($node, 'body_copy');
-    $footnotes = array();
-    $footnoteOrder = array();
-    $footnoteCount = 0;
-    $figures = array();
-    $figureOrder = array();
-    $figureCount = 0;
-    $figureOccurenceCount = array();
+    $cacheKey = "osci_body_copy_" . $nid;
+    $output = &drupal_static($cacheKey);
+    if (!isset($output)) {
+        if ($cache = cache_get($cacheKey)) {
+            $output = $cache->data;
+        }
+        else {
+            include("includes/simple_html_dom.php");    
 
-    $plateNid = null;
-    if (isset($elements['field_osci_plate_image'])) {
-        $plateNid = ($elements['field_osci_plate_image']['#items'][0]['nid']) ? $elements['field_osci_plate_image']['#items'][0]['nid'] : null;
-        $plateCaption = $node->field_osci_navigation_title['und'][0]['value'];
-        unset($elements['field_osci_plate_image']);
-    }
+            $node = node_load($nid);
+            $elements = node_view($node, 'body_copy');
+            $footnotes = array();
+            $footnoteOrder = array();
+            $footnoteCount = 0;
+            $figures = array();
+            $figureOrder = array();
+            $figureCount = 0;
+            $figureOccurenceCount = array();
 
-    $catalogNumber = (isset($node->field_osci_catalogue_number['und']) && $node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
-    $bodyCopyElements = osci_body_copy_sort_elements($elements);
-
-    $paragraphCount = 0;
-    
-    // get url for path
-    $paragraphUrl = url("node/{$nid}/reader", array('absolute' => TRUE, 'fragment' => 'para-'));
-
-    foreach ($bodyCopyElements as $k => $weight) {
-        $v = $elements[$k];
-        $elements[$k]['#theme'] = 'body_copy_field_html5';
-
-        if (strlen(trim($v[0]['#markup']))) {
-            $html = str_get_html($v[0]['#markup']);
-            
-            $paragraphs = $html->find('p');
-            if (count($paragraphs)) {
-                foreach($paragraphs as $p) {
-                    $paragraphCount++;
-                    $p->innertext = "<a href=\"" . $paragraphUrl . $paragraphCount . "\" class=\"osci_paragraph_identifier osci_paragraph_{$paragraphCount}\" data-paragraph_id=\"{$paragraphCount}\">{$paragraphCount}</a>" . $p->innertext();
-                    $newClass = $p->class ? $p->class . ' ' : '';
-                    $p->class = $newClass . "osci_paragraph_{$paragraphCount} osci_paragraph";
-                    $p->setAttribute("data-paragraph_id", $paragraphCount);
-                }
+            $plateNid = null;
+            if (isset($elements['field_osci_plate_image'])) {
+                $plateNid = ($elements['field_osci_plate_image']['#items'][0]['nid']) ? $elements['field_osci_plate_image']['#items'][0]['nid'] : null;
+                $plateCaption = $node->field_osci_navigation_title['und'][0]['value'];
+                unset($elements['field_osci_plate_image']);
             }
-            
-            $v[0]['#markup'] = $html->save();
-            $html = str_get_html($v[0]['#markup']);
-            
-            $figLinks = $html->find("a.figure-link");
-            if (count($figLinks)) {
-                foreach ($figLinks as $link) {
-                    $fId = $link->innertext();
 
-                    $numberTemplate = ($v[0]['osci_figures'][$fId]['number_template']) ? $v[0]['osci_figures'][$fId]['number_template'] : "Fig. cat#.fig#";
-                    $numberTemplate = str_replace(
-                        array('cat#', 'fig#'),
-                        array($catalogNumber, ++$figureCount),
-                        $numberTemplate
-                    );
-                    $v[0]['osci_figures'][$fId]['number_template'] = $numberTemplate;
+            $catalogNumber = (isset($node->field_osci_catalogue_number['und']) && $node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
+            $bodyCopyElements = osci_body_copy_sort_elements($elements);
 
-                    if (isset($figureOccurenceCount[$fId])) {
-                        $figOccur = ++$figureOccurenceCount[$fId];
-                    } else {
-                        $figOccur = $figureOccurenceCount[$fId] = 1;
+            $paragraphCount = 0;
+
+            // get url for path
+            $paragraphUrl = url("node/{$nid}/reader", array('absolute' => TRUE, 'fragment' => 'para-'));
+
+            foreach ($bodyCopyElements as $k => $weight) {
+                $v = $elements[$k];
+                $elements[$k]['#theme'] = 'body_copy_field_html5';
+
+                if (strlen(trim($v[0]['#markup']))) {
+                    $html = str_get_html($v[0]['#markup']);
+
+                    $paragraphs = $html->find('p');
+                    if (count($paragraphs)) {
+                        foreach($paragraphs as $p) {
+                            $paragraphCount++;
+                            $p->innertext = "<a href=\"" . $paragraphUrl . $paragraphCount . "\" class=\"osci_paragraph_identifier osci_paragraph_{$paragraphCount}\" data-paragraph_id=\"{$paragraphCount}\">{$paragraphCount}</a>" . $p->innertext();
+                            $newClass = $p->class ? $p->class . ' ' : '';
+                            $p->class = $newClass . "osci_paragraph_{$paragraphCount} osci_paragraph";
+                            $p->setAttribute("data-paragraph_id", $paragraphCount);
+                        }
                     }
-                    
-                    $link->innertext = $numberTemplate;
-                    $link->setAttribute("data-occurence", $figOccur);
-                    $figureOrder[$figureCount] = $fId;
-                }
-            }
-            
-            $v[0]['#markup'] = $html->save();
-            $html = str_get_html($v[0]['#markup']);
-            
-            $fnLinks = $html->find("a.footnote-link");
-            if (count($fnLinks)) {
-                foreach ($fnLinks as $link) {
-                    $fnId = $link->innertext();
 
-                    $link->innertext = ++$footnoteCount;
-                    $footnoteOrder[$footnoteCount] = $fnId;
-                }
-            }
+                    $v[0]['#markup'] = $html->save();
+                    $html = str_get_html($v[0]['#markup']);
 
-            $elements[$k][0]['#markup'] = $html->save();
-        } else {
-            unset($elements[$k]);
-        }
+                    $figLinks = $html->find("a.figure-link");
+                    if (count($figLinks)) {
+                        foreach ($figLinks as $link) {
+                            $fId = $link->innertext();
 
-        $footnotes += $v[0]['osci_footnotes'];
-        $figures += $v[0]['osci_figures'];
-    }
+                            $numberTemplate = ($v[0]['osci_figures'][$fId]['number_template']) ? $v[0]['osci_figures'][$fId]['number_template'] : "Fig. cat#.fig#";
+                            $numberTemplate = str_replace(
+                                array('cat#', 'fig#'),
+                                array($catalogNumber, ++$figureCount),
+                                $numberTemplate
+                            );
+                            $v[0]['osci_figures'][$fId]['number_template'] = $numberTemplate;
 
-    if (count($footnotes)) {
-        $finalFootnotes = array();
-        foreach($footnoteOrder as $k => $fnId) {
-            if (isset($footnotes[$fnId])) {
-                $finalFootnotes[$k] = array_merge($footnotes[$fnId], array('fnCount' => $k));
-            }
-        }
+                            if (isset($figureOccurenceCount[$fId])) {
+                                $figOccur = ++$figureOccurenceCount[$fId];
+                            } else {
+                                $figOccur = $figureOccurenceCount[$fId] = 1;
+                            }
 
-        $elements['field_osci_footnotes'] = array(
-            '#theme'            => 'body_copy_field_html5',
-            '#title'            => 'Footnotes',
-            '#weight'           => 999,
-            '#label_display'    => 'inline',
-            '#field_type'       => 'osci_body_copy',
-            '#field_name'       => 'field_osci_footnotes',
-            '#attributes'        => array('class' => array('osci_column_break')),
-            0 => array(
-                '#markup' => theme('body_copy_footnotes', array('footnotes' => $finalFootnotes))
-            ),
-        );
-    }
+                            $link->innertext = $numberTemplate;
+                            $link->setAttribute("data-occurence", $figOccur);
+                            $figureOrder[$figureCount] = $fId;
+                        }
+                    }
 
-    if (count($figures) || $plateNid) {
-        $finalFigures = array();
+                    $v[0]['#markup'] = $html->save();
+                    $html = str_get_html($v[0]['#markup']);
 
-        if ($plateNid) {
-            $plateId = 'osci_plate_fig';
-            $finalFigures[$plateId] = array(
-                'figure_reference' => $plateNid,
-                'number_template' => ($catalogNumber) ? "Cat. {$catalogNumber}" : ' ',
-                'caption' => $plateCaption,
-                'position' => 't',
-                'columns' => '55%',
-                'id' => $plateId,
-                'format' => 'footnote',
-                'figCount' => 0,
-                'figOccurences' => 1
-            );
-        }
+                    $fnLinks = $html->find("a.footnote-link");
+                    if (count($fnLinks)) {
+                        foreach ($fnLinks as $link) {
+                            $fnId = $link->innertext();
 
-        foreach($figureOrder as $k => $fId) {
-            if (isset($figures[$fId])) {
-                if (isset($finalFigures[$fId])) {
-                    $finalFigures[$fId]['figOccurences']++;
+                            $link->innertext = ++$footnoteCount;
+                            $footnoteOrder[$footnoteCount] = $fnId;
+                        }
+                    }
+
+                    $elements[$k][0]['#markup'] = $html->save();
                 } else {
-                    $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $k, 'figOccurences' => 1, 'catalogNumber' => $catalogNumber));
+                    unset($elements[$k]);
                 }
+
+                $footnotes += $v[0]['osci_footnotes'];
+                $figures += $v[0]['osci_figures'];
             }
+
+            if (count($footnotes)) {
+                $finalFootnotes = array();
+                foreach($footnoteOrder as $k => $fnId) {
+                    if (isset($footnotes[$fnId])) {
+                        $finalFootnotes[$k] = array_merge($footnotes[$fnId], array('fnCount' => $k));
+                    }
+                }
+
+                $elements['field_osci_footnotes'] = array(
+                    '#theme'            => 'body_copy_field_html5',
+                    '#title'            => 'Footnotes',
+                    '#weight'           => 999,
+                    '#label_display'    => 'inline',
+                    '#field_type'       => 'osci_body_copy',
+                    '#field_name'       => 'field_osci_footnotes',
+                    '#attributes'        => array('class' => array('osci_column_break')),
+                    0 => array(
+                        '#markup' => theme('body_copy_footnotes', array('footnotes' => $finalFootnotes))
+                    ),
+                );
+            }
+
+            if (count($figures) || $plateNid) {
+                $finalFigures = array();
+
+                if ($plateNid) {
+                    $plateId = 'osci_plate_fig';
+                    $finalFigures[$plateId] = array(
+                        'figure_reference' => $plateNid,
+                        'number_template' => ($catalogNumber) ? "Cat. {$catalogNumber}" : ' ',
+                        'caption' => $plateCaption,
+                        'position' => 't',
+                        'columns' => '55%',
+                        'id' => $plateId,
+                        'format' => 'footnote',
+                        'figCount' => 0,
+                        'figOccurences' => 1
+                    );
+                }
+
+                foreach($figureOrder as $k => $fId) {
+                    if (isset($figures[$fId])) {
+                        if (isset($finalFigures[$fId])) {
+                            $finalFigures[$fId]['figOccurences']++;
+                        } else {
+                            $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $k, 'figOccurences' => 1, 'catalogNumber' => $catalogNumber));
+                        }
+                    }
+                }
+
+                $elements['field_osci_figures'] = array(
+                    '#theme'            => 'body_copy_field_html5',
+                    '#title'            => 'Figures',
+                    '#weight'           => 1000,
+                    '#label_display'    => 'inline',
+                    '#field_type'       => 'osci_body_copy',
+                    '#field_name'       => 'field_osci_figures',
+                    0 => array(
+                        '#markup' => theme('body_copy_figures', array('figures' => $finalFigures))
+                    ),
+                );
+            }
+
+            $elements['#theme'] = 'body_copy_node';
+            unset($elements['#pre_render']);
+
+            $output = render($elements);
+            cache_set($cacheKey, $output, 'cache');
         }
-
-        $elements['field_osci_figures'] = array(
-            '#theme'            => 'body_copy_field_html5',
-            '#title'            => 'Figures',
-            '#weight'           => 1000,
-            '#label_display'    => 'inline',
-            '#field_type'       => 'osci_body_copy',
-            '#field_name'       => 'field_osci_figures',
-            0 => array(
-                '#markup' => theme('body_copy_figures', array('figures' => $finalFigures))
-            ),
-        );
     }
-
-    $elements['#theme'] = 'body_copy_node';
-    unset($elements['#pre_render']);
-
-    print render($elements);
+    
+    print $output;
 }
 
 function osci_body_copy_entity_info_alter(&$entity_info)
