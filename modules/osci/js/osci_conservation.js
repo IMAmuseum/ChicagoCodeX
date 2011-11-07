@@ -801,9 +801,11 @@ ConservationAsset.prototype.refreshViewfinderViewport = function() {
         var offsetY = (((pointNE.y * -1.0) / (pointSW.y - pointNE.y)) * vfHeight) - this.settings.viewPortBorderWidth;
 
         // calculate the height and width of the viewport
-        var ratio = this.map.size().x / (pointNE.x - pointSW.x);
-        var vpWidth = ratio * vfWidth;
-        var vpHeight = ratio * vfHeight;
+        var ratioX = this.map.size().x / (pointNE.x - pointSW.x);
+        var ratioY = this.map.size().y / (pointSW.y - pointNE.y);
+        
+        var vpWidth = ratioX * vfWidth;
+        var vpHeight = ratioY * vfHeight;
 
         this.ui.viewfinderViewport.css({
             top : offsetY + "px",
