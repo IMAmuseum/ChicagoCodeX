@@ -1,7 +1,7 @@
 496c496,498
 <       if (p.tabIndex >= 0) return p;
 ---
->       	if (p.className.match) {
+>       	if (p.className && p.className.match) {
 > 			if (p.className.match(/conservation-asset/)) return p;
 > 		}
 790,796d791

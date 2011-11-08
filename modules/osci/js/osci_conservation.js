@@ -247,7 +247,10 @@ ConservationAsset.prototype.createLayer = function(layerData) {
 
 
 ConservationAsset.prototype.removeLayer = function(layerData) {
-    this.map.remove(layerData.polymapLayer);
+    if (layerData.polymapLayer) {
+        this.map.remove(layerData.polymapLayer);
+    }
+    layerData.polymapLayer = undefined;
     layerData.visible = false;
 }
 
@@ -261,6 +264,10 @@ ConservationAsset.prototype.toggleLayer = function(layerData) {
     }
 }
 
+ConservationAsset.prototype.repaintLayer = function(layerData) {
+    this.removeLayer(layerData);
+    this.createLayer(layerData);
+}
 
 ConservationAsset.prototype.createLayerIIP = function(layerData) {
     var CA = this;
@@ -471,6 +478,9 @@ ConservationAsset.prototype.createUI = function() {
 	this.ui.reset = $('<div class="ca-ui-reset"></div>')
     .bind('click', function(event) {
     	var i, count;
+        
+        CA.clearPopups();
+        
     	// reset to provided inset, or container bounds otherwise
     	if (typeof CA.figureOptions.swLat != 'undefined' && !CA.figureOptions.editing) {
     		var extents =  [
@@ -490,8 +500,7 @@ ConservationAsset.prototype.createUI = function() {
     	}
     	// correct zoom control to reflect new zoom
     	CA.ui.zoomSlider.slider('value', CA.map.zoom());
-    	// reset annotation layer visibility
-    	CA.showAnnotationPresets();
+    	
     	// reset initial slider position
     	if (CA.figureOptions.sliderPosition) {
     		if (CA.ui.slider) {
@@ -531,13 +540,9 @@ ConservationAsset.prototype.createUI = function() {
         		CA.ui.viewfinderLayer2.css('opacity', CA.ui.slider.slider('value') / 100);
     		}
     	}
-    	// repaint visible annotaion layers to put them back on top
-    	var aIds = CA.getVisibleAnnotationIds();
-    	for (i=0, count = aIds.length; i < count; i++) {
-    		currentLayer = CA.getLayerById(aIds[i]);
-    		CA.toggleLayer(currentLayer);
-    		CA.toggleLayer(currentLayer);
-    	}
+        
+        // reset annotation layer visibility
+    	CA.showAnnotationPresets();
     });
     if (this.figureOptions.interaction || this.figureOptions.editing) {
         this.ui.reset.appendTo(this.ui.controlbar);
@@ -1268,23 +1273,25 @@ ConservationAsset.prototype.removeLegendItem = function(layerData) {
     var $ = this.$;
     var CA = this;
     
-    var legendItems = this.ui.legend.find('ul').children();
-    // find the item with the matching layer num and remove it
-    legendItems.each(function() {
-       if ($(this).attr('data-layer_num') == layerData.layer_num) {
-           $(this).remove();
-           CA.ui.legendItemsCount--;
-       } 
-    });
-    
-    // if the legend is empty, remove it
-    if (this.ui.legendItemsCount <= 0) {
-        this.ui.legend.remove();
-        delete this.ui.legend;
-        // remove from control array
-        for (var i=0, count = this.ui.controls.length; i < count; i++) {
-            if ($(this.ui.controls[i]).hasClass('ca-ui-legend')) {
-                this.ui.controls.splice(i, 1);
+    if (this.ui.legend) {
+        var legendItems = this.ui.legend.find('ul').children();
+        // find the item with the matching layer num and remove it
+        legendItems.each(function() {
+           if ($(this).attr('data-layer_num') == layerData.layer_num) {
+               $(this).remove();
+               CA.ui.legendItemsCount--;
+           } 
+        });
+
+        // if the legend is empty, remove it
+        if (this.ui.legendItemsCount <= 0) {
+            this.ui.legend.remove();
+            delete this.ui.legend;
+            // remove from control array
+            for (var i=0, count = this.ui.controls.length; i < count; i++) {
+                if ($(this.ui.controls[i]).hasClass('ca-ui-legend')) {
+                    this.ui.controls.splice(i, 1);
+                }
             }
         }
     }
@@ -1292,22 +1299,24 @@ ConservationAsset.prototype.removeLegendItem = function(layerData) {
 
 // toggle on any annotation layer that's configured from the figure options 
 ConservationAsset.prototype.showAnnotationPresets = function() {
-	if (this.figureOptions.annotationPreset) {
-		// each preset is a layer_id for a layer in this.layers
-    	for (var i=0, count = this.figureOptions.annotationPreset.length; i < count; i++) {
-    		var presetLayerId = this.figureOptions.annotationPreset[i];
-    		// step through the annotation layers
-    		for (var j=0, layerCount = this.annotationLayers.length; j < layerCount; j++) {
-    			if (this.annotationLayers[j].layer_id == presetLayerId && !this.annotationLayers[j].visible) {
-    				this.toggleLayer(this.annotationLayers[j]);
-    				if (this.figureOptions.annotation || this.figureOptions.editing) {
+    for (var j=0, layerCount = this.annotationLayers.length; j < layerCount; j++) {
+        this.removeLayer(this.annotationLayers[j]);
+        this.removeLegendItem(this.annotationLayers[j]);
+        
+        if (this.figureOptions.annotationPreset) {
+            // each preset is a layer_id for a layer in this.layers
+            for (var i=0, count = this.figureOptions.annotationPreset.length; i < count; i++) {
+                var presetLayerId = this.figureOptions.annotationPreset[i];
+                if (this.annotationLayers[j].layer_id == presetLayerId) {
+                    this.repaintLayer(this.annotationLayers[j]);
+                    
+                    if (this.figureOptions.annotation || this.figureOptions.editing) {
         				this.addLegendItem(this.annotationLayers[j]);
     				}
-    			} else if (this.annotationLayers[j].visible) {
-                    this.toggleLayer(this.annotationLayers[j]);
+                    break;
                 }
-    		}
-    	}
+            }
+        }
     }
 }
 
