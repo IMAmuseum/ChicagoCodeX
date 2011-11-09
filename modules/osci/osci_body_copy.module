@@ -127,6 +127,12 @@ function osci_body_copy_node_update($node)
     $cacheKey = "osci_body_copy_" . $node->nid;
     cache_clear_all($cacheKey, 'cache');
     
+    $cacheKey = "osci_body_copy_" . $node->nid . '_html5';
+    cache_clear_all($cacheKey, 'cache');
+    
+    $cacheKey = "osci_body_copy_" . $node->nid . '_print';
+    cache_clear_all($cacheKey, 'cache');
+    
     $cacheKey = "osci_toc_" . $node->nid;
     cache_clear_all($cacheKey, 'cache');
 }
