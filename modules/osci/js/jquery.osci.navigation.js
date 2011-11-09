@@ -417,11 +417,16 @@
             }
 
             //shift the page using css3
-            $("#osci_pages", "#osci_viewer").css({
-                "-webkit-transform" : "translate(" + newOffset + "px, 0)",
-                "-moz-transform" : "translate(" + newOffset + "px, 0)",
-                "transform" : "translate(" + newOffset + "px, 0)"
-            });
+            if ($.browser.msie) {
+                $("#osci_pages").attr("style", "-ms-transform:translate(" + newOffset + "px, 0);");
+            } else {
+                $("#osci_pages").css({
+                    "-webkit-transform" : "translate(" + newOffset + "px, 0)",
+                    "-moz-transform" : "translate(" + newOffset + "px, 0)",
+                    //"-ms-transform" : "translate(" + newOffset + "px, 0)",
+                    "transform" : "translate(" + newOffset + "px, 0)"
+                });
+            }
             
             amplify.publish("osci_navigation_complete", { page : base.data.currentPage});
         };
