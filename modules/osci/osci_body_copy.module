@@ -437,12 +437,14 @@ function osci_body_copy_render_layout($nid, $format = 'html5')
                     );
                 }
 
+                $figureCount = 0;
                 foreach($figureOrder as $k => $fId) {
                     if (isset($figures[$fId])) {
                         if (isset($finalFigures[$fId])) {
                             $finalFigures[$fId]['figOccurences']++;
                         } else {
-                            $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $k + 1, 'figOccurences' => 1, 'catalogNumber' => $catalogNumber));
+                            $figureCount++;
+                            $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $figureCount, 'figOccurences' => 1, 'catalogNumber' => $catalogNumber));
                         }
                     }
                 }
