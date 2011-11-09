@@ -20,6 +20,14 @@ function osci_reader_menu()
         'access arguments' => array('access content'),
         'type' => MENU_CALLBACK
     );
+    
+    $items['print/%'] = array(
+        'title' => 'Reader',
+        'description' => 'Reader print layout for book display',
+        'page callback' => 'osci_reader_print_alias',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK
+    );
 
     return $items;
 }
@@ -31,6 +39,18 @@ function osci_reader_theme()
             'template'  => 'templates/osci_viewer',
         ),
     );
+}
+
+function osci_reader_print_alias()
+{
+    $args = arg();
+    array_shift($args);
+    $alias = implode("/", $args);
+
+    $nodePath = drupal_lookup_path('source', $alias);
+    $nid = (int)str_replace("node/", "", $nodePath);
+    
+    book_export_pdf($nid);
 }
 
 function osci_reader_render_alias()

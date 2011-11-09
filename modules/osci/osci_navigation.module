@@ -370,6 +370,7 @@ function _osci_navigation_clean_toc_iterate($toc)
                     'nid'      => $nid,
                     'title'    => $v['title'],
                     'href'     => url("reader/" . $alias),
+                    'print'    => url("print/" . $alias),
                     'bodycopy' => url($v['href'] . '/bodycopy'),
                     'mlid'     => $v['mlid'],
                     'next'     => $nextPage,

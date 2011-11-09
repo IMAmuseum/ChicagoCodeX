@@ -5,6 +5,7 @@
         <div id="osci_header_controls">
         	<div id="osci_increase_font"></div>
         	<div id="osci_decrease_font"></div>
+            <div id="osci_print"></div>
             <div id="user_link"></div>
             <div class="tooltip">
                 <?php if(user_is_logged_in()): ?>

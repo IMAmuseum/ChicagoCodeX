@@ -71,7 +71,7 @@ body.page-node-reader, body.page-reader {
     background: #464646 url('../images/bg-header-bar-right.png') no-repeat right;   
     float: right;
     height: 26px;
-    width: 220px;
+    width: 240px;
 }
 
 #osci_increase_font {
@@ -86,6 +86,15 @@ body.page-node-reader, body.page-reader {
 #osci_decrease_font {
 	background: #464646 url('../../../modules/osci/images/iconFontDecrease.png') no-repeat;
 	width: 21px;
+	height: 21px;
+	cursor: pointer;
+	float: left;
+	padding-top: 3px;
+}
+
+#osci_print {
+	background: #464646 url('../images/print_icon.png') no-repeat 8px 5px;
+	width: 26px;
 	height: 21px;
 	cursor: pointer;
 	float: left;

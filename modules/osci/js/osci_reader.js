@@ -594,6 +594,12 @@
             position : "bottom center"            
         });
         
+        $("#osci_print").click(function(e){
+            e.preventDefault();
+            
+            window.open($.osci.navigation.data.toc["nid_" + $.osci.navigation.data.nid].print);
+        });
+        
         amplify.subscribe("osci_toc_complete", function() {
             $("#osci_navigation_toc_wrapper").find("li.inactive > a").tipsy({
                 gravity : "w",
