@@ -139,25 +139,23 @@ body.page-node-reader, body.page-reader {
 
 #osci_nav_prev {
     position: absolute;
-    width: 24px;
-	height:30px;
+    width: 50px;
+	height:50px;
     top: -14px;
-    right: 76px;
-	background: transparent url('../images/btn-prev.png') no-repeat left top;
-	background-size: 100%;
+    right: 70px;
+	background: transparent url('../images/btn-prev.png') no-repeat 20px top;
 	overflow:hidden;display:block;text-indent:999px;font-size:0;
 	opacity: 0.3;
 }
 
 #osci_nav_next {
-	width: 24px;
-	height:30px;
+	width: 64px;
+	height:50px;
     position: absolute;
-    right: 34px;
+    right: 0;
     top: -14px;
     text-align: right;
-	background: transparent url('../images/btn-next.png') no-repeat left top;
-	background-size: 100%;
+	background: transparent url('../images/btn-next.png') no-repeat 6px top;
 	overflow:hidden;display:block;text-indent:999px;font-size:0;
 	opacity: 0.3;
 }
