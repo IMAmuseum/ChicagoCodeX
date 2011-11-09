@@ -152,21 +152,31 @@ var ConservationAsset = function(container) { // container should be a html elem
         }
     }
     // create the first two layers, using preset data if available
-    var baseLayerPreset = this.figureOptions.baseLayerPreset ? this.figureOptions.baseLayerPreset : [];
-    if (baseLayerPreset.length > 0) {
+    var baseLayerPreset = this.figureOptions.baseLayerPreset ? this.figureOptions.baseLayerPreset : [],
+        numBaseLayerPresets = baseLayerPreset.length,
+        usedPresetLayers = false;
+        
+    if (numBaseLayerPresets > 0) {
         var firstLayer = this.getLayerById(baseLayerPreset[0]);
-        if (firstLayer) {
-            this.createLayer(firstLayer);
+        var secondLayer;
+        
+        if (numBaseLayerPresets > 1) {
+            secondLayer = this.getLayerById(baseLayerPreset[1]);
         }
-    	if (baseLayerPreset.length > 1) {
-    		var secondLayer = this.getLayerById(baseLayerPreset[1]);
+        
+        if (firstLayer && (secondLayer || numBaseLayerPresets == 1)) {
+            this.createLayer(firstLayer);
+            
             if (secondLayer) {
                 this.createLayer(secondLayer);
                 $('#' + secondLayer.id).css('opacity', 0);
             }
-    	}
+            
+            usedPresetLayers = true;
+        }
     }
-    else {
+    
+    if (!usedPresetLayers) {
     	// create first layer, second layer, and make second transparent
         this.createLayer(this.baseLayers[0]);
 	    if (this.baseLayers[1]) {
