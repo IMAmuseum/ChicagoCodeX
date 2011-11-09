@@ -352,23 +352,26 @@ function osci_body_copy_render_layout($nid, $format = 'html5')
                         foreach ($figLinks as $link) {
                             $fId = $link->innertext();
 
-                            $numberTemplate = ($v[0]['osci_figures'][$fId]['number_template']) ? $v[0]['osci_figures'][$fId]['number_template'] : "Fig. cat#.fig#";
-                            $numberTemplate = str_replace(
-                                array('cat#', 'fig#'),
-                                array($catalogNumber, ++$figureCount),
-                                $numberTemplate
-                            );
-                            $v[0]['osci_figures'][$fId]['number_template'] = $numberTemplate;
-
                             if (isset($figureOccurenceCount[$fId])) {
                                 $figOccur = ++$figureOccurenceCount[$fId];
                             } else {
                                 $figOccur = $figureOccurenceCount[$fId] = 1;
                             }
 
+                            $numberTemplate = ($v[0]['osci_figures'][$fId]['number_template']) ? $v[0]['osci_figures'][$fId]['number_template'] : "Fig. cat#.fig#";
+                            
+                            if ($figOccur === 1) {
+                                $numberTemplate = str_replace(
+                                    array('cat#', 'fig#'),
+                                    array($catalogNumber, ++$figureCount),
+                                    $numberTemplate
+                                );
+                            }
+                            $v[0]['osci_figures'][$fId]['number_template'] = $numberTemplate;                            
+
                             $link->innertext = $numberTemplate;
                             $link->setAttribute("data-occurence", $figOccur);
-                            $figureOrder[$figureCount] = $fId;
+                            $figureOrder[] = $fId;
                         }
                     }
 
@@ -439,7 +442,7 @@ function osci_body_copy_render_layout($nid, $format = 'html5')
                         if (isset($finalFigures[$fId])) {
                             $finalFigures[$fId]['figOccurences']++;
                         } else {
-                            $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $k, 'figOccurences' => 1, 'catalogNumber' => $catalogNumber));
+                            $finalFigures[$fId] = array_merge($figures[$fId], array('figCount' => $k + 1, 'figOccurences' => 1, 'catalogNumber' => $catalogNumber));
                         }
                     }
                 }
