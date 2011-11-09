@@ -697,7 +697,7 @@ ConservationAsset.prototype.createUI = function() {
 };
 
 ConservationAsset.prototype.reset = function() {
-    var i, count,
+    var $ = this.$, i, count,
         CA = this;
         
     CA.clearPopups();
