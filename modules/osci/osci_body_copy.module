@@ -14,7 +14,7 @@ function osci_body_copy_menu()
         'title'             => 'Raw Content',
         'description'       => 'Body copy layout for book display',
         'page callback'     => 'osci_body_copy_render_layout',
-        'page arguments'    => array(1),
+        'page arguments'    => array(1, 'html5'),
         'access arguments'  => array('access content'),
         'type'              => MENU_CALLBACK
     );
@@ -97,8 +97,14 @@ function osci_body_copy_theme()
                 'body_copy_format'  => null,
             )
         ),
-        'body_copy_figures' => array(
-            'template' => 'templates/osci_body_copy_figures',
+        'body_copy_figures_html5' => array(
+            'template' => 'templates/osci_body_copy_figures_html5',
+            'variables' => array(
+                'figures' => array()
+            )
+        ),
+        'body_copy_figures_print' => array(
+            'template' => 'templates/osci_body_copy_figures_print',
             'variables' => array(
                 'figures' => array()
             )
@@ -136,7 +142,7 @@ function book_export_pdf($nid) {
         }
 
         $html = theme('osci_book_export_pdf', array('title' => $node->title, 'contents' => $contents, 'depth' => $node->book['depth']));
-//return $html;
+
         require_once("includes/dompdf/dompdf_config.inc.php");
 
         $dompdf = new DOMPDF();
@@ -160,7 +166,7 @@ function book_export_pdf($nid) {
 }
 
 function book_node_export_pdf($node, $children = '') {
-    $node->rendered = osci_body_copy_render_layout_print($node->nid);
+    $node->rendered = osci_body_copy_render_layout($node->nid, 'print');
 
     return theme('osci_book_node_export_pdf', array('node' => $node, 'children' => $children));
 }
@@ -181,6 +187,7 @@ function osci_body_copy_sort_elements($elements)
     return $bodyCopyElements;
 }
 
+/*
 function osci_body_copy_render_layout_print($nid)
 {
     $node = node_load($nid);
@@ -275,10 +282,11 @@ function osci_body_copy_render_layout_print($nid)
     unset($elements['#theme']);
     return render($elements);
 }
+*/
 
-function osci_body_copy_render_layout($nid)
+function osci_body_copy_render_layout($nid, $format = 'html5')
 {
-    $cacheKey = "osci_body_copy_" . $nid;
+    $cacheKey = "osci_body_copy_" . $nid . '_' . $format;
     $output = &drupal_static($cacheKey);
     if (!isset($output)) {
         if ($cache = cache_get($cacheKey)) {
@@ -314,7 +322,7 @@ function osci_body_copy_render_layout($nid)
 
             foreach ($bodyCopyElements as $k => $weight) {
                 $v = $elements[$k];
-                $elements[$k]['#theme'] = 'body_copy_field_html5';
+                $elements[$k]['#theme'] = 'body_copy_field_' . $format;
 
                 if (strlen(trim($v[0]['#markup']))) {
                     $html = str_get_html($v[0]['#markup']);
@@ -431,19 +439,27 @@ function osci_body_copy_render_layout($nid)
                 }
 
                 $elements['field_osci_figures'] = array(
-                    '#theme'            => 'body_copy_field_html5',
+                    '#theme'            => 'body_copy_field_' . $format,
                     '#title'            => 'Figures',
                     '#weight'           => 1000,
                     '#label_display'    => 'inline',
                     '#field_type'       => 'osci_body_copy',
                     '#field_name'       => 'field_osci_figures',
                     0 => array(
-                        '#markup' => theme('body_copy_figures', array('figures' => $finalFigures))
+                        '#markup' => theme('body_copy_figures_' . $format, array('figures' => $finalFigures))
                     ),
                 );
             }
 
-            $elements['#theme'] = 'body_copy_node';
+            switch($format) {
+                case 'print':
+                    unset($elements['#theme']);
+                    break;
+                
+                default:
+                    $elements['#theme'] = 'body_copy_node';
+            }
+            
             unset($elements['#pre_render']);
 
             $output = render($elements);
@@ -451,7 +467,14 @@ function osci_body_copy_render_layout($nid)
         }
     }
     
-    print $output;
+    switch ($format) {
+        case 'print':
+            return $output;
+            break;
+        
+        default:
+            print $output;
+    }
 }
 
 function osci_body_copy_entity_info_alter(&$entity_info)

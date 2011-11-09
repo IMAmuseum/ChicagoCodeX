@@ -181,13 +181,13 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
            	}
            	else {
 	            $vars['thumbnail'] = theme_image(array(
-	                        		'path'		=> $options->previewUrl,
-	                        		'alt'		=> $node->title,
-	                        		'attributes' => array(
-	                        	    	'data-figure_id' => $figure['id'],
-	                        	        'data-figure_number' => $figure['figCount'],
-	                        	        'data-occurences' => $figure['figOccurences']
-	            )
+                    'path'		=> $options->previewUrl,
+                    'alt'		=> $node->title,
+                    'attributes' => array(
+                        'data-figure_id' => $figure['id'],
+                        'data-figure_number' => $figure['figCount'],
+                        'data-occurences' => $figure['figOccurences']
+                    )
 	            ));
            	}
             break;
@@ -201,9 +201,120 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
 }
 
 function osci_body_copy_preprocess_body_copy_figure_print(&$vars) {
-    $vars['osci_static_image'] = true;
-    $vars['osci_image_cache'] = "osci_print";
-    osci_body_copy_preprocess_body_copy_figure($vars);
+    $figure = $vars['figure'];
+    $node = node_load($figure['figure_reference']);
+    
+    if (!isset($node->nid)) {
+        watchdog("osci_body_copy", "invalid figure reference " . $figure['figure_reference']);
+        return;
+    }
+    node_build_content($node);
+
+    $vars['content'] = "";
+    
+    if (!isset($figure['figCount'])) {
+        $figure['figCount'] = 0;
+        $vars['figure']['figCount'] = 0;
+    }
+    
+    if (!isset($figure['catalogNumber'])) {
+        $vars['figure']['catalogNumber'] = 0;
+    }
+    
+    $figure['figOccurences'] = isset($figure['figOccurences']) ? $figure['figOccurences'] : 1;
+
+
+    // store the options as they are, then strip out the url since it's
+    // only needed on the thumbnail
+    $options = isset($figure['figure_options']) ? htmlspecialchars($figure['figure_options']) : null;
+    $options = json_decode(htmlspecialchars_decode($options));
+
+    $vars['type'] = $node->type;
+    $vars['caption'] = (empty($figure['caption'])) ? '' : trim(check_markup($figure['caption'], $figure['format']));
+    $title = isset($figure['number_template']) ? $figure['number_template'] : '';
+    $title = trim(strip_tags($title . $vars['caption']));
+    $nodeType = $node->type;
+    switch ($nodeType) {
+    	
+        case 'image':
+        	if (!isset($node->field_ptiff['und'][0]) && isset($node->field_image['und'][0]))
+        	{
+                $image = theme_image_style(array(
+                    'style_name' => 'osci_print',
+                    'path' => $node->field_image['und'][0]['uri'],
+                    'alt' => $title,
+                    'title' => $title,
+                    'attributes' => array(
+                        'class' => $vars['osci_image_cache']
+                    )
+                ));
+
+        		$vars['content'] = $image;
+        	}
+        	elseif (isset($node->field_ptiff['und'][0]))
+        	{
+        	    $vars['type'] = "iip_image";
+        	    $data['figure_type'] = "iip_image";
+        		$vars['content'] = _osci_iip_create_iip_div($node, $figure['id']);
+                
+                // test is a preview url is available.  If so, use it in the thumbnail below
+                if ($options && isset($options->previewUrl) && $options->previewUrl != '') {
+                    $thumbnailPath = 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl);
+                } else {
+                    $thumbnailPath = $node->field_image['und'][0]['uri'];
+                }
+
+                // if the figure has a its own thumbnail, use that
+                if (isset($options->previewUrl)) {
+                    $vars['content'] = $options->previewUrl;
+                }
+                else {
+                    $vars['content'] = theme_image_style(array(
+                        'style_name' => "osci_print",
+                        'path' => $thumbnailPath,
+                        'alt' => $title,
+                        'title' => $title,
+                        'attributes' => array(
+                            'class' => $vars['osci_image_cache']
+                        )
+                    ));
+                }
+        	}
+
+    		break;
+        
+        case 'html_figure':
+            $vars['content'] = check_markup($node->field_osci_figure_content['und'][0]['value'], $node->field_osci_figure_content['und'][0]['format']);
+            break;
+        
+        case 'iip_asset':
+        case 'svg_asset':
+        case 'image_asset':
+        	$node->field_assets['und'][0]['nid'] = $node->nid;
+        case 'conservation_asset':   
+            // test is a preview url is available.  If so, use it in the thumbnail below
+            if ($options && isset($options->previewUri) && $options->previewUri != '') {
+            	$thumbnailPath = $options->previewUri;
+            }
+            elseif ($options && isset($options->previewUrl) && $options->previewUrl != '') {
+            	$thumbnailPath = 'public://'.str_ireplace('sites/default/files/', '', $options->previewUrl);
+            } 
+            else {
+            	$thumbnailPath = $node->field_image['und'][0]['uri'];
+           	}
+
+            $vars['content'] = theme_image_style(array(
+                'style_name' => "osci_print",
+                'path' => $thumbnailPath,
+                'alt' => $title,
+                'title' => $title,
+                'attributes' => array(
+                    'class' => $vars['osci_image_cache']
+                )
+            ));
+           	
+            break;
+    }
 }
 
 function template_preprocess_osci_book_export_pdf(&$variables) {
