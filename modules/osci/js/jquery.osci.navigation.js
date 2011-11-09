@@ -177,6 +177,10 @@
         //function to call when the browser is resized
         function _osci_resize()
         {
+            if ($("#ca-ui-fullscreen-modal").length || $("#modalBackdrop").length) {
+                return;
+            }
+            
         	//get the first paragraph currently displayed so we can try to stay on the same page after the resize
             var firstParagraph = $("div.osci_page_" + (base.data.currentPage + 1)).find("p.osci_paragraph:first");
             base.data.to = { operation : "paragraph", value : firstParagraph.data("paragraph_id")};
