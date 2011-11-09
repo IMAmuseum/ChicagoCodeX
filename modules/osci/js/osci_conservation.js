@@ -154,11 +154,16 @@ var ConservationAsset = function(container) { // container should be a html elem
     // create the first two layers, using preset data if available
     var baseLayerPreset = this.figureOptions.baseLayerPreset ? this.figureOptions.baseLayerPreset : [];
     if (baseLayerPreset.length > 0) {
-    	this.createLayer(this.getLayerById(baseLayerPreset[0]));
+        var firstLayer = this.getLayerById(baseLayerPreset[0]);
+        if (firstLayer) {
+            this.createLayer(firstLayer);
+        }
     	if (baseLayerPreset.length > 1) {
     		var secondLayer = this.getLayerById(baseLayerPreset[1]);
-    		this.createLayer(secondLayer);
-    		$('#' + secondLayer.id).css('opacity', 0);
+            if (secondLayer) {
+                this.createLayer(secondLayer);
+                $('#' + secondLayer.id).css('opacity', 0);
+            }
     	}
     }
     else {
