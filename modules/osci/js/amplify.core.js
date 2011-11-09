@@ -1,5 +1,5 @@
 /*!
- * Amplify Core 1.0beta
+ * Amplify Core 1.1.0
  * 
  * Copyright 2011 appendTo LLC. (http://appendto.com/team)
  * Dual licensed under the MIT or GPL licenses.
@@ -15,6 +15,7 @@ var slice = [].slice,
 var amplify = global.amplify = {
 	publish: function( topic ) {
 		var args = slice.call( arguments, 1 ),
+			topicSubscriptions,
 			subscription,
 			length,
 			i = 0,
@@ -24,8 +25,9 @@ var amplify = global.amplify = {
 			return true;
 		}
 
-		for ( length = subscriptions[ topic ].length; i < length; i++ ) {
-			subscription = subscriptions[ topic ][ i ];
+		topicSubscriptions = subscriptions[ topic ].slice();
+		for ( length = topicSubscriptions.length; i < length; i++ ) {
+			subscription = topicSubscriptions[ i ];
 			ret = subscription.callback.apply( subscription.context, args );
 			if ( ret === false ) {
 				break;
@@ -46,25 +48,37 @@ var amplify = global.amplify = {
 		}
 		priority = priority || 10;
 
-		if ( !subscriptions[ topic ] ) {
-			subscriptions[ topic ] = [];
-		}
+		var topicIndex = 0,
+			topics = topic.split( /\s/ ),
+			topicLength = topics.length,
+			added;
+		for ( ; topicIndex < topicLength; topicIndex++ ) {
+			topic = topics[ topicIndex ];
+			added = false;
+			if ( !subscriptions[ topic ] ) {
+				subscriptions[ topic ] = [];
+			}
+	
+			var i = subscriptions[ topic ].length - 1,
+				subscriptionInfo = {
+					callback: callback,
+					context: context,
+					priority: priority
+				};
+	
+			for ( ; i >= 0; i-- ) {
+				if ( subscriptions[ topic ][ i ].priority <= priority ) {
+					subscriptions[ topic ].splice( i + 1, 0, subscriptionInfo );
+					added = true;
+					break;
+				}
+			}
 
-		var i = subscriptions[ topic ].length - 1,
-			subscriptionInfo = {
-				callback: callback,
-				context: context,
-				priority: priority
-			};
-
-		for ( ; i >= 0; i-- ) {
-			if ( subscriptions[ topic ][ i ].priority <= priority ) {
-				subscriptions[ topic ].splice( i + 1, 0, subscriptionInfo );
-				return callback;
+			if ( !added ) {
+				subscriptions[ topic ].unshift( subscriptionInfo );
 			}
 		}
 
-		subscriptions[ topic ].unshift( subscriptionInfo );
 		return callback;
 	},
 
