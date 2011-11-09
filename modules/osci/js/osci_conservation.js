@@ -1285,7 +1285,7 @@ ConservationAsset.prototype.addLegendItem = function(layerData) {
     
     var itemBox = $('<div class="item-box"></div>')
     	.css('background-color', '#'+layerData.color)
-    	.appendTo(legendItem);
+    	.prependTo(legendItem);
     
     this.ui.legendItemsCount++;
     
