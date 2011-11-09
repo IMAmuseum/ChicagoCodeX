@@ -254,7 +254,7 @@
                     figure.bind("osci_figure_fullscreen", function(e) {
                         var assetId = $(this).find('.conservation-asset').attr("id");
                         var asset = window.caCollection.find(assetId);
-                        asset.fullscreen();
+                        asset.fullscreen(true);
                     });
                 },
                 image_asset: function(figure, content) {
@@ -266,7 +266,7 @@
                     figure.bind("osci_figure_fullscreen", function(e) {
                         var assetId = $(this).find('.conservation-asset').attr("id");
                         var asset = window.caCollection.find(assetId);
-                        asset.fullscreen();
+                        asset.fullscreen(true);
                     });
                 },
                 iip_asset: function(figure, content) {
@@ -278,7 +278,7 @@
                     figure.bind("osci_figure_fullscreen", function(e) {
                         var assetId = $(this).find('.conservation-asset').attr("id");
                         var asset = window.caCollection.find(assetId);
-                        asset.fullscreen();
+                        asset.fullscreen(true);
                     });
                 },
                 svg_asset: function(figure, content) {
@@ -290,7 +290,7 @@
                     figure.bind("osci_figure_fullscreen", function(e) {
                         var assetId = $(this).find('.conservation-asset').attr("id");
                         var asset = window.caCollection.find(assetId);
-                        asset.fullscreen();
+                        asset.fullscreen(true);
                     });
                 },
                 html_figure : function(figure, content) {

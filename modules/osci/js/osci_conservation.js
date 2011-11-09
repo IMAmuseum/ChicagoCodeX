@@ -477,72 +477,7 @@ ConservationAsset.prototype.createUI = function() {
     // reset control
 	this.ui.reset = $('<div class="ca-ui-reset"></div>')
     .bind('click', function(event) {
-    	var i, count;
-        
-        CA.clearPopups();
-        
-    	// reset to provided inset, or container bounds otherwise
-    	if (typeof CA.figureOptions.swLat != 'undefined' && !CA.figureOptions.editing) {
-    		var extents =  [
-    			{
-    				lon: CA.figureOptions.swLon,
-    				lat: CA.figureOptions.swLat
-    			},
-    			{
-    				lon: CA.figureOptions.neLon,
-    				lat: CA.figureOptions.neLat
-    			}
-    			];
-    		CA.map.extent(extents);
-    	}
-    	else {
-            CA.zoomToContainer();
-    	}
-    	// correct zoom control to reflect new zoom
-    	CA.ui.zoomSlider.slider('value', CA.map.zoom());
-    	
-    	// reset initial slider position
-    	if (CA.figureOptions.sliderPosition) {
-    		if (CA.ui.slider) {
-    			CA.ui.slider.slider('value', CA.figureOptions.sliderPosition);
-    		}
-    	}
-    	/*
-    	 * Reset original layer selection
-    	 */
-    	var baseLayers;
-    	if (CA.figureOptions.baseLayerPreset) {
-    		baseLayers = [];
-    		for (i=0, count = CA.figureOptions.baseLayerPreset.length; i < count; i++) {
-    			baseLayers.push(CA.getLayerById(CA.figureOptions.baseLayerPreset[i]));
-    		}
-    	}
-    	else {
-    		baseLayers = CA.baseLayers;
-    	}
-    	for (i = 0, count = baseLayers.length; i < count && i < 2; i++) {
-			currentLayer = CA.settings['currentLayer' + (i + 1)];
-			// turn off current layer
-			CA.toggleLayer(currentLayer);
-			// turn on new
-			CA.toggleLayer(baseLayers[i]);
-			// upkeep state
-			CA.settings['currentLayer' + (i + 1)] = baseLayers[i];
-			// update layer selector ui
-			if (CA.ui['layerSelector' + (i + 1)]) {
-				CA.ui['layerSelector'+ (i + 1)].find('span').html(baseLayers[i].title);
-			}
-    	}
-    	// if more than one layer, restore transparency setting
-    	if (baseLayers.length > 1 && CA.ui.slider) {
-    		$('#'+CA.settings.currentLayer2.id).css('opacity', CA.ui.slider.slider('value') / 100);
-    		if (CA.ui.viewfinderLayer2) {
-        		CA.ui.viewfinderLayer2.css('opacity', CA.ui.slider.slider('value') / 100);
-    		}
-    	}
-        
-        // reset annotation layer visibility
-    	CA.showAnnotationPresets();
+    	CA.reset();
     });
     if (this.figureOptions.interaction || this.figureOptions.editing) {
         this.ui.reset.appendTo(this.ui.controlbar);
@@ -744,7 +679,77 @@ ConservationAsset.prototype.createUI = function() {
             });
         }
     });
-}
+};
+
+ConservationAsset.prototype.reset = function() {
+    var i, count,
+        CA = this;
+        
+    CA.clearPopups();
+
+    // reset to provided inset, or container bounds otherwise
+    if (typeof CA.figureOptions.swLat != 'undefined' && !CA.figureOptions.editing) {
+        var extents =  [
+            {
+                lon: CA.figureOptions.swLon,
+                lat: CA.figureOptions.swLat
+            },
+            {
+                lon: CA.figureOptions.neLon,
+                lat: CA.figureOptions.neLat
+            }
+            ];
+        CA.map.extent(extents);
+    }
+    else {
+        CA.zoomToContainer();
+    }
+    // correct zoom control to reflect new zoom
+    CA.ui.zoomSlider.slider('value', CA.map.zoom());
+
+    // reset initial slider position
+    if (CA.figureOptions.sliderPosition) {
+        if (CA.ui.slider) {
+            CA.ui.slider.slider('value', CA.figureOptions.sliderPosition);
+        }
+    }
+    /*
+     * Reset original layer selection
+     */
+    var baseLayers;
+    if (CA.figureOptions.baseLayerPreset) {
+        baseLayers = [];
+        for (i=0, count = CA.figureOptions.baseLayerPreset.length; i < count; i++) {
+            baseLayers.push(CA.getLayerById(CA.figureOptions.baseLayerPreset[i]));
+        }
+    }
+    else {
+        baseLayers = CA.baseLayers;
+    }
+    for (i = 0, count = baseLayers.length; i < count && i < 2; i++) {
+        currentLayer = CA.settings['currentLayer' + (i + 1)];
+        // turn off current layer
+        CA.toggleLayer(currentLayer);
+        // turn on new
+        CA.toggleLayer(baseLayers[i]);
+        // upkeep state
+        CA.settings['currentLayer' + (i + 1)] = baseLayers[i];
+        // update layer selector ui
+        if (CA.ui['layerSelector' + (i + 1)]) {
+            CA.ui['layerSelector'+ (i + 1)].find('span').html(baseLayers[i].title);
+        }
+    }
+    // if more than one layer, restore transparency setting
+    if (baseLayers.length > 1 && CA.ui.slider) {
+        $('#'+CA.settings.currentLayer2.id).css('opacity', CA.ui.slider.slider('value') / 100);
+        if (CA.ui.viewfinderLayer2) {
+            CA.ui.viewfinderLayer2.css('opacity', CA.ui.slider.slider('value') / 100);
+        }
+    }
+
+    // reset annotation layer visibility
+    CA.showAnnotationPresets();  
+};
 
 
 ConservationAsset.prototype.refreshViewfinder = function() {
@@ -829,7 +834,7 @@ ConservationAsset.prototype.refreshViewfinderOpacity = function(opacity) {
 };
 
 
-ConservationAsset.prototype.fullscreen = function() {
+ConservationAsset.prototype.fullscreen = function(reset) {
     var $ = this.$;
     var CA = this;
 
@@ -897,7 +902,11 @@ ConservationAsset.prototype.fullscreen = function() {
     .append(markup)
     .prependTo(figureWrapper);
     
-    new ConservationAsset(markup);
+    var tempCA = new ConservationAsset(markup);
+    
+    if (reset) {
+        tempCA.reset();
+    }
 };
 
 //resize the control bar so no wrapping occurs
