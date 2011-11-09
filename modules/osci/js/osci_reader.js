@@ -148,18 +148,30 @@
                         // Ensure the toc tab is closed
                         amplify.publish("osci_nav_toggle", {osci_nav_close : true});
                         
-                        more.css({
-                            "-webkit-transform" : "translate(0, 0)",
-                            "-moz-transform" : "translate(0, 0)",
-                            "transform" : "translate(0, 0)"
-                        });
+                        if ($.browser.msie) {
+                            more.attr("style", "-ms-transform:translate(0, 0);");
+                        } else {
+                            more.css({
+                                "-webkit-transform" : "translate(0, 0)",
+                                "-moz-transform" : "translate(0, 0)",
+                                //"-ms-transform" : "translate(0, 0)",
+                                "transform" : "translate(0, 0)"
+                            });
+                        }
                         break;
                     case "close":
-                        more.css({
-                            "-webkit-transform" : "translate(0, " + more.outerHeight() + "px)",
-                            "-moz-transform" : "translate(0, " + more.outerHeight() + "px)",
-                            "transform" : "translate(0, " + more.outerHeight() + "px)"
-                        });
+                        var moreHeight = more.outerHeight();
+  
+                        if ($.browser.msie) {
+                            more.attr("style", "-ms-transform:translate(0, " + moreHeight + "px);");
+                        } else {
+                            more.css({
+                                "-webkit-transform" : "translate(0, " + moreHeight + "px)",
+                                "-moz-transform" : "translate(0, " + moreHeight + "px)",
+                                //"-ms-transform" : "translate(0, " + moreHeight + "px)",
+                                "transform" : "translate(0, " + moreHeight + "px)"
+                            });
+                        }
                         break;
                 }
             }
@@ -318,9 +330,9 @@
                         content : content.clone().css({
                             height : "auto",
                             width : "auto",
-                            transform : "translate(0px, 0px) scale(1)",
-                            "-moz-transform" : "translate(0px, 0px) scale(1)",
-                            "-webkit-transform" : "translate(0px, 0px) scale(1)"
+                            //transform : "translate(0px, 0px) scale(1)",
+                            //"-moz-transform" : "translate(0px, 0px) scale(1)",
+                            //"-webkit-transform" : "translate(0px, 0px) scale(1)"
                         }),
                         title : $("figcaption", figure).clone().html()
                     });
@@ -358,39 +370,60 @@
                 switch (state) {
                     case "open":
                         var outerWidth = toc.outerWidth();
-                        toc.css({
-                            "-webkit-transform" : "translate(" + outerWidth + "px, 0)",
-                            "-moz-transform" : "translate(" + outerWidth + "px, 0)",
-                            "transform" : "translate(" + outerWidth + "px, 0)"
-                        });
+
+                        if ($.browser.msie) {
+                            toc.attr("style", "-ms-transform:translate(" + outerWidth + "px, 0);");
+                        } else {
+                            toc.css({
+                                "-webkit-transform" : "translate(" + outerWidth + "px, 0)",
+                                "-moz-transform" : "translate(" + outerWidth + "px, 0)",
+                                //"-ms-transform" : "translate(" + outerWidth + "px, 0)",
+                                "transform" : "translate(" + outerWidth + "px, 0)"
+                            });
+                        }
                         
                         // When the toc tab is opened:
                         // close the more tab and slide it to the right
                         amplify.publish("osci_more_toggle", {osci_more_close : true});
                         
-                        $("#osci_more_wrapper").css({
-                        	"-webkit-transform" : "translate(" + toc.outerWidth() + "px, 300px)",
-                        	"-moz-transform" : "translate(" + toc.outerWidth() + "px, 300px)",
-                        	"transform" : "translate(" + toc.outerWidth() + "px, 300px)"
+                        if ($.browser.msie) {
+                            toc.attr("style", "-ms-transform:translate(" + outerWidth + "px, 300px);");
+                        } else {
+                            $("#osci_more_wrapper").css({
+                                "-webkit-transform" : "translate(" + outerWidth + "px, 300px)",
+                                "-moz-transform" : "translate(" + outerWidth + "px, 300px)",
+                                //-ms-transform" : "translate(" + outerWidth + "px, 300px)",
+                                "transform" : "translate(" + outerWidth + "px, 300px)"
 	                    });
+                        }
                         
                         amplify.publish("osci_note_toggle", {osci_note_close : true});
                         
                         break;
                     case "close":
-                        toc.css({
-                            "-webkit-transform" : "translate(0px, 0)",
-                            "-moz-transform" : "translate(0, 0)",
-                            "transform" : "translate(0, 0)"
-                        });
+                        if ($.browser.msie) {
+                            toc.attr("style", "-ms-transform:translate(0, 0);");
+                        } else {
+                            toc.css({
+                                "-webkit-transform" : "translate(0px, 0)",
+                                "-moz-transform" : "translate(0, 0)",
+                                //"-ms-transform" : "translate(0, 0)",
+                                "transform" : "translate(0, 0)"
+                            });
+                        }
                         
                         // When the toc tab is closed:
                         // slide the more tab to the right
-                        $("#osci_more_wrapper").css({
-                        	"-webkit-transform" : "translate(0px, 300px)",
-                        	"-moz-transform" : "translate(0px, 300px)",
-                        	"transform" : "translate(0px, 300px)"
+                        if ($.browser.msie) {
+                            toc.attr("style", "-ms-transform:translate(0, 300px);");
+                        } else {
+                            $("#osci_more_wrapper").css({
+                                "-webkit-transform" : "translate(0px, 300px)",
+                                "-moz-transform" : "translate(0px, 300px)",
+                                //"-ms-transform" : "translate(0px, 300px)",
+                                "transform" : "translate(0px, 300px)"
 	                    });
+                        }
                         
                         amplify.publish("osci_note_toggle", {osci_note_open : true});
                         
