@@ -287,19 +287,27 @@
                 }
                 
                 if ((base.panel.hasClass("open") && !data.osci_note_open) || data.osci_note_close) {
-                    base.panel.css({
-                        "-webkit-transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
-                        "-moz-transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
-                        "transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)"
-                    });
+                    if ($.browser.msie) {
+                        base.panel.attr("style", "-ms-transform:translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0);");
+                    } else {
+                        base.panel.css({
+                            "-webkit-transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
+                            "-moz-transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)",
+                            "transform" : "translate(" + (base.panel.outerWidth() - base.options.panelPixelsClosed) + "px, 0)"
+                        });
+                    }
                     
                     base.panel.removeClass("open");
                 } else {
-                    base.panel.css({
-                        "-webkit-transform" : "translate(0px, 0)",
-                        "-moz-transform" : "translate(0px, 0)",
-                        "transform" : "translate(0px, 0)"
-                    });
+                    if ($.browser.msie) {
+                        base.panel.attr("style", "-ms-transform:translate(0,0);");
+                    } else {
+                        base.panel.css({
+                            "-webkit-transform" : "translate(0px, 0)",
+                            "-moz-transform" : "translate(0px, 0)",
+                            "transform" : "translate(0px, 0)"
+                        });
+                    }
 
                     base.panel.addClass("open");
                 }
