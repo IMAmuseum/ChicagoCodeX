@@ -60,33 +60,6 @@
                 }
             });
             
-            // increase content font size
-            $("#osci_increase_font").click(function (e) {
-            	if($.osci.fontSize) {
-            		$.osci.fontSize += 20;
-            	} else {
-            		$.osci.fontSize = 120;
-            	}
-            	
-            	// reset content
-            	_osci_resize()
-            });
-            
-            // decrease content font size
-            $("#osci_decrease_font").click(function (e) {
-            	if($.osci.fontSize) {
-            		// check against minimum font size
-            		if(($.osci.fontSize - 20) <= 20) {
-            			return;
-            		}
-            		$.osci.fontSize -= 20;
-            	} else {
-            		$.osci.fontSize = 60;
-            	}
-            	// reset content
-            	_osci_resize()
-            });
-            
             //setup the prev button
             $("#" + base.options.prevLinkId).click(function (e){
                 e.preventDefault();
@@ -112,21 +85,6 @@
                         break;
                 }
             });
-            
-            //Not sure if this fits here but prevents this getting assigned more than once in the layout module
-            if (!window.resizeTimer) {
-                $(window).resize(function(){
-                    if (window.resizeTimer) {
-                        clearTimeout(window.resizeTimer);
-                    }
-                    
-                    if ($("#ca-ui-fullscreen-modal").length || $("#modalBackdrop").length) {
-                        return;
-                    }
-                    
-                    window.resizeTimer = setTimeout(_osci_resize, 100);
-                });
-            }
             
             base.disableNavigation();
      
@@ -177,20 +135,6 @@
             $("#" + base.options.sectionNavId).show();
             $("#" + base.options.prevLinkId).show();
             $("#" + base.options.nextLinkId).show();
-        }
-        
-        //function to call when the browser is resized
-        function _osci_resize()
-        {
-        	//get the first paragraph currently displayed so we can try to stay on the same page after the resize
-            var firstParagraph = $("div.osci_page_" + (base.data.currentPage + 1)).find("p.osci_paragraph:first");
-            base.data.to = { operation : "paragraph", value : firstParagraph.data("paragraph_id")};
-            
-            //$("ul", "#" + base.options.tocId).trigger("osci_toc_update_heights");
-            
-            //clear the layout cache and reload the content
-            $.osci.storage.clearCache("osci_layout_cache:");
-            base.loadContent();
         }
         
         //reset the navigation

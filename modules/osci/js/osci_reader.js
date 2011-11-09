@@ -616,5 +616,76 @@
             fade : true,
             fallback : "The publication's search capability is currently in development"
         });
+        
+        //function to call when the browser is resized
+        function _osci_resize(force)
+        {
+            var $window = $(window),
+                currentWidth = $window.width(),
+                currentHeight = $window.height();
+                
+            if (!force && $.osci.windowSize.height == currentHeight && $.osci.windowSize.width == currentWidth) {
+                return;
+            } else {
+                $.osci.windowSize = {
+                    height : currentHeight,
+                    width : currentWidth
+                };
+            }
+            
+        	//get the first paragraph currently displayed so we can try to stay on the same page after the resize
+            var firstParagraph = $("div.osci_page_" + ($.osci.navigation.data.currentPage + 1)).find("p.osci_paragraph:first");
+             
+            //clear the layout cache and reload the content
+            $.osci.storage.clearCache("osci_layout_cache:");
+            $.osci.navigation.loadContent(false, "paragraph", firstParagraph.data("paragraph_id"));
+        }
+        
+        //smooth out resizing
+        if (!window.resizeTimer) {
+            var $window = $(window);
+            
+            if (!$.osci.windowSize) {
+                $.osci.windowSize = {
+                    height : $window.height(),
+                    width : $window.width()
+                };
+            }
+            
+            $window.resize(function(){
+                if (window.resizeTimer) {
+                    clearTimeout(window.resizeTimer);
+                }
+
+                window.resizeTimer = setTimeout(_osci_resize, 100);
+            });
+        }
+        
+        // increase content font size
+        $("#osci_increase_font").click(function (e) {
+            if($.osci.fontSize) {
+                $.osci.fontSize += 20;
+            } else {
+                $.osci.fontSize = 120;
+            }
+
+            // reset content
+            _osci_resize(true);
+        });
+
+        // decrease content font size
+        $("#osci_decrease_font").click(function (e) {
+            if($.osci.fontSize) {
+                // check against minimum font size
+                if(($.osci.fontSize - 20) <= 20) {
+                    return;
+                }
+                $.osci.fontSize -= 20;
+            } else {
+                $.osci.fontSize = 60;
+            }
+            // reset content
+            _osci_resize(true);
+        });
     });
 })(jQuery);
