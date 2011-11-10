@@ -81,7 +81,8 @@
                 column : undefined,
                 currentColumn : 0,
                 processedFigures : [],
-                pageParagraphIdentifiers : {}
+                pageParagraphIdentifiers : {},
+                currentOffset : 0
             };
             
             if ($.osci.fontSize) {
@@ -761,6 +762,7 @@
             //Remove all columns and identifiers
             base.render.page.find("div.column, a.osci_paragraph_identifier").remove();
             base.render.pageParagraphIdentifiers = {};
+            base.render.pageHasContent = false;
             
             //Grab all of the figures currently on the page
             figures = base.render.page.find("figure:visible");
