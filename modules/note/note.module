@@ -454,3 +454,13 @@ function user_notes($node) {
     return $rows;
 
 }
+
+function note_form_alter(&$form, &$form_state, $form_id)
+{
+    switch($form_id) 
+    {
+        case "note_form":
+            unset($form['field_taxonomy_tags']['und']['#autocomplete_path']);
+            break;
+    }
+}
