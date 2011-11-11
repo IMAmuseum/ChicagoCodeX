@@ -677,7 +677,7 @@
             
         	//get the first paragraph currently displayed so we can try to stay on the same page after the resize
             var firstParagraph = $("div.osci_page_" + ($.osci.navigation.data.currentPage + 1)).find("p.osci_paragraph:first");
-            console.log(firstParagraph.data("paragraph_id"));
+
             //clear the layout cache and reload the content
             $.osci.storage.clearCache("osci_layout_cache:");
             $.osci.navigation.loadContent(false, "paragraph", firstParagraph.data("paragraph_id"));
