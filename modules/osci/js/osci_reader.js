@@ -23,7 +23,7 @@
             }).appendTo("#osci_viewer");
         
         setTimeout(function(){temp.remove();}, 1100);
-    }
+    };
     
     function findAndGotoElement(selector, occurence) {
         var elem = $(selector);
@@ -120,7 +120,7 @@
                 }).data({occurence : validItemOccur, occurences : occurences});
             }
         }
-    }
+    };
     
     $(document).ready(function() {
         var $doc = $(this),
@@ -329,7 +329,7 @@
                     }).appendTo($("figcaption", figure)).fancybox({
                         content : content.clone().css({
                             height : "auto",
-                            width : "auto",
+                            width : "auto"
                             //transform : "translate(0px, 0px) scale(1)",
                             //"-moz-transform" : "translate(0px, 0px) scale(1)",
                             //"-webkit-transform" : "translate(0px, 0px) scale(1)"
@@ -485,7 +485,7 @@
 
                                             amplify.publish("osci_more_toggle", {osci_more_close : true});
                                         },
-                                        title : "goto figure in context",
+                                        title : "Locate figure in text",
                                         "class" : gotoClass
                                     }).appendTo($elem);
 
@@ -513,7 +513,7 @@
                                                 type : "osci_figure_fullscreen"
                                             });
                                         },
-                                        title : "view fullscreen",
+                                        title : "View full screen",
                                         "class" : "figure_fullscreen"
                                     }).appendTo($elem);
                                 });
@@ -633,6 +633,15 @@
             window.open($.osci.navigation.data.toc["nid_" + $.osci.navigation.data.nid].print);
         });
         
+        amplify.subscribe("osci_navigation_complete", function() {
+            var link = $("#osci_header_controls").find(".logout-link, .login-link"),
+                url = link.attr("href");
+            
+            url = url.substr(0, url.indexOf("destination=") + 12);
+            url = url + document.location.pathname.substr(1);
+            link.attr("href", url);
+        });
+        
         amplify.subscribe("osci_toc_complete", function() {
             $("#osci_navigation_toc_wrapper").find("li.inactive > a").tipsy({
                 gravity : "w",
@@ -668,7 +677,7 @@
             
         	//get the first paragraph currently displayed so we can try to stay on the same page after the resize
             var firstParagraph = $("div.osci_page_" + ($.osci.navigation.data.currentPage + 1)).find("p.osci_paragraph:first");
-             
+            console.log(firstParagraph.data("paragraph_id"));
             //clear the layout cache and reload the content
             $.osci.storage.clearCache("osci_layout_cache:");
             $.osci.navigation.loadContent(false, "paragraph", firstParagraph.data("paragraph_id"));

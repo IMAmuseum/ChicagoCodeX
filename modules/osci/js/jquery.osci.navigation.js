@@ -240,7 +240,8 @@
                 nid = base.data.nid,
                 titleLength = 0,
                 bookTitle = "",
-                subTitle = "";
+                subTitle = "",
+                pageTitle = "";
             
             //work our way up the table of contents heirarchy to get the title parts
             while (hasParent) {
@@ -263,9 +264,11 @@
                         subTitle = titleParts[i] + ": " + subTitle;
                     } else {
                         subTitle = titleParts[i];
+                        pageTitle = titleParts[i];
                     }
                 }
             }
+            document.title = $("<div>" + pageTitle + " | " + bookTitle + "</div>").text();
 
             //put the title parts into the page
             $("h1.osci_book_title").html(bookTitle);
