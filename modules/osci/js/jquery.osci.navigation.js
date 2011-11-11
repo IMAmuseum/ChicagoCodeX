@@ -128,14 +128,52 @@
             $("#" + base.options.sectionNavId).hide();
             $("#" + base.options.prevLinkId).hide();
             $("#" + base.options.nextLinkId).hide();
-        }
+        };
         
         base.enableNavigation = function()
         {
             $("#" + base.options.sectionNavId).show();
             $("#" + base.options.prevLinkId).show();
             $("#" + base.options.nextLinkId).show();
-        }
+        };
+        
+        base.getPublicationInfo = function(id, field)
+        {
+            var pubInfo = {},
+                rootEntry = base.data.toc["nid_" + base.data.rootNid];
+                
+            if (rootEntry.editor) {
+                pubInfo.editor = rootEntry.editor;
+            }
+            pubInfo.volume_title = rootEntry.title;
+            pubInfo.timestamp = rootEntry.timestamp;
+            
+            if (id) {
+                var entry = base.data.toc["nid_" + id];
+                if (entry) {
+                    pubInfo.section_title = entry.title;
+                    pubInfo.timestamp = new Date(entry.timestamp * 1000);
+                    
+                    if (field && entry.sub_sections) {
+                        for(var i = 0, ss = entry.sub_sections.length; i < ss; i++)
+                        {
+                            if (entry.sub_sections[i].field == field)
+                            {
+                                pubInfo.sub_section_title = entry.sub_sections[i].title;
+                                if (entry.sub_sections[i].author)
+                                {
+                                    
+                                    pubInfo.author = entry.sub_sections[i].author;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return pubInfo;
+        };
         
         //reset the navigation
         function _reset_navigation()
@@ -151,7 +189,7 @@
             amplify.publish("osci_toc_update");
             
             base.navigateTo(base.data.to.operation, base.data.to.value);
-        }
+        };
         
         //update the reference images to the current section
         function _update_reference_image()
@@ -191,7 +229,7 @@
                     });
                 });
             }
-        }
+        };
         
         //update the page title to the current section
         function _update_title()
@@ -232,7 +270,7 @@
             //put the title parts into the page
             $("h1.osci_book_title").html(bookTitle);
             $("h2.osci_book_section_title").find("span.section_title").html(subTitle);
-        }
+        };
         
         //update the HTML5 url history
         base.updateHistory = function (nid, replace)
@@ -669,6 +707,7 @@
                 
                 if (!node.parent) {
                     rootNid = node.nid;
+                    base.data.rootNid = node.nid;
                     continue;
                 }
              
@@ -707,8 +746,11 @@
                     
                     subItemCount = node.sub_sections.length;
                     subMenuItems = [];
+                    
                     for (j = 0; j < subItemCount; j++) {
-                        subMenuItems.push(_create_menu_item(node.sub_sections[j]));
+                        subItem = node.sub_sections[j];
+                        subItem.nid = node.nid;
+                        subMenuItems.push(_create_menu_item(subItem));
                     }
                     createdMenus["#osci_toc_node_" + node.nid + "_submenu"].append.apply(createdMenus["#osci_toc_node_" + node.nid + "_submenu"], subMenuItems);
                 }

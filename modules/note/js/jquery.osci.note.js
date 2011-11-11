@@ -32,6 +32,9 @@
             var citationChicago = '${author}. ${pubDate} ${articleTitle}. In ${bookTitle}, ${paragraph}. ${publisher}';
             $.template('citationChicago', citationChicago);
 
+            var citationTemplate = '{{if author}}${author}, {{/if}}"${articleTitle}: ${subSection}," in ${bookTitle}, ed. ${editor} (${publisher}, ${pubDate}), para ${paragraph}';
+            $.template('citationTemplate', citationTemplate);
+
             amplify.subscribe("osci_navigation_complete", function(data) {
                 base.updatePageNotes(data.page);
             });
@@ -63,9 +66,11 @@
 //                    }
                 var pid = $(this).data('pid');
                 if (e.type == 'mouseenter') {
-                    $('.osci_paragraph_' + pid).addClass('highlight-note');
+                    $('a.osci_paragraph_' + pid).addClass('cite-paragraph');
+                    $('p.osci_paragraph_' + pid).addClass('highlight-note');
                 } else {
-                    $('.osci_paragraph_' + pid).removeClass('highlight-note');
+                    $('a.osci_paragraph_' + pid).removeClass('cite-paragraph');
+                    $('p.osci_paragraph_' + pid).removeClass('highlight-note');
                 }
             });
             
@@ -87,36 +92,47 @@
                         break;
                     case 'citation-form':
                         var data = {
-                            author: 'Jane Doe',
-                            pubDate: '2011, May 21',
-                            bookTitle: $('.osci_book_title').text(),
-                            publisher: 'University of Chicago Press',
-                            articleTitle: $('.osci_book_section_title > .section_title').text(),
-                            paragraph: base.selection.paragraph_id
+                            author: base.selection.publicationInfo.author,
+                            pubDate: base.selection.publicationInfo.timestamp.getUTCFullYear(),
+                            subSection: base.selection.publicationInfo.sub_section_title,
+                            bookTitle: $("<div>" + base.selection.publicationInfo.volume_title + "</div>").text().replace(/(\r\n|\n|\r)/gm,""),
+                            publisher: 'Chicago: Art Institute of Chicago',
+                            articleTitle: $("<div>" + base.selection.publicationInfo.section_title + "</div>").text().replace(/(\r\n|\n|\r)/gm,""),
+                            paragraph: base.selection.paragraph_id,
+                            editor: base.selection.publicationInfo.editor
                         };
-
-                        $('a[href$="#citation-format-apa"]').click(function(e) {
+                        
+                        $('a[href$="#citation-format-default"]').click(function(e) {
                             e.preventDefault();
-                            $('#edit-citation-text').html($.tmpl('citationAPA', data));
+                            $('#edit-citation-text').html($.tmpl('citationTemplate', data));
                             $('#edit-citation-options ul li').removeClass('active');
                             $(this).parent().addClass('active');
                         });
 
-                        $('a[href$="#citation-format-apa"]').click(); //default
+                        $('a[href$="#citation-format-default"]').click(); //default
 
-                        $('a[href$="#citation-format-mla"]').click(function(e) {
-                            e.preventDefault();
-                            $('#edit-citation-text').html($.tmpl('citationMLA', data));
-                            $('#edit-citation-options ul li').removeClass('active');
-                            $(this).parent().addClass('active');
-                        });
-
-                        $('a[href$="#citation-format-chicago"]').click(function(e) {
-                            e.preventDefault();
-                            $('#edit-citation-text').html($.tmpl('citationChicago', data));
-                            $('#edit-citation-options ul li').removeClass('active');
-                            $(this).parent().addClass('active');
-                        });
+//                        $('a[href$="#citation-format-apa"]').click(function(e) {
+//                            e.preventDefault();
+//                            $('#edit-citation-text').html($.tmpl('citationApa', data));
+//                            $('#edit-citation-options ul li').removeClass('active');
+//                            $(this).parent().addClass('active');
+//                        });
+//
+//                        $('a[href$="#citation-format-apa"]').click(); //default
+//
+//                        $('a[href$="#citation-format-mla"]').click(function(e) {
+//                            e.preventDefault();
+//                            $('#edit-citation-text').html($.tmpl('citationMLA', data));
+//                            $('#edit-citation-options ul li').removeClass('active');
+//                            $(this).parent().addClass('active');
+//                        });
+//
+//                        $('a[href$="#citation-format-chicago"]').click(function(e) {
+//                            e.preventDefault();
+//                            $('#edit-citation-text').html($.tmpl('citationChicago', data));
+//                            $('#edit-citation-options ul li').removeClass('active');
+//                            $(this).parent().addClass('active');
+//                        });
 
                         $('#edit-citation-selection').html($("p.osci_paragraph_" + base.selection.paragraph_id + ":first").text());
                         $('#edit-citation-url').val($('a.osci_paragraph_' + base.selection.paragraph_id).attr('href'));
@@ -165,6 +181,21 @@
 
                     var target = $(e.currentTarget);
                     if (target.is("p")) {
+                        var classes = target.attr('class').split(' '),
+                            field;
+                            
+                        for (var i = 0; i < classes.length; i++) {
+                            var matches = /^field\_(.+)/.exec(classes[i]);
+                            if (matches != null) {
+                               field = matches[0];
+                            }
+                        }
+                        
+                        var tocData = $.osci.navigation.getPublicationInfo(
+                            $.osci.navigation.data.nid,
+                            field
+                        );
+
                         base.selection = {
                             selection:      null,
                             start_node:     null,
@@ -172,7 +203,8 @@
                             end_node:       null,
                             end_offset:     null,
                             parent_offset:  null,
-                            paragraph_id:   target.data('paragraph_id')
+                            paragraph_id:   target.data('paragraph_id'),
+                            publicationInfo:tocData
                         }
                     }
                 });

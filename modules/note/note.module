@@ -331,15 +331,18 @@ function citation_form() {
     $form = array();
 
     $items = array(
-        l('APA', $_GET['q'], array(
-            'fragment' => 'citation-format-apa', 
+        l('Citation', $_GET['q'], array(
+            'fragment' => 'citation-format-default', 
         )),
-        l('MLA', $_GET['q'], array(
-            'fragment' => 'citation-format-mla', 
-        )),
-        l('Chicago', $_GET['q'], array(
-            'fragment' => 'citation-format-chicago', 
-        )),
+//        l('APA', $_GET['q'], array(
+//            'fragment' => 'citation-format-apa', 
+//        )),
+//        l('MLA', $_GET['q'], array(
+//            'fragment' => 'citation-format-mla', 
+//        )),
+//        l('Chicago', $_GET['q'], array(
+//            'fragment' => 'citation-format-chicago', 
+//        )),
     );
     $format_links = theme('item_list', array('items' => $items)); 
 
