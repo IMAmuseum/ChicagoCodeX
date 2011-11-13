@@ -641,8 +641,8 @@
             url = url + document.location.pathname.substr(1);
             link.attr("href", url);
 
-            if (_gaq) {
-                _gaq.push(['_trackEvent', 'Navigation', 'Navigated to new page', url, data.page]);
+            if (window._gaq) {
+                window._gaq.push(['_trackEvent', 'Navigation', 'Navigated to new page', url, data.page]);
             }
         });
         
