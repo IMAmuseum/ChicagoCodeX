@@ -179,7 +179,7 @@ var ConservationAsset = function(container) { // container should be a html elem
         }
     }
     
-    if (!usedPresetLayers) {
+    if (!usedPresetLayers && this.baseLayers.length) {
     	// create first layer, second layer, and make second transparent
         this.createLayer(this.baseLayers[0]);
 	    if (this.baseLayers[1]) {
