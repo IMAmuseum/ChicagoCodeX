@@ -1450,12 +1450,13 @@ function outerHTML(node){
 window.caCollection = new CACollection();
 
 // auto load any conservation assets 
-window.addEventListener('load', function() {
-    var assets = jQuery('.conservation-asset').not('.noload');
-    for(var i=0, count = assets.length; i < count; i++) {
-        new ConservationAsset(assets[i]);
-    }
-}, false);
+// had to comment out due to double parsing in reader
+//window.addEventListener('load', function() {
+//    var assets = jQuery('.conservation-asset').not('.noload');
+//    for(var i=0, count = assets.length; i < count; i++) {
+//        new ConservationAsset(assets[i]);
+//    }
+//}, false);
 
 // update the viewfinder if an asset is being dragged
 function conservationMousemove(e) {
