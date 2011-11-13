@@ -9,7 +9,7 @@
         <span class="figure_number"><?php print isset($figure['number_template']) ? $figure['number_template'] : $figure['id']; ?></span>
     </div>
     <?php } ?>
-    <figcaption>
+    <figcaption class="<?php print $figure['id']; ?>">
         <span class="figure_number"><?php print isset($figure['number_template']) ? $figure['number_template'] : $figure['id']; ?></span>
         <?php print $caption; ?>
     </figcaption>

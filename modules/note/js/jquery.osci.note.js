@@ -32,7 +32,7 @@
             var citationChicago = '${author}. ${pubDate} ${articleTitle}. In ${bookTitle}, ${paragraph}. ${publisher}';
             $.template('citationChicago', citationChicago);
 
-            var citationTemplate = '{{if author}}${author}, {{/if}}"${articleTitle}: ${subSection}," in ${bookTitle}, ed. ${editor} (${publisher}, ${pubDate}), para ${paragraph}';
+            var citationTemplate = '{{if author}}${author}, {{/if}}"${articleTitle}: ${subSection}," in ${bookTitle}, ed. ${editor} (${publisher}, ${pubDate}), para ${paragraph}.';
             $.template('citationTemplate', citationTemplate);
 
             amplify.subscribe("osci_navigation_complete", function(data) {

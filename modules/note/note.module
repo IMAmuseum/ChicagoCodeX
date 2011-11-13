@@ -331,7 +331,7 @@ function citation_form() {
     $form = array();
 
     $items = array(
-        l('Citation', $_GET['q'], array(
+        l('Chicago', $_GET['q'], array(
             'fragment' => 'citation-format-default', 
         )),
 //        l('APA', $_GET['q'], array(

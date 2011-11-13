@@ -142,6 +142,18 @@ function osci_body_copy_preprocess_body_copy_figure(&$vars) {
         
         case 'html_figure':
             $vars['content'] = check_markup($node->field_osci_figure_content['und'][0]['value'], $node->field_osci_figure_content['und'][0]['format']);
+            
+            if (isset($node->field_image['und'][0]))
+            $vars['thumbnail'] = theme_image_style(array(
+                'style_name' => "osci_thumbnail_165w",
+                'path' => $node->field_image['und'][0]['uri'],
+                'alt' => $node->title,
+                'attributes' => array(
+                    'data-figure_id' => $figure['id'],
+                    'data-figure_number' => $figure['figCount'],
+                    'data-occurences' => $figure['figOccurences']
+                )
+            ));
             break;
         
         case 'iip_asset':

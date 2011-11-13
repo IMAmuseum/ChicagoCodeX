@@ -430,6 +430,7 @@
                     height = (width / aspect) + captionHeight;
         
                     //If the height of the figure is greater than the page height, scale it down
+                    //while (height > base.options.innerPageHeight) {
                     if (height > base.options.innerPageHeight) {
                         height = base.options.innerPageHeight;
         
@@ -441,8 +442,10 @@
                         captionHeight = figure.find("figcaption").height();
                         
                         //calc width again to maintain proper aspect ratio
-                        width = (height - captionHeight) * aspect;
+                        //width = (height - captionHeight) * aspect;
                         columns = Math.ceil((width + base.options.gutterWidth) / (base.options.gutterWidth + base.options.columnWidth));
+
+                        //height = (width / aspect) + captionHeight;
                     }
                     figure.css({ height : height + "px", width : width + "px"});
     

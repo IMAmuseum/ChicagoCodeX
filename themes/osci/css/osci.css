@@ -1138,3 +1138,6 @@ div.ctools-modal-content input.form-submit {
     color: #444;
 }
 
+.ca-ui-fullscreen-wrap figcaption.osci_plate_fig span.figure_number {
+    display: none;
+}

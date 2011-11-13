@@ -297,19 +297,19 @@
                     var contentHeight = 0, aspect = 0, contentWidth = 0, translate;
                     figure.prepend(content);
                     
-                    content.children().each(function(i, elem){
-                        var $elem = $(elem);
-                        contentHeight += $elem.outerHeight(true);
-                        contentWidth += $elem.outerWidth(true);
-                    });
+//                    content.children().each(function(i, elem){
+//                        var $elem = $(elem);
+//                        contentHeight += $elem.outerHeight(true);
+//                        contentWidth += $elem.outerWidth(true);
+//                    });
+//                    
+//                    aspect = Math.round((contentWidth / contentHeight) * 1000) / 1000;
+//                    figure.data("aspect", aspect);
                     
-                    aspect = Math.round((contentWidth / contentHeight) * 1000) / 1000;
-                    figure.data("aspect", aspect);
-                    
-                    if (!figure.data("aspect_determined")) {
-                        figure.data("aspect_determined", true);
-                        return false;
-                    } 
+//                    if (!figure.data("aspect_determined")) {
+//                        figure.data("aspect_determined", true);
+//                        return false;
+//                    } 
 
 //                    if (aspect > 1) {
 //                        translate = "translate(-" + ((contentWidth - (contentWidth / aspect)) / 2) + "px, 0)";
@@ -444,12 +444,6 @@
                             footnotes = data.find("#field_osci_footnotes").remove(),
                             figures = data.find("#field_osci_figures").find(".figureThumbnail").remove(),
                             moreContainer = $("#" + $.osci.more.options.containerId).show();
-
-                        //Do the layout
-                        $.osci.layout(data, {
-                            readerId : Drupal.settings.osci_navigation.reader_id,
-                            cacheId : navData.nid
-                        });
                         
                         //Add footnotes to the more bar
                         footnotes = footnotes.find(".footnote");
@@ -525,6 +519,12 @@
                         } else {
                             moreContainer.show();
                         }
+                        
+                        //Do the layout
+                        $.osci.layout(data, {
+                            readerId : Drupal.settings.osci_navigation.reader_id,
+                            cacheId : navData.nid
+                        });
                     }
                 });
             }
