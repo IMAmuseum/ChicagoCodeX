@@ -94,6 +94,9 @@ var ConservationAsset = function(container) { // container should be a html elem
     		sliderPosition: 0
     	};
     }
+    if (!this.figureOptions.sliderPosition) {
+        this.figureOptions.sliderPosition = 0;
+    }
     // detect and incorporate the caption if it exists
     this.settings.captionMarkup = this.container.parents('figure:first').find('figcaption').clone();
 
@@ -566,7 +569,7 @@ ConservationAsset.prototype.createUI = function() {
         	this.ui.layerSelector2.after(this.ui.sliderContainer);
         }
         // restore preset if available
-        if (this.figureOptions.sliderPosition) {
+        if (this.figureOptions.sliderPosition != undefined) {
         	this.ui.slider.slider('value', this.figureOptions.sliderPosition);
         }
     }
@@ -724,7 +727,7 @@ ConservationAsset.prototype.reset = function() {
     CA.ui.zoomSlider.slider('value', CA.map.zoom());
 
     // reset initial slider position
-    if (CA.figureOptions.sliderPosition) {
+    if (CA.figureOptions.sliderPosition != undefined) {
         if (CA.ui.slider) {
             CA.ui.slider.slider('value', CA.figureOptions.sliderPosition);
         }
