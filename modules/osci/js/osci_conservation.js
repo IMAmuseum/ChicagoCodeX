@@ -235,6 +235,10 @@ ConservationAsset.prototype.createLayer = function(layerData) {
     // alias jquery
     var $ = this.$;
     var layer;
+    
+    if (layerData == undefined) {
+        return;
+    }
 
     // provide zoom_levels if missing
     if (!layerData.zoom_levels) {
