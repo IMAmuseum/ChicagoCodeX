@@ -150,9 +150,9 @@ var ConservationAsset = function(container) { // container should be a html elem
     // calculate zoom levels if not already present
     for (i=0, count = this.layers.length; i < count; i++) {
         layerData = this.layers[i];
-        //if (!layerData.zoom_levels) {
+        if (!layerData.zoom_levels) {
             layerData.zoom_levels = this.getZoomLevels(layerData.width, layerData.height);
-        //}
+        }
     }
     // create the first two layers, using preset data if available
     var baseLayerPreset = this.figureOptions.baseLayerPreset ? this.figureOptions.baseLayerPreset : [],
@@ -237,9 +237,9 @@ ConservationAsset.prototype.createLayer = function(layerData) {
     var layer;
 
     // provide zoom_levels if missing
-    //if (!layerData.zoom_levels) {
+    if (!layerData.zoom_levels) {
         layerData.zoom_levels = this.getZoomLevels(layerData.width, layerData.height);
-    //}
+    }
 
     // determine type of layer
     if (layerData.type == 'image') {
@@ -296,8 +296,8 @@ ConservationAsset.prototype.createLayerIIP = function(layerData) {
         var image_h = layerData.height; 
         var image_w = layerData.width; 
         var tile_size = 256; 
-        //var scale = CA.getScale(layerData.zoom_levels - 1, c.zoom);
-        var scale = CA.getScale(layerData.zoom_levels, c.zoom);
+        var scale = CA.getScale(layerData.zoom_levels - 1, c.zoom);
+        //var scale = CA.getScale(layerData.zoom_levels, c.zoom);
         var mw = Math.round(image_w / scale); 
         var mh = Math.round(image_h / scale); 
         var tw = Math.ceil(mw / tile_size); 
@@ -376,9 +376,9 @@ ConservationAsset.prototype.zoomToContainer = function() {
         var layerData = this.layers[i];
         var scale = this.getScale(layerData.zoom_levels - 0, zoomToCalculateAt);
         // TODO: figure out why this is a special case:
-//        if (layerData.type == 'iip') {
-//            scale = this.getScale(layerData.zoom_levels - 1, zoomToCalculateAt);
-//        }
+        if (layerData.type == 'iip') {
+            scale = this.getScale(layerData.zoom_levels - 1, zoomToCalculateAt);
+        }
         var mw = Math.round(layerData.width / scale);
         var mh = Math.round(layerData.height / scale);
         var tw = Math.ceil(mw / this.map.tileSize().x);
