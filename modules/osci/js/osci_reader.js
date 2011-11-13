@@ -633,13 +633,17 @@
             window.open($.osci.navigation.data.toc["nid_" + $.osci.navigation.data.nid].print);
         });
         
-        amplify.subscribe("osci_navigation_complete", function() {
+        amplify.subscribe("osci_navigation_complete", function(data) {
             var link = $("#osci_header_controls").find(".logout-link, .login-link"),
                 url = link.attr("href");
             
             url = url.substr(0, url.indexOf("destination=") + 12);
             url = url + document.location.pathname.substr(1);
             link.attr("href", url);
+
+            if (_gaq) {
+                _gaq.push(['_trackEvent', 'Navigation', 'Navigated to new page', url, data.page]);
+            }
         });
         
         amplify.subscribe("osci_toc_complete", function() {
