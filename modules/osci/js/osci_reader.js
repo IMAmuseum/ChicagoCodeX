@@ -337,6 +337,10 @@
                         title : $("figcaption", figure).clone().html()
                     });
                     
+                    figure.bind("osci_figure_fullscreen", function(e) {
+                        $(this).find("a.figure_fullscreen").click();
+                    });
+                    
                     return true;
                 }
             }
