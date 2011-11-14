@@ -330,7 +330,7 @@
                         content : content.clone().css({
                             height : "auto",
                             width : "auto",
-                            'max-height' : ($(window).height() - 80) + "px"
+                            'max-height' : ($(window).height() - 120) + "px"
                             //transform : "translate(0px, 0px) scale(1)",
                             //"-moz-transform" : "translate(0px, 0px) scale(1)",
                             //"-webkit-transform" : "translate(0px, 0px) scale(1)"
