@@ -337,9 +337,9 @@ function citation_form() {
 //        l('APA', $_GET['q'], array(
 //            'fragment' => 'citation-format-apa', 
 //        )),
-//        l('MLA', $_GET['q'], array(
-//            'fragment' => 'citation-format-mla', 
-//        )),
+        l('MLA', $_GET['q'], array(
+            'fragment' => 'citation-format-mla', 
+        )),
 //        l('Chicago', $_GET['q'], array(
 //            'fragment' => 'citation-format-chicago', 
 //        )),

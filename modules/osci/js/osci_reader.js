@@ -387,7 +387,7 @@
                         amplify.publish("osci_more_toggle", {osci_more_close : true});
                         
                         if ($.browser.msie) {
-                            toc.attr("style", "-ms-transform:translate(" + outerWidth + "px, 300px);");
+                            $("#osci_more_wrapper").attr("style", "-ms-transform:translate(" + outerWidth + "px, 300px);");
                         } else {
                             $("#osci_more_wrapper").css({
                                 "-webkit-transform" : "translate(" + outerWidth + "px, 300px)",
@@ -415,7 +415,7 @@
                         // When the toc tab is closed:
                         // slide the more tab to the right
                         if ($.browser.msie) {
-                            toc.attr("style", "-ms-transform:translate(0, 300px);");
+                            $("#osci_more_wrapper").attr("style", "-ms-transform:translate(0, 300px);");
                         } else {
                             $("#osci_more_wrapper").css({
                                 "-webkit-transform" : "translate(0px, 300px)",

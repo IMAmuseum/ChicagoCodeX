@@ -25,7 +25,7 @@
             $.template('citationAPA', citationAPA);
 
             // MLA Style
-            var citationMLA = '${author}. "${articleTitle}" ${bookTitle}. para ${paragraph}. ${publisher}, ${pubDate}';
+            var citationMLA = '{{if author}}${author}, {{/if}}"${articleTitle}: ${subSection}," in ${bookTitle}, ed. ${editor} (${publisher}, ${pubDate}), ${paragraph}.';
             $.template('citationMLA', citationMLA);
 
             // Chicago style
@@ -120,12 +120,12 @@
 //
 //                        $('a[href$="#citation-format-apa"]').click(); //default
 //
-//                        $('a[href$="#citation-format-mla"]').click(function(e) {
-//                            e.preventDefault();
-//                            $('#edit-citation-text').html($.tmpl('citationMLA', data));
-//                            $('#edit-citation-options ul li').removeClass('active');
-//                            $(this).parent().addClass('active');
-//                        });
+                        $('a[href$="#citation-format-mla"]').click(function(e) {
+                            e.preventDefault();
+                            $('#edit-citation-text').html($.tmpl('citationMLA', data));
+                            $('#edit-citation-options ul li').removeClass('active');
+                            $(this).parent().addClass('active');
+                        });
 //
 //                        $('a[href$="#citation-format-chicago"]').click(function(e) {
 //                            e.preventDefault();
