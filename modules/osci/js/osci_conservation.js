@@ -977,14 +977,24 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
         CA.clearPopups();
 
         // get the position of the selector's top right corner - this is where to bind the popup
-        var parentOffset = layerSelector.offsetParent().position();
-        var elOffset = layerSelector.position();
-        //var elWidth = layerSelector.outerWidth();
-        //var totalWidth = layerSelector.offsetParent().parent().width();
-        var totalHeight = layerSelector.offsetParent().parent().height();
-        //var right = totalWidth - parentOffset.left - elOffset.left - elWidth;
-        var left = parentOffset.left + elOffset.left;
-        var bottom = totalHeight - parentOffset.top - elOffset.top;
+        var parentOffset = layerSelector.offsetParent().position(),
+            elOffset = layerSelector.position(),
+            elWidth = 0,
+            totalWidth = 0,
+            totalHeight = layerSelector.offsetParent().parent().height(),
+            right = 0,
+            left = 0,
+            bottom = totalHeight - parentOffset.top - elOffset.top;
+            
+        if (layerControlNum == 1) {
+            //position left side for control 1
+            left = parentOffset.left + elOffset.left;
+        } else {
+            //position right side for control 2
+            elWidth = layerSelector.outerWidth();
+            totalWidth = layerSelector.offsetParent().parent().width();
+            right = totalWidth - parentOffset.left - elOffset.left - elWidth;
+        }
 
         // create a layer list, not including the current selected layer
         var layerList = $('<ul></ul>');
@@ -1040,13 +1050,20 @@ ConservationAsset.prototype.toggleLayerSelector = function(event) {
                 }).appendTo(layerList);
             }
         }
+        
+        var cssParams = {
+            bottom : bottom
+        };
+        
+        if (layerControlNum == 1) {
+            cssParams.left = left;
+        } else {
+            cssParams.right = right;
+        }
 
         // create the popup
         CA.ui[layerSelectorPopup] = $('<div class="ca-ui-layer-selector-popup"></div>')
-        .css({
-            left: left, 
-            bottom: bottom
-        })
+        .css(cssParams)
         .bind('mouseenter', function() {
             CA.container.attr('data-controls-lock', 'true');
         })
