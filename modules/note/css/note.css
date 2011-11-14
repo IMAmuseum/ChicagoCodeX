@@ -107,3 +107,7 @@ div.note div.links ul li {
 }
 
 #edit-citation-url { width: 98%; }
+
+#osci_viewer_wrapper div.note ul.links li {
+    margin-right: 6px;
+}
