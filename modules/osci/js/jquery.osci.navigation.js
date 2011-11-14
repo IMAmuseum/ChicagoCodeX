@@ -195,7 +195,7 @@
         function _update_reference_image()
         {
             var nid = base.data.nid,
-                tocData = $("#osci_toc_node_" + nid).data(),
+                tocData = base.data.toc["nid_" + nid],
                 navImageWrapper = $(".osci_reference_image"),
                 largeUrl = "#", thumbUrl = "";
 
