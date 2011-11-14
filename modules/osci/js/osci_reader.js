@@ -631,11 +631,17 @@
             position : "bottom center"            
         });
         
-        $("#osci_print").click(function(e){
-            e.preventDefault();
-            
-            window.open($.osci.navigation.data.toc["nid_" + $.osci.navigation.data.nid].print);
+        $("#osci_print").tipsy({
+            gravity : "n",
+            fade : true,
+            fallback : "The publication's print capability is currently in development"
         });
+        
+//        $("#osci_print").click(function(e){
+//            e.preventDefault();
+//            
+//            window.open($.osci.navigation.data.toc["nid_" + $.osci.navigation.data.nid].print);
+//        });
         
         amplify.subscribe("osci_navigation_complete", function(data) {
             var link = $("#osci_header_controls").find(".logout-link, .login-link"),
