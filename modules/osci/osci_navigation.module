@@ -237,12 +237,12 @@ function _osci_navigation_get_book_toc($nid)
     
     $toc = &drupal_static($cacheKey);
     if (!isset($toc)) {
-        if ($cache = cache_get($cacheKey) && false) {
+        if ($cache = cache_get($cacheKey)) {
             $toc = $cache->data;
         }
         else {
             $node = node_load($nid);
-
+            
             if (isset($node->book)) {
                 foreach (book_get_books() as $book_id => $book) {
                     if ($book['bid'] == $node->book['bid']) {
