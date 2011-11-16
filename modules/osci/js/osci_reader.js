@@ -653,7 +653,13 @@
             link.attr("href", url);
 
             if (window._gaq) {
-                window._gaq.push(['_trackEvent', 'Navigation', 'Navigated to new page', url, data.page]);
+                window._gaq.push(['_trackEvent', 'Navigation', 'Navigated to new page', document.location.pathname, data.page]);
+            }
+        });
+        
+        amplify.subscribe("osci_loading_content_complete", function(data) {
+            if (window._gaq) {
+                window._gaq.push(['_trackPageview', document.location.pathname]);
             }
         });
         

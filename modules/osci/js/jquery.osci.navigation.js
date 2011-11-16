@@ -121,6 +121,8 @@
             if (!(navAfterLoadTo === undefined) && !(navAfterLoadValue === undefined)) {
                 base.navigateTo(navAfterLoadTo, navAfterLoadValue);
             }
+            
+            amplify.publish("osci_loading_content_complete");
         };
         
         base.disableNavigation = function()
