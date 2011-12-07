@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * Implementation of hook_menu
+ */
+function osci_storage_menu() {
+    $items = array();
+
+    $items['storage-demo'] = array(
+        'title'             => t('localStorage Demo'),
+        'page callback'     => 'osci_storage_demo',
+        'access arguments'  => array('access content'),
+    );
+
+    return $items;
+}
+
+function osci_storage_demo() {
+    drupal_add_js(drupal_get_path('module', 'osci_storage').'/js/jquery.storage.js');
+
+    $demoJs = <<<DEMO
+(function ($) {
+    $(document).ready(function() {
+        $('#getText').click(function() {                    
+        	var start = new Date();
+            $.osci.storage.getUrl({ 
+            	url : '/osci/node/45/bodycopy',
+				expire : 60,
+				callback : function(content) {
+					var finished = new Date();
+                	var time = finished.getTime() - start.getTime();
+                	
+                	$('.stat').html('CACHE: ' + content.cache + '<br/> TIME: ' + time + 'ms');
+                	$('#returnResult').html(content.data);
+				}
+			});
+            return false;
+        });
+        $('#clearCache').click(function() {
+            $.osci.storage.clearCache();
+            
+            $('.stat').html('Cache cleared');
+            $('#returnResult').html('');
+        });
+    });
+})(jQuery);
+DEMO;
+
+    drupal_add_js($demoJs, array('type' => 'inline', 'scope' => 'footer'));
+
+    return '<a id="getText" href="#">Get Node</a> |
+            <a id="clearCache" href="#">Clear Cache</a>
+            <br/>
+            <div class="stat"></div>
+            <div id="returnResult"></div>
+    ';
+}

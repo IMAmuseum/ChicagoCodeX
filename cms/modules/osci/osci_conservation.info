@@ -1,0 +1,7 @@
+name = "OSCI Conservation Tools"
+description = "Provides tools for displaying and working with conservation assets"
+package = "OSCI"
+version = "0.1"
+core = "7.x"
+files[] = osci_conservation.module
+files[] = osci_conservation.install

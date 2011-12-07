@@ -1,0 +1,232 @@
+<?php
+
+
+function osci_iip_init() {
+	drupal_add_js(array('osci_iip' => array(
+		'server_url' => variable_get('osci_iip_server_url', ''),
+		'base_path' => variable_get('osci_iip_base_path', '')
+	)), 'setting');
+}
+
+function osci_iip_menu() {
+    $items = array();
+
+    $items['iip-demo'] = array(
+        'title'             => t('IIP Demo'),
+        'page callback'     => 'osci_iip_demo',
+        'access arguments'  => array('access content'),
+    );
+    
+    $items['admin/config/services/iip'] = array(
+    	'title'             => 'IIP Settings',
+        'description'       => 'IIP integration settings',
+        'page callback'     => 'drupal_get_form',
+        'page arguments'    => array('osci_iip_admin'),
+        'access arguments'  => array('access administration pages'),
+        'type'              => MENU_NORMAL_ITEM
+    );
+
+    return $items;
+}
+
+function osci_iip_admin() {
+	$form['osci_iip_server_url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('IIP Server URL'),
+        '#description' => t('The URL for the IIP server (i.e. http://cmog.org/fcgi-bin/iipsrv.fcgi)'),
+        '#default_value' => variable_get('osci_iip_server_url','')
+    );
+    
+	$form['osci_iip_base_path'] = array(
+        '#type' => 'textfield',
+        '#title' => t('IIP Base Path'),
+        '#description' => t('The directory on the server where IIP PTIF images reside (i.e. /var/www/images)'),
+        '#default_value' => variable_get('osci_iip_base_path','')
+    );
+
+    return system_settings_form($form);
+}
+
+function osci_iip_demo() {
+	drupal_add_library('system', 'ui.slider');
+	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip_polymaps.js');
+	drupal_add_js(drupal_get_path('module', 'osci_iip').'/js/osci_iip.js');
+	
+	$node = node_load(74);
+	$return .= "<h2>SplinePaths w/ annotations</h2>";
+    $return .= '<div style="width:640px; height:480px;">';
+	$return .= _osci_iip_create_iip_div($node, $node->nid);
+	$return .= '</div>';
+	$return .= '<p>&nbsp;</p>';
+	
+	$node = node_load(22);
+	$return .= "<h2>LinePaths</h2>";
+    $return .= '<div style="width:640px; height:480px;">';
+	$return .= _osci_iip_create_iip_div($node, $node->nid);
+	$return .= '</div>';
+	$return .= '<p>&nbsp;</p>';
+
+    $node = node_load(73);
+	$return .= "<h2>ShapePaths</h2>";
+    $return .= '<div style="width:640px; height:480px;">';
+	$return .= _osci_iip_create_iip_div($node, $node->nid);
+	$return .= '</div>';
+	$return .= '<p>&nbsp;</p>';
+
+	$node = node_load(75);
+	$return .= "<h2>Tiger!!!</h2>";
+    $return .= '<div style="width:640px; height:480px;">';
+	$return .= _osci_iip_create_iip_div($node, $node->nid);
+	$return .= '</div>';
+	$return .= '<p>&nbsp;</p>';
+
+	// make it live!
+	$return .= '<script type="text/javascript">(function($) { $(document).ready(function()	{ $(".iipmap").each(function(){ iipmap($(this)); }); }); }) (jQuery);</script>';
+    return $return;
+}
+
+function osci_iip_node_insert($node) {
+	// must set is_new to false or subsequent save attempts fail
+	$node->is_new = FALSE;
+
+	if ($node->type == 'image') {
+		// For an image - If the aspect ratio isn't set, and a ptiff or image
+		// was supplied, get our aspect ratio
+		if(!isset($node->field_aspect_ratio['und'][0]['value'])
+			&& (isset($node->field_ptiff['und'][0]) || isset($node->field_image['und'][0])))
+		{
+			_osci_iip_save_aspect_ratio($node);
+		}
+
+		// if no image was uploaded, but ptiff was supplied, get image
+		if (empty($node->field_image['und']) && !empty($node->field_ptiff['und'])) {
+			_osci_iip_get_image($node);
+		}
+	}
+}
+
+function osci_iip_node_update($node) {
+	// For an image - If the user supplied a PTIFF path, but no image, let's get a thumbnail
+	if ($node->type == 'image'
+		&& empty($node->field_image['und'])
+		&& !empty($node->field_ptiff['und']))
+	{
+		_osci_iip_get_image($node);
+	}
+	// For an image - If the aspect ratio isn't set, and a ptiff or image
+	// was supplied, get our aspect ratio
+	if ($node->type == 'image'
+		&& !isset($node->field_aspect_ratio['und'][0]['value'])
+		&& (isset($node->field_ptiff['und'][0]) || isset($node->field_image['und'][0])))
+	{
+		_osci_iip_save_aspect_ratio($node);
+	}
+}
+
+
+function _osci_iip_save_aspect_ratio($node) {
+	// Retrieve and store aspect ratio - called in node_insert and node_update
+	// x:1(y) where x is the stored value and y is the constant 1
+
+	// If a ptiff is defined, it trumps all other methods
+	if (isset($node->field_ptiff['und'][0]))
+	{
+		$attr = _osci_iip_get_image_attr($node);
+		if($attr)
+		{
+			$ar = ($attr['iw'] / $attr['ih']);
+			$node->field_aspect_ratio['und'][0]['value'] = round($ar, 4);
+			node_save($node);
+			unset($attr);
+		}
+	}
+	// If no ptiff, use the field_image uri to get attributes
+	elseif (isset($node->field_image['und'][0]['uri']))
+	{
+		$attr = image_get_info($node->field_image['und'][0]['uri']);
+	}
+	// No uri, check for file fid - new uploads
+	elseif (isset($node->field_image['und'][0]['fid']))
+	{
+		$file = file_load($node->field_image['und'][0]['fid']);
+		$attr = image_get_info($file->uri);
+	}
+
+	// If we obtained attributes, calculate aspect ratio and save
+	if(isset($attr))
+	{
+		$ar = ($attr['width'] / $attr['height']);
+		$node->field_aspect_ratio['und'][0]['value'] = round($ar, 4);
+		node_save($node);
+	}
+}
+
+function _osci_iip_get_image($node) {
+	// Get the image data by calling the iip server and asking for a whole jpeg
+	$iipSrv = variable_get('osci_iip_server_url', '') . "?";
+	$command = "FIF=" . variable_get('osci_iip_base_path', '') . "/" . $node->field_ptiff['und'][0]['value'] . "&CVT=jpeg";
+	$curl = curl_init($iipSrv.$command);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	$output = curl_exec($curl);
+	// Save the file with the new Drupal 7 File API
+	$fo = file_save_data($output, "public://iip_thumbs/iip_image_node_".$node->nid.".jpg", FILE_EXISTS_REPLACE);
+	if ($fo)
+	{
+		$node->field_image['und'][0]['fid'] = $fo->fid;
+		node_save($node);
+	}
+}
+
+function _osci_iip_get_image_attr($node) {
+	if (!is_numeric($node->nid)) return false;
+	$iipsrv = variable_get('osci_iip_server_url', '') . "?";
+	$ptiff = $node->field_ptiff['und'][0]['value'];
+	// Get image data as a text response from the IIP server
+	// Must supply the fif parameter
+	$url = $iipsrv . 'FIF=' . variable_get('osci_iip_base_path', '') . "/" . $ptiff . '&OBJ=Basic-info';
+	$curl = curl_init($url);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	$res = curl_exec($curl);
+	if(!stristr($res, 'error')) {
+		// Parse the image maximum dimensions and the number of zoom layers
+		preg_match('/Max-size:(\d+) (\d+)/', $res, $matches);
+		$iw = $matches[1];
+		$ih = $matches[2];
+		preg_match('/Resolution-number:(\d+)/', $res, $matches);
+		$zl = $matches[1];
+
+		// Craft our return response
+		$ret = array(
+			'iw' => $iw,
+			'ih' => $ih,
+			'zl' => $zl,
+		);
+		return $ret;
+	}
+	return false;
+}
+
+function _osci_iip_create_iip_div($node, $figure_id) {
+	$attr = _osci_iip_get_image_attr($node);
+
+	if (count($node->field_svg_file)) {
+		$field_svg = file_create_url($node->field_svg_file['und'][0]['uri']);
+	}
+	else { $field_svg = ""; }
+
+	$ptiff_base = variable_get('osci_iip_base_path', '') . '/';
+	$field_ptiff = $ptiff_base . $node->field_ptiff['und'][0]['value'];
+	if (isset($node->field_ptiff_overlay['und']) && $node->field_ptiff_overlay['und'][0]['value']) {
+		$field_overlay = $ptiff_base . $node->field_ptiff_overlay['und'][0]['value'];
+	}
+	else { $field_overlay = ""; }
+	$ret = '<div id="map_'.$figure_id.'" class="iipmap" data-node="'.$node->nid.'" ';
+	$ret .= 'data-iw="'.$attr['iw'].'" data-ih="'.$attr['ih'].'" data-zlm="'.$attr['zl'].'" ';
+	$ret .= 'data-ptiff="'.$field_ptiff.'" data-figure-id="'.$figure_id.'" ';
+	$ret .= 'data-svg="'.$field_svg.'" data-overlay="'.$field_overlay.'" ';
+	$ret .= 'data-collapsed="true" style="width: 100%; height: 100%; position:relative; background-color: rgba(0,0,0,.8);"></div>';
+	$ret .= "<style>.layer path { fill: none; stroke: #00FF00; stroke-width: 3; vector-effect: non-scaling-stroke;}</style>";
+	$ret .= '<style>.chevron{stroke:#FFF} .direction{stroke:#CCC} .back{stroke:#000} .fore{stroke:#CCC}</style>';
+	$ret .= '<style> .compass .zoom { position: absolute; top: 5px;} .compass .pan {position: absolute; top:40px}</style>';
+	return $ret;
+}

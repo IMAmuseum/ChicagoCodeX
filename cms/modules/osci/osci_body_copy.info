@@ -1,0 +1,5 @@
+name = "OSCI Body Copy"
+description = "OSCI iBody Copy Module"
+package = "OSCI"
+version = "0.1"
+core = "7.x"

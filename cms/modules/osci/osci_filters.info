@@ -1,0 +1,7 @@
+name = "OSCI Filters"
+description = "OSCI Filters Module"
+package = "OSCI"
+version = "0.1"
+core = "7.x"
+
+files[] = osci_filters.module

@@ -1,0 +1,5 @@
+name = "OSCI Reader"
+description = "Pulls all OSCI modules together to create the reader experience"
+package = "OSCI"
+version = "0.1"
+core = "7.x"
