@@ -1,5 +1,0 @@
-name = "OSCI IIP"
-description = "Provides interface to IIP image server"
-package = "OSCI"
-version = "0.1"
-core = "7.x"
