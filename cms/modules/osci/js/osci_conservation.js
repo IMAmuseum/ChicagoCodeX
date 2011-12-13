@@ -452,6 +452,12 @@ ConservationAsset.prototype.createUI = function() {
                 //refresh the viewport if displayed
                 CA.refreshViewfinderViewport();
             },
+            'DOMMouseScroll' : function(event) {
+                CA.ui.zoomSlider.slider('value', CA.map.zoom());
+
+                //refresh the viewport if displayed
+                CA.refreshViewfinderViewport();
+            },
             'dblclick' : function(event) {
                 CA.ui.zoomSlider.slider('value', CA.map.zoom());
 
