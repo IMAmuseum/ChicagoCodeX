@@ -353,7 +353,7 @@ function citation_form() {
     );
 
     $form['citation_text'] = array(
-        '#type'     => 'textarea',
+        '#markup'   => '<div id="citation_text"></div>',
     );    
 
     $form['citation_url'] = array(
@@ -362,13 +362,12 @@ function citation_form() {
     );
 
     $form['citation_selection'] = array(
-        '#type'     => 'textarea',
-        '#title'    => t('Paragraph Text'),
+        '#markup'   => '<span id="citation_paragraph_text_label">Paragraph Text</span><div id="citation_paragraph_text"></div>'
     );
 
     $form['citation_helper'] = array(
         '#type'     => 'item',
-        '#markup'    => t('Select text and press <strong>ctrl + c</strong> to copy'),
+        '#markup'   => t('Select text and press <strong>ctrl + c</strong> to copy'),
     );
 
     return $form;

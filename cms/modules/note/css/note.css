@@ -111,3 +111,20 @@ div.note div.links ul li {
 #osci_viewer_wrapper div.note ul.links li {
     margin-right: 6px;
 }
+
+#citation_text {
+    border: 2px solid #999;
+    padding: 10px;
+    margin: 0 0 10px 0;
+}
+
+#citation_paragraph_text {
+    height: 180px;
+    overflow-y: scroll;
+    border: 2px solid #999;
+    padding: 10px;
+}
+
+#citation_paragraph_text_label {
+    font-weight: bold;
+}

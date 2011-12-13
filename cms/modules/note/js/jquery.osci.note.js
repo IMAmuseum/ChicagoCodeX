@@ -25,14 +25,14 @@
             $.template('citationAPA', citationAPA);
 
             // MLA Style
-            var citationMLA = '{{if author}}${author}, {{/if}}"${articleTitle}: ${subSection}," in ${bookTitle}, ed. ${editor} (${publisher}, ${pubDate}), ${paragraph}.';
+            var citationMLA = '{{if author}}${author}, {{/if}}"<em>${articleTitle}</em>: ${subSection}," in <span style="text-decoration:underline;">${bookTitle}</span>, ed. ${editor} (${publisher}, ${pubDate}), ${paragraph}.';
             $.template('citationMLA', citationMLA);
 
             // Chicago style
-            var citationChicago = '${author}. ${pubDate} ${articleTitle}. In ${bookTitle}, ${paragraph}. ${publisher}';
+            var citationChicago = '${author}. ${pubDate} ${articleTitle}. In <em>${bookTitle}</em>, ${paragraph}. ${publisher}';
             $.template('citationChicago', citationChicago);
 
-            var citationTemplate = '{{if author}}${author}, {{/if}}"${articleTitle}: ${subSection}," in ${bookTitle}, ed. ${editor} (${publisher}, ${pubDate}), para ${paragraph}.';
+            var citationTemplate = '{{if author}}${author}, {{/if}}"<em>${articleTitle}</em>: ${subSection}," in <em>${bookTitle}</em>, ed. ${editor} (${publisher}, ${pubDate}), para ${paragraph}.';
             $.template('citationTemplate', citationTemplate);
 
             amplify.subscribe("osci_navigation_complete", function(data) {
@@ -104,7 +104,7 @@
                         
                         $('a[href$="#citation-format-default"]').click(function(e) {
                             e.preventDefault();
-                            $('#edit-citation-text').html($.tmpl('citationTemplate', data));
+                            $('#citation_text').html($.tmpl('citationTemplate', data));
                             $('#edit-citation-options ul li').removeClass('active');
                             $(this).parent().addClass('active');
                         });
@@ -122,7 +122,7 @@
 //
                         $('a[href$="#citation-format-mla"]').click(function(e) {
                             e.preventDefault();
-                            $('#edit-citation-text').html($.tmpl('citationMLA', data));
+                            $('#citation_text').html($.tmpl('citationMLA', data));
                             $('#edit-citation-options ul li').removeClass('active');
                             $(this).parent().addClass('active');
                         });
@@ -134,7 +134,7 @@
 //                            $(this).parent().addClass('active');
 //                        });
 
-                        $('#edit-citation-selection').html($("p.osci_paragraph_" + base.selection.paragraph_id + ":first").text());
+                        $('#citation_paragraph_text').html($("p.osci_paragraph_" + base.selection.paragraph_id + ":first").text());
                         $('#edit-citation-url').val($('a.osci_paragraph_' + base.selection.paragraph_id).attr('href'));
                         $('#edit-citation-text, #edit-citation-url, #edit-citation-selection').click(function(e) {
                             e.preventDefault();
