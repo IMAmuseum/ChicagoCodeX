@@ -459,17 +459,20 @@
                 }
             }
 
-            //shift the page using css3
-            if ($.browser.msie) {
-                $("#osci_pages").attr("style", "-ms-transform:translate(" + newOffset + "px, 0);");
-            } else {
-                $("#osci_pages").css({
-                    "-webkit-transform" : "translate(" + newOffset + "px, 0)",
-                    "-moz-transform" : "translate(" + newOffset + "px, 0)",
-                    //"-ms-transform" : "translate(" + newOffset + "px, 0)",
-                    "transform" : "translate(" + newOffset + "px, 0)"
-                });
-            }
+            //shift the page using css3 - due to firefox bug with slider switched to margin
+//            if ($.browser.msie) {
+//                $("#osci_pages").attr("style", "-ms-transform:translate(" + newOffset + "px, 0);");
+//            } else {
+//                $("#osci_pages").css({
+//                    "-webkit-transform" : "translate(" + newOffset + "px, 0)",
+//                    "-moz-transform" : "translate(" + newOffset + "px, 0)",
+//                    //"-ms-transform" : "translate(" + newOffset + "px, 0)",
+//                    "transform" : "translate(" + newOffset + "px, 0)"
+//                });
+//            }
+            $("#osci_pages").css({
+                "margin-left" : newOffset + "px"
+            });
             
             amplify.publish("osci_navigation_complete", { page : base.data.currentPage});
         };
