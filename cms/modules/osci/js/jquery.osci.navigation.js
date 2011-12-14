@@ -119,7 +119,7 @@
             }
             
             if (!(navAfterLoadTo === undefined) && !(navAfterLoadValue === undefined)) {
-                base.navigateTo(navAfterLoadTo, navAfterLoadValue);
+                base.data.to = {operation : navAfterLoadTo, value : navAfterLoadValue};
             }
             
             amplify.publish("osci_loading_content_complete");
