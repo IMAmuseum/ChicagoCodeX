@@ -67,15 +67,40 @@
             
             tabs = $("<div>", {
                 id : base.options.tabContainerId
-            }).append('<ul><li class="placeholder_tab"><a href="#osci_more_tab_1">placeholder</a></li></ul><div id="osci_more_tab_1"></div>').appendTo(base.container).tabs();
+            })
+            .append('<ul><li class="placeholder_tab"><a href="#osci_more_tab_1">placeholder</a></li></ul><div id="osci_more_tab_1"></div>')
+            .appendTo(base.container)
+            .tabs({
+                select : function(e, ui) {
+                    for (var i in base.tab_map)
+                    {
+                        if (base.tab_map[i] == ui.index) {
+                            base.selected_tab = i;
+                        }
+                    }
+                }
+            });
             tabs.tabs("remove", 0);
+        };
+        
+        base.select_tab = function(tabName)
+        {
+            if (!tabName)
+            {
+                tabName = base.selected_tab;
+            }
+
+            var tabNum = base.tab_map[tabName],
+                tabs = base.container.find("#" + base.options.tabContainerId);
+                
+            tabs.tabs("select", tabNum);
         };
         
         base.add_content = function(tabName, data, paginate, perPage, callback)
         {
             var tabNum, tabId = "osci_tab_" + tabName, tab, total, i, pager, item, maxPagesDisplay = 5, totalPages,
                 tabs = $("#" + base.options.tabContainerId, base.container), tabWidth, calcWidth, pagerItemText, maxPagerItemText,
-                pagerItems = [], hasPagerDisplayData = false, pagerControlWidth = 0;
+                pagerItems = [], hasPagerDisplayData = false, pagerControlWidth = 0, selectedTab;
 
             if (base.tab_map[tabName] !== undefined) {
                 tabNum = base.tab_map[tabName];
@@ -95,7 +120,11 @@
             }
             
             tab.empty();
+            
+            //maintain previous selected tab
+            selectedTab = base.selected_tab;
             tabs.tabs("select", tabNum);
+            if (selectedTab) {base.selected_tab = selectedTab};
             
             if (data.length) {
                 if (paginate === true) {   

@@ -202,7 +202,6 @@
             processFigureCallback : {
                 image : function(figure, content) {
                     var contentWidth = content.width(),
-                        contentHeight = content.height(),
                         imageCacheSize = 0,
                         finalImage, finalImageWidth;
                     
@@ -294,34 +293,7 @@
                     });
                 },
                 html_figure : function(figure, content) {
-                    var contentHeight = 0, aspect = 0, contentWidth = 0, translate;
                     figure.prepend(content);
-                    
-//                    content.children().each(function(i, elem){
-//                        var $elem = $(elem);
-//                        contentHeight += $elem.outerHeight(true);
-//                        contentWidth += $elem.outerWidth(true);
-//                    });
-//                    
-//                    aspect = Math.round((contentWidth / contentHeight) * 1000) / 1000;
-//                    figure.data("aspect", aspect);
-                    
-//                    if (!figure.data("aspect_determined")) {
-//                        figure.data("aspect_determined", true);
-//                        return false;
-//                    } 
-
-//                    if (aspect > 1) {
-//                        translate = "translate(-" + ((contentWidth - (contentWidth / aspect)) / 2) + "px, 0)";
-//                    } else {
-//                        translate = "translate(0, " + ((contentHeight - (contentHeight * aspect)) / 2) + "px)";
-//                    }
-//                    
-//                    content.children().css({
-//                        "transform" : translate + " scale(" + aspect + ")",
-//                        "-moz-transform" : translate + " scale(" + aspect + ")",
-//                        "-webkit-transform" : translate + " scale(" + aspect + ")"
-//                    });
                     
                     $("<a>", {
                         href : "#",
@@ -331,9 +303,6 @@
                             height : "auto",
                             width : "auto",
                             'max-height' : ($(window).height() - 120) + "px"
-                            //transform : "translate(0px, 0px) scale(1)",
-                            //"-moz-transform" : "translate(0px, 0px) scale(1)",
-                            //"-webkit-transform" : "translate(0px, 0px) scale(1)"
                         }),
                         title : $("figcaption", figure).clone().html()
                     });
@@ -468,7 +437,7 @@
 
                             //Add figures to the more bar
                             $.osci.more.add_content("figures", figures, true, undefined, function(tab){
-                                $(".figureThumbnail", tab).each(function(i, elem){
+                                tab.find(".figureThumbnail").each(function(i, elem){
                                     var $elem = $(elem),
                                         img = $elem.find("img"),
                                         gotoClass = (parseInt(img.data("occurences"), 10) > 1) ? "figure_goto-multi" : "figure_goto";
@@ -518,6 +487,8 @@
                                 });
                             });
                         }
+                    
+                        $.osci.more.select_tab();
 
                         if (!footnotes.length && !figures.length) {
                             moreContainer.hide();
