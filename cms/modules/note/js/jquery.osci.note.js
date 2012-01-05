@@ -52,9 +52,11 @@
             }
             
             $(window).click(function(e){
-                if (base.toolbar.is(':visible')) {
-                    base.toolbar.hide();
-                }
+            	if (!$(e.target).is('p')) {
+            		if (base.toolbar.is(':visible')) {
+            			base.toolbar.hide();
+            		}
+            	}
             });
             
             $('.noteTitle').live('hover', function(e) {
@@ -168,7 +170,7 @@
                         return;
                     }
 
-                    e.stopPropagation();
+                    // e.stopPropagation();
 //                    $.osci.note.toolbar.appendTo($('body'));
                     var left    = e.clientX - (base.toolbar.outerWidth() / 2);
                     var top     = e.clientY - base.toolbar.outerHeight() - parseInt($('.osci_paragraph').css('lineHeight'));

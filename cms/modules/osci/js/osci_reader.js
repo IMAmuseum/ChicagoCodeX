@@ -562,6 +562,13 @@
         
         //make more & navigation bars close when viewer is clicked
         $("#" + Drupal.settings.osci_layout.viewer_id).click(function(e){
+        	
+        	// TODO: this should not be coupled this way.
+        	// closes any open notes
+        	if ($('#osci_table_of_contents_wrapper').hasClass('open') || $('#osci_more_wrapper').hasClass('open')) {
+            	$('ul.selection-toolbar').hide();
+        	}
+        	
             amplify.publish("osci_nav_toggle", {osci_nav_close : true});
             amplify.publish("osci_more_toggle", {osci_more_close : true});
         });
