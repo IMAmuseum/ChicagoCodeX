@@ -38,6 +38,7 @@ function osci_conservation_menu() {
     $items['conservation/view/%'] = array(
         'title'             => t('View a conservation asset as a standalone figure'),
         'page callback'     => 'osci_conservation_view',
+        'page arguments'    => array(2),
         'access arguments'  => array('access content'),
         'type'              => MENU_CALLBACK
     );
@@ -421,7 +422,7 @@ function _osci_conservation_get_conservation_html($nid) {
     }
 
     $ret =    '<div class="conservation-asset" data-aspect="'._osci_conservation_get_conservation_aspect($node)
-    		. '" data-collapsed="true" id="'.$id.'">'
+    		. '" data-collapsed="true" data-nid="'.$nid.'" id="'.$id.'">'
             . '<ul class="conservation-layers" style="display:none;">'
             . $layers
             . '</ul>'
@@ -496,28 +497,30 @@ function _osci_conservation_get_conservation_aspect($node) {
 
 function osci_conservation_view($nid)
 {
-    drupal_add_library('system', 'ui.slider');
+	drupal_add_library('system', 'ui.slider');
+	drupal_add_js(drupal_get_path('module', 'osci_reader') . '/js/amplify.core.js');
+	drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_polymaps.js', 'file');
+	drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip.js', 'file');
+	drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/osci_conservation.js', 'file');
+	drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/conservation-view.js', 'file');
+	drupal_add_css(drupal_get_path('module', 'osci_layout').'/css/osci_layout.css');
+	drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css', 'file');
+	drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/conservation-view.css', 'file');
 
-    drupal_add_js(drupal_get_path('module', 'osci_reader') . '/js/amplify.core.js');
-    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip_polymaps.js', 'file');
-    drupal_add_js(drupal_get_path('module', 'osci_iip') . '/js/osci_iip.js', 'file');
-    drupal_add_js(drupal_get_path('module', 'osci_conservation') . '/js/osci_conservation.js', 'file');
-    drupal_add_css(drupal_get_path('module', 'osci_layout').'/css/osci_layout.css');
-    drupal_add_css(drupal_get_path('module', 'osci_conservation') . '/css/osci_conservation.css', 'file');
-    
-    $node = node_load($nid);
-    $elements = node_view($node, 'body_copy');
-    
-    $catalogNumber = (isset($node->field_osci_catalogue_number['und']) && $node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
-    
-    $plateNid = null;
-    if (isset($elements['field_osci_plate_image'])) {
-        $plateNid = ($elements['field_osci_plate_image']['#items'][0]['nid']) ? $elements['field_osci_plate_image']['#items'][0]['nid'] : null;
-        $plateCaption = $node->field_osci_navigation_title['und'][0]['value'];
-    }
-    
-    $plateId = 'osci_plate_fig';
-    $plateFigure = array(
+	$node = node_load($nid);
+
+	$elements = node_view($node, 'body_copy');
+
+	$catalogNumber = (isset($node->field_osci_catalogue_number['und']) && $node->field_osci_catalogue_number['und'][0]['value']) ? $node->field_osci_catalogue_number['und'][0]['value'] : null;
+
+	$plateNid = null;
+	if (isset($elements['field_osci_plate_image'])) {
+		$plateNid = ($elements['field_osci_plate_image']['#items'][0]['nid']) ? $elements['field_osci_plate_image']['#items'][0]['nid'] : null;
+		$plateCaption = $node->field_osci_navigation_title['und'][0]['value'];
+	}
+
+	$plateId = 'osci_plate_fig';
+	$plateFigure = array(
         'figure_reference' => $plateNid,
         'number_template' => ($catalogNumber) ? "Cat. {$catalogNumber}" : ' ',
         'caption' => $plateCaption,
@@ -527,7 +530,8 @@ function osci_conservation_view($nid)
         'format' => 'footnote',
         'figCount' => 0,
         'figOccurences' => 1
-    );
-        
-    return theme('body_copy_figure', array('figure' => $plateFigure));
+	);
+
+	return theme('body_copy_figure', array('figure' => $plateFigure));
+	
 }
