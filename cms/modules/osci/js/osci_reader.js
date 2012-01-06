@@ -575,22 +575,9 @@
         
         $(".osci_reference_image_link").live("click",function(e){
             e.preventDefault();
-//            var $this = $(this),
-//                fancyOptions = {
-//                    speedIn : 100,
-//                    speedOut : 100,
-//                    scroll : 'no'
-//                };
-//                
-//            if ($this.parent().hasClass("everpresent")) {
-//                fancyOptions.title = '<a target="_blank" href="' + $this.attr('href') + '">Open in new window</a>';
-//            }
-//                
-//            fancyOptions.href = $this.attr("href");
-//            $.fancybox(fancyOptions);
-            $("#osci_pages").find("#osci_plate_fig").trigger({
-                type : "osci_figure_fullscreen"
-            });
+	    // grab the current section nid and open new window
+            var url = Drupal.settings.baseUrl + 'conservation/view/' + $.osci.navigation.data.nid;
+            window.open(url);
         });
         
         var checkKey = false;
