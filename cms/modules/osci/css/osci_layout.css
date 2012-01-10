@@ -109,3 +109,11 @@ body {
     color: #BBB;
     text-align: right;
 }
+
+.browser_warning {
+    width: 100%;
+    text-align: center;
+    font-size: 100%;
+    color: white;
+    background-color: lightCoral;
+}

@@ -721,9 +721,15 @@
         var loggedOut = $("a.login-link");
         if (loggedOut.length) {
             var winWidth = $("body").outerWidth() * .9,
-                maxWidth = 400,
+                maxWidth = 640,
                 width = winWidth > maxWidth ? maxWidth : winWidth,
                 content = $("body").append($('<div id="disclaimer"><h1>Welcome</h1><p>Please note that this publication represents a limited presentation of the digital catalogues <em>Monet Paintings and Drawings at the Art Institute of Chicago</em> and <em>Renoir Paintings and Drawings at the Art Institute of Chicago</em>, the first two volumes in the series <em>Paintings and Drawings by the Impressionist Circle in the Collection of the Art Institute of Chicago</em>. At this time, only the entries for Claude Monet’s <em>Beach at Sainte-Adresse</em> and <em>Cliff Walk at Pourville</em> and Pierre-Auguste Renoir’s <em>Laundress</em> are available, though the volumes will eventually include our comprehensive holdings of works by these artists. Certain other sections of the catalogues, such as the collector pages, will also be further expanded in the future.</p><p>This preview publication is currently in a usability-testing period and only functions fully in Chrome and Safari browsers.  A few functions, including the search feature, remain in the development stage.</p><p>We welcome you to view a short video to learn more about the catalogue features: <a href="http://www.artic.edu/aic/resources/resource/1980">http://www.artic.edu/aic/resources/resource/1980</a></p><p>Thank you for visiting! We welcome your questions and comments about the publication. <a href="https://www.surveymonkey.com/s/OnlineCatalogueFeedback">Fill out a survey to let us know what you think.</a></p></div>').hide());
+            
+            // browser detection, display additional warning for unsupported browsers
+            if (navigator.userAgent.indexOf("Chrome") == -1 && navigator.userAgent.indexOf("Safari") == -1) {
+            	$('#disclaimer').prepend($('<div class="browser_warning">Your browser is not fully supported!<br>Please see details below.</div>'));
+            }
+                
             var tempLink = $("<a>", {"id" : "disclaimer-link"}).hide().appendTo("body").fancybox(
                 {
                     'width' : width,
