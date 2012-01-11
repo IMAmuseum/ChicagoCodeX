@@ -559,7 +559,7 @@
         function _create_table_of_contents()
         {
             var container = $("#" + base.options.tocId), i, toc, node, rootNid, tocItem, subMenu, 
-                j, subItem, subItemCount, tocWrapper, subMenuItems, createdMenus = {};
+                j, subItem, subItemCount, tocWrapper, tocWrapperHeight, subMenuItems, createdMenus = {};
 
             toc = container.find("#osci_navigation_toc");
 
@@ -765,7 +765,12 @@
             }
       
             //tocWrapper.height(($(window).height() - tocWrapper.position().top - 40) + "px").overscroll({direction : "vertical", showThumbs : true});
-            tocWrapper.height(($(window).height() - tocWrapper.position().top - 40) + "px");
+            tocWrapperHeight = ($(window).height() - tocWrapper.position().top - 40) + "px";
+            tocWrapper.height(tocWrapperHeight);
+            amplify.subscribe("osci_loading_content_complete", function() {
+            	tocWrapper.height(tocWrapperHeight);
+            	base.data.tocScroll.refresh();
+            });
             toc.show();
             
             if ($.browser.webkit) {
