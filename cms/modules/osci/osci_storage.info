@@ -1,5 +1,0 @@
-name = "OSCI Remote Storage"
-description = "Utilize localStorage to cache book pages"
-package = "OSCI"
-version = "0.1"
-core = "7.x"

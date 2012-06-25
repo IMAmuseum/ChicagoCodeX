@@ -1,0 +1,33 @@
+#section {
+	margin: 60px 40px;
+	padding: 20px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: block;
+	overflow-y: auto;
+	overflow-x: hidden;
+	background-color: white;
+	-moz-box-shadow: 2px 2px 6px #666;
+	-webkit-box-shadow: 2px 2px 6px #666;
+	box-shadow: 2px 2px 6px #666;
+}
+
+#section img {
+	max-width: 600px;
+}
+
+/* When less than 600px... */
+@media (max-width:600px) {
+
+	#section {
+		padding: 6px;
+		margin: 60px 10px 10px 10px;
+	}
+}
+
+section figure img.thumbnail {
+	display: none;
+}

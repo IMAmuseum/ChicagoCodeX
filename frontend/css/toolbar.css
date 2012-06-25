@@ -1,0 +1,66 @@
+#toolbar {
+	z-index: 100;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	height: 26px;
+	overflow: hidden;
+	background: #464646;
+}
+#toolbar-icon {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 26px;
+	width: 26px;
+	background: url('../img/bg-header-bar-left.png') no-repeat;
+}
+#toolbar-pub-title {
+	position: absolute;
+	top: 0px;
+	left: 40px;
+	height: 26px;
+	color: #d8d8d8;
+	font-size: 14px;
+	padding: 4px 0px 0px 0px;
+}
+#toolbar-items {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	height: 26px;
+}
+.toolbar-item {
+	display: inline-block;
+}
+.TextEnlarge-toolbar-item {
+	background: url('../img/iconFontIncrease.png') no-repeat center center;
+	height: 26px;
+	width: 26px;
+	text-indent: 9999px;
+}
+.TextReduce-toolbar-item {
+	background: url('../img/iconFontDecrease.png') no-repeat center center;
+	height: 26px;
+	width: 26px;
+	text-indent: 9999px;
+}
+.Print-toolbar-item {
+	background: url('../img/print_icon.png') no-repeat center center;
+	height: 26px;
+	width: 26px;
+	text-indent: 9999px;
+}
+.Account-toolbar-item {
+	background: url('../img/user-icon.png') no-repeat center center;
+	height: 26px;
+	width: 26px;
+	text-indent: 9999px;
+}
+.Search-toolbar-item {
+	background: url('../img/search-field.png') no-repeat center center;
+	height: 26px;
+	width: 143px;
+	text-indent: 9999px;
+}

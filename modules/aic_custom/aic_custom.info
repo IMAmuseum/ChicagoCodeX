@@ -1,0 +1,6 @@
+name = "AIC Custom"
+description = "Custom additions to the OSCI ToolKit for AIC"
+package = "OSCI ToolKit"
+version = "1.0"
+core = "7.x"
+dependencies[] = osci_tk_features
