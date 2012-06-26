@@ -104,24 +104,16 @@ a.footnote-reference {
 }
 
 /* tooltips */
-.ui-tooltip-content {
-	position: relative;
-	padding: 5px 9px;
-	overflow: hidden;
-	text-align: left;
-	word-wrap: break-word;
-	overflow: hidden;
-	background: #fff;
-	box-shadow: 0 1px 4px #666;
+.ui-tooltip-toolbar {
+	background-color: #333;
+	opacity: .75 !important;
+	color: #fff;
+	font-size: .75em;
+	font-family: Helvetica;
+	border: 1px solid #000;
+	width: auto !important;
+	border-radius: 3px;
 }
-.ui-tooltip .ui-tooltip-tip {
-	background-color:#fff!important;
-}
-.ui-tooltip, .qtip {
-	max-width:auto!important;
-	background: #fff!important;	
-}
-
 
 /* misc */
 .fancybox-close {

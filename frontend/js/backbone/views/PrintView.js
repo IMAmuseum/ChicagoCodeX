@@ -7,7 +7,7 @@ Aic.views.Print = OsciTk.views.BaseView.extend({
 	id: 'toolbar-item-print',
 	render: function() {
 		$('.Print-toolbar-item').qtip('destroy').qtip({
-			content: "This publication's print functionality is still in development",
+			content: "Print functionality is still in development",
 			show: { 
 				event: '',
 				ready: true
@@ -15,6 +15,9 @@ Aic.views.Print = OsciTk.views.BaseView.extend({
 			position: {
 				my: 'top center',
 				at: 'bottom center'
+			},
+			style: {
+				classes: 'ui-tooltip-toolbar'
 			}
 		});
 	}
