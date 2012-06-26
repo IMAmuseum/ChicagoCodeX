@@ -5,7 +5,7 @@ if (typeof Aic.views === 'undefined'){Aic.views = {};}
 
 Aic.views.Print = OsciTk.views.BaseView.extend({
 	id: 'toolbar-item-print',
-	render: function() {
+	click: function() {
 		$('.Print-toolbar-item').qtip('destroy').qtip({
 			content: "Print functionality is still in development",
 			show: { 

@@ -5,6 +5,7 @@ if (typeof Aic.views === 'undefined'){Aic.views = {};}
 
 Aic.views.Account = OsciTk.views.BaseView.extend({
 	id: 'toolbar-item-account',
-	render: function() {
+	click: function(e) {
+		
 	}
 });

@@ -5,6 +5,7 @@ if (typeof Aic.views === 'undefined'){Aic.views = {};}
 
 Aic.views.Search = OsciTk.views.BaseView.extend({
 	id: 'toolbar-item-search',
-	render: function() {
+	click: function(e) {
+		
 	}
 });

@@ -20,7 +20,7 @@ Aic.views.ToolbarItem = OsciTk.views.BaseView.extend({
 			text: this.options.toolbarItem.text
 		}));
 	},
-	itemClicked: function() {
-		this.contentView.render();
+	itemClicked: function(e) {
+		this.contentView.click(e);
 	}
 });

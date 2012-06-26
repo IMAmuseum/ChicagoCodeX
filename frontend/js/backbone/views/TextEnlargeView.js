@@ -10,7 +10,7 @@ Aic.views.TextEnlarge = OsciTk.views.BaseView.extend({
 			app.config.set('currentFontSize', 100);
 		}
 	},
-	render: function() {
+	click: function(e) {
 		app.config.set('currentFontSize', app.config.get('currentFontSize') + 25);
 		app.views.sectionView.$el.css({
 			'font-size': app.config.get('currentFontSize') + '%'
