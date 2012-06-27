@@ -14,17 +14,21 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 		this.addView(app.views.toolbarView);
 		
 		// Add the title view to the appView
-		app.views.titleView = new OsciTk.views.Title();
+		app.views.titleView = new Aic.views.Title();
 		this.addView(app.views.titleView);
 		
 		// Add the reference image view to the AppView
 		app.views.referenceImageView = new Aic.views.ReferenceImage();
 		this.addView(app.views.referenceImageView);
 		
-		//set the default section view
+		// Add the contents view
+		app.views.tocView = new Aic.views.Toc();
+		this.addView(app.views.tocView);
+		
+		// set the default section view
 		var sectionViewClass = OsciTk.views.Section;
 
-		//allow a custom section view to be used
+		// allow a custom section view to be used
 		if (app.config.get('sectionView') && OsciTk.views[app.config.get('sectionView')]) {
 			sectionViewClass = OsciTk.views[app.config.get('sectionView')];
 		}

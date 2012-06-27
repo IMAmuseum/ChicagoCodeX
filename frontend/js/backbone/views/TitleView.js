@@ -1,9 +1,9 @@
-// OsciTk Namespace Initialization //
-if (typeof OsciTk === 'undefined'){OsciTk = {};}
-if (typeof OsciTk.views === 'undefined'){OsciTk.views = {};}
-// OsciTk Namespace Initialization //
+// Aic Namespace Initialization //
+if (typeof Aic === 'undefined'){Aic = {};}
+if (typeof Aic.views === 'undefined'){Aic.views = {};}
+// Aic Namespace Initialization //
 
-OsciTk.views.Title = OsciTk.views.BaseView.extend({
+Aic.views.Title = OsciTk.views.BaseView.extend({
 	id: 'title-view',
 	template: OsciTk.templateManager.get('title'),
 	initialize: function() {

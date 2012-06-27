@@ -1,0 +1,58 @@
+#toc-view {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	width: 180px;
+	margin: 26px 0px 0px 0px;
+	background-color: #cbcbcb;
+    background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cbcbcb));
+    -moz-box-shadow: 0 -6px 6px #888;
+    -webkit-box-shadow: 0 0 6px #888;
+    -ms-box-shadow: 0 0 6px #888;
+    box-shadow: 0 0 6px #888;
+    height: auto;
+    z-index: 100;
+}
+#toc-view.closed {
+	left: -180px;
+}
+#toc-view.open {
+	left: 0px;
+}
+
+#toc-handle {
+	transform: rotate(90deg); 
+    -webkit-transform: rotate(90deg); 
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    display: block;
+    position: relative;
+    left: 143px;
+	top: 100px;
+    color: #222;
+    z-index: 101;
+    font-size: 12px;
+    line-height: 1;
+    background: transparent url("../img/bg-tab-bottom.png") no-repeat;
+    width: 99px;
+    height: 25px;
+    text-align: center;
+	overflow: hidden;
+	padding-top: 6px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+#toc-reference-image {
+	width: 160px;
+	height: 180px;
+	margin: 20px 10px;
+}
+#toc-reference-image img {
+	border: 5px solid white;
+	max-width: 100%;
+	max-height: 100%;
+	-moz-box-shadow: 2px 2px 6px #808080;
+    -webkit-box-shadow: 2px 2px 6px #808080;
+    box-shadow: 2px 2px 6px #808080;	
+}
