@@ -2,6 +2,7 @@
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
+	left: -180px;
 	width: 180px;
 	margin: 26px 0px 0px 0px;
 	background-color: #cbcbcb;
@@ -13,12 +14,6 @@
     box-shadow: 0 0 6px #888;
     height: auto;
     z-index: 100;
-}
-#toc-view.closed {
-	left: -180px;
-}
-#toc-view.open {
-	left: 0px;
 }
 
 #toc-handle {

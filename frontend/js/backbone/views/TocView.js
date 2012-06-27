@@ -25,15 +25,11 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 	},
 	switchDrawer: function() {
 		if (this.isOpen) {
-			this.$el
-				.removeClass('open')
-				.addClass('closed');
+			this.$el.animate({ left: '-180px' });
 			this.isOpen = false;
 		}
 		else {
-			this.$el
-				.removeClass('closed')
-				.addClass('open');
+			this.$el.animate({ left: '0px'});
 			this.isOpen = true;
 		}
 	}
