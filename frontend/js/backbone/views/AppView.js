@@ -17,6 +17,10 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 		app.views.titleView = new OsciTk.views.Title();
 		this.addView(app.views.titleView);
 		
+		// Add the reference image view to the AppView
+		app.views.referenceImageView = new Aic.views.ReferenceImage();
+		this.addView(app.views.referenceImageView);
+		
 		//set the default section view
 		var sectionViewClass = OsciTk.views.Section;
 

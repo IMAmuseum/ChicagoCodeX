@@ -1,0 +1,15 @@
+#referenceImage {
+	position: absolute;
+	right: 10px;
+	top: 60px;
+	width: 100px;
+	height: auto;
+	-moz-box-shadow: 2px 2px 6px #666;
+	-webkit-box-shadow: 2px 2px 6px #666;
+	box-shadow: 2px 2px 6px #666;
+}
+
+#referenceImage img {
+	width: 100px;
+	height: auto;
+}
