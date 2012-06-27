@@ -10,7 +10,6 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 		this.imageUrl = null;
 		app.dispatcher.on('figuresAvailable', function(figures) {console.log(figures);});
 		app.dispatcher.on('figuresLoaded', function(figures) {
-			console.log(figures);
 			for (var i=0; i < figures.models.length; i++) {
 				var content = $(figures.models[i].get('rawData'));
 				// look for an image first, simple to handle
@@ -33,7 +32,6 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 	},
 	render: function() {
 		if (this.imageUrl) {
-			console.log('rendering');
 			this.$el.html(this.template({destination: this.imageUrl}));
 		}
 		
