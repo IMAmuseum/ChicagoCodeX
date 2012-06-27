@@ -114,6 +114,13 @@ a.footnote-reference {
 	width: auto !important;
 	border-radius: 3px;
 }
+.ui-tooltip-toolbar a, 
+.ui-tooltip-toolbar a:active, 
+.ui-tooltip-toolbar a:visited, 
+.ui-tooltip-toolbar a:hover, 
+.ui-tooltip-toolbar a:link {
+	color: #fff;
+}
 
 /* misc */
 .fancybox-close {
