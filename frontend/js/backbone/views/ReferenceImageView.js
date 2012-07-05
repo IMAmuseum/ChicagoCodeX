@@ -8,6 +8,7 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 	template: OsciTk.templateManager.get('reference-image'),
 	initialize: function() {
 		this.imageUrl = null;
+		
 		app.dispatcher.on('figuresLoaded', function(figures) {
 			for (var i=0; i < figures.models.length; i++) {
 				var content = $(figures.models[i].get('rawData'));
@@ -20,21 +21,21 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 					break;
 				}
 				// look for a figure with a preview url next
-// TODO: finish parsing previewUri from figure options and use that if available				
+				// TODO: finish parsing previewUri from figure options and use that if available				
 //				var figure = content.find('figure');
 //				if (figure.length > 0) {
 //					var options = JSON.parse(figure.attr('data-options'));
 //					if (options.previewUri) {
-//						
+//				
 //					}
 //				}
 			}
 		}, this);
 	},
 	render: function() {
-		if (this.imageUrl) {
-			this.$el.html(this.template({destination: this.imageUrl}));
-		}
-		
+		this.$el.html(this.template({
+			destination: this.imageUrl,
+			navTree: this.navTree
+		}));
 	}
 });
