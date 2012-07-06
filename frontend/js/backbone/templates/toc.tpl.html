@@ -1,7 +1,11 @@
 <div id="toc-handle">Contents</div>
 <div id="toc-reference-image">
-	<% if (referenceImageUrl) { %>
+	<% if (typeof(referenceImageUrl) !== 'undefined') { %>
 		<img src="<%= referenceImageUrl %>">
 	<% } %>
 </div>
-<div id="toc-navigation"></div>
+<div id="toc-navigation">
+	<% if (typeof(navTree) !== 'undefined') { %>
+		<%= navTree %>
+	<% } %>
+</div>

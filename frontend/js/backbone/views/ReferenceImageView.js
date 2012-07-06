@@ -8,6 +8,7 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 	template: OsciTk.templateManager.get('reference-image'),
 	initialize: function() {
 		this.imageUrl = null;
+		this.sectionUrl = null;
 		
 		app.dispatcher.on('figuresLoaded', function(figures) {
 			for (var i=0; i < figures.models.length; i++) {
@@ -15,27 +16,29 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 				// look for an image first, simple to handle
 				var img = content.find('img');
 				if (img.length > 0) {
-					this.imageUrl = img.attr('src');
+					this.imageUrl = this.sectionImageUrl = img.attr('src');
 					this.render();
 					app.dispatcher.trigger('referenceImageLoaded', this);
 					break;
 				}
-				// look for a figure with a preview url next
-				// TODO: finish parsing previewUri from figure options and use that if available				
-//				var figure = content.find('figure');
-//				if (figure.length > 0) {
-//					var options = JSON.parse(figure.attr('data-options'));
-//					if (options.previewUri) {
-//				
-//					}
-//				}
 			}
+		}, this);
+
+		// change the image when requested
+		app.dispatcher.on('referenceImageChange', function(url) {
+			this.imageUrl = url;
+			this.render();
+		}, this);
+
+		// restore the original image set by the figuresLoaded event
+		app.dispatcher.on('referenceImageChange', function() {
+			this.imageUrl = this.sectionImageUrl;
+			this.render();
 		}, this);
 	},
 	render: function() {
 		this.$el.html(this.template({
-			destination: this.imageUrl,
-			navTree: this.navTree
+			destination: this.imageUrl
 		}));
 	}
 });
