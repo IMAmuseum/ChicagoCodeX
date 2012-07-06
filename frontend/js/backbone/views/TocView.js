@@ -21,6 +21,9 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 
 		// when a section is loaded, find and highlight the matching navigation item
 		app.dispatcher.on('sectionLoaded', function(section) {
+			// reset bold on all section li tags
+			this.$el.find('li[data-section_id]').css('font-weight', 'normal');
+			// set the current sections nav item to bold
 			var li = this.$el.find('li[data-section_id="' + section.id + '"]');
 			li.css('font-weight', 'bold');
 			// find any vertical nav arrows and click them to close
@@ -47,20 +50,17 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 			navTree: this.navTree
 		}));
 		this.renderCollapsibleList();
-		
+
 		// bind handle to open/close panel
 		this.$el.find('#toc-handle').on('click', this, function(event) {
 			event.data.switchDrawer();
 		});
 
-		// bind section titles to navigate
-		this.$el.find('#toc-navigation li div.navTitle').on('click', function(event) {
-			var sectionId = $(this).parent().attr('data-section_id');
-			app.router.navigate("/section/" + sectionId, {trigger: true});
-		});
+		
 	},
 	renderNavTree: function() {
 		var topLevelItems = app.collections.navigationItems.where({parent: null});
+		
 		// build the markup for the navigation menu
 		var markup = $('<ul class="collapsibleList"></ul>');
 		for (var i = 0; i < topLevelItems.length; i++) {
@@ -74,6 +74,7 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 			.attr('data-section_id', item.id)
 			.append('<div class="navArrowContainer"></div>')
 			.append('<div class="navTitle">' + item.get('title') + '</div>');
+		
 		// get the children of this item and render them too
 		var children = app.collections.navigationItems.where({parent: item});
 		for (var i = 0; i < children.length; i++) {
@@ -84,23 +85,31 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 		return itemMarkup;
 	},
 	renderCollapsibleList: function() {
-		var lists = this.$el.find('ul.collapsibleList');
-		for (var i = 0; i < lists.length; i++) {
-			var list = $(lists[i]);
-			// hide all but the top level items
-			list.find('ul').addClass('collapsed').hide();
-			
-			// for each li that has a sibling ul, bind it's click to show the below listings
-			list.find('li + ul')
-				.prev()
-				.addClass('navArrow H')
-				.bind('click', {view: this}, this.toggleCollapsibleList);
+		// calculate and set a fixed height on the navigation area
+		var navigation = $('#toc-navigation');
+		console.log(navigation.offset(), 'LEFT OFF HERE ON FRI');
 
-			// bind the mouseover of each li to fire a change event for the reference image
-			list.find('li')
-				.bind('mouseenter', this.changeReferenceImage)
-				.bind('mouseleave', this.restoreReferenceImage);
-		}
+		var list = this.$el.find('ul.collapsibleList').first();
+		
+		// hide all but the top level items
+		list.find('ul').addClass('collapsed').hide();
+		
+		// for each li that has a sibling ul, bind it's click to show the below listings
+		list.find('li + ul')
+			.prev()
+			.addClass('navArrow H')
+			.bind('click', {view: this}, this.toggleCollapsibleList);
+
+		// bind the mouseover of each li to fire a change event for the reference image
+		list.find('li')
+			.bind('mouseenter', this.changeReferenceImage)
+			.bind('mouseleave', this.restoreReferenceImage);
+
+		// bind section titles to navigate
+		list.find('li div.navTitle').on('click', function(event) {
+			var sectionId = $(this).parent().attr('data-section_id');
+			app.router.navigate("/section/" + sectionId, {trigger: true});
+		});
 	},
 	changeReferenceImage: function(event) {
 		var itemId = $(event.currentTarget).attr('data-section_id');
