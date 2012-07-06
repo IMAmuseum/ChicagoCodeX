@@ -19,10 +19,16 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 			this.navTree = this.renderNavTree();
 		}, this);
 
-		// when a section is loaded, highlight the matching navigation item
+		// when a section is loaded, find and highlight the matching navigation item
 		app.dispatcher.on('sectionLoaded', function(section) {
 			var li = this.$el.find('li[data-section_id="' + section.id + '"]');
 			li.css('font-weight', 'bold');
+			// find any vertical nav arrows and click them to close
+			this.$el.find('li.V').click();
+			// find parents of the li that are horizontal and click
+			li.parents('ul').each(function() {
+				$(this).children('li.H').click();
+			});
 		}, this);
 	},
 	switchDrawer: function() {
@@ -43,8 +49,14 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 		this.renderCollapsibleList();
 		
 		// bind handle to open/close panel
-		this.$el.find('#toc-handle').on('click', this, function(e) {
-			e.data.switchDrawer();
+		this.$el.find('#toc-handle').on('click', this, function(event) {
+			event.data.switchDrawer();
+		});
+
+		// bind section titles to navigate
+		this.$el.find('#toc-navigation li div.navTitle').on('click', function(event) {
+			var sectionId = $(this).parent().attr('data-section_id');
+			app.router.navigate("/section/" + sectionId, {trigger: true});
 		});
 	},
 	renderNavTree: function() {
