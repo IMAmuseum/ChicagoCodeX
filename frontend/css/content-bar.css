@@ -1,3 +1,6 @@
+#content-bar-wrapper {
+	display: none;
+}
 #content-bar {
 	position: absolute;
 	bottom: 0;
