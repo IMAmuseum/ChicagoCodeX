@@ -19,6 +19,12 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 			this.navTree = this.renderNavTree();
 		}, this);
 
+		app.dispatcher.on('drawersClose', function(caller) {
+			if (caller !== this) {
+				this.closeDrawer();
+			}
+		}, this);
+
 		// when a section is loaded, find and highlight the matching navigation item
 		app.dispatcher.on('sectionLoaded', function(section) {
 			this.render();
@@ -37,13 +43,21 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 	},
 	toggleDrawer: function() {
 		if (this.isOpen) {
-			this.$el.animate({ left: '-200px' });
-			this.isOpen = false;
+			this.closeDrawer();
 		}
 		else {
-			this.$el.animate({ left: '0px'});
-			this.isOpen = true;
+			this.openDrawer();
 		}
+	},
+	closeDrawer: function() {
+		this.$el.animate({ left: '-200px' });
+		this.isOpen = false;
+	},
+	openDrawer: function() {
+		// tell other drawers to close
+		app.dispatcher.trigger('drawersClose', this);
+		this.$el.animate({ left: '0px'});
+		this.isOpen = true;
 	},
 	render: function() {
 		// render and place content

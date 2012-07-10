@@ -19,6 +19,12 @@ Aic.views.ContentBar = OsciTk.views.BaseView.extend({
 			this.render();
 		}, this);
 
+		app.dispatcher.on('drawersClose', function(caller) {
+			if (caller !== this) {
+				this.closeDrawer();
+			} 
+		}, this);
+
 		//this.render();
 	},
 	render: function() {
@@ -42,6 +48,8 @@ Aic.views.ContentBar = OsciTk.views.BaseView.extend({
 		}
 	},
 	openDrawer: function() {
+		// tell other drawers to close
+		app.dispatcher.trigger('drawersClose', this);
 		this.$el.animate({
 			height: '300px'
 		},
