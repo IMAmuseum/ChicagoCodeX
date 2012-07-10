@@ -1,6 +1,6 @@
 // Aic Namespace Initialization //
-if (typeof OsciTk === 'undefined'){OsciTk = {};}
-if (typeof OsciTk.views === 'undefined'){OsciTk.views = {};}
+if (typeof Aic === 'undefined'){Aic = {};}
+if (typeof Aic.views === 'undefined'){Aic.views = {};}
 // Aic Namespace Initialization //
 
 Aic.views.Toc = OsciTk.views.BaseView.extend({
