@@ -21,6 +21,7 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 
 		// when a section is loaded, find and highlight the matching navigation item
 		app.dispatcher.on('sectionLoaded', function(section) {
+			this.render();
 			// reset bold on all section li tags
 			this.$el.find('li[data-section_id]').css('font-weight', 'normal');
 			// set the current sections nav item to bold
@@ -45,18 +46,27 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 		}
 	},
 	render: function() {
+		// render and place content
 		this.$el.html(this.template({
 			referenceImageUrl: this.referenceImageUrl,
 			navTree: this.navTree
 		}));
-		this.renderCollapsibleList();
+
+		// the reference image can throw off height calculation.  Rerender list after it loads
+		var img = this.$el.find('#toc-reference-image img');
+		if (img[0].complete === false) {
+			img.on('load', function() {
+				app.views.tocView.renderCollapsibleList();
+			});
+		}
+		else {
+			this.renderCollapsibleList();
+		}
 
 		// bind handle to open/close panel
 		this.$el.find('#toc-handle').on('click', this, function(event) {
 			event.data.switchDrawer();
 		});
-
-		
 	},
 	renderNavTree: function() {
 		var topLevelItems = app.collections.navigationItems.where({parent: null});
@@ -87,7 +97,8 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 	renderCollapsibleList: function() {
 		// calculate and set a fixed height on the navigation area
 		var navigation = $('#toc-navigation');
-		console.log(navigation.offset(), 'LEFT OFF HERE ON FRI');
+		var navHeight = window.innerHeight - navigation.offset().top;
+		navigation.css('height', navHeight + 'px');
 
 		var list = this.$el.find('ul.collapsibleList').first();
 		
