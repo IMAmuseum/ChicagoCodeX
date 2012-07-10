@@ -1,0 +1,35 @@
+#content-bar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 300px;
+	width: auto;
+	z-index: 100;
+	background-color: #cbcbcb;
+    background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cbcbcb));
+    -moz-box-shadow: 0 -6px 6px #888;
+    -webkit-box-shadow: 0 0 6px #888;
+    -ms-box-shadow: 0 0 6px #888;
+    box-shadow: 0 0 6px #888;
+}
+#content-bar-handle {
+	position: relative;
+	top: -25px;
+	width: 99px;
+	z-index: 101;
+	font-size: 12px;
+    line-height: 1;
+    background: transparent url("../img/bg-tab-bottom.png") no-repeat;
+    text-align: center;
+	overflow: hidden;
+	padding: 6px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+#content-bar-tabs {
+
+}
+#content-bar-content {
+
+}

@@ -21,9 +21,13 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 		app.views.referenceImageView = new Aic.views.ReferenceImage();
 		this.addView(app.views.referenceImageView);
 		
-		// Add the contents view
+		// Add the table of contents view
 		app.views.tocView = new Aic.views.Toc();
 		this.addView(app.views.tocView);
+		
+		// Add the content bar
+		app.views.contentBarView = new Aic.views.ContentBar();
+		this.addView(app.views.contentBarView);
 		
 		// set the default section view
 		var sectionViewClass = OsciTk.views.Section;
@@ -43,14 +47,14 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 		app.views.navigationView = new OsciTk.views.Navigation();
 		this.addView(app.views.navigationView);
 		
-//		// Add the footnotes view to the AppView
-//		app.views.footnotesView = new OsciTk.views.Footnotes();
-//		
+		// Add the footnotes view to the AppView
+		// app.views.footnotesView = new OsciTk.views.Footnotes();
+		
 		// Add the inline notes view to the AppView
-		app.views.inlineNotesView = new OsciTk.views.InlineNotes();
+		// app.views.inlineNotesView = new OsciTk.views.InlineNotes();
 
 		// Add the fullscreen figure view to the AppView
-		app.views.fsFigureView = new OsciTk.views.FullscreenFigureView();
+		// app.views.fsFigureView = new OsciTk.views.FullscreenFigureView();
 
 	}
 });
