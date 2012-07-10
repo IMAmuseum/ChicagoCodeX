@@ -4,17 +4,19 @@ if (typeof Aic.views === 'undefined'){Aic.views = {};}
 // Aic Namespace Initialization //
 
 Aic.views.ContentBar = OsciTk.views.BaseView.extend({
-	id: 'content-bar-wrapper',
+	id: 'content-bar',
 	template: OsciTk.templateManager.get('content-bar'),
 	initialize: function() {
 		this.isOpen = false;
 		
 		app.dispatcher.on('figuresLoaded', function(figures) {
 			console.log('draw a figures tab');
+			this.render();
 		}, this);
 
 		app.dispatcher.on('footnotesLoaded', function(footnotes) {
 			console.log('draw a footnotes tab');
+			this.render();
 		}, this);
 
 		//this.render();
@@ -30,6 +32,41 @@ Aic.views.ContentBar = OsciTk.views.BaseView.extend({
 		});
 	},
 	toggleDrawer: function() {
-		
+		if (this.isOpen) {
+			// close drawer
+			this.closeDrawer();
+		}
+		else {
+			// open drawer
+			this.openDrawer();
+		}
+	},
+	openDrawer: function() {
+		this.$el.animate({
+			height: '300px'
+		},
+		{
+			step: function() {
+				$(this).css("overflow","visible");
+			},
+			complete: function() {
+				$(this).css("overflow","visible");
+			}
+		});
+		this.isOpen = true;
+	},
+	closeDrawer: function() {
+		this.$el.animate({
+			height: '0'
+		},
+		{
+			step: function() {
+				$(this).css("overflow","visible");
+			},
+			complete: function() {
+				$(this).css("overflow","visible");
+			}
+		});
+		this.isOpen = false;
 	}
 });

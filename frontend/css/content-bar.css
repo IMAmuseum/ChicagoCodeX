@@ -1,13 +1,12 @@
-#content-bar-wrapper {
-	display: none;
-}
 #content-bar {
+	display: none;
 	position: absolute;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	height: 300px;
+	height: 0;
 	width: auto;
+	overflow: visible;
 	z-index: 100;
 	background-color: #cbcbcb;
     background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
