@@ -68,7 +68,7 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 
 		// the reference image can throw off height calculation.  Rerender list after it loads
 		var img = this.$el.find('#toc-reference-image img');
-		if (img[0].complete === false) {
+		if (img[0] && img[0].complete === false) {
 			img.on('load', function() {
 				app.views.tocView.renderCollapsibleList();
 			});

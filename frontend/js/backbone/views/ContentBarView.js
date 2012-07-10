@@ -24,8 +24,6 @@ Aic.views.ContentBar = OsciTk.views.BaseView.extend({
 				this.closeDrawer();
 			} 
 		}, this);
-
-		//this.render();
 	},
 	render: function() {
 		this.$el.show();
