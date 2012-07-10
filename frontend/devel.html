@@ -75,6 +75,7 @@
 		jQuery(function() { 
 			app.bootstrap({
 				packageUrl: 'http://ccx.localhost/api/epub/79013/package.opf',
+				// packageUrl: 'sample/package.opf',
 				// Template urls are checked in index order
 				templateUrls: [
 					'/sites/default/ChicagoCodeX/frontend/js/backbone/templates/',
@@ -93,6 +94,10 @@
 					{view: 'Print', text: 'Print'},
 					{view: 'Account', text: 'Account'},
 					{view: 'Search', text: 'Search'}
+				],
+				moreItems: [
+					{view: 'Footnotes', text: 'Footnotes'},
+					{view: 'Figures', text: 'Figures'}
 				],
 				sectionView: 'MultiColumnSection',
 				sectionViewOptions: {
