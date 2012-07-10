@@ -35,7 +35,7 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 			});
 		}, this);
 	},
-	switchDrawer: function() {
+	toggleDrawer: function() {
 		if (this.isOpen) {
 			this.$el.animate({ left: '-200px' });
 			this.isOpen = false;
@@ -65,7 +65,7 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 
 		// bind handle to open/close panel
 		this.$el.find('#toc-handle').on('click', this, function(event) {
-			event.data.switchDrawer();
+			event.data.toggleDrawer();
 		});
 	},
 	renderNavTree: function() {
