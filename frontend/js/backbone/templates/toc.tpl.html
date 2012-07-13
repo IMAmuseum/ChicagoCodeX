@@ -4,8 +4,10 @@
 		<img src="<%= referenceImageUrl %>">
 	<% } %>
 </div>
-<div id="toc-navigation">
-	<% if (typeof(navTree) !== 'undefined') { %>
-		<%= navTree %>
-	<% } %>
+<div id="toc-navigation-scroll-wrap">
+	<div id="toc-navigation">
+		<% if (typeof(navTree) !== 'undefined') { %>
+			<%= navTree %>
+		<% } %>
+	</div>
 </div>
