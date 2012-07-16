@@ -50,14 +50,20 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 		}
 	},
 	closeDrawer: function() {
-		this.$el.animate({ left: '-200px' });
-		this.isOpen = false;
+		if (this.isOpen) {
+			app.dispatcher.trigger('uiShift', {caller: this, x: -200});
+			this.$el.animate({ left: '-200px' });
+			this.isOpen = false;
+		}
 	},
 	openDrawer: function() {
-		// tell other drawers to close
-		app.dispatcher.trigger('drawersClose', this);
-		this.$el.animate({ left: '0px'});
-		this.isOpen = true;
+		if (!this.isOpen) {
+			// tell other drawers to close
+			app.dispatcher.trigger('drawersClose', this);
+			app.dispatcher.trigger('uiShift', {caller: this, x: 200});
+			this.$el.animate({ left: '0px'});
+			this.isOpen = true;
+		}
 	},
 	render: function() {
 		// render and place content

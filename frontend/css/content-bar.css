@@ -17,7 +17,8 @@
     box-shadow: 0 0 6px #888;
 }
 #content-bar-handle {
-	position: relative;
+	position: absolute;
+	left: 0px;
 	top: -24px;
 	width: 99px;
 	z-index: 101;
@@ -29,8 +30,20 @@
 	padding: 6px;
 	font-family: Arial, Helvetica, sans-serif;
 }
-#content-bar-tabs {
-
+#content-bar-tabs ul {
+	padding: 6px 10px 0 5px;
+	background: #CCC url(../img/ui-bg-highlight.png) 50% 50% repeat-x;
+}
+#content-bar-tabs li {
+	margin: 0 10px 0 0;
+	padding: 8px 10px 8px 10px;
+	font-size: 11px;
+	display: inline-block;
+	text-transform: uppercase;
+	font-family: Arial, Helvetica, sans-serif;
+}
+#content-bar-tabs li .active {
+	background: white;
 }
 #content-bar-content {
 
