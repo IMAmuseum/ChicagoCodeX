@@ -7,31 +7,31 @@
 	height: auto;
 	margin: 26px 0px 0px 0px;
 	background-color: #cbcbcb;
-    background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cbcbcb));
-    -moz-box-shadow: 0 -6px 6px #888;
-    -webkit-box-shadow: 0 0 6px #888;
-    -ms-box-shadow: 0 0 6px #888;
-    box-shadow: 0 0 6px #888;
-    z-index: 100;
+	background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cbcbcb));
+	-moz-box-shadow: 0 -6px 6px #888;
+	-webkit-box-shadow: 0 0 6px #888;
+	-ms-box-shadow: 0 0 6px #888;
+	box-shadow: 0 0 6px #888;
+	z-index: 100;
 }
 #toc-handle {
-    -webkit-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    transform: rotate(90deg); 
-    display: block;
-    position: relative;
-    left: 163px;
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg); 
+	display: block;
+	position: absolute;
+	left: 163px;
 	top: 100px;
-    color: #222;
-    z-index: 101;
-    font-size: 12px;
-    line-height: 1;
-    background: transparent url("../img/bg-tab-bottom.png") no-repeat;
-    width: 99px;
-    height: 25px;
-    text-align: center;
+	color: #222;
+	z-index: 101;
+	font-size: 12px;
+	line-height: 1;
+	background: transparent url("../img/bg-tab-bottom.png") no-repeat;
+	width: 99px;
+	height: 25px;
+	text-align: center;
 	overflow: hidden;
 	padding: 6px;
 	font-family: Arial, Helvetica, sans-serif;
@@ -45,71 +45,70 @@
 	max-width: 100%;
 	max-height: 100%;
 	-moz-box-shadow: 2px 2px 6px #808080;
-    -webkit-box-shadow: 2px 2px 6px #808080;
-    box-shadow: 2px 2px 6px #808080;	
+	-webkit-box-shadow: 2px 2px 6px #808080;
+	box-shadow: 2px 2px 6px #808080;	
 }
 #toc-navigation-scroll-wrap {
-    width: 180px;
-    margin: 20px 10px 0 10px;
-    overflow: hidden;
+	width: 180px;
+	margin: 20px 10px 0 10px;
+	overflow: hidden;
 }
 #toc-navigation {
-    position: relative;
-    width: 195px;
-    border-top: 1px solid #888;
-    overflow-y: auto;
-    overflow-x: hidden;
+	position: absolute;
+	width: 195px;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 #toc-navigation ul.collapsibleList {
-    width: 180px;
-    line-height: 150%;
-    font-size: .75em;
+	width: 180px;
+	line-height: 150%;
+	font-size: .75em;
 }
 #toc-navigation ul.collapsibleList li {
-    width: 100%;
-    list-style-type: none;
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #ccc;
-    border-bottom: 1px solid #888;
+	width: 100%;
+	list-style-type: none;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #ccc;
+	border-bottom: 1px solid #888;
 }
 #toc-navigation ul.collapsibleList > ul > ul > li {
-    background-color: #ddd;
+	background-color: #ddd;
 }
 #toc-navigation ul.collapsibleList > ul > ul > ul > li {
-    background-color: #eee;
+	background-color: #eee;
 }
 #toc-navigation ul.collapsibleList > ul > ul > ul > ul li {
-    background-color: #fff;
+	background-color: #fff;
 }
 #toc-navigation ul.collapsibleList li.navArrow {
-    background-color: #999;
+	background-color: #999;
 }
 #toc-navigation ul.collapsibleList > ul > li.navArrow {
-    background-color: #aaa;
+	background-color: #aaa;
 }
 #toc-navigation ul.collapsibleList > ul > ul > li.navArrow {
-    background-color: #bbb;
+	background-color: #bbb;
 }
 #toc-navigation ul.collapsibleList > ul > ul > ul > li.navArrow {
-    background-color: #ccc;
+	background-color: #ccc;
 }
 #toc-navigation ul.collapsibleList > ul > ul > ul > ul li.navArrow {
-    background-color: #ddd;
+	background-color: #ddd;
 }
 #toc-navigation li.navArrow .navArrowContainer {
-    float: right;
-    margin: 5px;
-    height: 16px;
-    width: 16px;
-    background: url('../img/bg-nav-arrow.png') no-repeat center;
+	float: right;
+	margin: 5px;
+	height: 16px;
+	width: 16px;
+	background: url('../img/bg-nav-arrow.png') no-repeat center;
 }
 #toc-navigation .V .navArrowContainer {
-    transform: rotate(90deg);
-    -webkit-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
+	transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
 }
 #toc-navigation .navTitle {
-    padding: 5px 15px 5px 5px;
-    width: 160px;
+	padding: 5px 15px 5px 5px;
+	width: 160px;
 }

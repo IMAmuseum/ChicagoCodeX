@@ -22,12 +22,28 @@ Aic.views.ContentBar = OsciTk.views.BaseView.extend({
 		app.dispatcher.on('drawersClose', function(caller) {
 			if (caller !== this) {
 				this.closeDrawer();
-			} 
+			}
+		}, this);
+
+		app.dispatcher.on('uiShift', function(params) {
+			if (params.caller != this) {
+				if (typeof(params.x) !== 'undefined') {
+					// move the content bar handle
+					var handle = this.$el.find('#content-bar-handle');
+					var left = parseInt(handle.css('left'), 10);
+					handle.animate({
+						left: (left + params.x) + 'px'
+					});
+				}
+			}
 		}, this);
 	},
 	render: function() {
 		this.$el.show();
-		this.$el.html(this.template());
+		this.$el.html(this.template({
+			figures: app.collections.figures,
+			footnotes: app.collections.footnotes
+		}));
 
 		// bind handle to toggle drawer
 		this.$el.find('#content-bar-handle').on('click', this, function(event) {

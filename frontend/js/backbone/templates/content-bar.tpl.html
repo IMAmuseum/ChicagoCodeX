@@ -1,3 +1,30 @@
 <div id="content-bar-handle">More</div>
-<div id="content-bar-tabs"></div>
-<div id="content-bar-content"></div>
+<div id="content-bar-tabs">
+	<ul>
+		<% if (figures.length > 0) { %>
+		<li class="figures-tab active">Figures</li>
+		<% } %>
+		<% if (footnotes.length > 0) { %>
+		<li class="footnotes-tab">Footnotes</li>
+		<% } %>
+	</ul>
+</div>
+<div id="content-bar-content">
+	<% if (figures.length > 0) { %>
+		<div class="figures-content">
+			Figures
+			<% _.each(figures, function(figure) { %>
+
+			<% }); %>
+		</div>
+	<% } %>
+	<% if (footnotes.length > 0) { %>
+		<div class="footnotes-content">
+			Footnotes
+			<ul>
+			<% _.each(footnotes, function(footnotes) { %>
+				
+			<% }); %>
+		</div>
+	<% } %>
+</div>

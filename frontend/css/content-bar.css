@@ -32,7 +32,7 @@
 }
 #content-bar-tabs ul {
 	padding: 6px 10px 0 5px;
-	background: #CCC url(../img/ui-bg-highlight.png) 50% 50% repeat-x;
+	background: #CCC url(../img/bg-highlight.png) 50% 50% repeat-x;
 }
 #content-bar-tabs li {
 	margin: 0 10px 0 0;
@@ -42,7 +42,8 @@
 	text-transform: uppercase;
 	font-family: Arial, Helvetica, sans-serif;
 }
-#content-bar-tabs li .active {
+#content-bar-tabs li.active {
+	border-radius: 5px 5px 0 0;
 	background: white;
 }
 #content-bar-content {
