@@ -1,4 +1,4 @@
-#footnotes {
+#figures {
 	display: none;
 	position: absolute;
 	bottom: 0;
@@ -16,9 +16,9 @@
     -ms-box-shadow: 0 0 6px #888;
     box-shadow: 0 0 6px #888;
 }
-#footnotes-handle {
+#figures-handle {
 	position: absolute;
-	left: 105px;
+	left: 0px;
 	top: -24px;
 	width: 99px;
 	z-index: 101;
@@ -30,7 +30,7 @@
 	padding: 6px;
 	font-family: Arial, Helvetica, sans-serif;
 }
-#footnotes-content {
+#figures-content {
 	height: 300px;
 	overflow-y: hidden;
 }
