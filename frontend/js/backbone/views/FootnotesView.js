@@ -10,37 +10,38 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 		this.isOpen = false;
 
 		// draw the footnotes ui only if footnotes become available
-		app.dispatcher.on('footnotesLoaded', function(footnotes) 
+		app.dispatcher.on('footnotesLoaded', function(footnotes)
 		{
 			this.render();
-		}, this);
 
-		// close the drawer when requested
-		app.dispatcher.on('drawersClose', function(caller) {
-			if (caller !== this) {
-				this.closeDrawer();
-			}
-		}, this);
-
-		// move the drawer handle when a UI shift happens
-		app.dispatcher.on('uiShift', function(params) {
-			if (params.caller != this) {
-				if (typeof(params.x) !== 'undefined') {
-					// move the content bar handle
-					var handle = this.$el.find('#footnotes-handle');
-					var left = parseInt(handle.css('left'), 10);
-					handle.animate({
-						left: (left + params.x) + 'px'
-					});
+			// close the drawer when requested
+			app.dispatcher.on('drawersClose', function(caller) {
+				if (caller !== this) {
+					this.closeDrawer();
 				}
-			}
-		}, this);
+			}, this);
 
-		// bind handle to toggle drawer
-		this.$el.find('#footnotes-handle').on('click', this, function(event) {
-			var $this = event.data;
-			$this.toggleDrawer();
-		});
+			// move the drawer handle when a UI shift happens
+			app.dispatcher.on('uiShift', function(params) {
+				if (params.caller != this) {
+					if (typeof(params.x) !== 'undefined') {
+						// move the content bar handle
+						var handle = this.$el.find('#footnotes-handle');
+						var left = parseInt(handle.css('left'), 10);
+						handle.animate({
+							left: (left + params.x) + 'px'
+						});
+					}
+				}
+			}, this);
+
+			// bind handle to toggle drawer
+			this.$el.find('#footnotes-handle').on('click', this, function(event) {
+				console.log(event, 'event');
+				var $this = event.data;
+				$this.toggleDrawer();
+			});
+		}, this);
 	},
 	render: function() {
 		this.$el.css('display', 'block');
