@@ -25,9 +25,9 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 		app.views.tocView = new Aic.views.Toc();
 		this.addView(app.views.tocView);
 		
-		// Add the content bar
-		app.views.contentBarView = new Aic.views.ContentBar();
-		this.addView(app.views.contentBarView);
+		// Add the footnotes bar
+		app.views.footnotesView = new Aic.views.Footnotes();
+		this.addView(app.views.footnotesView);
 		
 		// set the default section view
 		var sectionViewClass = OsciTk.views.Section;
@@ -46,9 +46,6 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 		// Add the navigation view to the AppView
 		app.views.navigationView = new OsciTk.views.Navigation();
 		this.addView(app.views.navigationView);
-		
-		// Add the footnotes view to the AppView
-		// app.views.footnotesView = new OsciTk.views.Footnotes();
 		
 		// Add the inline notes view to the AppView
 		// app.views.inlineNotesView = new OsciTk.views.InlineNotes();

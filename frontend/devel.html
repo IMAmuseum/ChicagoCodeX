@@ -13,7 +13,8 @@
 	<link type="text/css" rel="stylesheet" href="../sites/default/ChicagoCodeX/frontend/css/multiColumnSection.css">
 	<link type="text/css" rel="stylesheet" href="../sites/default/ChicagoCodeX/frontend/css/referenceImage.css">
 	<link type="text/css" rel="stylesheet" href="../sites/default/ChicagoCodeX/frontend/css/toc.css">
-	<link type="text/css" rel="stylesheet" href="../sites/default/ChicagoCodeX/frontend/css/content-bar.css">
+	<link type="text/css" rel="stylesheet" href="../sites/default/ChicagoCodeX/frontend/css/footnotes.css">
+	<link type="text/css" rel="stylesheet" href="../sites/default/ChicagoCodeX/frontend/css/figures.css">
 	<link type="text/css" rel="stylesheet" href="../sites/default/ChicagoCodeX/frontend/css/navigation.css">
 	<!-- <link type="text/css" rel="stylesheet" href="../sites/default/OSCI-Toolkit/frontend/css/search.css"> -->
 	<!-- <link type="text/css" rel="stylesheet" href="../sites/default/OSCI-Toolkit/frontend/css/notes.css"> -->
@@ -54,7 +55,8 @@
 	<script src="../sites/default/ChicagoCodeX/frontend/js/backbone/views/AccountView.js"></script>
 	<script src="../sites/default/ChicagoCodeX/frontend/js/backbone/views/SearchView.js"></script>
 	<script src="../sites/default/ChicagoCodeX/frontend/js/backbone/views/TocView.js"></script>
-	<script src="../sites/default/ChicagoCodeX/frontend/js/backbone/views/ContentBarView.js"></script>
+	<script src="../sites/default/ChicagoCodeX/frontend/js/backbone/views/FootnotesView.js"></script>
+	<script src="../sites/default/ChicagoCodeX/frontend/js/backbone/views/FiguresView.js"></script>
 	<script src="../sites/default/OSCI-Toolkit/frontend/js/backbone/views/SectionView.js"></script>
 	<script src="../sites/default/OSCI-Toolkit/frontend/js/backbone/views/PageView.js"></script>
 	<script src="../sites/default/OSCI-Toolkit/frontend/js/backbone/views/MultiColumnPageView.js"></script>
@@ -92,10 +94,6 @@
 					{view: 'Print', text: 'Print'},
 					{view: 'Account', text: 'Account'},
 					{view: 'Search', text: 'Search'}
-				],
-				moreItems: [
-					{view: 'Footnotes', text: 'Footnotes'},
-					{view: 'Figures', text: 'Figures'}
 				],
 				sectionView: 'MultiColumnSection',
 				sectionViewOptions: {

@@ -3,33 +3,31 @@ if (typeof Aic === 'undefined'){Aic = {};}
 if (typeof Aic.views === 'undefined'){Aic.views = {};}
 // Aic Namespace Initialization //
 
-Aic.views.ContentBar = OsciTk.views.BaseView.extend({
-	id: 'content-bar',
-	template: OsciTk.templateManager.get('content-bar'),
+Aic.views.Footnotes = OsciTk.views.BaseView.extend({
+	id: 'footnotes',
+	template: OsciTk.templateManager.get('footnotes'),
 	initialize: function() {
 		this.isOpen = false;
-		
-		app.dispatcher.on('figuresLoaded', function(figures) {
-			console.log('draw a figures tab');
+
+		// draw the footnotes ui only if footnotes become available
+		app.dispatcher.on('footnotesLoaded', function(footnotes) 
+		{
 			this.render();
 		}, this);
 
-		app.dispatcher.on('footnotesLoaded', function(footnotes) {
-			console.log('draw a footnotes tab');
-			this.render();
-		}, this);
-
+		// close the drawer when requested
 		app.dispatcher.on('drawersClose', function(caller) {
 			if (caller !== this) {
 				this.closeDrawer();
 			}
 		}, this);
 
+		// move the drawer handle when a UI shift happens
 		app.dispatcher.on('uiShift', function(params) {
 			if (params.caller != this) {
 				if (typeof(params.x) !== 'undefined') {
 					// move the content bar handle
-					var handle = this.$el.find('#content-bar-handle');
+					var handle = this.$el.find('#footnotes-handle');
 					var left = parseInt(handle.css('left'), 10);
 					handle.animate({
 						left: (left + params.x) + 'px'
@@ -37,21 +35,19 @@ Aic.views.ContentBar = OsciTk.views.BaseView.extend({
 				}
 			}
 		}, this);
-	},
-	render: function() {
-		this.$el.show();
-		this.$el.html(this.template({
-			figures: app.collections.figures,
-			footnotes: app.collections.footnotes
-		}));
 
 		// bind handle to toggle drawer
-		this.$el.find('#content-bar-handle').on('click', this, function(event) {
+		this.$el.find('#footnotes-handle').on('click', this, function(event) {
 			var $this = event.data;
 			$this.toggleDrawer();
 		});
 	},
+	render: function() {
+		this.$el.css('display', 'block');
+		this.$el.html(this.template());
+	},
 	toggleDrawer: function() {
+		console.log('toggle');
 		if (this.isOpen) {
 			// close drawer
 			this.closeDrawer();
