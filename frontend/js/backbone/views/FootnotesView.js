@@ -8,47 +8,80 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 	template: OsciTk.templateManager.get('footnotes'),
 	initialize: function() {
 		this.isOpen = false;
+		this.collection = app.collections.footnotes;
+		this.page = 1;
 
 		// draw the footnotes ui only if footnotes become available
-		app.dispatcher.on('footnotesLoaded', function(footnotes)
-		{
+		app.dispatcher.on('footnotesLoaded', function(footnotes) {
 			this.render();
+		}, this);
 
-			// close the drawer when requested
-			app.dispatcher.on('drawersClose', function(caller) {
-				if (caller !== this) {
-					this.closeDrawer();
+		// close the drawer when requested
+		app.dispatcher.on('drawersClose', function(caller) {
+			if (caller !== this) {
+				this.closeDrawer();
+			}
+		}, this);
+
+		// move the drawer handle when a UI shift happens
+		app.dispatcher.on('uiShift', function(params) {
+			if (params.caller != this) {
+				if (typeof(params.x) !== 'undefined') {
+					// move the content bar handle
+					var handle = this.$el.find('#footnotes-handle');
+					var left = parseInt(handle.css('left'), 10);
+					handle.animate({
+						left: (left + params.x) + 'px'
+					});
 				}
-			}, this);
-
-			// move the drawer handle when a UI shift happens
-			app.dispatcher.on('uiShift', function(params) {
-				if (params.caller != this) {
-					if (typeof(params.x) !== 'undefined') {
-						// move the content bar handle
-						var handle = this.$el.find('#footnotes-handle');
-						var left = parseInt(handle.css('left'), 10);
-						handle.animate({
-							left: (left + params.x) + 'px'
-						});
-					}
-				}
-			}, this);
-
-			// bind handle to toggle drawer
-			this.$el.find('#footnotes-handle').on('click', this, function(event) {
-				console.log(event, 'event');
-				var $this = event.data;
-				$this.toggleDrawer();
-			});
+			}
 		}, this);
 	},
 	render: function() {
 		this.$el.css('display', 'block');
-		this.$el.html(this.template());
+		var data = { footnotes: this.collection.models };
+		this.$el.html(this.template(data));
+
+		// set footnotes list width
+		var containerWidth = this.$el.find('#footnotes-list-container').width();
+		var listWidth = containerWidth * this.collection.length;
+		this.$el.find('#footnotes-list').width(listWidth);
+		this.$el.find('#footnotes-list li').width(containerWidth);
+
+		// bind handle to toggle drawer
+		this.$el.find('#footnotes-handle').on('click', this, function(event) {
+			var $this = event.data;
+			$this.toggleDrawer();
+		});
+
+		// bind previous button
+		this.$el.find('#footnotes-nav-prev .footnotes-indicator').on('click', this, function(event) {
+			var $this = event.data;
+			if ($this.page > 1) {
+				$this.page--;
+				$this.translateToPage();
+			}
+		});
+
+		// bind next button
+		this.$el.find('#footnotes-nav-next .footnotes-indicator').on('click', this, function(event) {
+			var $this = event.data;
+			if ($this.page < $this.collection.length) {
+				$this.page++;
+				$this.translateToPage();
+			}
+		});
+	},
+	translateToPage: function() {
+		var width = this.$el.find('#footnotes-list-container').width();
+		var list = this.$el.find('#footnotes-list');
+		var pos = -(width * (this.page - 1));
+
+		list.css({
+			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)'
+		});
 	},
 	toggleDrawer: function() {
-		console.log('toggle');
 		if (this.isOpen) {
 			// close drawer
 			this.closeDrawer();
@@ -61,30 +94,14 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 	openDrawer: function() {
 		// tell other drawers to close
 		app.dispatcher.trigger('drawersClose', this);
-		this.$el.animate({
+		this.$el.find('#footnotes-content').animate({
 			height: '300px'
-		},
-		{
-			step: function() {
-				$(this).css("overflow","visible");
-			},
-			complete: function() {
-				$(this).css("overflow","visible");
-			}
 		});
 		this.isOpen = true;
 	},
 	closeDrawer: function() {
-		this.$el.animate({
+		this.$el.find('#footnotes-content').animate({
 			height: '0'
-		},
-		{
-			step: function() {
-				$(this).css("overflow","visible");
-			},
-			complete: function() {
-				$(this).css("overflow","visible");
-			}
 		});
 		this.isOpen = false;
 	}

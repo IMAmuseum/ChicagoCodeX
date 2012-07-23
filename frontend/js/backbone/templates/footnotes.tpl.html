@@ -1,2 +1,15 @@
 <div id="footnotes-handle">Footnotes</div>
-<div id="footnotes-content"></div>
+<div id="footnotes-content">
+	<div id="footnotes-nav-prev"><div class="footnotes-indicator prev"></div></div>
+	<div id="footnotes-list-container">
+		<ul id="footnotes-list">
+			<% _.each(footnotes, function(footnote) { %>
+				<li>
+					<div class="footnote-id"><%= footnote.get('id') %></div>
+					<div class="footnote-body"><%= footnote.get('body') %></div>
+				</li>
+			<% }); %>
+		</ul>
+	</div>
+	<div id="footnotes-nav-next"><div class="footnotes-indicator next"></div></div>
+</div>
