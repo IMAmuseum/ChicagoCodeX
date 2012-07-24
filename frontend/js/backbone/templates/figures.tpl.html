@@ -1,2 +1,28 @@
 <div id="figures-handle">Figures</div>
-<div id="figures-content"></div>
+<div id="figures-content">
+	<div id="figures-nav-prev"><div class="figures-indicator prev"></div></div>
+	<div id="figures-list-container">
+		<ul id="figures-list">
+			<% _.each(figures, function(figure) { %>
+				<li>
+					<figure class='preview' data-figure-id="<%= figure.id %>">
+						<% if (figure.thumbnail_url != undefined) { %>
+							<img class='figure-preview' src='<%= figure.thumbnail_url %>'/>
+						<% } else { %>
+							<div class='figure-preview'>&nbsp;</div>
+						<% } %>
+						<div class='figure-info'>
+							<!--<h3 class='title'>Figure Title?</h3>-->
+							<!--<p class='meta-info'>meta info | more meta</p>-->
+							<div class='caption'>
+								<%= figure.caption %>
+							</div>
+						</div>
+						<a class='view-in-context'>View in context</a>
+					</figure>
+				</li>
+			<% }); %>
+		</ul>
+	</div>
+	<div id="figures-nav-next"><div class="figures-indicator next"></div></div>
+</div>

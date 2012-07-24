@@ -4,9 +4,6 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	height: 0;
-	width: auto;
-	overflow: visible;
 	z-index: 100;
 	background-color: #cbcbcb;
     background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
@@ -18,7 +15,7 @@
 }
 #figures-handle {
 	position: absolute;
-	left: 0px;
+	left: 105px;
 	top: -24px;
 	width: 99px;
 	z-index: 101;
@@ -31,6 +28,68 @@
 	font-family: Arial, Helvetica, sans-serif;
 }
 #figures-content {
-	height: 300px;
+	position: relative;
+	height: 0px;
 	overflow-y: hidden;
+}
+#figures-nav-prev {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 40px;
+
+}
+#figures-nav-next {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	width: 40px;
+}
+.figures-indicator {
+	position: absolute;
+	top: 50%;
+	text-indent: 100%;
+	overflow: hidden;
+	height: 28px;
+	width: 40px;
+	opacity: .4;
+}
+.figures-indicator:hover {
+	opacity: 1;
+}
+.figures-indicator.prev {
+	background: url(../img/icon-nav-arrow-left.png) no-repeat center top;
+}
+.figures-indicator.next {
+	background: url(../img/icon-nav-arrow-right.png) no-repeat center top;
+}
+#figures-list-container {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 40px;
+	right: 40px;
+	overflow: hidden;
+}
+#figures-list {
+	list-style: none;
+	-webkit-transition: -webkit-transform 300ms linear;
+}
+#figures-list li {
+	display: inline-block;
+	height: 290px;
+	padding: 10px 20px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	float: left;
+}
+#figures-list .figure-preview {
+	width: 240px;
+	height: 240px;
+	cursor: pointer;
+	background-position: center;
+	background-size: cover;
+	background: url('../img/osci-default-figure.png');
 }
