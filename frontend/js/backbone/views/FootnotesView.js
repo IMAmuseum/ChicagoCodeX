@@ -18,23 +18,21 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 
 		// close the drawer when requested
 		app.dispatcher.on('drawersClose', function(caller) {
-			if (caller !== this) {
+			if (caller !== this && this.isOpen === true) {
 				this.closeDrawer();
 			}
 		}, this);
 
-		// move the drawer handle when a UI shift happens
-		app.dispatcher.on('uiShift', function(params) {
-			if (params.caller != this) {
-				if (typeof(params.x) !== 'undefined') {
-					// move the content bar handle
-					var handle = this.$el.find('#footnotes-handle');
-					var left = parseInt(handle.css('left'), 10);
-					handle.animate({
-						left: (left + params.x) + 'px'
-					});
-				}
-			}
+		// move the drawer handle when the table of contents opens or closes
+		app.dispatcher.on('tocOpening', function() {
+			var handle = this.$el.find('#footnotes-handle');
+			var left = parseInt(handle.css('left'), 10);
+			handle.animate({'left': (left + 200) + 'px'});
+		}, this);
+		app.dispatcher.on('tocClosing', function() {
+			var handle = this.$el.find('#footnotes-handle');
+			var left = parseInt(handle.css('left'), 10);
+			handle.animate({'left': (left - 200) + 'px'});
 		}, this);
 	},
 	render: function() {
@@ -92,8 +90,8 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 		}
 	},
 	openDrawer: function() {
-		// tell other drawers to close
-		app.dispatcher.trigger('drawersClose', this);
+		// tell toc to close
+		app.dispatcher.trigger('tocClose');
 		this.$el.find('#footnotes-content').animate({
 			height: '300px'
 		});

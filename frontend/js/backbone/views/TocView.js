@@ -19,7 +19,7 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 			this.navTree = this.renderNavTree();
 		}, this);
 
-		app.dispatcher.on('drawersClose', function(caller) {
+		app.dispatcher.on('tocClose', function(caller) {
 			if (caller !== this) {
 				this.closeDrawer();
 			}
@@ -51,7 +51,7 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 	},
 	closeDrawer: function() {
 		if (this.isOpen) {
-			app.dispatcher.trigger('uiShift', {caller: this, x: -200});
+			app.dispatcher.trigger('tocClosing');
 			this.$el.animate({ left: '-200px' });
 			this.isOpen = false;
 		}
@@ -60,7 +60,7 @@ Aic.views.Toc = OsciTk.views.BaseView.extend({
 		if (!this.isOpen) {
 			// tell other drawers to close
 			app.dispatcher.trigger('drawersClose', this);
-			app.dispatcher.trigger('uiShift', {caller: this, x: 200});
+			app.dispatcher.trigger('tocOpening');
 			this.$el.animate({ left: '0px'});
 			this.isOpen = true;
 		}

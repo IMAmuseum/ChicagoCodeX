@@ -20,7 +20,6 @@
 	left: 0;
 	top: -24px;
 	width: 99px;
-	z-index: 101;
 	font-size: 12px;
     line-height: 1;
     background: transparent url("../img/bg-tab-bottom.png") no-repeat;
@@ -40,7 +39,6 @@
 	bottom: 0;
 	left: 0;
 	width: 40px;
-
 }
 #footnotes-nav-next {
 	position: absolute;
