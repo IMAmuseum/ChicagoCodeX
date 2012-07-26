@@ -47,6 +47,10 @@ Aic.views.Figures = OsciTk.views.BaseView.extend({
 			var left = parseInt(handle.css('left'), 10);
 			handle.animate({'left': (left - 200) + 'px'});
 		}, this);
+
+		app.dispatcher.on("windowResized", function() {
+			this.render();
+		}, this);
 	},
 	render: function() {
 		this.$el.css('display', 'block');
@@ -55,27 +59,34 @@ Aic.views.Figures = OsciTk.views.BaseView.extend({
 
 		// set figures list width
 		var itemWidth = this.$el.find('#figures-list li').outerWidth();
-		// console.log(itemWidth, 'itemWidth');
 		var itemCount = this.collection.length;
 		this.$el.find('#figures-list').width(itemWidth * itemCount);
 		
 		// justify contents across container width
 		var containerWidth = this.$el.find('#figures-list-container').width();
-		// console.log(containerWidth, 'containerWidth');
 		var numToFit = Math.floor(containerWidth / itemWidth);
 		var paddingToAdd = (containerWidth - (numToFit * itemWidth)) / numToFit;
-		var currentPadding = parseInt(this.$el.find('#figures-list li').css('padding-left'), 10) * 2;
-		var newPadding = (currentPadding + paddingToAdd) / 2;
+		var leftPadding = parseInt(this.$el.find('#figures-list li').css('padding-left'), 10);
+		var rightPadding = parseInt(this.$el.find('#figures-list li').css('padding-right'), 10);
+		var currentPadding = leftPadding + rightPadding;
+		var newPadding = Math.floor((currentPadding + paddingToAdd) / 2);
+		var extra = 0;
+		if ((newPadding * 2) < (currentPadding + paddingToAdd)) {
+			extra = ((currentPadding + paddingToAdd) - (newPadding * 2)) * numToFit;
+		}
 		this.$el.find('#figures-list li').css({
 			'padding-left': newPadding + 'px',
 			'padding-right': newPadding + 'px'
 		});
+		this.$el.find('#figures-list li:nth-child('+numToFit+'n+'+numToFit+')').css({
+			'padding-right': newPadding + extra + 'px'
+		});
 
-		// css has changed, get item width again
+		// item width has changed, get it again
 		itemWidth = this.$el.find('#figures-list li').outerWidth();
 		
-		// reset list length now that padding has been added
-		this.$el.find('#figures-list').width(itemWidth * itemCount);
+		// reset list width now that padding has been added
+		this.$el.find('#figures-list').width((itemWidth + paddingToAdd) * itemCount);
 
 		// set the max page value
 		this.maxPage = Math.ceil((itemWidth * itemCount) / containerWidth);
@@ -93,7 +104,6 @@ Aic.views.Figures = OsciTk.views.BaseView.extend({
 		var width = this.$el.find('#figures-list-container').width();
 		var list = this.$el.find('#figures-list');
 		var pos = -(width * (this.page - 1));
-
 		list.css({
 			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)'
 		});
