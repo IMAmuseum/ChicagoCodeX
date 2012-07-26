@@ -37,7 +37,6 @@
 	bottom: 0;
 	left: 0;
 	width: 40px;
-
 }
 #figures-nav-next {
 	position: absolute;
@@ -78,10 +77,10 @@
 }
 #figures-list li {
 	display: inline-block;
-	height: 290px;
+	height: 300px;
 	padding: 10px 20px;
 	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-y: hidden;
 	float: left;
 }
 #figures-list .figure-preview {
@@ -91,4 +90,11 @@
 	background-position: center;
 	background-size: cover;
 	background: url('../img/osci-default-figure.png');
+}
+#figures-list .figure-info {
+	max-width: 240px;
+}
+#figures-list .caption {
+	max-height: 1.25em;
+	overflow: hidden;
 }
