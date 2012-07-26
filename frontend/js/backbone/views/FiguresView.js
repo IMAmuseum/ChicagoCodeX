@@ -6,6 +6,13 @@ if (typeof Aic.views === 'undefined'){Aic.views = {};}
 Aic.views.Figures = OsciTk.views.BaseView.extend({
 	id: 'figures',
 	template: OsciTk.templateManager.get('figures'),
+	events: {
+		"click #figures-handle": "toggleDrawer",
+		"click .figure-preview": "onFigurePreviewClicked",
+		"click a.view-in-context": "onViewInContextClicked",
+		"click #figures-nav-next .figures-indicator": "onNextPageClicked",
+		"click #figures-nav-prev .figures-indicator": "onPrevPageClicked"
+	},
 	initialize: function() {
 		this.isOpen = false;
 		this.collection = app.collections.figures;
@@ -14,6 +21,11 @@ Aic.views.Figures = OsciTk.views.BaseView.extend({
 
 		// draw the figures ui only if figures become available
 		app.dispatcher.on('figuresLoaded', function(figures) {
+			// re-render this view when collection changes
+			this.collection.on('add remove reset', function() {
+				this.render();
+			}, this);
+			
 			this.render();
 		}, this);
 
@@ -43,11 +55,13 @@ Aic.views.Figures = OsciTk.views.BaseView.extend({
 
 		// set figures list width
 		var itemWidth = this.$el.find('#figures-list li').outerWidth();
+		// console.log(itemWidth, 'itemWidth');
 		var itemCount = this.collection.length;
 		this.$el.find('#figures-list').width(itemWidth * itemCount);
 		
 		// justify contents across container width
 		var containerWidth = this.$el.find('#figures-list-container').width();
+		// console.log(containerWidth, 'containerWidth');
 		var numToFit = Math.floor(containerWidth / itemWidth);
 		var paddingToAdd = (containerWidth - (numToFit * itemWidth)) / numToFit;
 		var currentPadding = parseInt(this.$el.find('#figures-list li').css('padding-left'), 10) * 2;
@@ -65,30 +79,15 @@ Aic.views.Figures = OsciTk.views.BaseView.extend({
 
 		// set the max page value
 		this.maxPage = Math.ceil((itemWidth * itemCount) / containerWidth);
-		
-		// bind handle to toggle drawer
-		this.$el.find('#figures-handle').on('click', this, function(event) {
-			var $this = event.data;
-			$this.toggleDrawer();
-		});
-
-		// bind previous button
-		this.$el.find('#figures-nav-prev .figures-indicator').on('click', this, function(event) {
-			var $this = event.data;
-			if ($this.page > 1) {
-				$this.page--;
-				$this.translateToPage();
-			}
-		});
-
-		// bind next button
-		this.$el.find('#figures-nav-next .figures-indicator').on('click', this, function(event) {
-			var $this = event.data;
-			if ($this.page < $this.maxPage) {
-				$this.page++;
-				$this.translateToPage();
-			}
-		});
+	},
+	onFigurePreviewClicked: function(event_data) {
+		app.dispatcher.trigger('showFigureFullscreen', $(event_data.target).parent('figure').attr('data-figure-id'));
+		return false;
+	},
+	onViewInContextClicked: function(event_data) {
+		app.dispatcher.trigger('navigate', { identifier: $(event_data.target).parent('figure').attr('data-figure-id') });
+		this.closeDrawer();
+		return false;
 	},
 	translateToPage: function() {
 		var width = this.$el.find('#figures-list-container').width();
@@ -98,6 +97,18 @@ Aic.views.Figures = OsciTk.views.BaseView.extend({
 		list.css({
 			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)'
 		});
+	},
+	onNextPageClicked: function() {
+		if (this.page < this.maxPage) {
+			this.page++;
+			this.translateToPage();
+		}
+	},
+	onPrevPageClicked: function() {
+		if (this.page > 1) {
+			this.page--;
+			this.translateToPage();
+		}
 	},
 	toggleDrawer: function() {
 		if (this.isOpen) {

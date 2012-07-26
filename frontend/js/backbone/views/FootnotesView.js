@@ -6,6 +6,11 @@ if (typeof Aic.views === 'undefined'){Aic.views = {};}
 Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 	id: 'footnotes',
 	template: OsciTk.templateManager.get('footnotes'),
+	events: {
+		"click #footnotes-handle": "toggleDrawer",
+		"click #footnotes-nav-next .footnotes-indicator": "onNextPageClicked",
+		"click #footnotes-nav-prev .footnotes-indicator": "onPrevPageClicked"
+	},
 	initialize: function() {
 		this.isOpen = false;
 		this.collection = app.collections.footnotes;
@@ -13,6 +18,11 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 
 		// draw the footnotes ui only if footnotes become available
 		app.dispatcher.on('footnotesLoaded', function(footnotes) {
+			// re-render this view when collection changes
+			this.collection.on('add remove reset', function() {
+				this.render();
+			}, this);
+			
 			this.render();
 		}, this);
 
@@ -45,30 +55,6 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 		var listWidth = containerWidth * this.collection.length;
 		this.$el.find('#footnotes-list').width(listWidth);
 		this.$el.find('#footnotes-list li').width(containerWidth);
-
-		// bind handle to toggle drawer
-		this.$el.find('#footnotes-handle').on('click', this, function(event) {
-			var $this = event.data;
-			$this.toggleDrawer();
-		});
-
-		// bind previous button
-		this.$el.find('#footnotes-nav-prev .footnotes-indicator').on('click', this, function(event) {
-			var $this = event.data;
-			if ($this.page > 1) {
-				$this.page--;
-				$this.translateToPage();
-			}
-		});
-
-		// bind next button
-		this.$el.find('#footnotes-nav-next .footnotes-indicator').on('click', this, function(event) {
-			var $this = event.data;
-			if ($this.page < $this.collection.length) {
-				$this.page++;
-				$this.translateToPage();
-			}
-		});
 	},
 	translateToPage: function() {
 		var width = this.$el.find('#footnotes-list-container').width();
@@ -78,6 +64,18 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 		list.css({
 			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)'
 		});
+	},
+	onNextPageClicked: function() {
+		if (this.page < this.maxPage) {
+			this.page++;
+			this.translateToPage();
+		}
+	},
+	onPrevPageClicked: function() {
+		if (this.page > 1) {
+			this.page--;
+			this.translateToPage();
+		}
 	},
 	toggleDrawer: function() {
 		if (this.isOpen) {
