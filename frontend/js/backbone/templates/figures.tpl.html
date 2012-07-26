@@ -6,8 +6,8 @@
 			<% _.each(figures, function(figure) { %>
 				<li>
 					<figure class='preview' data-figure-id="<%= figure.id %>">
-						<% if (figure.thumbnail_url != undefined) { %>
-							<img class='figure-preview' src='<%= figure.thumbnail_url %>'/>
+						<% if (figure.get('thumbnail_url') != undefined) { %>
+							<img class='figure-preview' src='<%= figure.get('thumbnail_url') %>'/>
 						<% } else { %>
 							<div class='figure-preview'>&nbsp;</div>
 						<% } %>
@@ -15,7 +15,7 @@
 							<!--<h3 class='title'>Figure Title?</h3>-->
 							<!--<p class='meta-info'>meta info | more meta</p>-->
 							<div class='caption'>
-								<%= figure.caption %>
+								<%= figure.get('caption') %>
 							</div>
 						</div>
 						<a class='view-in-context'>View in context</a>
