@@ -55,7 +55,7 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 		// app.views.inlineNotesView = new OsciTk.views.InlineNotes();
 
 		// Add the fullscreen figure view to the AppView
-		// app.views.fsFigureView = new OsciTk.views.FullscreenFigureView();
+		app.views.fsFigureView = new OsciTk.views.FullscreenFigureView();
 
 	}
 });
