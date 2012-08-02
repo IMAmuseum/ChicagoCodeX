@@ -50,9 +50,9 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 		// Add the navigation view to the AppView
 		app.views.navigationView = new OsciTk.views.Navigation();
 		this.addView(app.views.navigationView);
-		
+
 		// Add the inline notes view to the AppView
-		// app.views.inlineNotesView = new OsciTk.views.InlineNotes();
+		app.views.inlineNotesView = new OsciTk.views.InlineNotes();
 
 		// Add the fullscreen figure view to the AppView
 		app.views.fsFigureView = new OsciTk.views.FullscreenFigureView();
