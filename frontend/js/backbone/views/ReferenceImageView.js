@@ -31,14 +31,20 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 		}, this);
 
 		// restore the original image set by the figuresLoaded event
-		app.dispatcher.on('referenceImageChange', function() {
+		app.dispatcher.on('referenceImageRestore', function() {
 			this.imageUrl = this.sectionImageUrl;
 			this.render();
 		}, this);
+	},
+	events: {
+		'click': 'onClick'
 	},
 	render: function() {
 		this.$el.html(this.template({
 			destination: this.imageUrl
 		}));
+	},
+	onClick: function() {
+
 	}
 });
