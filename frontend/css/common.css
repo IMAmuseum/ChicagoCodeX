@@ -39,12 +39,6 @@ figcaption {
 	/*line-height:1.5em;*/
 }
 
-.paragraph-controls {
-	color: #BACCD1;
-	font-size:11px;
-	font-family:Arial, Helvetica, sans-serif;
-}
-
 a.figure_reference {
 	
 }
@@ -82,24 +76,6 @@ a.footnote-reference {
 }
 .figure_content table tbody td {
 	padding:5px;
-}
-
-/* paragraph number controls */
-.paragraph-controls {
-	font-size:11px!important;	
-}
-.paragraph-controls.notes-present span {
-	padding:2px 5px;background:#EBE8C1;color:#333;
-}
-.paragraph-controls span {
-	padding:2px 5px;
-}
-.paragraph-controls.notes-present:after {
-	/*content: url('../img/bg-note-indicator.png');
-	display:block;
-	position:relative;
-	bottom:0px;
-	left:0px;*/
 }
 
 /* tooltips */

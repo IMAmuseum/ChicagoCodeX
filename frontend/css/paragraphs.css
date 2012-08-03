@@ -47,6 +47,23 @@
 	padding:5px 0 5px 0;
 	font-family:Arial, Helvetica, sans-serif;
 }
+/* paragraph number controls */
+.paragraph-controls {
+	color: #BACCD1;
+	font-size:11px;
+	font-family:Arial, Helvetica, sans-serif;
+}
+.paragraph-controls.notes-present span {
+	padding:2px 5px;
+	background:#EBE8C1;
+	color:#333;
+}
+.paragraph-controls.notes-present span:hover, .paragraph-controls.notes-present span.hovered {
+	background: #C9C6A0;
+}
+.paragraph-controls span {
+	padding:2px 5px;
+}
 
 /* paragraph control tooltips */
 .paragraph-controls .ui-tooltip, .paragraph controls .qtip {
