@@ -1,0 +1,5 @@
+<% _.each(notes, function(note) { %>
+	<div class="note" data-osci_content_id="<%= note.get('content_id') %>">
+		<%= note.get('note') %>
+	</div>
+<% }); %>

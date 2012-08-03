@@ -53,9 +53,15 @@ Aic.views.App = OsciTk.views.BaseView.extend({
 
 		// Add the inline notes view to the AppView
 		app.views.inlineNotesView = new OsciTk.views.InlineNotes();
+		this.addView(app.views.navigationView);
 
 		// Add the fullscreen figure view to the AppView
 		app.views.fsFigureView = new OsciTk.views.FullscreenFigureView();
+		this.addView(app.views.fsFigureView);
+
+		// Add the persistent notes view
+		app.views.persistentNotesView = new Aic.views.PersistentNotesView();
+		this.addView(app.views.persistentNotesView);
 
 	}
 });
