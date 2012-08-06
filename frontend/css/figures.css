@@ -4,7 +4,7 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	z-index: 101;
+	z-index: 100;
 	background-color: #cbcbcb;
     background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cbcbcb));

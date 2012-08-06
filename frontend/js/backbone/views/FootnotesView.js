@@ -13,6 +13,7 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 	},
 	initialize: function() {
 		this.isOpen = false;
+		this.isActive = false;
 		this.collection = app.collections.footnotes;
 		this.page = 1;
 
@@ -43,6 +44,25 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 			var handle = this.$el.find('#footnotes-handle');
 			var left = parseInt(handle.css('left'), 10);
 			handle.animate({'left': (left - 200) + 'px'});
+		}, this);
+
+		// listen for other tabs going active
+		app.dispatcher.on('tabActive', function(caller) {
+			if (caller !== this) {
+				this.setInactive();
+			}
+		}, this);
+
+		// listen for other tabs opening or closing
+		app.dispatcher.on('tabOpening', function(caller) {
+			if (caller !== this) {
+				this.openDrawer();
+			}
+		}, this);
+		app.dispatcher.on('tabClosing', function(caller) {
+			if (caller !== this) {
+				this.closeDrawer();
+			}
 		}, this);
 	},
 	render: function() {
@@ -79,12 +99,21 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 	},
 	toggleDrawer: function() {
 		if (this.isOpen) {
-			// close drawer
-			this.closeDrawer();
+			if (this.isActive) {
+				// close drawer
+				app.dispatcher.trigger('tabClosing', this);
+				this.closeDrawer();
+			}
+			else {
+				// make active
+				this.setActive();
+			}
 		}
 		else {
-			// open drawer
+			// open drawer and make active
+			app.dispatcher.trigger('tabOpening', this);
 			this.openDrawer();
+			this.setActive();
 		}
 	},
 	openDrawer: function() {
@@ -96,9 +125,21 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 		this.isOpen = true;
 	},
 	closeDrawer: function() {
+		var $this = this;
 		this.$el.find('#footnotes-content').animate({
 			height: '0'
+		}, null, null, function() {
+			$this.setInactive();
 		});
 		this.isOpen = false;
+	},
+	setActive: function() {
+		this.$el.css({'z-index': '101'});
+		app.dispatcher.trigger('tabActive', this);
+		this.isActive = true;
+	},
+	setInactive: function() {
+		this.$el.css({'z-index': '100'});
+		this.isActive = false;
 	}
 });
