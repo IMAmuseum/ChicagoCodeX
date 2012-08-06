@@ -8,6 +8,7 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 	template: OsciTk.templateManager.get('reference-image'),
 	initialize: function() {
 		this.imageUrl = null;
+		this.figureId = null;
 		this.sectionUrl = null;
 		
 		app.dispatcher.on('figuresLoaded', function(figures) {
@@ -17,6 +18,7 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 				var img = content.find('img');
 				if (img.length > 0) {
 					this.imageUrl = this.sectionImageUrl = img.attr('src');
+					this.figure_id = figures.models[i].id;
 					this.render();
 					app.dispatcher.trigger('referenceImageLoaded', this);
 					break;
@@ -41,10 +43,16 @@ Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
 	},
 	render: function() {
 		this.$el.html(this.template({
-			destination: this.imageUrl
+			destination: this.imageUrl,
+			figure_id: this.figure_id
 		}));
 	},
 	onClick: function() {
-
+		// make the figure view full screen
+		var figure_id = this.$el.find('img').attr('data-figure_id');
+		var figure = app.collections.figures.where({id: figure_id})[0];
+		if (typeof(figure) !== 'undefined') {
+			app.dispatcher.trigger('showFigureFullscreen', figure.id);
+		}
 	}
 });
