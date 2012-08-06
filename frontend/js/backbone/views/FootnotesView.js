@@ -19,14 +19,14 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 
 		// draw the footnotes ui only if footnotes become available
 		app.dispatcher.on('footnotesLoaded', function(footnotes) {
-			// re-render this view when collection changes
-			this.collection.on('add remove reset', function() {
-				this.render();
-			}, this);
-			
 			this.render();
 		}, this);
 
+		// re-render this view when collection changes
+		this.collection.on('add remove reset', function() {
+			this.render();
+		}, this);
+		
 		// close the drawer when requested
 		app.dispatcher.on('drawersClose', function(caller) {
 			if (caller !== this && this.isOpen === true) {
@@ -40,6 +40,7 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 			var left = parseInt(handle.css('left'), 10);
 			handle.animate({'left': (left + 200) + 'px'});
 		}, this);
+		
 		app.dispatcher.on('tocClosing', function() {
 			var handle = this.$el.find('#footnotes-handle');
 			var left = parseInt(handle.css('left'), 10);
@@ -80,13 +81,12 @@ Aic.views.Footnotes = OsciTk.views.BaseView.extend({
 		var width = this.$el.find('#footnotes-list-container').width();
 		var list = this.$el.find('#footnotes-list');
 		var pos = -(width * (this.page - 1));
-
 		list.css({
 			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)'
 		});
 	},
 	onNextPageClicked: function() {
-		if (this.page < this.maxPage) {
+		if (this.page < this.collection.length) {
 			this.page++;
 			this.translateToPage();
 		}
