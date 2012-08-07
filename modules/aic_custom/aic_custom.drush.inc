@@ -232,7 +232,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		// copy fields
 		$node->title = $asset['title'];
 		$node->field_navigation_title = $asset['field_osci_navigation_title'];
-		$node->field_content_length = $asset['field_osci_content_length'];
+		// $node->field_content_length = $asset['field_osci_content_length'];
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
@@ -265,7 +265,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		// copy fields
 		$node->title = $asset['title'];
 		$node->field_navigation_title = $asset['field_osci_navigation_title'];
-		$node->field_content_length = $asset['field_osci_content_length'];
+		// $node->field_content_length = $asset['field_osci_content_length'];
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
@@ -290,7 +290,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		// copy fields
 		$node->title = $asset['title'];
 		$node->field_navigation_title = $asset['field_osci_navigation_title'];
-		$node->field_content_length = $asset['field_osci_content_length'];
+		// $node->field_content_length = $asset['field_osci_content_length'];
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
@@ -319,7 +319,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		// copy fields
 		$node->title = $asset['title'];
 		$node->field_navigation_title = $asset['field_osci_navigation_title'];
-		$node->field_content_length = $asset['field_osci_content_length'];
+		// $node->field_content_length = $asset['field_osci_content_length'];
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
@@ -351,7 +351,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		node_object_prepare($node);
 		// copy fields
 		$node->title = $asset['title'];
-		$node->field_content_length = $asset['field_osci_content_length'];
+		// $node->field_content_length = $asset['field_osci_content_length'];
 		$node->field_active = $asset['field_active'];
 		$node->field_editor = $asset['field_osci_editor'];
 		// if plate image is present, make it the first figure
@@ -388,7 +388,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		// copy fields
 		$node->title = $asset['title'];
 		$node->field_navigation_title = $asset['field_osci_navigation_title'];
-		$node->field_content_length = $asset['field_osci_content_length'];
+		// $node->field_content_length = $asset['field_osci_content_length'];
 		$node->field_catalogue_number = $asset['field_osci_catalogue_number'];
 		$node->field_active = $asset['field_active'];
 		$node->field_creator = $asset['field_osci_creator'];
