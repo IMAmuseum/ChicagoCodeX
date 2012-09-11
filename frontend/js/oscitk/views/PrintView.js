@@ -1,9 +1,4 @@
-// Aic Namespace Initialization //
-if (typeof Aic === 'undefined'){Aic = {};}
-if (typeof Aic.views === 'undefined'){Aic.views = {};}
-// Aic Namespace Initialization //
-
-Aic.views.Print = OsciTk.views.BaseView.extend({
+OsciTk.views.Print = OsciTk.views.BaseView.extend({
 	id: 'toolbar-item-print',
 	click: function(e) {
 		$('.Print-toolbar-item').qtip('destroy').qtip({

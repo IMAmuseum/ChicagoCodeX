@@ -1,11 +1,6 @@
-// Aic Namespace Initialization //
-if (typeof Aic === 'undefined'){Aic = {};}
-if (typeof Aic.views === 'undefined'){Aic.views = {};}
-// Aic Namespace Initialization //
-
-Aic.views.PersistentNotesView = OsciTk.views.BaseView.extend({
+OsciTk.views.PersistentNotesView = OsciTk.views.BaseView.extend({
 	id: 'persistent-notes',
-	template: OsciTk.templateManager.get('persistent-notes'),
+	template: OsciTk.templateManager.get('aic-persistent-notes'),
 	initialize: function() {
 		this.notesToRender = [];
 

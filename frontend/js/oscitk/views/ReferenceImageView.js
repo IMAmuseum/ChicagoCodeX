@@ -1,11 +1,6 @@
-// Aic Namespace Initialization //
-if (typeof Aic === 'undefined'){Aic = {};}
-if (typeof Aic.views === 'undefined'){Aic.views = {};}
-// Aic Namespace Initialization //
-
-Aic.views.ReferenceImage = OsciTk.views.BaseView.extend({
+OsciTk.views.ReferenceImage = OsciTk.views.BaseView.extend({
 	id: 'referenceImage',
-	template: OsciTk.templateManager.get('reference-image'),
+	template: OsciTk.templateManager.get('aic-reference-image'),
 	initialize: function() {
 		this.imageUrl = null;
 		this.figureId = null;

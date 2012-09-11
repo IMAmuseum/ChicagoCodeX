@@ -1,11 +1,6 @@
-// Aic Namespace Initialization //
-if (typeof Aic === 'undefined'){Aic = {};}
-if (typeof Aic.views === 'undefined'){Aic.views = {};}
-// Aic Namespace Initialization //
-
-Aic.views.Title = OsciTk.views.BaseView.extend({
+OsciTk.views.Title = OsciTk.views.BaseView.extend({
 	id: 'title-view',
-	template: OsciTk.templateManager.get('title'),
+	template: OsciTk.templateManager.get('aic-title'),
 	initialize: function() {
 		app.dispatcher.on('routedToSection', function(params) {
 			// load the section provided, or the first one if none provided

@@ -1,11 +1,6 @@
-// Aic Namespace Initialization //
-if (typeof Aic === 'undefined'){Aic = {};}
-if (typeof Aic.views === 'undefined'){Aic.views = {};}
-// Aic Namespace Initialization //
-
-Aic.views.Toc = OsciTk.views.BaseView.extend({
+OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	id: 'toc-view',
-	template: OsciTk.templateManager.get('toc'),
+	template: OsciTk.templateManager.get('aic-toc'),
 	initialize: function() {
 		this.navTree = null;
 		this.isOpen = false;

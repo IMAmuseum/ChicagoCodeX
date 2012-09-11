@@ -1,9 +1,4 @@
-// Aic Namespace Initialization //
-if (typeof Aic === 'undefined'){Aic = {};}
-if (typeof Aic.views === 'undefined'){Aic.views = {};}
-// Aic Namespace Initialization //
-
-Aic.views.TextEnlarge = OsciTk.views.BaseView.extend({
+OsciTk.views.TextEnlarge = OsciTk.views.BaseView.extend({
 	id: 'toolbar-item-textEnlarge',
 	initialize: function() {
 		if (app.config.get('currentFontSize') === undefined) {

@@ -1,11 +1,6 @@
-// Aic Namespace Initialization //
-if (typeof Aic === 'undefined'){Aic = {};}
-if (typeof Aic.views === 'undefined'){Aic.views = {};}
-// Aic Namespace Initialization //
-
-Aic.views.Toolbar = OsciTk.views.BaseView.extend({
+OsciTk.views.Toolbar = OsciTk.views.BaseView.extend({
 	id: 'toolbar',
-	template: OsciTk.templateManager.get('toolbar'),
+	template: OsciTk.templateManager.get('aic-toolbar'),
 	initialize: function() {
 		// if toolbar items were provided, store them in the view
 		this.toolbarItems = app.config.get('toolbarItems') ? app.config.get('toolbarItems') : [];
@@ -21,7 +16,7 @@ Aic.views.Toolbar = OsciTk.views.BaseView.extend({
 	render: function() {
 		this.$el.html(this.template());
 		_.each(this.toolbarItems, function(toolbarItem) {
-			var item = new Aic.views.ToolbarItem({toolbarItem: toolbarItem});
+			var item = new OsciTk.views.ToolbarItem({toolbarItem: toolbarItem});
 			this.toolbarItemViews.push(item);
 			this.addView(item, '#toolbar-items');
 			item.render();
