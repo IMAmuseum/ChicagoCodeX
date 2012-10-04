@@ -69,7 +69,17 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 	},
 	render: function() {
 		this.$el.css('display', 'block');
-		var data = { figures: this.collection.models };
+		// prepare data for display, getting a sorted copy of the figures collection
+		var data = {
+			figures: this.collection.sortBy(function(figure) {
+				var figNum = figure.get('title').toLowerCase();
+				var matches = figNum.match(/fig. (\d+)/);
+				if (matches.length < 2) {
+					return 0;
+				}
+				return parseInt(matches[1], 10);
+			})
+		};
 		this.$el.html(this.template(data));
 
 		// set figures list width
