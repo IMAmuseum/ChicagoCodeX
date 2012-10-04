@@ -123,6 +123,9 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 	onViewInContextClicked: function(event_data) {
 		app.dispatcher.trigger('navigate', { identifier: $(event_data.target).parent('figure').attr('data-figure-id') });
 		this.closeDrawer();
+		if (app.views.footnotesView) {
+			app.views.footnotesView.closeDrawer();
+		}
 		return false;
 	},
 	translateToPage: function() {
