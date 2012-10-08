@@ -5,6 +5,7 @@
 	left: 0px;
 	right: 0px;
 	height: 26px;
+	min-height: 26px;
 	overflow: hidden;
 	background: #464646;
 }
@@ -31,8 +32,9 @@
 	right: 0px;
 	height: 26px;
 }
-.toolbar-item {
+div.toolbar-item {
 	display: inline-block;
+	height: 26px;
 }
 .TextEnlarge-toolbar-item {
 	background: url('../img/iconFontIncrease.png') no-repeat center center;
