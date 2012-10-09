@@ -60,6 +60,19 @@ OsciTk.views.Footnotes = OsciTk.views.BaseView.extend({
 				this.closeDrawer();
 			}
 		}, this);
+
+		// listen for section layout complete, and link footnotes to drawer action
+		app.dispatcher.on('layoutComplete', function(meta) {
+			console.log(this, 'layoutComplete-this');
+			var i,
+				that = this,
+				refs = app.views.sectionView.$el.find('.footnote-reference');
+			for (i = 0; i < refs.length; i++) {
+				var ref = $(refs[i]);
+				ref.off('click');
+				ref.bind('click', {'caller': this}, this.onFootnoteRefClicked);
+			}
+		}, this);
 	},
 	render: function() {
 		this.$el.css('display', 'block');
@@ -92,11 +105,16 @@ OsciTk.views.Footnotes = OsciTk.views.BaseView.extend({
 			this.translateToPage();
 		}
 	},
+	onFootnoteRefClicked: function(event) {
+		event.preventDefault();
+		var matches = event.target.hash.match(/#(fn-\d+-\d+)/);
+		var id = matches[1];
+		event.data.caller.navigateTo(id);
+	},
 	toggleDrawer: function() {
 		if (this.isOpen) {
 			if (this.isActive) {
 				// close drawer
-				app.dispatcher.trigger('tabClosing', this);
 				this.closeDrawer();
 			}
 			else {
@@ -106,7 +124,6 @@ OsciTk.views.Footnotes = OsciTk.views.BaseView.extend({
 		}
 		else {
 			// open drawer and make active
-			app.dispatcher.trigger('tabOpening', this);
 			this.openDrawer();
 			this.setActive();
 		}
@@ -114,6 +131,7 @@ OsciTk.views.Footnotes = OsciTk.views.BaseView.extend({
 	openDrawer: function() {
 		// tell toc to close
 		app.dispatcher.trigger('tocClose');
+		app.dispatcher.trigger('tabOpening', this);
 		this.$el.find('#footnotes-content').animate({
 			height: '300px'
 		});
@@ -121,6 +139,7 @@ OsciTk.views.Footnotes = OsciTk.views.BaseView.extend({
 	},
 	closeDrawer: function() {
 		var $this = this;
+		app.dispatcher.trigger('tabClosing', this);
 		this.$el.find('#footnotes-content').animate({
 			height: '0'
 		}, null, null, function() {
@@ -136,5 +155,17 @@ OsciTk.views.Footnotes = OsciTk.views.BaseView.extend({
 	setInactive: function() {
 		this.$el.css({'z-index': '100'});
 		this.isActive = false;
+	},
+	navigateTo: function(id) {
+		// open drawer and make active
+		if (!this.isOpen) this.openDrawer();
+		if (!this.isActive) this.setActive();
+
+		// figure out which page this footnote is on based on delta
+		var delta = parseInt(app.collections.footnotes.get(id).get('delta'), 10);
+		console.log(delta, 'delta');
+		this.page = delta + 1;
+		console.log(this.page, 'page');
+		this.translateToPage();
 	}
 });
