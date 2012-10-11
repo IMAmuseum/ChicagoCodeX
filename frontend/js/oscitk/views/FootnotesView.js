@@ -63,7 +63,6 @@ OsciTk.views.Footnotes = OsciTk.views.BaseView.extend({
 
 		// listen for section layout complete, and link footnotes to drawer action
 		app.dispatcher.on('layoutComplete', function(meta) {
-			console.log(this, 'layoutComplete-this');
 			var i,
 				that = this,
 				refs = app.views.sectionView.$el.find('.footnote-reference');
@@ -163,9 +162,7 @@ OsciTk.views.Footnotes = OsciTk.views.BaseView.extend({
 
 		// figure out which page this footnote is on based on delta
 		var delta = parseInt(app.collections.footnotes.get(id).get('delta'), 10);
-		console.log(delta, 'delta');
 		this.page = delta + 1;
-		console.log(this.page, 'page');
 		this.translateToPage();
 	}
 });

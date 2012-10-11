@@ -3,7 +3,7 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 	template: OsciTk.templateManager.get('aic-figures'),
 	events: {
 		"click #figures-handle": "toggleDrawer",
-		"click .figure-preview": "onFigurePreviewClicked",
+		"click a.view-fullscreen": "onFigurePreviewClicked",
 		"click a.view-in-context": "onViewInContextClicked",
 		"click #figures-nav-next .figures-indicator": "onNextPageClicked",
 		"click #figures-nav-prev .figures-indicator": "onPrevPageClicked"
@@ -17,11 +17,6 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 
 		// draw the figures ui only if figures become available
 		app.dispatcher.on('figuresLoaded', function(figures) {
-			// re-render this view when collection changes
-			this.collection.on('add remove reset', function() {
-				this.render();
-			}, this);
-			
 			this.render();
 		}, this);
 
@@ -117,7 +112,11 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 		this.maxPage = Math.ceil((itemWidth * itemCount) / containerWidth);
 	},
 	onFigurePreviewClicked: function(event_data) {
-		app.dispatcher.trigger('showFigureFullscreen', $(event_data.target).parent('figure').attr('data-figure-id'));
+		var figId = $(event_data.target).parent('figure').attr('data-figure-id');
+		var figureView = app.views.figures[figId];
+		if (figureView && figureView.fullscreen) {
+			figureView.fullscreen();
+		}
 		return false;
 	},
 	onViewInContextClicked: function(event_data) {

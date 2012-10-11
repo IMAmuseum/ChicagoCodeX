@@ -45,9 +45,10 @@ OsciTk.views.ReferenceImage = OsciTk.views.BaseView.extend({
 	onClick: function() {
 		// make the figure view full screen
 		var figure_id = this.$el.find('img').attr('data-figure_id');
-		var figure = app.collections.figures.where({id: figure_id})[0];
-		if (typeof(figure) !== 'undefined') {
-			app.dispatcher.trigger('showFigureFullscreen', figure.id);
+		var figureView = app.views.figures[figure_id];
+		if (figureView && figureView.fullscreen) {
+			figureView.fullscreen();
 		}
+		return false;
 	}
 });
