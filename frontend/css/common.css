@@ -105,4 +105,17 @@ a.footnote-reference {
 }
 .fancybox-close:hover { opacity: 1; }
 
-
+@-webkit-keyframes pulse {
+    from {
+      -webkit-transform: scale(1.0);
+      animation-timing-function: ease-out;
+    }
+    75% {
+      -webkit-transform: scale(0);
+      animation-timing-function: ease-in;
+    }
+    to { 
+      -webkit-transform: scale(1.0);
+      animation-timing-function: ease-out;
+    }
+}

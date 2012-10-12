@@ -120,12 +120,69 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 		return false;
 	},
 	onViewInContextClicked: function(event_data) {
-		app.dispatcher.trigger('navigate', { identifier: $(event_data.target).parent('figure').attr('data-figure-id') });
-		this.closeDrawer();
-		if (app.views.footnotesView) {
-			app.views.footnotesView.closeDrawer();
+		console.log(event_data, 'event_data');
+		
+		// find the figure identifier
+		figId = $(event_data.target).parent().attr('data-figure-id');
+		console.log(figId, 'figId');
+		// find the reference elements that match this figId
+		figRefs = app.views.sectionView.$el.find('a.figure_reference[href="#'+figId+'"]');
+		console.log(figRefs, 'figRefs');
+
+		// determine which of these elements are currently visible
+		var visibleRefs = [];
+		_.each(figRefs, function(figRef) {
+			console.log(figRef, 'figure reference');
+			var visible = app.views.sectionView.isElementVisible(figRef);
+			if (visible) {
+				visibleRefs.push(figRef);
+			}
+		}, this);
+
+		if (visibleRefs.length > 0) {
+			// navigate to the first instance and highlight
+			this.navigateAndHighlightRef(visibleRefs, 0);
+			// clean up the interface
+			this.closeDrawer();
+			if (app.views.footnotesView) {
+				app.views.footnotesView.closeDrawer();
+			}
 		}
 		return false;
+	},
+	navigateAndHighlightRef: function(visibleRefs, index) {
+		index = index || 0;
+		// navigate to figure reference
+		app.dispatcher.trigger('navigate', { identifier: figId + '-' + (index + 1) });
+		
+		var ref = $(visibleRefs[index]);
+		this.pulsateText(ref);
+	},
+	pulsateText: function(element) {
+		var offset = element.offset(),
+			width = element.width(),
+			temp = $("<div>", {
+				css : {
+					position : "absolute",
+					top : (offset.top - 90) + "px",
+					left : offset.left - 160 + (width / 2) + "px",
+					margin : 0,
+					width : "80px",
+					height : "80px",
+					border : "6px solid #F00",
+					"border-radius" : "46px",
+					"-webkit-animation-duration" : "400ms",
+					"-webkit-animation-iteration-count" : "3",
+					"-webkit-animation-name" : "pulse",
+					"-webkit-animation-direction" : "normal",
+					"-webkit-box-shadow": "0px 0px 10px #888"
+				}
+			}).appendTo("#section");
+		console.log(offset, 'offset');
+		console.log(width, 'width');
+		console.log(temp, 'temp');
+		
+		setTimeout(function(){temp.remove();}, 1100);
 	},
 	translateToPage: function() {
 		var width = this.$el.find('#figures-list-container').width();
