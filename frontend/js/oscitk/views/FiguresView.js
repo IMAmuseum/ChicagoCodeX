@@ -120,19 +120,15 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 		return false;
 	},
 	onViewInContextClicked: function(event_data) {
-		console.log(event_data, 'event_data');
 		
 		// find the figure identifier
 		figId = $(event_data.target).parent().attr('data-figure-id');
-		console.log(figId, 'figId');
 		// find the reference elements that match this figId
 		figRefs = app.views.sectionView.$el.find('a.figure_reference[href="#'+figId+'"]');
-		console.log(figRefs, 'figRefs');
 
 		// determine which of these elements are currently visible
 		var visibleRefs = [];
 		_.each(figRefs, function(figRef) {
-			console.log(figRef, 'figure reference');
 			var visible = app.views.sectionView.isElementVisible(figRef);
 			if (visible) {
 				visibleRefs.push(figRef);
@@ -178,9 +174,6 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 					"-webkit-box-shadow": "0px 0px 10px #888"
 				}
 			}).appendTo("#section");
-		console.log(offset, 'offset');
-		console.log(width, 'width');
-		console.log(temp, 'temp');
 		
 		setTimeout(function(){temp.remove();}, 1100);
 	},
