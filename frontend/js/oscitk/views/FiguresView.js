@@ -147,12 +147,75 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 		return false;
 	},
 	navigateAndHighlightRef: function(visibleRefs, index) {
+		$this = this;
 		index = index || 0;
 		// navigate to figure reference
 		app.dispatcher.trigger('navigate', { identifier: figId + '-' + (index + 1) });
 		
 		var ref = $(visibleRefs[index]);
 		this.pulsateText(ref);
+		// if there are duplicate references in the text
+		if (visibleRefs.length > 1) {
+			var prev, next;
+			// is there a previous ref?
+			prev = (index > 0) ? true : false;
+			// is there a next ref?
+			next = (visibleRefs.length - 1 > index) ? true : false;
+			// draw a control
+			linker = $("<div>", { id: "osci_linker" });
+			if (prev) {
+				// create previous control
+				linkerPrev = $('<a>', {
+					'href': '#',
+					'class': 'prev',
+					'title': 'Previous Reference',
+					'text': '&lt;'
+				}).appendTo(linker);
+				linkerPrev.bind('click', function(event) {
+					event.preventDefault();
+					linker.remove();
+					$this.navigateAndHighlightRef(visibleRefs, index - 1);
+				});
+			}
+			if (next) {
+				// create next control
+				linkerNext = $('<a>', {
+					'href': '#',
+					'class': 'next',
+					'title': 'Next Reference',
+					'text': '&gt;'
+				}).appendTo(linker);
+				linkerNext.bind('click', function(event) {
+					event.preventDefault();
+					linker.remove();
+					$this.navigateAndHighlightRef(visibleRefs, index + 1);
+				});
+			}
+			// create stop control
+			linkerClose = $('<a>', {
+				'href': '#',
+				'class': 'close',
+				'title': 'Close',
+				'text': 'close'
+			}).appendTo(linker);
+			linkerClose.bind('click', function(event) {
+				event.preventDefault();
+				linker.remove();
+			});
+
+			// set postion and append to section
+			linker.appendTo('#section');
+			var offset = ref.offset();
+			var width = linker.width();
+			linker.css({
+				position: 'absolute',
+				top: (offset.top - 90) + 'px',
+				left: (offset.left - 160) + (width / 2) + 'px',
+				width: '100px',
+				height: '28px'
+			});
+
+		}
 	},
 	pulsateText: function(element) {
 		var offset = element.offset(),
