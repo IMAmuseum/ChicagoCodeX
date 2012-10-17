@@ -236,7 +236,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// if there are attached files, reattach to new node with new id
 		if (isset($asset['field_attached_files']['und'])) {
@@ -269,7 +269,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// save and keep the node id for later referrals
 		node_save($node);
@@ -294,7 +294,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// save the node (need a node id to continue)
 		node_save($node);
@@ -323,7 +323,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// if there are attached files, reattach to new node with new id
 		if (isset($asset['field_attached_files']['und'])) {
@@ -356,7 +356,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_editor = $asset['field_osci_editor'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// if there are attached files, reattach to new node with new id
 		if (isset($asset['field_attached_files']['und'])) {
@@ -406,7 +406,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		}
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// if there are attached files, reattach to new node with new id
 		if (isset($asset['field_attached_files']['und'])) {
@@ -518,7 +518,7 @@ function _getNewNodeId($nid) {
 	return FALSE;
 }
 
-function _createFigureFromNid($nid) {
+function _createFigureFromNid($nid, $plate = FALSE) {
 	// global $json;
 	// set up a base figure
 	$figure = array(
@@ -531,6 +531,9 @@ function _createFigureFromNid($nid) {
 	);
 	// replace asset reference with new id of passed in nid
 	$figure['asset_reference'] = _getNewNodeId($nid);
+	if ($plate) {
+		$figure['position'] = 'plate';
+	}
 	return $figure;
 }
 
