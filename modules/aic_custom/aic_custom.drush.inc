@@ -195,13 +195,13 @@ function drush_aic_custom_aic_import($path = NULL) {
 	for ($i = 0; $i < count($json->conservationAssets); $i++) {
 		$asset = _objectToArray($json->conservationAssets[$i]);
 		$node = new stdClass();
-		$node->type = 'conservation_asset';
+		$node->type = 'layered_image';
 		$node->language = 'und';
 		node_object_prepare($node);
 		// copy fields
 		$node->title = $asset['title'];
 		$node->field_data = $asset['field_data'];
-		$node->field_aspect_ratio = $asset['field_aspect_ratio'];
+		// $node->field_aspect_ratio = $asset['field_aspect_ratio']; # not used
 		// copy field_image, replacing owner and setting proper new fid
 		$node->field_image = $asset['field_image'];
 		if (isset($node->field_image['und'][0]['fid'])) {
@@ -569,7 +569,8 @@ function _transmuteBodyCopyField($bcField, $node, $newFieldName) {
 				print "- Invalid figure reference in node {$node->nid}\n";
 				continue;
 			}
-			// parse figure options to find and replace nids
+			// parse figure options
+			// find and replace nids
 			$figOptions = json_decode($fig['figure_options']);
 			if (is_array($figOptions->annotationPreset)) {
 				foreach ($figOptions->annotationPreset as &$presetNid) {
@@ -581,6 +582,20 @@ function _transmuteBodyCopyField($bcField, $node, $newFieldName) {
 					$presetNid = _getNewNodeId($presetNid);
 				}
 			}
+			// some options renamed
+			if (isset($figOptions->annotation) && $figOptions->annotation == FALSE) {
+				$figOptions->disable_annotation = TRUE;
+			} else {
+				$figOptions->disable_annotation = FALSE;
+			}
+			unset($figOptions->annotation);
+			if (isset($figOptions->interaction) && $figOptions->interaction == FALSE) {
+				$figOptions->disable_interaction = TRUE;
+			} else {
+				$figOptions->disable_interaction = FALSE;
+			}
+			unset($figOptions->interaction);
+
 			$newFig['options'] = json_encode($figOptions);
 			// add the new figure to the node, and store a reference for later lookup
 			$node->field_figure['und'][] = $newFig;
