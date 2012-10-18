@@ -498,7 +498,7 @@ function _getNewFileId($fid) {
 	global $json;
 	foreach ($json->files as $file) {
 		if ($file->fid === $fid) {
-			return $file->new_id;
+			return (int) $file->new_id;
 		}
 	}
 	die("Could not find old file {$fid}\n");
@@ -510,7 +510,7 @@ function _getNewNodeId($nid) {
 	foreach ($contentTypes as $contentType) {
 		foreach ($contentType as $node) {
 			if (isset($node->nid) && $node->nid == $nid) {
-				return $node->new_id;
+				return (int) $node->new_id;
 			}
 		}
 	}
