@@ -27,8 +27,9 @@ function drush_aic_custom_aic_import($path = NULL) {
 		return;
 	}
 	
-	global $json;
+	global $json, $copyFields;
 	$json = json_decode($contents);
+	$copyFields = array();
 	
 	// first import the files
 	print "Importing Files...\n";
@@ -456,8 +457,32 @@ function drush_aic_custom_aic_import($path = NULL) {
 		// build nodetree from book data
 		$pub->field_nodetree = array();
 		_nodetreeFromBook(array($asset), $pub->field_nodetree);
-		// print_r($pub->field_nodetree);die();
 		node_save($pub);
+	}
+
+	// Relink node references in copy fields
+	print "Relinking node references in copy fields...\n";
+	$allNodes = node_load_multiple(FALSE);
+	foreach ($allNodes as $node) {
+		$modified = FALSE;
+		// test if this node has copy fields
+		foreach ($copyFields as $copyField) {
+			if (isset($node->$copyField)) {
+				// parse link tags for this copy field
+				$ncf = $node->$copyField;
+				preg_match_all('/\[link:(\d+)[^\]]*\]/', $ncf['und'][0]['value'], $matches);
+				for ($i = 0; $i < count($matches[0]); $i++) {
+					$search = "/link:{$matches[1][$i]}/";
+					$replace = "link:" . _getNewNodeId($matches[1][$i]);
+					$ncf['und'][0]['value'] = preg_replace($search, $replace, $ncf['und'][0]['value']);
+					$modified = TRUE;
+				}
+				$node->$copyField = $ncf;
+			}
+		}
+		if ($modified) {
+			node_save($node);
+		}
 	}
 }
 
@@ -538,6 +563,12 @@ function _createFigureFromNid($nid, $plate = FALSE) {
 }
 
 function _transmuteBodyCopyField($bcField, $node, $newFieldName) {
+	// track body copy fields for end of migration parsing (_relinkCopyFields)
+	global $copyFields;
+	if (!in_array($newFieldName, $copyFields)) {
+		$copyFields[] = $newFieldName;
+	}
+
 	// if no data, just set the newFieldName to a blank string
 	if (!isset($bcField['und'][0])) {
 		$newField = array();
