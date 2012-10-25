@@ -457,7 +457,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		}
 		// build nodetree from book data
 		$pub->field_nodetree = array();
-		_nodetreeFromBook(array($asset), $pub->field_nodetree);
+		_nodetreeFromBook($asset['below'], $pub->field_nodetree);
 		node_save($pub);
 	}
 
