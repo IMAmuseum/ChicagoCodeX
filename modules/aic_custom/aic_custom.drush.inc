@@ -342,41 +342,42 @@ function drush_aic_custom_aic_import($path = NULL) {
 		node_save($node);
 	}
 	
+	// Don't import volumes, as they are shell nodes for books
 	// import Volumes
-	print "Importing Volumes...\n";
-	for ($i = 0; $i < count($json->volumes); $i++) {
-		$asset = _objectToArray($json->volumes[$i]);
-		$node = new stdClass();
-		$node->type = 'volume';
-		$node->language = 'und';
-		node_object_prepare($node);
-		// copy fields
-		$node->title = $asset['title'];
-		// $node->field_content_length = $asset['field_osci_content_length'];
-		$node->field_active = $asset['field_active'];
-		$node->field_editor = $asset['field_osci_editor'];
-		// if plate image is present, make it the first figure
-		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
-		}
-		// if there are attached files, reattach to new node with new id
-		if (isset($asset['field_attached_files']['und'])) {
-			$node->field_file = array('und' => array());
-			foreach ($asset['field_attached_files']['und'] as $file) {
-				$file['fid'] = _getNewFileId($file['fid']);
-				$node->field_file['und'][] = $afile;
-			}
-		}
-		// would copy over identifier to new field, but there is no identifier content, so skipping
-		//
-		// save the node (need a node id to continue)
-		node_save($node);
-		$json->volumes[$i]->new_id = $node->nid;
-		// transmute body copy fields
-		_transmuteBodyCopyField($asset['field_osci_body'], $node, 'field_curatorial_entry');
-		_transmuteBodyCopyField($asset['field_osci_credits'], $node, 'field_credits');
-		node_save($node);
-	}
+	// print "Importing Volumes...\n";
+	// for ($i = 0; $i < count($json->volumes); $i++) {
+	// 	$asset = _objectToArray($json->volumes[$i]);
+	// 	$node = new stdClass();
+	// 	$node->type = 'volume';
+	// 	$node->language = 'und';
+	// 	node_object_prepare($node);
+	// 	// copy fields
+	// 	$node->title = $asset['title'];
+	// 	// $node->field_content_length = $asset['field_osci_content_length'];
+	// 	$node->field_active = $asset['field_active'];
+	// 	$node->field_editor = $asset['field_osci_editor'];
+	// 	// if plate image is present, make it the first figure
+	// 	if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
+	// 		$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
+	// 	}
+	// 	// if there are attached files, reattach to new node with new id
+	// 	if (isset($asset['field_attached_files']['und'])) {
+	// 		$node->field_file = array('und' => array());
+	// 		foreach ($asset['field_attached_files']['und'] as $file) {
+	// 			$file['fid'] = _getNewFileId($file['fid']);
+	// 			$node->field_file['und'][] = $afile;
+	// 		}
+	// 	}
+	// 	// would copy over identifier to new field, but there is no identifier content, so skipping
+	// 	//
+	// 	// save the node (need a node id to continue)
+	// 	node_save($node);
+	// 	$json->volumes[$i]->new_id = $node->nid;
+	// 	// transmute body copy fields
+	// 	_transmuteBodyCopyField($asset['field_osci_body'], $node, 'field_curatorial_entry');
+	// 	_transmuteBodyCopyField($asset['field_osci_credits'], $node, 'field_credits');
+	// 	node_save($node);
+	// }
 		
 	// import Works of Art - Must come after Collector (nodereference)
 	print "Importing Works of Art...\n";
