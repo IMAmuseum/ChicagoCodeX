@@ -493,7 +493,7 @@ function _nodetreeFromBook($assets, &$fieldNodetree) {
 		// set target nid
 		$nodetree['target_nid'] = _getNewNodeId($asset['link']['nid']);
 		// set parent nid
-		if ($asset['link']['depth'] === 1) {
+		if ($asset['link']['depth'] === 2) {
 			$nodetree['parent_nid'] = '';
 		}
 		else {
