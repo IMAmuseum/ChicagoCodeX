@@ -61,10 +61,12 @@
 #navigation .prev-page.corner {
 	position: absolute;
 	left: 0px;
+	top:0px;
 }
 #navigation .next-page.corner {
 	position: absolute;
 	right: 0px;
+	top:0px;
 }
 #navigation .corner {
 	cursor: pointer;
