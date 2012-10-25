@@ -9,6 +9,7 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 		"click #figures-nav-prev .figures-indicator": "onPrevPageClicked"
 	},
 	initialize: function() {
+		that = this;
 		this.isOpen = false;
 		this.isActive = false;
 		this.collection = app.collections.figures;
@@ -156,13 +157,14 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 		this.pulsateText(ref);
 		// if there are duplicate references in the text
 		if (visibleRefs.length > 1) {
-			var prev, next;
 			// is there a previous ref?
-			prev = (index > 0) ? true : false;
+			var prev = (index > 0) ? true : false;
 			// is there a next ref?
-			next = (visibleRefs.length - 1 > index) ? true : false;
+			var next = (visibleRefs.length - 1 > index) ? true : false;
 			// draw a control
-			linker = $("<div>", { id: "osci_linker" });
+			
+			
+			var linker = this.linker = $("<div>", { id: "osci_linker" });
 			if (prev) {
 				// create previous control
 				linkerPrev = $('<a>', {
@@ -210,7 +212,7 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 			linker.css({
 				position: 'absolute',
 				top: (offset.top - 90) + 'px',
-				left: (offset.left - 160) + (width / 2) + 'px',
+				left: offset.left - 100 - (width / 2) + 'px',
 				width: '100px',
 				height: '28px'
 			});
