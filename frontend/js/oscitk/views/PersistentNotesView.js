@@ -18,7 +18,6 @@ OsciTk.views.PersistentNotesView = OsciTk.views.BaseView.extend({
 					this.notesToRender.push(note);
 				}
 			}, this);
-			console.log(this.notesToRender, 'notesToRender');
 			this.render();
 		}, this);
 

@@ -27,8 +27,9 @@ function drush_aic_custom_aic_import($path = NULL) {
 		return;
 	}
 	
-	global $json;
+	global $json, $copyFields;
 	$json = json_decode($contents);
+	$copyFields = array();
 	
 	// first import the files
 	print "Importing Files...\n";
@@ -195,13 +196,13 @@ function drush_aic_custom_aic_import($path = NULL) {
 	for ($i = 0; $i < count($json->conservationAssets); $i++) {
 		$asset = _objectToArray($json->conservationAssets[$i]);
 		$node = new stdClass();
-		$node->type = 'conservation_asset';
+		$node->type = 'layered_image';
 		$node->language = 'und';
 		node_object_prepare($node);
 		// copy fields
 		$node->title = $asset['title'];
 		$node->field_data = $asset['field_data'];
-		$node->field_aspect_ratio = $asset['field_aspect_ratio'];
+		// $node->field_aspect_ratio = $asset['field_aspect_ratio']; # not used
 		// copy field_image, replacing owner and setting proper new fid
 		$node->field_image = $asset['field_image'];
 		if (isset($node->field_image['und'][0]['fid'])) {
@@ -236,7 +237,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// if there are attached files, reattach to new node with new id
 		if (isset($asset['field_attached_files']['und'])) {
@@ -269,7 +270,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// save and keep the node id for later referrals
 		node_save($node);
@@ -294,7 +295,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// save the node (need a node id to continue)
 		node_save($node);
@@ -323,7 +324,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		$node->field_active = $asset['field_active'];
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// if there are attached files, reattach to new node with new id
 		if (isset($asset['field_attached_files']['und'])) {
@@ -341,41 +342,42 @@ function drush_aic_custom_aic_import($path = NULL) {
 		node_save($node);
 	}
 	
+	// Don't import volumes, as they are shell nodes for books
 	// import Volumes
-	print "Importing Volumes...\n";
-	for ($i = 0; $i < count($json->volumes); $i++) {
-		$asset = _objectToArray($json->volumes[$i]);
-		$node = new stdClass();
-		$node->type = 'volume';
-		$node->language = 'und';
-		node_object_prepare($node);
-		// copy fields
-		$node->title = $asset['title'];
-		// $node->field_content_length = $asset['field_osci_content_length'];
-		$node->field_active = $asset['field_active'];
-		$node->field_editor = $asset['field_osci_editor'];
-		// if plate image is present, make it the first figure
-		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
-		}
-		// if there are attached files, reattach to new node with new id
-		if (isset($asset['field_attached_files']['und'])) {
-			$node->field_file = array('und' => array());
-			foreach ($asset['field_attached_files']['und'] as $file) {
-				$file['fid'] = _getNewFileId($file['fid']);
-				$node->field_file['und'][] = $afile;
-			}
-		}
-		// would copy over identifier to new field, but there is no identifier content, so skipping
-		//
-		// save the node (need a node id to continue)
-		node_save($node);
-		$json->volumes[$i]->new_id = $node->nid;
-		// transmute body copy fields
-		_transmuteBodyCopyField($asset['field_osci_body'], $node, 'field_curatorial_entry');
-		_transmuteBodyCopyField($asset['field_osci_credits'], $node, 'field_credits');
-		node_save($node);
-	}
+	// print "Importing Volumes...\n";
+	// for ($i = 0; $i < count($json->volumes); $i++) {
+	// 	$asset = _objectToArray($json->volumes[$i]);
+	// 	$node = new stdClass();
+	// 	$node->type = 'volume';
+	// 	$node->language = 'und';
+	// 	node_object_prepare($node);
+	// 	// copy fields
+	// 	$node->title = $asset['title'];
+	// 	// $node->field_content_length = $asset['field_osci_content_length'];
+	// 	$node->field_active = $asset['field_active'];
+	// 	$node->field_editor = $asset['field_osci_editor'];
+	// 	// if plate image is present, make it the first figure
+	// 	if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
+	// 		$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
+	// 	}
+	// 	// if there are attached files, reattach to new node with new id
+	// 	if (isset($asset['field_attached_files']['und'])) {
+	// 		$node->field_file = array('und' => array());
+	// 		foreach ($asset['field_attached_files']['und'] as $file) {
+	// 			$file['fid'] = _getNewFileId($file['fid']);
+	// 			$node->field_file['und'][] = $afile;
+	// 		}
+	// 	}
+	// 	// would copy over identifier to new field, but there is no identifier content, so skipping
+	// 	//
+	// 	// save the node (need a node id to continue)
+	// 	node_save($node);
+	// 	$json->volumes[$i]->new_id = $node->nid;
+	// 	// transmute body copy fields
+	// 	_transmuteBodyCopyField($asset['field_osci_body'], $node, 'field_curatorial_entry');
+	// 	_transmuteBodyCopyField($asset['field_osci_credits'], $node, 'field_credits');
+	// 	node_save($node);
+	// }
 		
 	// import Works of Art - Must come after Collector (nodereference)
 	print "Importing Works of Art...\n";
@@ -406,7 +408,7 @@ function drush_aic_custom_aic_import($path = NULL) {
 		}
 		// if plate image is present, make it the first figure
 		if (isset($asset['field_osci_plate_image']['und'][0]['nid'])) {
-			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid']);
+			$node->field_figure['und'][] = _createFigureFromNid($asset['field_osci_plate_image']['und'][0]['nid'], TRUE);
 		}
 		// if there are attached files, reattach to new node with new id
 		if (isset($asset['field_attached_files']['und'])) {
@@ -456,8 +458,32 @@ function drush_aic_custom_aic_import($path = NULL) {
 		// build nodetree from book data
 		$pub->field_nodetree = array();
 		_nodetreeFromBook(array($asset), $pub->field_nodetree);
-		// print_r($pub->field_nodetree);die();
 		node_save($pub);
+	}
+
+	// Relink node references in copy fields
+	print "Relinking node references in copy fields...\n";
+	$allNodes = node_load_multiple(FALSE);
+	foreach ($allNodes as $node) {
+		$modified = FALSE;
+		// test if this node has copy fields
+		foreach ($copyFields as $copyField) {
+			if (isset($node->$copyField)) {
+				// parse link tags for this copy field
+				$ncf = $node->$copyField;
+				preg_match_all('/\[link:(\d+)[^\]]*\]/', $ncf['und'][0]['value'], $matches);
+				for ($i = 0; $i < count($matches[0]); $i++) {
+					$search = "/link:{$matches[1][$i]}/";
+					$replace = "link:" . _getNewNodeId($matches[1][$i]);
+					$ncf['und'][0]['value'] = preg_replace($search, $replace, $ncf['und'][0]['value']);
+					$modified = TRUE;
+				}
+				$node->$copyField = $ncf;
+			}
+		}
+		if ($modified) {
+			node_save($node);
+		}
 	}
 }
 
@@ -498,7 +524,7 @@ function _getNewFileId($fid) {
 	global $json;
 	foreach ($json->files as $file) {
 		if ($file->fid === $fid) {
-			return $file->new_id;
+			return (int) $file->new_id;
 		}
 	}
 	die("Could not find old file {$fid}\n");
@@ -510,7 +536,7 @@ function _getNewNodeId($nid) {
 	foreach ($contentTypes as $contentType) {
 		foreach ($contentType as $node) {
 			if (isset($node->nid) && $node->nid == $nid) {
-				return $node->new_id;
+				return (int) $node->new_id;
 			}
 		}
 	}
@@ -518,7 +544,7 @@ function _getNewNodeId($nid) {
 	return FALSE;
 }
 
-function _createFigureFromNid($nid) {
+function _createFigureFromNid($nid, $plate = FALSE) {
 	// global $json;
 	// set up a base figure
 	$figure = array(
@@ -531,10 +557,19 @@ function _createFigureFromNid($nid) {
 	);
 	// replace asset reference with new id of passed in nid
 	$figure['asset_reference'] = _getNewNodeId($nid);
+	if ($plate) {
+		$figure['position'] = 'plate';
+	}
 	return $figure;
 }
 
 function _transmuteBodyCopyField($bcField, $node, $newFieldName) {
+	// track body copy fields for end of migration parsing (_relinkCopyFields)
+	global $copyFields;
+	if (!in_array($newFieldName, $copyFields)) {
+		$copyFields[] = $newFieldName;
+	}
+
 	// if no data, just set the newFieldName to a blank string
 	if (!isset($bcField['und'][0])) {
 		$newField = array();
@@ -566,7 +601,8 @@ function _transmuteBodyCopyField($bcField, $node, $newFieldName) {
 				print "- Invalid figure reference in node {$node->nid}\n";
 				continue;
 			}
-			// parse figure options to find and replace nids
+			// parse figure options
+			// find and replace nids
 			$figOptions = json_decode($fig['figure_options']);
 			if (is_array($figOptions->annotationPreset)) {
 				foreach ($figOptions->annotationPreset as &$presetNid) {
@@ -578,6 +614,20 @@ function _transmuteBodyCopyField($bcField, $node, $newFieldName) {
 					$presetNid = _getNewNodeId($presetNid);
 				}
 			}
+			// some options renamed
+			if (isset($figOptions->annotation) && $figOptions->annotation == FALSE) {
+				$figOptions->disable_annotation = TRUE;
+			} else {
+				$figOptions->disable_annotation = FALSE;
+			}
+			unset($figOptions->annotation);
+			if (isset($figOptions->interaction) && $figOptions->interaction == FALSE) {
+				$figOptions->disable_interaction = TRUE;
+			} else {
+				$figOptions->disable_interaction = FALSE;
+			}
+			unset($figOptions->interaction);
+
 			$newFig['options'] = json_encode($figOptions);
 			// add the new figure to the node, and store a reference for later lookup
 			$node->field_figure['und'][] = $newFig;

@@ -93,9 +93,32 @@
 	background: url('../img/osci-default-figure.png');
 }
 #figures-list .figure-info {
-	max-width: 240px;
+	max-width: 208px;
 }
 #figures-list .caption {
 	max-height: 1.25em;
 	overflow: hidden;
+	float: left;
+}
+#figures-list a.view-in-context {
+	height: 16px;
+	width: 16px;
+	margin-top: 2px;
+	background: url('../img/icon-goto.png');
+	float: right;
+	opacity: .6;
+}
+#figures-list a.view-in-context:hover {
+	opacity: 1;
+}
+#figures-list a.view-fullscreen {
+	height: 16px;
+	width: 16px;
+	margin-top: 2px;
+	background: url('../img/icon-fullscreen.png');
+	float: right;
+	opacity: .6;
+}
+#figures-list a.view-fullscreen:hover {
+	opacity: 1;
 }
