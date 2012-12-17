@@ -489,18 +489,22 @@ function drush_aic_custom_aic_import($path = NULL) {
 
 function _nodetreeFromBook($assets, &$fieldNodetree) {
 	foreach ($assets as $asset) {
-		$nodetree = array();
+		$nodetree = array(
+            'parent_nid' => '',
+        );
 		// set target nid
 		$nodetree['target_nid'] = _getNewNodeId($asset['link']['nid']);
+        // set depth
+        $nodetree['depth'] = $asset['link']['depth'] - 2;
 		// set parent nid
-		if ($asset['link']['depth'] === 2) {
+		if ($nodetree['depth'] === 0) {
 			$nodetree['parent_nid'] = '';
 		}
 		else {
 			// step backwards in the array until we find depth-1
 			for ($i = (count($fieldNodetree['und']) - 1); $i >= 0; $i--) {
 				$instance = $fieldNodetree['und'][$i];
-				if ($instance['depth'] < ($asset['link']['depth'] - 1)) {
+				if ($instance['depth'] < $nodetree['depth']) {
 					$nodetree['parent_nid'] = $instance['target_nid'];
 					break;
 				}
@@ -508,8 +512,6 @@ function _nodetreeFromBook($assets, &$fieldNodetree) {
 		}
 		// set weight
 		$nodetree['weight'] = isset($asset['link']['weight']) ? $asset['link']['weight'] : 0;
-		// set depth
-		$nodetree['depth'] = $asset['link']['depth'] - 1;
 		// append to nodetree field
 		$fieldNodetree['und'][] = $nodetree;
 		// process children
