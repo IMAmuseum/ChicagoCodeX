@@ -6,7 +6,7 @@ OsciTk.views.ReferenceImage = OsciTk.views.BaseView.extend({
 		this.figureId = null;
 		this.sectionUrl = null;
 		
-		app.dispatcher.on('figuresLoaded', function(figures) {
+		this.listenTo(Backbone, 'figuresLoaded', function(figures) {
 			for (var i=0; i < figures.models.length; i++) {
 				var content = $(figures.models[i].get('rawData'));
 				// look for an image first, simple to handle
@@ -15,23 +15,23 @@ OsciTk.views.ReferenceImage = OsciTk.views.BaseView.extend({
 					this.imageUrl = this.sectionImageUrl = img.attr('src');
 					this.figure_id = figures.models[i].id;
 					this.render();
-					app.dispatcher.trigger('referenceImageLoaded', this);
+					Backbone.trigger('referenceImageLoaded', this);
 					break;
 				}
 			}
-		}, this);
+		});
 
 		// change the image when requested
-		app.dispatcher.on('referenceImageChange', function(url) {
+		this.listenTo(Backbone, 'referenceImageChange', function(url) {
 			this.imageUrl = url;
 			this.render();
-		}, this);
+		});
 
 		// restore the original image set by the figuresLoaded event
-		app.dispatcher.on('referenceImageRestore', function() {
+		this.listenTo(Backbone, 'referenceImageRestore', function() {
 			this.imageUrl = this.sectionImageUrl;
 			this.render();
-		}, this);
+		});
 	},
 	events: {
 		'click': 'onClick'

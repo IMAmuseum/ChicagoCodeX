@@ -2,7 +2,7 @@ OsciTk.views.Title = OsciTk.views.BaseView.extend({
 	id: 'title-view',
 	template: OsciTk.templateManager.get('aic-title'),
 	initialize: function() {
-		app.dispatcher.on('routedToSection', function(params) {
+		this.listenTo(Backbone, 'routedToSection', function(params) {
 			// load the section provided, or the first one if none provided
 			var section;
 			if (typeof(params.section_id) === 'undefined') {
@@ -13,7 +13,7 @@ OsciTk.views.Title = OsciTk.views.BaseView.extend({
 			}
 			this.$el.find('#section-title').text(section.get('title'));
 			
-		}, this);
+		});
 
 		this.render();
 	},
@@ -24,7 +24,7 @@ OsciTk.views.Title = OsciTk.views.BaseView.extend({
 	events: {
 		"click #section-title": function(e) {
 			e.preventDefault();
-			app.dispatcher.trigger('navigate', {identifier: "start"});
+			Backbone.trigger('navigate', {identifier: "start"});
 		}
 	}
 });

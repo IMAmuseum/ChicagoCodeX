@@ -10,6 +10,6 @@ OsciTk.views.TextReduce = OsciTk.views.BaseView.extend({
 		app.views.sectionView.$el.css({
 			'font-size': app.config.get('currentFontSize') + '%'
 		});
-		app.dispatcher.trigger("windowResized");
+		Backbone.trigger("windowResized");
 	}
 });

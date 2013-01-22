@@ -5,7 +5,7 @@ OsciTk.views.PersistentNotesView = OsciTk.views.BaseView.extend({
 		this.notesToRender = [];
 
 		// when the page changes, display any notes for paragraphs on this page
-		app.dispatcher.on('pageChanged', function(params) {
+		this.listenTo(Backbone, 'pageChanged', function(params) {
 			// clear the notesToRender array
 			this.notesToRender = [];
 			// find the element for this page number
@@ -19,10 +19,10 @@ OsciTk.views.PersistentNotesView = OsciTk.views.BaseView.extend({
 				}
 			}, this);
 			this.render();
-		}, this);
+		});
 
 		// when the notes collection changes, re-render
-		app.collections.notes.on('change', this.render);
+		this.listenTo(app.collections.notes, 'change', this.render);
 	},
 	events: {
 		'click .note'     : 'onClick',

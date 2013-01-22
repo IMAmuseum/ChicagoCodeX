@@ -8,10 +8,10 @@ OsciTk.views.Toolbar = OsciTk.views.BaseView.extend({
 		this.render();
 		
 		// put publication title in place once it is available
-		app.dispatcher.bind('packageLoaded', function(docPackage) {
+		this.listenTo(Backbone, 'packageLoaded', function(docPackage) {
 			var title = docPackage.get('metadata')['dc:title']['value'];
 			this.$el.find('#toolbar-pub-title').html(title);
-		}, this);
+		});
 	},
 	render: function() {
 		this.$el.html(this.template());

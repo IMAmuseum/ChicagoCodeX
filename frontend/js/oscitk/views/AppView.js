@@ -30,6 +30,10 @@ OsciTk.views.App = OsciTk.views.BaseView.extend({
 		app.views.figuresView = new OsciTk.views.Figures();
 		this.addView(app.views.figuresView);
 
+		// Add the glossary tab
+		app.views.glossaryView = new OsciTk.views.Glossary();
+		this.addView(app.views.glossaryView);
+
 		// set the default section view
 		var sectionViewClass = OsciTk.views.Section;
 
@@ -60,5 +64,7 @@ OsciTk.views.App = OsciTk.views.BaseView.extend({
 		app.views.persistentNotesView = new OsciTk.views.PersistentNotesView();
 		this.addView(app.views.persistentNotesView);
 
+        // setup glossary tooltips
+        app.views.glossaryTooltipView = new OsciTk.views.GlossaryTooltip();
 	}
 });

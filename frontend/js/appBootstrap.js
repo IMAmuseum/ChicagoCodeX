@@ -1,5 +1,4 @@
 app = {
-	dispatcher : undefined,
 	router : undefined,
 	config : undefined,
 	views : {},
@@ -7,13 +6,13 @@ app = {
 	collections : {},
 
 	bootstrap : function(config) {
-		this.dispatcher = _.extend({}, Backbone.Events);
 		this.config = new OsciTk.models.Config(config);
 		this.router = new OsciTk.router();
 		this.account = new OsciTk.models.Account();
 		this.collections.notes = new OsciTk.collections.Notes();
 		this.collections.figures = new OsciTk.collections.Figures();
 		this.collections.footnotes = new OsciTk.collections.Footnotes();
+        this.collections.glossaryTerms = new OsciTk.collections.GlossaryTerms();
 		this.collections.navigationItems = new OsciTk.collections.NavigationItems();
 		
 		//setup window resizing, to trigger an event
@@ -23,7 +22,7 @@ app = {
 			}
 
 			var onWindowResize = function(){
-				app.dispatcher.trigger("windowResized");
+				Backbone.trigger("windowResized");
 			};
 
 			window.resizeTimer = setTimeout(onWindowResize, 200);

@@ -1,67 +1,23 @@
-OsciTk.views.Figures = OsciTk.views.BaseView.extend({
+OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 	id: 'figures',
 	template: OsciTk.templateManager.get('aic-figures'),
 	events: {
-		"click #figures-handle": "toggleDrawer",
+		"click .drawer-handle": "toggleDrawer",
 		"click a.view-fullscreen": "onFigurePreviewClicked",
 		"click a.view-in-context": "onViewInContextClicked",
 		"click #figures-nav-next .figures-indicator": "onNextPageClicked",
 		"click #figures-nav-prev .figures-indicator": "onPrevPageClicked"
 	},
 	initialize: function() {
-		that = this;
-		this.isOpen = false;
-		this.isActive = false;
 		this.collection = app.collections.figures;
 		this.page = 1;
 		this.maxPage = 1;
 
 		// draw the figures ui only if figures become available
-		app.dispatcher.on('figuresLoaded', function(figures) {
+		this.listenTo(Backbone, 'figuresLoaded', function(figures) {
 			this.render();
-		}, this);
-
-		// close the drawer when requested
-		app.dispatcher.on('drawersClose', function(caller) {
-			if (caller !== this && this.isOpen === true) {
-				this.closeDrawer();
-			}
-		}, this);
-
-		// move the drawer handle when the table of contents opens or closes
-		app.dispatcher.on('tocOpening', function() {
-			var handle = this.$el.find('#figures-handle');
-			var left = parseInt(handle.css('left'), 10);
-			handle.animate({'left': (left + 200) + 'px'});
-		}, this);
-		app.dispatcher.on('tocClosing', function() {
-			var handle = this.$el.find('#figures-handle');
-			var left = parseInt(handle.css('left'), 10);
-			handle.animate({'left': (left - 200) + 'px'});
-		}, this);
-
-		app.dispatcher.on("windowResized", function() {
-			this.render();
-		}, this);
-
-		// listen for other tabs going active
-		app.dispatcher.on('tabActive', function(caller) {
-			if (caller !== this) {
-				this.setInactive();
-			}
-		}, this);
-		
-		// listen for other tabs opening or closing
-		app.dispatcher.on('tabOpening', function(caller) {
-			if (caller !== this) {
-				this.openDrawer();
-			}
-		}, this);
-		app.dispatcher.on('tabClosing', function(caller) {
-			if (caller !== this) {
-				this.closeDrawer();
-			}
-		}, this);
+		});
+		this._super('initialize');
 	},
 	render: function() {
 		this.$el.css('display', 'block');
@@ -151,7 +107,7 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 		$this = this;
 		index = index || 0;
 		// navigate to figure reference
-		app.dispatcher.trigger('navigate', { identifier: figId + '-' + (index + 1) });
+		Backbone.trigger('navigate', { identifier: figId + '-' + (index + 1) });
 		
 		var ref = $(visibleRefs[index]);
 		this.pulsateText(ref);
@@ -261,50 +217,5 @@ OsciTk.views.Figures = OsciTk.views.BaseView.extend({
 			this.page--;
 			this.translateToPage();
 		}
-	},
-	toggleDrawer: function() {
-		if (this.isOpen) {
-			if (this.isActive) {
-				// close drawer
-				app.dispatcher.trigger('tabClosing', this);
-				this.closeDrawer();
-			}
-			else {
-				// make active
-				this.setActive();
-			}
-		}
-		else {
-			// open drawer and make active
-			app.dispatcher.trigger('tabOpening', this);
-			this.openDrawer();
-			this.setActive();
-		}
-	},
-	openDrawer: function() {
-		// tell toc drawer to close
-		app.dispatcher.trigger('tocClose');
-		this.$el.find('#figures-content').animate({
-			height: '300px'
-		});
-		this.isOpen = true;
-	},
-	closeDrawer: function() {
-		var $this = this;
-		this.$el.find('#figures-content').animate({
-			height: '0'
-		}, null, null, function() {
-			$this.setInactive();
-		});
-		this.isOpen = false;
-	},
-	setActive: function() {
-		app.dispatcher.trigger('tabActive', this);
-		this.$el.css({'z-index': '101'});
-		this.isActive = true;
-	},
-	setInactive: function() {
-		this.$el.css({'z-index': '100'});
-		this.isActive = false;
 	}
 });

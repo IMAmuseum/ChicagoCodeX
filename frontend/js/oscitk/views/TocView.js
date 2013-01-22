@@ -5,23 +5,23 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		this.navTree = null;
 		this.isOpen = false;
 		
-		app.dispatcher.on('referenceImageLoaded', function(referenceImageView) {
+		this.listenTo(Backbone, 'referenceImageLoaded', function(referenceImageView) {
 			this.referenceImageUrl = referenceImageView.imageUrl;
 			this.render();
-		}, this);
+		});
 		
-		app.dispatcher.on('navigationLoaded', function(navigationItems) {
+		this.listenTo(Backbone, 'navigationLoaded', function(navigationItems) {
 			this.navTree = this.renderNavTree();
-		}, this);
+		});
 
-		app.dispatcher.on('tocClose', function(caller) {
+		this.listenTo(Backbone, 'tocClose', function(caller) {
 			if (caller !== this) {
 				this.closeDrawer();
 			}
-		}, this);
+		});
 
 		// when a section is loaded, find and highlight the matching navigation item
-		app.dispatcher.on('sectionLoaded', function(section) {
+		this.listenTo(Backbone, 'sectionLoaded', function(section) {
 			this.render();
 			// reset bold on all section li tags
 			this.$el.find('li[data-section_id]').css('font-weight', 'normal');
@@ -34,7 +34,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			li.parents('ul').each(function() {
 				$(this).children('li.H').click();
 			});
-		}, this);
+		});
 	},
 	toggleDrawer: function() {
 		if (this.isOpen) {
@@ -46,7 +46,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	},
 	closeDrawer: function() {
 		if (this.isOpen) {
-			app.dispatcher.trigger('tocClosing');
+			Backbone.trigger('tocClosing');
 			this.$el.animate({ left: '-200px' });
 			this.isOpen = false;
 		}
@@ -54,8 +54,8 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	openDrawer: function() {
 		if (!this.isOpen) {
 			// tell other drawers to close
-			app.dispatcher.trigger('drawersClose', this);
-			app.dispatcher.trigger('tocOpening');
+			Backbone.trigger('drawersClose', this);
+			Backbone.trigger('tocOpening');
 			this.$el.animate({ left: '0px'});
 			this.isOpen = true;
 		}
@@ -142,11 +142,11 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		var item  = app.collections.navigationItems.get(itemId);
 		var thumb = item.get('thumbnail');
 		if (thumb) {
-			app.dispatcher.trigger('referenceImageChange', thumb);
+			Backbone.trigger('referenceImageChange', thumb);
 		}
 	},
 	restoreReferenceImage: function(event) {
-		app.dispatcher.trigger('referenceImageRestore');
+		Backbone.trigger('referenceImageRestore');
 	},
 	toggleCollapsibleList: function(event) {
 		// determine status of clicked li

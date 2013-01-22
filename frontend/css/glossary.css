@@ -1,0 +1,90 @@
+#glossary {
+	display: none;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: auto;
+	overflow: visible;
+	z-index: 100;
+	background-color: #cbcbcb;
+    background: -moz-linear-gradient(100% 100% 90deg, #cbcbcb, #ffffff);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cbcbcb));
+    -moz-box-shadow: 0 -6px 6px #888;
+    -webkit-box-shadow: 0 0 6px #888;
+    -ms-box-shadow: 0 0 6px #888;
+    box-shadow: 0 0 6px #888;
+}
+#glossary-handle {
+	position: absolute;
+	left: 210px;
+	top: -24px;
+	width: 99px;
+	font-size: 12px;
+    line-height: 1;
+    background: transparent url("../img/bg-tab-bottom.png") no-repeat;
+    text-align: center;
+	overflow: hidden;
+	padding: 6px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+#glossary-content {
+	position: relative;
+	height: 0;
+	overflow-y: hidden;
+}
+#glossary-sidebar {
+	float: left;
+	width: 20%;
+	height: 100%;
+	position: relative;
+}
+#glossary-wrapper {
+	padding: 20px;	
+}
+#glossary-filter {
+	line-height: 1.4em;
+	text-indent: 10px;
+	border-radius: 50px;
+	border: none;
+	font-size: 18px;
+	background: #fff;
+	border: 2px inset #ccc;
+	width: 100%;
+	-webkit-appearance: none;
+	outline-width: 0;
+}
+#glossary-filter-clear {
+	display: none;
+	cursor: pointer;
+	position: absolute;
+	top: 5px;
+	right: 6px;
+	width: 20px;
+	height: 20px;
+	background: url(../img/close-circle.png) 0 0 no-repeat;
+	background-size: 20px 20px;
+}
+#glossary-term-listing {
+	margin: 10px 0;
+	list-style: none;
+	height: 200px;
+	overflow-y: scroll;
+	-webkit-overflow-scrolling: touch;
+}
+#glossary-term-listing li {
+	cursor: pointer;
+	height: 30px;
+	line-height: 30px;
+	padding: 0 10px;
+	border-bottom: 1px solid rgba(0,0,0,.2);
+	box-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+#glossary-term-content {
+	float: right;
+	width: 80%;
+	height: 100%;
+}
+#glossary-term-content * {
+	padding: 0 20px;
+}

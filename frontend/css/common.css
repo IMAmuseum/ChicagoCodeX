@@ -97,6 +97,11 @@ a.footnote-reference {
 	color: #fff;
 }
 
+/* drawers */
+.drawer-handle {
+	cursor: pointer;
+}
+
 /* misc */
 .fancybox-close {
 	top: 0px!important;
