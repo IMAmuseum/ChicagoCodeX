@@ -4,8 +4,8 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<link rel='apple-touch-icon' href='img/icon-app-57.png' />
-	<link type="text/css" rel="stylesheet" href="/oscitk/css/OSCI-Toolkit-0.1.0-dependencies.min.css">
-	<link type="text/css" rel="stylesheet" href="/oscitk/css/OSCI-Toolkit-0.1.0.min.css">
+	<link type="text/css" rel="stylesheet" href="/sites/default/OSCI-Toolkit-Frontend/dist/css/OSCI-Toolkit-0.1.0-dependencies.min.css">
+	<link type="text/css" rel="stylesheet" href="/sites/default/OSCI-Toolkit-Frontend/dist/css/OSCI-Toolkit-0.1.0.min.css">
 	<link type="text/css" rel="stylesheet" href="/frontend/css/common.css">
 	<link type="text/css" rel="stylesheet" href="/frontend/css/toolbar.css">
 	<link type="text/css" rel="stylesheet" href="/frontend/css/title.css">
@@ -18,8 +18,12 @@
 	<link type="text/css" rel="stylesheet" href="/frontend/css/navigation.css">
 	<link type="text/css" rel="stylesheet" href="/frontend/css/paragraphs.css">
 	<link type="text/css" rel="stylesheet" href="/frontend/css/notes.css">
-	<script src="/oscitk/js/OSCI-Toolkit-0.1.0-dependencies.min.js"></script>
-	<script src="/oscitk/js/OSCI-Toolkit-0.1.0.js"></script>
+	<link type="text/css" rel="stylesheet" href="/frontend/css/glossary.css">
+	<script src="/sites/default/OSCI-Toolkit-Frontend/dist/js/OSCI-Toolkit-0.1.0-dependencies.min.js"></script>
+	<script src="/sites/default/OSCI-Toolkit-Frontend/dist/js/OSCI-Toolkit-0.1.0.js"></script>
+	<script src="/frontend/js/oscitk/views/AppView.js"></script>
+	<script src="/frontend/js/oscitk/views/BottomDrawerView.js"></script>
+	<script src="/frontend/js/oscitk/views/GlossaryView.js"></script>
 	<script src="/frontend/js/oscitk/views/AppView.js"></script>
 	<script src="/frontend/js/oscitk/views/TitleView.js"></script>
 	<script src="/frontend/js/oscitk/views/ToolbarView.js"></script>
@@ -37,7 +41,7 @@
 	<script>
 		jQuery(function() { 
 			app.bootstrap({
-				packageUrl: 'http://ccx.localhost/api/epub/79013/package.opf',
+				packageUrl: 'http://osci-aic.imamuseum.org/api/epub/120025/package.opf',
 				// packageUrl: 'sample/package.opf',
 				// Template urls are checked in index order
 				templateUrls: [
@@ -45,11 +49,11 @@
 					'/sites/default/OSCI-Toolkit-Frontend/js/oscitk/templates/'
 				],
 				endpoints: {
-					'OsciTkNotes': 'http://ccx.localhost/api/notes/',
-					'OsciTkNote': 'http://ccx.localhost/api/notes/',
-					'OsciTkSearch': 'http://ccx.localhost/api/search/',
-					'OsciTkOpenSearch': 'http://ccx.localhost/api/opensearch/',
-					'OsciTkAccount': 'http://ccx.localhost/api/users/'					
+					'OsciTkNotes': 'http://osci-aic.imamuseum.org/api/notes/',
+					'OsciTkNote': 'http://osci-aic.imamuseum.org/api/notes/',
+					'OsciTkSearch': 'http://osci-aic.imamuseum.org/api/search/',
+					'OsciTkOpenSearch': 'http://osci-aic.imamuseum.org/api/opensearch/',
+					'OsciTkAccount': 'http://osci-aic.imamuseum.org/api/users/'					
 				},
 				toolbarItems: [
 					{view: 'TextEnlarge', text: 'Enlarge'},
