@@ -67,6 +67,8 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 
 		// set the max page value
 		this.maxPage = Math.ceil((itemWidth * itemCount) / containerWidth);
+
+		this.setDrawerLastPosition();
 	},
 	onFigurePreviewClicked: function(event_data) {
 		var figId = $(event_data.target).parent('figure').attr('data-figure-id');
@@ -95,11 +97,6 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		if (visibleRefs.length > 0) {
 			// navigate to the first instance and highlight
 			this.navigateAndHighlightRef(visibleRefs, 0);
-			// clean up the interface
-			this.closeDrawer();
-			if (app.views.footnotesView) {
-				app.views.footnotesView.closeDrawer();
-			}
 		}
 		return false;
 	},

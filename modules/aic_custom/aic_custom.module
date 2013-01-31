@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function aic_custom_theme_registry_alter(&$theme_registry) {
     $theme_path = drupal_get_path('module', 'aic_custom');
@@ -10,6 +10,49 @@ function aic_custom_theme_registry_alter(&$theme_registry) {
 
     $theme_registry['osci_tk_epub_ncx_generate_navmap']['theme path'] = $theme_path;
     $theme_registry['osci_tk_epub_ncx_generate_navmap']['function'] = 'aic_custom_ncx_generate_navmap';
+}
+
+/**
+ * Implements hook_filter_info_alter()
+ */
+function aic_custom_filter_info_alter(&$info) {
+    $info['osci_tk_glossary_terms']['process callback'] = '_aic_custom_glossary_filter';
+}
+
+function _aic_custom_glossary_filter($text, $filter, $format) {
+    if (!is_numeric(arg(2))) return $text;
+
+    global $aic_custom_current_tree;
+    global $aic_custom_term_count;
+
+    $publication = node_load(arg(2));
+
+    $vocabulary = _osci_tk_glossary_retrieve_glossaries($publication);
+
+    foreach ($vocabulary as $vocab_id) {
+        $tree = taxonomy_get_tree($vocab_id);
+        foreach ($tree as $leaf) {
+            $aic_custom_current_tree = $leaf;
+            $text = preg_replace_callback('/' . $leaf->name . '\b/i', '_aic_custom_glossary_parse_term', $text);
+        }
+    }
+
+    return $text;
+}
+
+/**
+ * Callback for parsing glossary terms
+ */
+function _aic_custom_glossary_parse_term($match) {
+    global $aic_custom_current_tree;
+    global $aic_custom_term_count;
+
+    if ($aic_custom_term_count[$aic_custom_current_tree->tid] == 0) {
+        $aic_custom_term_count[$aic_custom_current_tree->tid]++;
+        return '<a href="#" class="glossary-term" data-tid="' . $aic_custom_current_tree->tid . '">' . $match[0] . '</a>';
+    } else {
+        return $match[0];
+    }
 }
 
 function aic_custom_navigation_generate_toc_item_list(&$vars) {

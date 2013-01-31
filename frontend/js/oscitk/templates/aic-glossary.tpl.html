@@ -2,13 +2,13 @@
 <div id="glossary-content" class="drawer-content">
 	<div id="glossary-wrapper">
 		<div id="glossary-sidebar">
-			<input type="text" id="glossary-filter" placeholder="Search Glossary" />
-			<div id="glossary-filter-clear"></div>
-			<ul id="glossary-term-listing">
-			<% _.each(glossary, function(item) { %>
-				<li data-tid="<%= item.get('id') %>"><%= item.get('term') %></li>
-			<% }); %>
-			</ul>
+			<div id="glossary-filter-box">
+				<input type="text" id="glossary-filter" placeholder="Search Glossary" />
+				<div id="glossary-filter-search-icon"></div>
+				<div id="glossary-filter-clear"></div>
+			</div>
+			<ul id="glossary-term-listing"></ul>
+			<ul id="glossary-term-listing-mobile"></ul>
 		</div>
 		<div id="glossary-term-content">
 			<h4></h4>

@@ -111,4 +111,5 @@
 #toc-navigation .navTitle {
 	padding: 5px 15px 5px 5px;
 	width: 160px;
+	cursor: pointer;
 }

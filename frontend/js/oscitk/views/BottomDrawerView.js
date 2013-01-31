@@ -2,6 +2,7 @@ OsciTk.views.BottomDrawerView = OsciTk.views.BaseView.extend({
 	initialize: function() {
 		this.isOpen = false;
 		this.isActive = false;
+		this.lastPosition = null;
 
 		// close the drawer when requested
 		this.listenTo(Backbone, 'drawersClose', function(caller) {
@@ -12,14 +13,10 @@ OsciTk.views.BottomDrawerView = OsciTk.views.BaseView.extend({
 
 		// move the drawer handle when the table of contents opens or closes
 		this.listenTo(Backbone, 'tocOpening', function() {
-			var handle = this.$el.find('.drawer-handle');
-			var left = parseInt(handle.css('left'), 10);
-			handle.animate({'left': (left + 200) + 'px'});
+			this.toggleDrawerHandlePosition(true);
 		});
 		this.listenTo(Backbone, 'tocClosing', function() {
-			var handle = this.$el.find('.drawer-handle');
-			var left = parseInt(handle.css('left'), 10);
-			handle.animate({'left': (left - 200) + 'px'});
+			this.toggleDrawerHandlePosition(false);
 		});
 
 		this.listenTo(Backbone, "windowResized", function() {
@@ -38,7 +35,7 @@ OsciTk.views.BottomDrawerView = OsciTk.views.BaseView.extend({
 			this.openDrawer();
 		});
 		this.listenTo(Backbone, 'tabClosing', function() {
-				this.closeDrawer();
+			this.closeDrawer();
 		});
 	},
 	toggleDrawer: function() {
@@ -72,6 +69,24 @@ OsciTk.views.BottomDrawerView = OsciTk.views.BaseView.extend({
 			$this.setInactive();
 		});
 		this.isOpen = false;
+	},
+	toggleDrawerHandlePosition: function(tocOpening) {
+		var handle = this.$el.find('.drawer-handle');
+		var left = parseInt(handle.css('left'), 10);
+		if (tocOpening) {
+			left += 200;
+			handle.animate({'left': left + 'px'});
+			this.lastPosition = left;
+		} else {
+			left -= 200;
+			handle.animate({'left': left + 'px'});
+			this.lastPosition = left;
+		}
+	},
+	setDrawerLastPosition: function() {
+		if (!_.isNull(this.lastPosition)) {
+			this.$el.find('.drawer-handle').css({'left': this.lastPosition + 'px'});
+		}
 	},
 	setActive: function() {
 		Backbone.trigger('tabActive', this);
