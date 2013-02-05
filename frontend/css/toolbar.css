@@ -8,7 +8,7 @@
 	min-height: 26px;
 	overflow: hidden;
 	background: #464646;
-        min-height:26px;
+	min-height:26px;
 }
 #toolbar-icon {
 	position: absolute;
@@ -30,13 +30,15 @@
 #toolbar-items {
 	position: absolute;
 	top: 0px;
-	right: 0px;
+	right: 5px;
 	height: 26px;
 }
 div.toolbar-item {
 	display: inline-block;
 	height: 26px;
 	width: 26px;
+	margin: 0 3px;
+	vertical-align: middle;
 }
 .TextEnlarge-toolbar-item {
 	background: url('../img/iconFontIncrease.png') no-repeat center center;

@@ -66,5 +66,9 @@ OsciTk.views.App = OsciTk.views.BaseView.extend({
 
         // setup glossary tooltips
         app.views.glossaryTooltipView = new OsciTk.views.GlossaryTooltip();
+
+        // Setup search
+		app.views.searchView = new OsciTk.views.Search();
+		this.addView(app.views.searchView);
 	}
 });
