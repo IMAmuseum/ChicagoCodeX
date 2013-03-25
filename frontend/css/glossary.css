@@ -29,6 +29,7 @@
 	font-family: Arial, Helvetica, sans-serif;
 }
 #glossary-content {
+	display: block;
 	position: relative;
 	height: 0;
 	overflow-y: hidden;
