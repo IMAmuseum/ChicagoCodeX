@@ -83,7 +83,7 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
     $depth = -1; 
     $flag = false;
     $output = ''; 
-    foreach ($vars['toc'] as $key => $leaf) {
+    foreach ($vars['toc'][0] as $key => $leaf) {
         $node = node_load($leaf['nid']);
 
         while ($leaf['depth'] > $depth) {
