@@ -1,5 +1,29 @@
 <?php
 
+function aic_custom_alter_epub_toc($toc) {
+    // alter the toc to add thumbnails for each section
+    // - thumbnails are found by taking the thumbnail field of the first found plate figure's node
+    foreach ($toc as &$tocItem) {
+        $section = node_load($tocItem['nid']);
+        if (isset($section->field_figure['und'])) {
+            foreach($section->field_figure['und'] as $figure) {
+                // find the first plate image
+                if ($figure['position'] === 'plate') {
+                    // load asset reference
+                    $asset = node_load($figure['asset_reference']);
+                    if ($asset) {
+                        if (isset($asset->field_image['und'][0])) {
+                            $tocItem['thumbnail'] = image_style_url('osci_tk_thumbnail_square', $asset->field_image['und'][0]['uri']);
+                        }
+                    }
+                    continue;
+                }
+            }
+        }
+    }
+    return array($toc);
+}
+
 function aic_custom_theme_registry_alter(&$theme_registry) {
     $theme_path = drupal_get_path('module', 'aic_custom');
     $theme_registry['osci_tk_epub_navigation_generate_toc_item_list']['theme path'] = $theme_path;
