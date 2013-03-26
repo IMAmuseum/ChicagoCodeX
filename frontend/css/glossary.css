@@ -34,6 +34,9 @@
 	height: 0;
 	overflow-y: hidden;
 }
+#glossary-content * {
+	padding: 0;
+}
 #glossary-sidebar {
 	display: table-cell;
 	width: 320px;
