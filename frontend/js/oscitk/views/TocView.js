@@ -71,6 +71,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			referenceImageUrl: this.referenceImageUrl,
 			navTree: this.navTree
 		}));
+		this.renderCollapsibleList();
 
 		// bind handle to open/close panel
 		this.$el.find('#toc-handle').on('click', this, function(event) {
