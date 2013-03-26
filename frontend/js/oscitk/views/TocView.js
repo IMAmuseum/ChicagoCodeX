@@ -1,15 +1,13 @@
 OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	id: 'toc-view',
 	template: OsciTk.templateManager.get('aic-toc'),
+	that: this,
 	initialize: function() {
 		this.navTree = null;
+		this.sectionImageUrl = null;
+		this.referenceImageUrl = null;
 		this.isOpen = false;
-		
-		this.listenTo(Backbone, 'referenceImageLoaded', function(referenceImageView) {
-			this.referenceImageUrl = referenceImageView.imageUrl;
-			this.render();
-		});
-		
+
 		this.listenTo(Backbone, 'navigationLoaded', function(navigationItems) {
 			this.navTree = this.renderNavTree();
 		});
@@ -22,6 +20,13 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 
 		// when a section is loaded, find and highlight the matching navigation item
 		this.listenTo(Backbone, 'sectionLoaded', function(section) {
+			// set the section image url and render
+			var navItems = app.collections.navigationItems.where({id: section.id});
+			if (navItems.length > 0) {
+				this.sectionImageUrl = this.referenceImageUrl = navItems[0].get('thumbnail');
+				// let the referenceImageView know about the image
+				Backbone.trigger('referenceImageLoaded', {imageUrl: this.sectionImageUrl});
+			}
 			this.render();
 			// reset bold on all section li tags
 			this.$el.find('li[data-section_id]').css('font-weight', 'normal');
@@ -67,17 +72,6 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			navTree: this.navTree
 		}));
 
-		// the reference image can throw off height calculation.  Rerender list after it loads
-		var img = this.$el.find('#toc-reference-image img');
-		if (img[0] && img[0].complete === false) {
-			img.on('load', function() {
-				app.views.tocView.renderCollapsibleList();
-			});
-		}
-		else {
-			this.renderCollapsibleList();
-		}
-
 		// bind handle to open/close panel
 		this.$el.find('#toc-handle').on('click', this, function(event) {
 			event.data.toggleDrawer();
@@ -110,6 +104,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		return itemMarkup;
 	},
 	renderCollapsibleList: function() {
+		var that = this;
 		// calculate and set a fixed height on the navigation area
 		var navigation = $('#toc-navigation');
 		var navHeight = window.innerHeight - navigation.offset().top;
@@ -128,25 +123,25 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 
 		// bind the mouseover of each li to fire a change event for the reference image
 		list.find('li')
-			.bind('mouseenter', this.changeReferenceImage)
-			.bind('mouseleave', this.restoreReferenceImage);
+			.bind('mouseenter', function(event) {
+				var itemId = $(event.currentTarget).attr('data-section_id');
+				var item  = app.collections.navigationItems.get(itemId);
+				var thumb = item.get('thumbnail');
+				if (thumb) {
+					that.referenceImageUrl = thumb;
+					that.render();
+				}
+			})
+			.bind('mouseleave', function(event) {
+				that.referenceImageUrl = this.sectionImageUrl;
+				that.render();
+			});
 
 		// bind section titles to navigate
 		list.find('li div.navTitle').on('click', function(event) {
 			var sectionId = $(this).parent().attr('data-section_id');
 			app.router.navigate("/section/" + sectionId, {trigger: true});
 		});
-	},
-	changeReferenceImage: function(event) {
-		var itemId = $(event.currentTarget).attr('data-section_id');
-		var item  = app.collections.navigationItems.get(itemId);
-		var thumb = item.get('thumbnail');
-		if (thumb) {
-			Backbone.trigger('referenceImageChange', thumb);
-		}
-	},
-	restoreReferenceImage: function(event) {
-		Backbone.trigger('referenceImageRestore');
 	},
 	toggleCollapsibleList: function(event) {
 		// determine status of clicked li
