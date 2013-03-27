@@ -145,6 +145,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		// bind section titles to navigate
 		list.find('li div.navTitle').on('click', function(event) {
 			var sectionId = $(this).parent().attr('data-section_id');
+			that.closeDrawer();
 			app.router.navigate("/section/" + sectionId, {trigger: true});
 		});
 	},
