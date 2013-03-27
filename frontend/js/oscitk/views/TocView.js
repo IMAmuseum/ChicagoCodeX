@@ -23,7 +23,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			// set the section image url and render
 			var navItems = app.collections.navigationItems.where({id: section.id});
 			if (navItems.length > 0) {
-				this.sectionImageUrl = this.referenceImageUrl = navItems[0].get('thumbnail');
+				this.sectionImageUrl = navItems[0].get('thumbnail');
 				// let the referenceImageView know about the image
 				Backbone.trigger('referenceImageLoaded', {imageUrl: this.sectionImageUrl});
 			}
@@ -68,7 +68,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	render: function() {
 		// render and place content
 		this.$el.html(this.template({
-			referenceImageUrl: this.referenceImageUrl,
+			referenceImageUrl: this.sectionImageUrl,
 			navTree: this.navTree
 		}));
 		this.renderCollapsibleList();
@@ -80,7 +80,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	},
 	renderNavTree: function() {
 		var topLevelItems = app.collections.navigationItems.where({parent: null});
-		
+
 		// build the markup for the navigation menu
 		var markup = $('<ul class="collapsibleList"></ul>');
 		for (var i = 0; i < topLevelItems.length; i++) {
@@ -94,7 +94,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			.attr('data-section_id', item.id)
 			.append('<div class="navArrowContainer"></div>')
 			.append('<div class="navTitle">' + item.get('title') + '</div>');
-		
+
 		// get the children of this item and render them too
 		var children = app.collections.navigationItems.where({parent: item});
 		for (var i = 0; i < children.length; i++) {
@@ -112,10 +112,10 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		navigation.css('height', navHeight + 'px');
 
 		var list = this.$el.find('ul.collapsibleList').first();
-		
+
 		// hide all but the top level items
 		list.find('ul').addClass('collapsed').hide();
-		
+
 		// for each li that has a sibling ul, bind it's click to show the below listings
 		list.find('li + ul')
 			.prev()
@@ -129,13 +129,17 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 				var item  = app.collections.navigationItems.get(itemId);
 				var thumb = item.get('thumbnail');
 				if (thumb) {
-					that.referenceImageUrl = thumb;
-					that.render();
+					var refImg = that.$el.find('#toc-reference-image img').first();
+					if (refImg) {
+						refImg.attr('src', thumb);
+					}
 				}
 			})
 			.bind('mouseleave', function(event) {
-				that.referenceImageUrl = this.sectionImageUrl;
-				that.render();
+				var refImg = that.$el.find('#toc-reference-image img').first();
+				if (refImg) {
+					refImg.attr('src', that.sectionImageUrl);
+				}
 			});
 
 		// bind section titles to navigate
