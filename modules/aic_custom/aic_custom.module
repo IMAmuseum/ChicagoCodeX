@@ -179,37 +179,37 @@ function aic_custom_ncx_generate_navmap(&$vars) {
     return $output;
 }
 
-function aic_custom_osci_tk_webapp_custom() {
-    drupal_add_css('frontend/css/common.css');
-    drupal_add_css('frontend/css/toolbar.css');
-    drupal_add_css('frontend/css/title.css');
-    drupal_add_css('frontend/css/section.css');
-    drupal_add_css('frontend/css/multiColumnSection.css');
-    drupal_add_css('frontend/css/referenceImage.css');
-    drupal_add_css('frontend/css/toc.css');
-    drupal_add_css('frontend/css/footnotes.css');
-    drupal_add_css('frontend/css/figures.css');
-    drupal_add_css('frontend/css/layered_image.css');
-    drupal_add_css('frontend/css/navigation.css');
-    drupal_add_css('frontend/css/paragraphs.css');
-    drupal_add_css('frontend/css/notes.css');
-    drupal_add_css('frontend/css/glossary.css');
-    drupal_add_css('frontend/css/search.css');
+function aic_custom_osci_tk_webapp_custom_alter($js, $css) {
+    $css[] = "/frontend/css/common.css";
+    $css[] = "/frontend/css/toolbar.css";
+    $css[] = "/frontend/css/title.css";
+    $css[] = "/frontend/css/section.css";
+    $css[] = "/frontend/css/multiColumnSection.css";
+    $css[] = "/frontend/css/referenceImage.css";
+    $css[] = "/frontend/css/toc.css";
+    $css[] = "/frontend/css/footnotes.css";
+    $css[] = "/frontend/css/figures.css";
+    $css[] = "/frontend/css/layered_image.css";
+    $css[] = "/frontend/css/navigation.css";
+    $css[] = "/frontend/css/paragraphs.css";
+    $css[] = "/frontend/css/notes.css";
+    $css[] = "/frontend/css/glossary.css";
+    $css[] = "/frontend/css/search.css";
 
-    drupal_add_js("frontend/js/oscitk/views/AppView.js");
-    drupal_add_js("frontend/js/oscitk/views/TitleView.js");
-    drupal_add_js("frontend/js/oscitk/views/ToolbarView.js");
-    drupal_add_js("frontend/js/oscitk/views/ToolbarItemView.js");
-    drupal_add_js("frontend/js/oscitk/views/TextEnlargeView.js");
-    drupal_add_js("frontend/js/oscitk/views/TextReduceView.js");
-    drupal_add_js("frontend/js/oscitk/views/PrintView.js");
-    drupal_add_js("frontend/js/oscitk/views/AccountView.js");
-    drupal_add_js("frontend/js/oscitk/views/SearchView.js");
-    drupal_add_js("frontend/js/oscitk/views/TocView.js");
-    drupal_add_js("frontend/js/oscitk/views/BottomDrawerView.js");
-    drupal_add_js("frontend/js/oscitk/views/FootnotesView.js");
-    drupal_add_js("frontend/js/oscitk/views/FiguresView.js");
-    drupal_add_js("frontend/js/oscitk/views/GlossaryView.js");
-    drupal_add_js("frontend/js/oscitk/views/PersistentNotesView.js");
-    drupal_add_js("frontend/js/oscitk/views/ReferenceImageView.js");
+    $js[] = "/frontend/js/oscitk/views/AppView.js";
+    $js[] = "/frontend/js/oscitk/views/TitleView.js";
+    $js[] = "/frontend/js/oscitk/views/ToolbarView.js";
+    $js[] = "/frontend/js/oscitk/views/ToolbarItemView.js";
+    $js[] = "/frontend/js/oscitk/views/TextEnlargeView.js";
+    $js[] = "/frontend/js/oscitk/views/TextReduceView.js";
+    $js[] = "/frontend/js/oscitk/views/PrintView.js";
+    $js[] = "/frontend/js/oscitk/views/AccountView.js";
+    $js[] = "/frontend/js/oscitk/views/SearchView.js";
+    $js[] = "/frontend/js/oscitk/views/TocView.js";
+    $js[] = "/frontend/js/oscitk/views/BottomDrawerView.js";
+    $js[] = "/frontend/js/oscitk/views/FootnotesView.js";
+    $js[] = "/frontend/js/oscitk/views/FiguresView.js";
+    $js[] = "/frontend/js/oscitk/views/GlossaryView.js";
+    $js[] = "/frontend/js/oscitk/views/PersistentNotesView.js";
+    $js[] = "/frontend/js/oscitk/views/ReferenceImageView.js";
 }
