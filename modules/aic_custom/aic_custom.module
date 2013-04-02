@@ -179,7 +179,7 @@ function aic_custom_ncx_generate_navmap(&$vars) {
     return $output;
 }
 
-function aic_custom_osci_tk_webapp_custom_alter($js, $css) {
+function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
     $css[] = "/frontend/css/common.css";
     $css[] = "/frontend/css/toolbar.css";
     $css[] = "/frontend/css/title.css";

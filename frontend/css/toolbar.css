@@ -40,31 +40,34 @@ div.toolbar-item {
 	margin: 0 3px;
 	vertical-align: middle;
 }
-div.textEnlarge-toolbar-item {
+div.toolbar-item:after {
+	background: none;
+}
+div.TextEnlarge-toolbar-item {
 	background: url('../img/iconFontIncrease.png') no-repeat center center;
 	height: 26px;
 	width: 26px;
 	text-indent: 9999px;
 }
-div.textReduce-toolbar-item {
+div.TextReduce-toolbar-item {
 	background: url('../img/iconFontDecrease.png') no-repeat center center;
 	height: 26px;
 	width: 26px;
 	text-indent: 9999px;
 }
-div.print-toolbar-item {
+div.Print-toolbar-item {
 	background: url('../img/print_icon.png') no-repeat center center;
 	height: 26px;
 	width: 26px;
 	text-indent: 9999px;
 }
-div.account-toolbar-item {
+div.Account-toolbar-item {
 	background: url('../img/user-icon.png') no-repeat center center;
 	height: 26px;
 	width: 26px;
 	text-indent: 9999px;
 }
-div.search-toolbar-item {
+div.Search-toolbar-item {
 	background: url('../img/search-field.png') no-repeat center center;
 	height: 26px;
 	width: 143px;
