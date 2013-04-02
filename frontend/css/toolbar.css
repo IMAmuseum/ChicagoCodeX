@@ -40,6 +40,9 @@ div.toolbar-item {
 	margin: 0 3px;
 	vertical-align: middle;
 }
+div.toolbar-item:after {
+	background: none;
+}
 div.TextEnlarge-toolbar-item {
 	background: url('../img/iconFontIncrease.png') no-repeat center center;
 	height: 26px;
