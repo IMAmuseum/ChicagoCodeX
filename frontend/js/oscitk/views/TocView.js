@@ -97,10 +97,12 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 
 		// get the children of this item and render them too
 		var children = app.collections.navigationItems.where({parent: item});
-		for (var i = 0; i < children.length; i++) {
-			var ul = $('<ul></ul>')
-				.append(this.renderNavSubTree(children[i]));
-			itemMarkup = itemMarkup.after(ul);
+		if (children.length > 0) {
+			var ul = $('<ul></ul>');
+			for (var i = 0; i < children.length; i++) {
+				ul.append(this.renderNavSubTree(children[i]));
+			}
+			itemMarkup = itemMarkup.append(ul);
 		}
 		return itemMarkup;
 	},
@@ -112,7 +114,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		navigation.css('height', navHeight + 'px');
 
 		var list = this.$el.find('ul.collapsibleList').first();
-
+		
 		// hide all but the top level items
 		list.find('ul').addClass('collapsed').hide();
 
