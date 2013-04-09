@@ -162,6 +162,6 @@ a.footnote-reference {
 	background: url('../img/icon-figref-close.png') no-repeat left top;
 	left:71px;
 }
-a.cross-link {
+a {
 	text-decoration: none;
 }
