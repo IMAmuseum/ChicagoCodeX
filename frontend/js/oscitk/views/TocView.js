@@ -36,8 +36,8 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			// find any vertical nav arrows and click them to close
 			this.$el.find('li.V').click();
 			// find parents of the li that are horizontal and click
-			li.parents('ul').each(function() {
-				$(this).children('li.H').click();
+			li.parents('li.H').each(function() {
+				$(this).click();
 			});
 		});
 	},
@@ -118,9 +118,9 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		// hide all but the top level items
 		list.find('ul').addClass('collapsed').hide();
 
-		// for each li that has a sibling ul, bind it's click to show the below listings
-		list.find('li + ul')
-			.prev()
+		// for each li that has a descendant ul, bind it's click to show the below listings
+		list.find('li > ul')
+			.parent()
 			.addClass('navArrow H')
 			.bind('click', {view: this}, this.toggleCollapsibleList);
 
@@ -152,22 +152,26 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		});
 	},
 	toggleCollapsibleList: function(event) {
-		// determine status of clicked li
-		var li = $(event.currentTarget);
-		var closed = li.hasClass('H');
-		if (closed) {
-			event.data.view.showCollapsibleList(li);
-		}
-		else {
-			event.data.view.hideCollapsibleList(li);
+		// only catch the nearest li click
+		if (!event.isDefaultPrevented()) {
+			event.preventDefault();
+			// determine status of clicked li
+			var li = $(event.currentTarget);
+			var closed = li.hasClass('H');
+			if (closed) {
+				event.data.view.showCollapsibleList(li);
+			}
+			else {
+				event.data.view.hideCollapsibleList(li);
+			}
 		}
 	},
 	showCollapsibleList: function(li) {
-		// reclass as Vertical Arrow, bind the click, and open the siblings
+		// reclass as Vertical Arrow, bind the click, and open the child ul
 		li.removeClass('H')
 			.addClass('V')
 			// unhide the sibling ul
-			.siblings('ul')
+			.children('ul')
 			.removeClass('collapsed')
 			.addClass('expanded')
 			.slideDown();
@@ -176,7 +180,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		// reclass as Horizontal Arrow and bind the click and open the sibling ul
 		li.removeClass('V')
 			.addClass('H')
-			.siblings('ul')
+			.children('ul')
 			.removeClass('expanded')
 			.addClass('collapsed')
 			.slideUp();

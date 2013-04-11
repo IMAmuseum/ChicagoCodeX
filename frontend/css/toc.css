@@ -96,14 +96,17 @@
 #toc-navigation ul.collapsibleList > ul > ul > ul > ul li.navArrow {
 	background-color: #ddd;
 }
-#toc-navigation li.navArrow .navArrowContainer {
+#toc-navigation li.navArrow > .navArrowContainer {
 	float: right;
 	margin: 5px;
 	height: 16px;
 	width: 16px;
+}
+#toc-navigation li.H > .navArrowContainer {
 	background: url('../img/bg-nav-arrow.png') no-repeat center;
 }
-#toc-navigation .V .navArrowContainer {
+#toc-navigation li.V > .navArrowContainer {
+	background: url('../img/bg-nav-arrow.png') no-repeat center;
 	transform: rotate(90deg);
 	-webkit-transform: rotate(90deg);
 	-moz-transform: rotate(90deg);
