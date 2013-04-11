@@ -72,28 +72,28 @@
 	background-color: #ccc;
 	border-bottom: 1px solid #888;
 }
-#toc-navigation ul.collapsibleList > ul > ul > li {
+#toc-navigation ul.collapsibleList > li > ul > li {
 	background-color: #ddd;
 }
-#toc-navigation ul.collapsibleList > ul > ul > ul > li {
+#toc-navigation ul.collapsibleList > li > ul > li > ul > li {
 	background-color: #eee;
 }
-#toc-navigation ul.collapsibleList > ul > ul > ul > ul li {
+#toc-navigation ul.collapsibleList > li > ul > li > ul > li > ul > li {
 	background-color: #fff;
 }
 #toc-navigation ul.collapsibleList li.navArrow {
 	background-color: #999;
 }
-#toc-navigation ul.collapsibleList > ul > li.navArrow {
+#toc-navigation ul.collapsibleList > li > ul > li.navArrow {
 	background-color: #aaa;
 }
-#toc-navigation ul.collapsibleList > ul > ul > li.navArrow {
+#toc-navigation ul.collapsibleList > li > ul > li > ul > li.navArrow {
 	background-color: #bbb;
 }
-#toc-navigation ul.collapsibleList > ul > ul > ul > li.navArrow {
+#toc-navigation ul.collapsibleList > li > ul > li > ul > li > ul > li.navArrow {
 	background-color: #ccc;
 }
-#toc-navigation ul.collapsibleList > ul > ul > ul > ul li.navArrow {
+#toc-navigation ul.collapsibleList > li > ul > li > ul > li > ul > li > ul li.navArrow {
 	background-color: #ddd;
 }
 #toc-navigation li.navArrow > .navArrowContainer {
