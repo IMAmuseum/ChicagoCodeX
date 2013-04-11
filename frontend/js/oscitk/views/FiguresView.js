@@ -4,6 +4,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 	events: {
 		"click .drawer-handle": "toggleDrawer",
 		"click a.view-fullscreen": "onFigurePreviewClicked",
+		"click img.figure-preview": "onFigurePreviewClicked",
 		"click a.view-in-context": "onViewInContextClicked",
 		"click #figures-nav-next .figures-indicator": "onNextPageClicked",
 		"click #figures-nav-prev .figures-indicator": "onPrevPageClicked"
