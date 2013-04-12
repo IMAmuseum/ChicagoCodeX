@@ -85,12 +85,18 @@
 	float: left;
 }
 #figures-list .figure-preview {
-	width: 240px;
-	height: 240px;
+	max-width: 240px;
+	max-height: 240px;
 	cursor: pointer;
 	background-position: center;
 	background-size: cover;
 	background: url('../img/osci-default-figure.png');
+}
+#figures-list .figure-preview-wrapper {
+	height: 240px;
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
 }
 #figures-list .figure-info {
 	max-width: 208px;

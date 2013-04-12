@@ -5,21 +5,23 @@
 		<ul id="figures-list">
 			<% _.each(figures, function(figure) { %>
 				<li>
-					<figure class='preview' data-figure-id="<%= figure.id %>">
+					<figure class="preview" data-figure-id="<%= figure.id %>">
+						<div class="figure-preview-wrapper">
 						<% if (figure.get('thumbnail_url') != undefined) { %>
-							<img class='figure-preview' src='<%= figure.get('thumbnail_url') %>'/>
+							<img class="figure-preview" src="<%= figure.get('thumbnail_url') %>"/>
 						<% } else { %>
-							<div class='figure-preview'>&nbsp;</div>
+							<div class="figure-preview">&nbsp;</div>
 						<% } %>
-						<div class='figure-info'>
-							<!--<h3 class='title'>Figure Title?</h3>-->
-							<!--<p class='meta-info'>meta info | more meta</p>-->
-							<div class='caption'>
+						</div>
+						<div class="figure-info">
+							<!--<h3 class="title">Figure Title?</h3>-->
+							<!--<p class="meta-info">meta info | more meta</p>-->
+							<div class="caption">
 								<%= figure.get('caption') %>
 							</div>
 						</div>
-						<a class='view-fullscreen'></a>
-						<a class='view-in-context'></a>
+						<a class="view-fullscreen"></a>
+						<a class="view-in-context"></a>
 					</figure>
 				</li>
 			<% }); %>
