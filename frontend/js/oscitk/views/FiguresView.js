@@ -39,7 +39,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		var itemWidth = this.$el.find('#figures-list li').first().outerWidth();
 		var itemCount = this.collection.length;
 		this.$el.find('#figures-list').width(itemWidth * itemCount);
-		
+
 		// justify contents across container width
 		var containerWidth = this.$el.find('#figures-list-container').width();
 		var numToFit = Math.floor(containerWidth / itemWidth);
@@ -178,22 +178,42 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 			width = element.width(),
 			temp = $("<div>", {
 				css : {
-					position : "absolute",
-					top : (offset.top - 90) + "px",
-					left : offset.left - 160 + (width / 2) + "px",
-					margin : 0,
-					width : "80px",
-					height : "80px",
-					border : "6px solid #F00",
+					"position": "absolute",
+					"top": (offset.top - 90) + "px",
+					"left": offset.left - 160 + (width / 2) + "px",
+					"margin": 0,
+					"width": "80px",
+					"height": "80px",
+					"border": "6px solid #F00",
 					"border-radius" : "46px",
 					"-webkit-animation-duration" : "400ms",
-					"-webkit-animation-iteration-count" : "3",
+					"-moz-animation-duration": "400ms",
+					"-ms-animation-duration" : "400ms",
+					"-o-animation-duration" : "400ms",
+					"animation-duration" : "400ms",
+					"-webkit-animation-iteration-count" : "1",
+					"-moz-animation-iteration-count" : "1",
+					"-ms-animation-iteration-count" : "1",
+					"-o-animation-iteration-count" : "1",
+					"animation-iteration-count" : "1",
 					"-webkit-animation-name" : "pulse",
+					"-moz-animation-name" : "pulse",
+					"-ms-animation-name" : "pulse",
+					"-o-animation-name" : "pulse",
+					"animation-name" : "pulse",
 					"-webkit-animation-direction" : "normal",
-					"-webkit-box-shadow": "0px 0px 10px #888"
+					"-moz-animation-direction" : "normal",
+					"-ms-animation-direction" : "normal",
+					"-o-animation-direction" : "normal",
+					"animation-direction" : "normal",
+					"-webkit-box-shadow": "0px 0px 10px #888",
+					"-moz-box-shadow": "0px 0px 10px #888",
+					"-ms-box-shadow": "0px 0px 10px #888",
+					"-o-box-shadow": "0px 0px 10px #888",
+					"box-shadow": "0px 0px 10px #888"
 				}
 			}).appendTo("#section");
-		
+
 		setTimeout(function(){temp.remove();}, 1100);
 	},
 	translateToPage: function() {
@@ -201,7 +221,16 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		var list = this.$el.find('#figures-list');
 		var pos = -(width * (this.page - 1));
 		list.css({
-			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)'
+			'-webkit-transition-duration': '400ms',
+			'-moz-transition-duration': '400ms',
+			'-ms-transition-duration': '400ms',
+			'-o-transition-duration': '400ms',
+			'transition-duration': '400ms',
+			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)',
+			'-moz-transform': 'translate3d(' + pos + 'px, 0px, 0px)',
+			'-ms-transform': 'translate3d(' + pos + 'px, 0px, 0px)',
+			'-o-transform': 'translate3d(' + pos + 'px, 0px, 0px)',
+			'transform': 'translate3d(' + pos + 'px, 0px, 0px)'
 		});
 	},
 	onNextPageClicked: function() {
