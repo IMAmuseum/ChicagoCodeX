@@ -52,7 +52,16 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
 		var list = this.$el.find('#footnotes-list');
 		var pos = -(width * (this.page - 1));
 		list.css({
-			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)'
+			'-webkit-transition-duration': '400ms',
+			'-moz-transition-duration': '400ms',
+			'-ms-transition-duration': '400ms',
+			'-o-transition-duration': '400ms',
+			'transition-duration': '400ms',
+			'-webkit-transform': 'translate3d(' + pos + 'px, 0px, 0px)',
+			'-moz-transform': 'translate3d(' + pos + 'px, 0px, 0px)',
+			'-ms-transform': 'translate3d(' + pos + 'px, 0px, 0px)',
+			'-o-transform': 'translate3d(' + pos + 'px, 0px, 0px)',
+			'transform': 'translate3d(' + pos + 'px, 0px, 0px)'
 		});
 	},
 	onNextPageClicked: function() {
