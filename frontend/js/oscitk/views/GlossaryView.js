@@ -14,6 +14,9 @@ OsciTk.views.Glossary = OsciTk.views.BottomDrawerView.extend({
 			this.collection = glossary;
 			this.render();
 		});
+		this.listenTo(Backbone, 'routedToSection', function() {
+			this.render();
+		});
 	},
 	render: function() {
 		this.$el.css('display', 'block');
