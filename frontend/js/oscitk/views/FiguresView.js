@@ -10,6 +10,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		"click #figures-nav-prev .figures-indicator": "onPrevPageClicked"
 	},
 	initialize: function() {
+		this._super('initialize');
 		this.collection = app.collections.figures;
 		this.page = 1;
 		this.maxPage = 1;
@@ -18,7 +19,6 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		this.listenTo(Backbone, 'figuresLoaded', function(figures) {
 			this.render();
 		});
-		this._super('initialize');
 	},
 	render: function() {
 		this.$el.css('display', 'block');

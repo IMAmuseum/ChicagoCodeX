@@ -9,11 +9,11 @@ OsciTk.views.Glossary = OsciTk.views.BottomDrawerView.extend({
 		'click #glossary-term-listing-mobile li': 'expandTerm'
 	},
 	initialize: function() {
+		this._super('initialize');
 		this.listenTo(Backbone, 'osci.glossary.loaded', function(glossary) {
 			this.collection = glossary;
 			this.render();
 		});
-		this._super('initialize');
 	},
 	render: function() {
 		this.$el.css('display', 'block');

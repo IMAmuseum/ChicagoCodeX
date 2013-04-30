@@ -7,6 +7,7 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
 		"click #footnotes-nav-prev .footnotes-indicator": "onPrevPageClicked"
 	},
 	initialize: function() {
+		this._super('initialize');
 		this.collection = app.collections.footnotes;
 		this.page = 1;
 
@@ -31,8 +32,6 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
 				ref.bind('click', {'caller': this}, this.onFootnoteRefClicked);
 			}
 		});
-
-		this._super('initialize');
 	},
 	render: function() {
 		this.$el.css('display', 'block');
