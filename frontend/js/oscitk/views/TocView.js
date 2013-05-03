@@ -114,7 +114,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		navigation.css('height', navHeight + 'px');
 
 		var list = this.$el.find('ul.collapsibleList').first();
-		
+
 		// hide all but the top level items
 		list.find('ul').addClass('collapsed').hide();
 
