@@ -72,7 +72,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		this.setDrawerLastPosition();
 	},
 	onFigurePreviewClicked: function(event_data) {
-		var figId = $(event_data.target).parent('figure').attr('data-figure-id');
+		var figId = $(event_data.target).parents('figure').attr('data-figure-id');
 		var figureView = app.views.figures[figId];
 		if (figureView && figureView.fullscreen) {
 			figureView.fullscreen();
