@@ -109,7 +109,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	renderCollapsibleList: function() {
 		var that = this;
 		// calculate and set a fixed height on the navigation area
-		var navigation = $('#toc-navigation');
+		var navigation = this.$el.find('#toc-navigation');
 		var navHeight = window.innerHeight - navigation.offset().top;
 		navigation.css('height', navHeight + 'px');
 
