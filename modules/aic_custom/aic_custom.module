@@ -110,12 +110,12 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
 
         if (empty($node->field_active['und']) || (!empty($node->field_active['und']) && $node->field_active['und'][0]['value'])) {
             $link = $vars['for_export'] ? $leaf['filename'] : $leaf['url'];
-            $attrs = "data-section_id='{$leaf['nid']}'";
-            $attrs .= " data-subtitle='{$leaf['subtitle']}'";
-            $attrs .= " data-timestamp='{$leaf['timestamp']}'";
-            $attrs .= " data-thumbnail='{$leaf['thumbnail']}'";
-            $attrs .= " data-active='{$leaf['active']}'";
-            $output .= "<a href='{$link}' {$attrs}>{$leaf['title']}</a>";
+            $attrs = "data-section_id=\"{$leaf['nid']}\"";
+            $attrs .= " data-subtitle=\"{$leaf['subtitle']}\"";
+            $attrs .= " data-timestamp=\"{$leaf['timestamp']}\"";
+            $attrs .= " data-thumbnail=\"{$leaf['thumbnail']}\"";
+            $attrs .= " data-active=\"{$leaf['active']}\"";
+            $output .= "<a href=\"{$link}\" {$attrs}>{$leaf['title']}</a>";
         } else {
             $output .= $leaf['title'];
         }

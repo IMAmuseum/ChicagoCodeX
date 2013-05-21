@@ -27,7 +27,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 			figures: this.collection.sortBy(function(figure) {
 				var figNum = figure.get('title').toLowerCase();
 				var matches = figNum.match(/fig. (\d+)/);
-				if (matches.length < 2) {
+				if (!matches || matches.length < 2) {
 					return 0;
 				}
 				return parseInt(matches[1], 10);
@@ -36,7 +36,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		this.$el.html(this.template(data));
 
 		// set figures list width
-		var itemWidth = this.$el.find('#figures-list li').first().outerWidth();
+		var itemWidth = this.$el.find('#figures-list li').first().outerWidth() || 1;
 		var itemCount = this.collection.length;
 		this.$el.find('#figures-list').width(itemWidth * itemCount);
 
