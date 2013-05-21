@@ -36,7 +36,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		this.$el.html(this.template(data));
 
 		// set figures list width
-		var itemWidth = this.$el.find('#figures-list li').first().outerWidth();
+		var itemWidth = this.$el.find('#figures-list li').first().outerWidth() || 1;
 		var itemCount = this.collection.length;
 		this.$el.find('#figures-list').width(itemWidth * itemCount);
 
