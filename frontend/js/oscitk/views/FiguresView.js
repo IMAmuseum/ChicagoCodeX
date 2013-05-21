@@ -27,7 +27,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 			figures: this.collection.sortBy(function(figure) {
 				var figNum = figure.get('title').toLowerCase();
 				var matches = figNum.match(/fig. (\d+)/);
-				if (matches.length < 2) {
+				if (!matches || matches.length < 2) {
 					return 0;
 				}
 				return parseInt(matches[1], 10);
