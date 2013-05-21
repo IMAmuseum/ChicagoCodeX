@@ -1,10 +1,10 @@
 <?php
 
 function aic_custom_alter_epub_toc($toc) {
-    // alter the toc to add thumbnails for each section
-    // - thumbnails are found by taking the thumbnail field of the first found plate figure's node
+    // alter the toc to add thumbnails and active/inactive flag for each section
     foreach ($toc as &$tocItem) {
         $section = node_load($tocItem['nid']);
+        // - thumbnails are found by taking the thumbnail field of the first found plate figure's node
         if (isset($section->field_figure['und'])) {
             foreach($section->field_figure['und'] as $figure) {
                 // find the first plate image
@@ -14,13 +14,22 @@ function aic_custom_alter_epub_toc($toc) {
                     if ($asset) {
                         if (isset($asset->field_image['und'][0])) {
                             $tocItem['thumbnail'] = image_style_url('osci_tk_thumbnail_square', $asset->field_image['und'][0]['uri']);
+                            break;
                         }
                     }
-                    continue;
                 }
             }
         }
+        // - active flag found on each section, to be added to TOC
+        if (isset($section->field_active['und'][0]) && $section->field_active['und'][0]['value'] === "1") {
+            $tocItem['active'] = true;
+        }
+        else {
+            $tocItem['active'] = false;
+
+        }
     }
+    dd($toc, 'toc');
     return array($toc);
 }
 
@@ -106,6 +115,7 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
             $attrs .= " data-subtitle=\"{$leaf['subtitle']}\"";
             $attrs .= " data-timestamp=\"{$leaf['timestamp']}\"";
             $attrs .= " data-thumbnail=\"{$leaf['thumbnail']}\"";
+            $attrs .= " data-active=\"{$leaf['active']}\"";
             $output .= "<a href=\"{$link}\" {$attrs}>{$leaf['title']}</a>";
         } else {
             $output .= $leaf['title'];
@@ -134,14 +144,14 @@ function aic_custom_navigation_generate_index(&$vars) {
             }    
 
             if (empty($section->field_active['und']) || (!empty($section->field_active['und']) && $section->field_active['und'][0]['value'])) {
-                $list .= "<li><a href=\"{$link}\">{$title}</a></li>";
+                $list .= "<li><a href='{$link}'>{$title}</a></li>";
 
                 // if section has figures, include them in index
                 if (isset($section->field_figure['und']) && count($section->field_figure['und']) > 0) { 
                     for ($i=0; $i < count($section->field_figure['und']); $i++) {
                         $figure = $section->field_figure['und'][$i];
                         $link = $vars['for_export'] ? _osci_tk_epub_node_figure_filename($section->nid, $i) : _osci_tk_epub_node_figure_url($section->nid, $i, $vars['rev_time'], $vars['node']->nid);
-                        $list .= "<li><a href=\"{$link}\">{$title}: Fig. {$i}</a></li>";
+                        $list .= "<li><a href='{$link}'>{$title}: Fig. {$i}</a></li>";
                     }
                 }
             } else {
@@ -180,36 +190,37 @@ function aic_custom_ncx_generate_navmap(&$vars) {
 }
 
 function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
-    $css[] = "/osci-aic/frontend/css/common.css";
-    $css[] = "/osci-aic/frontend/css/toolbar.css";
-    $css[] = "/osci-aic/frontend/css/title.css";
-    $css[] = "/osci-aic/frontend/css/section.css";
-    $css[] = "/osci-aic/frontend/css/multiColumnSection.css";
-    $css[] = "/osci-aic/frontend/css/referenceImage.css";
-    $css[] = "/osci-aic/frontend/css/toc.css";
-    $css[] = "/osci-aic/frontend/css/footnotes.css";
-    $css[] = "/osci-aic/frontend/css/figures.css";
-    $css[] = "/osci-aic/frontend/css/layered_image.css";
-    $css[] = "/osci-aic/frontend/css/navigation.css";
-    $css[] = "/osci-aic/frontend/css/paragraphs.css";
-    $css[] = "/osci-aic/frontend/css/notes.css";
-    $css[] = "/osci-aic/frontend/css/glossary.css";
-    $css[] = "/osci-aic/frontend/css/search.css";
+    $css[] = "/frontend/css/common.css";
+    $css[] = "/frontend/css/toolbar.css";
+    $css[] = "/frontend/css/title.css";
+    $css[] = "/frontend/css/section.css";
+    $css[] = "/frontend/css/multiColumnSection.css";
+    $css[] = "/frontend/css/referenceImage.css";
+    $css[] = "/frontend/css/toc.css";
+    $css[] = "/frontend/css/footnotes.css";
+    $css[] = "/frontend/css/figures.css";
+    $css[] = "/frontend/css/layered_image.css";
+    $css[] = "/frontend/css/navigation.css";
+    $css[] = "/frontend/css/paragraphs.css";
+    $css[] = "/frontend/css/notes.css";
+    $css[] = "/frontend/css/glossary.css";
+    $css[] = "/frontend/css/search.css";
 
-    $js[] = "/osci-aic/frontend/js/oscitk/views/AppView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/TitleView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/ToolbarView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/ToolbarItemView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/TextEnlargeView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/TextReduceView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/PrintView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/AccountView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/SearchView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/TocView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/BottomDrawerView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/FootnotesView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/FiguresView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/GlossaryView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/PersistentNotesView.js";
-    $js[] = "/osci-aic/frontend/js/oscitk/views/ReferenceImageView.js";
+    $js[] = "/frontend/js/oscitk/collections/NavigationItemsCollection.js";
+    $js[] = "/frontend/js/oscitk/views/AppView.js";
+    $js[] = "/frontend/js/oscitk/views/TitleView.js";
+    $js[] = "/frontend/js/oscitk/views/ToolbarView.js";
+    $js[] = "/frontend/js/oscitk/views/ToolbarItemView.js";
+    $js[] = "/frontend/js/oscitk/views/TextEnlargeView.js";
+    $js[] = "/frontend/js/oscitk/views/TextReduceView.js";
+    $js[] = "/frontend/js/oscitk/views/PrintView.js";
+    $js[] = "/frontend/js/oscitk/views/AccountView.js";
+    $js[] = "/frontend/js/oscitk/views/SearchView.js";
+    $js[] = "/frontend/js/oscitk/views/TocView.js";
+    $js[] = "/frontend/js/oscitk/views/BottomDrawerView.js";
+    $js[] = "/frontend/js/oscitk/views/FootnotesView.js";
+    $js[] = "/frontend/js/oscitk/views/FiguresView.js";
+    $js[] = "/frontend/js/oscitk/views/GlossaryView.js";
+    $js[] = "/frontend/js/oscitk/views/PersistentNotesView.js";
+    $js[] = "/frontend/js/oscitk/views/ReferenceImageView.js";
 }

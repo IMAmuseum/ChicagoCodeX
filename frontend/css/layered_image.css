@@ -310,6 +310,9 @@ div.layered_image-asset .ui-slider-handle {
 	padding-top: 5px;
 	margin-bottom: 5px;
 }
+.ca-ui-annotation-selector-list li:first-of-type {
+    border-top: none;
+}
 
 .ca-ui-annotation-selector-list li span {
 	float: left;
@@ -339,7 +342,9 @@ div.layered_image-asset .ui-slider-handle {
 .ca-ui-annotation-selector-item-box.filled {
 	background-color: #fff;
 }
-
+.ca-ui-annotation-selector .title {
+    display: none;
+}
 .ca-ui-layer-selector-popup {
 	position: absolute;
 	margin: 0;

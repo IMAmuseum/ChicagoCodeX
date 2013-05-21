@@ -92,6 +92,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		// create item's li tag
 		var itemMarkup = $('<li></li>')
 			.attr('data-section_id', item.id)
+			.attr('data-active', item.get('active'))
 			.append('<div class="navArrowContainer"></div>')
 			.append('<div class="navTitle">' + item.get('title') + '</div>');
 
@@ -109,12 +110,12 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	renderCollapsibleList: function() {
 		var that = this;
 		// calculate and set a fixed height on the navigation area
-		var navigation = $('#toc-navigation');
+		var navigation = this.$el.find('#toc-navigation');
 		var navHeight = window.innerHeight - navigation.offset().top;
 		navigation.css('height', navHeight + 'px');
 
 		var list = this.$el.find('ul.collapsibleList').first();
-		
+
 		// hide all but the top level items
 		list.find('ul').addClass('collapsed').hide();
 
@@ -144,12 +145,31 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 				}
 			});
 
-		// bind section titles to navigate
+		// bind section titles to navigate on click
 		list.find('li div.navTitle').on('click', function(event) {
-			var sectionId = $(this).parent().attr('data-section_id');
-			that.closeDrawer();
-			app.router.navigate("/section/" + sectionId, {trigger: true});
+			event.preventDefault();
+			var active = $(this).parent().attr('data-active');
+			if (active === 'true') {
+				var sectionId = $(this).parent().attr('data-section_id');
+				that.closeDrawer();
+				app.router.navigate("/section/" + sectionId, {trigger: true});
+			}
 		});
+
+		// bind non-active titles to show unavailable message on hover
+		list.find('li[data-active="false"] div.navTitle').qtip({
+			content: {
+				text: 'The complete version of Renoir Paintings and Drawings at the Art Institute of Chicago will include entries for the following works of art.'
+			},
+			position: {
+				my: 'left center',
+				at: 'right center'
+			},
+			style: {
+				classes: 'qtip-dark qtip-section-unavailable'
+			}
+		});
+
 	},
 	toggleCollapsibleList: function(event) {
 		// only catch the nearest li click
