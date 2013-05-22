@@ -29,7 +29,6 @@ function aic_custom_alter_epub_toc($toc) {
 
         }
     }
-    dd($toc, 'toc');
     return array($toc);
 }
 
