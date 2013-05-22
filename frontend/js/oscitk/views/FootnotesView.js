@@ -42,7 +42,7 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
 		var containerWidth = this.$el.find('#footnotes-list-container').width();
 		var listWidth = containerWidth * this.collection.length;
 		this.$el.find('#footnotes-list').width(listWidth);
-		this.$el.find('#footnotes-list li').width(containerWidth);
+		this.$el.find('#footnotes-list li').outerWidth(containerWidth);
 
 		this.setDrawerLastPosition();
 	},
