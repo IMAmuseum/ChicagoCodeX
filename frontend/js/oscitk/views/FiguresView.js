@@ -25,14 +25,13 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		// prepare data for display, getting a sorted copy of the figures collection
 		var data = {
 			figures: this.collection.sortBy(function(figure) {
-				var figNum = figure.get('title').toLowerCase();
-				var matches = figNum.match(/fig. (\d+)/);
-				if (!matches || matches.length < 2) {
-					return 0;
-				}
-				return parseInt(matches[1], 10);
+				return parseInt(figure.get('order'), 10);
 			})
 		};
+		// remove plate image if present
+		if (data.figures.length > 0 && data.figures[0].get('plate') === true) {
+			data.figures.shift();
+		}
 		this.$el.html(this.template(data));
 
 		// set figures list width
