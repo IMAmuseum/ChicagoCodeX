@@ -20,6 +20,10 @@ OsciTk.collections.NavigationItems = OsciTk.collections.NavigationItems.extend({
 					uri: item.a['href'],
 					active: (item.a['data-active'] == "1") ? true : false
 				};
+				// if thumbnail is from figure, note the index
+				if (typeof(item.a['data-thumbnail_figure_index']) !== 'undefined') {
+					parsedItem.thumbnail_figure_index = item.a['data-thumbnail_figure_index'];
+				}
 				this.add(parsedItem);
 
 				var navItem = this.at(this.length - 1);

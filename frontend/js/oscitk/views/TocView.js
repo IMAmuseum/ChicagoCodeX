@@ -25,7 +25,11 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			if (navItems.length > 0) {
 				this.sectionImageUrl = navItems[0].get('thumbnail');
 				// let the referenceImageView know about the image
-				Backbone.trigger('referenceImageLoaded', {imageUrl: this.sectionImageUrl});
+				Backbone.trigger('referenceImageLoaded', {
+					imageUrl: this.sectionImageUrl,
+					section_id: app.models.section.id,
+					figure_index: navItems[0].get('thumbnail_figure_index')
+				});
 			}
 			this.render();
 			// reset bold on all section li tags
