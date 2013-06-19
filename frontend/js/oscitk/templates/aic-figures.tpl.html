@@ -21,7 +21,11 @@
 							</div>
 						</div>
 						<a class="view-fullscreen"></a>
+						<% if (figure.get('count') > 1) { %>
+						<a class="view-in-context multi-occurence"></a>
+						<% } else { %>
 						<a class="view-in-context"></a>
+						<% } %>
 					</figure>
 				</li>
 			<% }); %>

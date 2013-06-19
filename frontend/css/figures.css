@@ -100,7 +100,7 @@
 	text-align: center;
 }
 #figures-list .figure-info {
-	max-width: 208px;
+	max-width: 198px;
 }
 #figures-list .caption {
 	max-height: 1.25em;
@@ -115,6 +115,10 @@
 	background: url('../img/icon-goto.png');
 	float: right;
 	opacity: .6;
+}
+#figures-list a.view-in-context.multi-occurence {
+	background: url('../img/icon-goto-multi.png');
+	width: 26px;
 }
 #figures-list a.view-in-context:hover {
 	opacity: 1;
