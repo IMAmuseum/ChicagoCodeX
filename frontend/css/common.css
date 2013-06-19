@@ -50,6 +50,10 @@ a.footnote-reference {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
+#section.oscitk_multi_column figure.html_figure .figure_content {
+    overflow: auto;
+}
+
 /* figure tables */
 .figure_content table {
 	width:100%;
