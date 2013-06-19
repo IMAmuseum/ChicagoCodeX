@@ -6,7 +6,6 @@ OsciTk.views.ReferenceImage = OsciTk.views.BaseView.extend({
 		this.imageUrl = null;
 
 		this.listenTo(Backbone, 'referenceImageLoaded', function(options) {
-			console.log(options, 'options');
 			this.imageUrl = options.imageUrl;
 			this.section_id = options.section_id;
 			this.figure_index = options.figure_index;
