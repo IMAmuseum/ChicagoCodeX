@@ -20,12 +20,10 @@ OsciTk.views.ReferenceImage = OsciTk.views.BaseView.extend({
 		}));
 	},
 	fullscreen: function() {
-		console.log('click');
 		var url = '/figure/window/' + this.section_id;
 		if (this.figure_index) {
 			url += '/' + this.figure_index;
 		}
-		console.log(url, 'url');
 		window.open(url);
 	}
 });
