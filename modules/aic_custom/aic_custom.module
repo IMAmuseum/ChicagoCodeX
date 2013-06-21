@@ -46,8 +46,20 @@ function aic_custom_alter_epub_toc($toc) {
         }
         else {
             $tocItem['active'] = false;
-
         }
+        // add in the field headings for disply in TOC
+        $fieldInfo = field_info_instances('node', $section->type);
+        $subHeadings = array();
+        $skipFields = array('Footnotes', 'Tombstone');
+        foreach($fieldInfo as $fieldName => $field) {
+            if ($field['display']['epub']['type'] === 'osci_tk_section' && !in_array($field['label'], $skipFields)) {
+                $value = field_get_items('node', $section, $fieldName);
+                if (is_array($value) && strlen(($value['0']['value'])) > 0) {
+                    array_push($subHeadings, array('id' => str_replace("field_", "", $fieldName), 'label' => $field['label']));
+                }
+            }
+        }
+        $tocItem['subHeadings'] = json_encode($subHeadings);
     }
     return array($toc);
 }
@@ -134,6 +146,7 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
             $attrs .= " data-timestamp=\"{$leaf['timestamp']}\"";
             $attrs .= " data-thumbnail=\"{$leaf['thumbnail']}\"";
             $attrs .= " data-active=\"{$leaf['active']}\"";
+            $attrs .= " data-subHead='{$leaf['subHeadings']}'";
             if (isset($leaf['thumbnail_figure_index'])) {
                 $attrs .= " data-thumbnail_figure_index=\"{$leaf['thumbnail_figure_index']}\"";
             }

@@ -18,7 +18,8 @@ OsciTk.collections.NavigationItems = OsciTk.collections.NavigationItems.extend({
 					thumbnail: item.a['data-thumbnail'],
 					timestamp: item.a['data-timestamp'],
 					uri: item.a['href'],
-					active: (item.a['data-active'] == "1") ? true : false
+					active: (item.a['data-active'] == "1") ? true : false,
+					subHeadings: JSON.parse(item.a['data-subHead'])
 				};
 				// if thumbnail is from figure, note the index
 				if (typeof(item.a['data-thumbnail_figure_index']) !== 'undefined') {

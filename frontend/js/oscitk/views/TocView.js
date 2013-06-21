@@ -100,14 +100,29 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			.append('<div class="navArrowContainer"></div>')
 			.append('<div class="navTitle">' + item.get('title') + '</div>');
 
+		var i, ul;
 		// get the children of this item and render them too
 		var children = app.collections.navigationItems.where({parent: item});
 		if (children.length > 0) {
-			var ul = $('<ul></ul>');
-			for (var i = 0; i < children.length; i++) {
+			ul = $('<ul></ul>');
+			for (i = 0; i < children.length; i++) {
 				ul.append(this.renderNavSubTree(children[i]));
 			}
-			itemMarkup = itemMarkup.append(ul);
+			itemMarkup.append(ul);
+		}
+
+		var subHeadings = item.get('subHeadings');
+		if (subHeadings.length > 0) {
+			ul = $('<ul></ul>');
+			for (i = 0; i < subHeadings.length; i++) {
+				var subHead = $('<li></li>')
+					.attr('data-section_id', item.id)
+					.attr('data-active', item.get('active'))
+					.attr('data-field', subHeadings[i].id)
+					.append('<div class="navTitle">' + subHeadings[i].label + '</div>');
+				ul.append(subHead);
+			}
+			itemMarkup.append(ul);
 		}
 		return itemMarkup;
 	},
@@ -155,8 +170,17 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			var active = $(this).parent().attr('data-active');
 			if (active === 'true') {
 				var sectionId = $(this).parent().attr('data-section_id');
+				var routeTo = "/section/" + sectionId;
+				var field = $(this).parent().attr('data-field');
+				if (field) {
+					routeTo += "/" + field + "_anchor";
+				}
 				that.closeDrawer();
-				app.router.navigate("/section/" + sectionId, {trigger: true});
+				if (field && sectionId === app.views.navigationView.currentNavigationItem.id) {
+					Backbone.trigger('navigate', { identifier: field + "_anchor" });
+				} else if (sectionId !== app.views.navigationView.currentNavigationItem.id) {
+					app.router.navigate(routeTo, {trigger: true});
+				}
 			}
 		});
 
