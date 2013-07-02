@@ -290,7 +290,11 @@ function aic_custom_figure_window($section_nid, $figIndex=null) {
 function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     $sectionNode = node_load($data['sectionNid']);
     $cat = '';
-    if ($sectionNode && is_array($sectionNode->field_catalogue_number) && $sectionNode->field_catalogue_number['und'][0]['value']) {
+    if ($sectionNode 
+        && isset($sectionNode->field_catalogue_number) 
+        && is_array($sectionNode->field_catalogue_number) 
+        && $sectionNode->field_catalogue_number['und'][0]['value']) {
+
         $cat = $sectionNode->field_catalogue_number['und'][0]['value'];
     }
 
