@@ -111,7 +111,9 @@ function _aic_custom_glossary_parse_term($match) {
     global $aic_custom_current_tree;
     global $aic_custom_term_count;
 
-    if ($aic_custom_term_count[$aic_custom_current_tree->tid] == 0) {
+    if (isset($aic_custom_term_count[$aic_custom_current_tree->tid]) 
+        && $aic_custom_term_count[$aic_custom_current_tree->tid] == 0) {
+        
         $aic_custom_term_count[$aic_custom_current_tree->tid]++;
         return '<a class="glossary-term" data-tid="' . $aic_custom_current_tree->tid . '">' . $match[0] . '</a>';
     } else {
