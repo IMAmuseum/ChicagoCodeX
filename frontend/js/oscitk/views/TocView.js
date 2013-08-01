@@ -112,7 +112,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		}
 
 		var subHeadings = item.get('subHeadings');
-		if (subHeadings.length > 0) {
+		if (!_.isUndefined(subHeadings) && subHeadings.length > 0) {
 			ul = $('<ul></ul>');
 			for (i = 0; i < subHeadings.length; i++) {
 				var subHead = $('<li></li>')
