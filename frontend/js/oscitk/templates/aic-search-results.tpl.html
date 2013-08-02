@@ -42,17 +42,12 @@
                     -->
 				</div>
 				<div class="search-result-content">
-                    <!--
 					<div class="search-result-section-image">
-						<img src="/sites/default/files/image_assets/1971.577.15.jpg" data-figure_id="fig-134367-1">
+						<img src="<%= result.get('thumbnail') %>" data-id="<%= result.get('id') %>">
 					</div>
-                    -->
 					<div class="search-result-content-entries">
                 <% first = false;} %>
 						<div class="search-result-content-entry" data-id="<%= result.get('id') %>">
-							<div class="search-result-content-entry-title">
-								<%= result.get('bundle') %>
-							</div>
 							<div class="search-result-content-entry-body">
                             <% if (_.isEmpty(result.get('teaser'))) { %>
                                 &nbsp;
@@ -60,6 +55,9 @@
                                 <%= result.get('teaser') %>
                             <% } %>
 							</div>
+                            <div class="search-result-content-entry-title">
+                                <%= result.get('bundle') %>
+                            </div>
 						</div>
             <% }); %>
 					</div>

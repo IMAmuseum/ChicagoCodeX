@@ -23,7 +23,7 @@
   width: 32px;
   padding: 32px 0 0 0;
   overflow: hidden;
-  background: #000000 none;
+  background: #464646 none;
   -moz-border-radius: 32px;
   -webkit-border-radius: 32px;
   border-radius: 32px;
@@ -48,7 +48,7 @@
 #search-container h2 {
 	margin-top: 35px;
 	padding-bottom: 5px;
-	border-bottom: 2px solid #000;
+	border-bottom: 2px solid #464646;
 }
 #search-container .search-form {
 	height: 30px;
@@ -67,7 +67,7 @@
 	font-size: 1em;
 }
 #search-container .search-submit {
-	background: #000;
+	background: #464646;
 	color: #FFF;
 	width: 88px;
 	height: 30px;
@@ -88,7 +88,7 @@
 	vertical-align: top;
 }
 #search-facets h3 {
-	border-bottom: 2px solid #000;
+	border-bottom: 2px solid #464646;
 	padding: 5px 0;
 	margin-bottom: 0.5em;
 }
@@ -105,11 +105,11 @@
 	-khtml-border-radius: 6px;
 }
 #search-facets ul li.active {
-	background-color: #000;
+	background-color: #464646;
 	color: #FFF;
 }
 #filter-by-section {
-	margin-top: 20px;
+	/* margin-top: 20px; */
 }
 #search-results-wrapper {
 	display: table-cell;
@@ -118,10 +118,11 @@
 }
 #search-results {
 	margin-left: 30px;
+    width: auto;
 }
 #search-results ul {
 	height: 32px;
-	border-bottom: 2px solid #000;
+	border-bottom: 2px solid #464646;
 }
 #search-results ul li {
 	list-style: none;
@@ -131,7 +132,7 @@
 #search-results ul li a {
 	display: inline-block;
 	background-color: #FFF;
-	color: #000;
+	color: #464646;
 	padding: 0 10px 0 5px;
 	height: 30px;
 	vertical-align: middle;
@@ -139,11 +140,12 @@
 	text-decoration: none;
 }
 #search-results ul li a.active {
-	background-color: #000;
+	background-color: #464646;
 	color: #FFF;
 }
-.search-result {
-	margin: 10px 0 20px 0;
+#search-results  .search-result {
+	margin: 10px 0 10px 0;
+    padding: 0;
 }
 .search-result-header {
 	background-color: #e3e3e3;
@@ -163,11 +165,12 @@
 	white-space: nowrap;
 	width: 100%;
 	padding-right: 40px;
+    padding-left: 6px;
 }
 .search-result-relevance {
 	width: 20px;
 	height: 9px;
-	border: 1px solid #000;
+	border: 1px solid #464646;
 	background-color: #999;
 	position: absolute;
 	right: 10px;
@@ -175,14 +178,20 @@
 }
 .relevance-bar {
 	height: 100%;
-	background-color: #000;
+	background-color: #464646;
 }
 .search-results-content {
-
+    position: relative;
+}
+.search-result-content-entries {
+    margin: 10px 0 0 60px;
+}
+.search-result-section-image {
+    position: absolute; 
 }
 .search-result-section-image img {
-	width: 50px;
-	height: 50px;
+	max-width: 50px;
+	max-height: 50px;
 }
 .search-result-publication {
 	font-style: italic;
@@ -232,4 +241,9 @@
 	background: url(../img/icon-magnify-gray.png) 0 0 no-repeat;
 	background-size: 10px 10px;
 	cursor: pointer;
+}
+.search-result-content-entry-title {
+    color: #e3e3e3;
+    font-size: 80%;
+    margin: 0 0 20px 0;
 }
