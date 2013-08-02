@@ -27,6 +27,7 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         this.results = null;
         this.hasSearched = false;
         this.isLoading = false;
+        this.resultsTemplate = OsciTk.templateManager.get('aic-search-results');
 
         this.render();
 
