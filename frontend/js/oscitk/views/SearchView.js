@@ -47,6 +47,15 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         // add search to toolbar
         $('#toolbar-items').append(OsciTk.templateManager.get('aic-search-bar'));
     },
+    renderResults: function() {
+        this.prepareResults();
+        this.$el.find("#search-results-container").html(this.resultsTemplate(this));
+    },
+    prepareResults: function() {
+        this.results = _.groupBy(this.response.docs.models, function(doc) {
+            return doc.get('ss_section_id');
+        });
+    },
     submitSearch: function(e) {
         e.preventDefault();
         this.search();
@@ -92,7 +101,7 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
                 that.response.facets = data.facets;
                 that.response.numFound = data.numFound;
                 // re-render the search view
-                //that.renderResults();
+                that.renderResults();
                 // handle container resizing
                 //that.resizeContainers();
             },
