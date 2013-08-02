@@ -5,7 +5,10 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         'click .results-content-tab': 'toggleResultsType',
         'click #search-close-button': 'close',
         'click .search-submit': 'submitSearch',
-        'submit .search-form': 'submitSearch'
+        'submit .search-form': 'submitSearch',
+        'click .search-result-title': 'gotoSection',
+        'click .search-result-content-entry': 'gotoResult',
+        'click .facet': 'addFacet'
     },
     initialize: function() {
         var that = this;
@@ -35,12 +38,12 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
             e.preventDefault();
             var topFormVal = $("#search-toolbar-item").find(".search-keyword").val();
             that.$el.find('.search-keyword').val(topFormVal);
-            that.search();
+            that.search(true);
         });
         $('.search-submit').on('click', function(e) {
             var topFormVal = $("#search-toolbar-item").find(".search-keyword").val();
             that.$el.find('.search-keyword').val(topFormVal);
-            that.search();
+            that.search(true);
         });
     },
     render: function() {
@@ -59,10 +62,14 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
     },
     submitSearch: function(e) {
         e.preventDefault();
-        this.search();
+        this.search(true);
     },
-    search: function() {
+    search: function(clearFilters) {
         if (!this.$el.is(":visible")) this.$el.show();
+
+        if (!_.isUndefined(clearFilters)) {
+            this.query.filters = [];
+        }
 
         var that = this;
         // set keyword
@@ -111,6 +118,20 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
             }
         });
     },
+    gotoSection: function(e) {
+        var $elem = $(e.currentTarget);
+        var resultModel = this.response.docs.get($elem.data("id"));
+
+        app.router.navigate("section/" + resultModel.get("ss_section_id"), {trigger:true});
+        this.close();
+    },
+    gotoResult: function(e) {
+        var $elem = $(e.currentTarget);
+        var resultModel = this.response.docs.get($elem.data("id"));
+
+        app.router.navigate("section/" + resultModel.get("ss_section_id") + "/" + resultModel.get("id"), {trigger: true});
+        this.close();
+    },
     toggleResultsType: function(e) {
         e.preventDefault();
 
@@ -124,5 +145,19 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
     },
     close: function() {
         this.$el.hide();
-    }
+    },
+    addFacet: function(e) {
+        e.preventDefault();
+        var facet = $(e.currentTarget).data('filter');
+        var fExists = _.indexOf(this.query.filters, facet);
+        if (fExists > -1) {
+            this.query.filters.splice(fExists, 1);
+        } else {
+            this.query.filters.push(facet);
+        }
+
+        if (this.hasSearched) {
+            this.search();
+        }
+    },
 });

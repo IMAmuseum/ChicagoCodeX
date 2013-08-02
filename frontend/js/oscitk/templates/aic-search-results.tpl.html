@@ -1,5 +1,6 @@
 <% if (query.keyword) { %>
 <div id="search-facets">
+<!--
 	<div id="search-facet-by-volume">
 		<h3>Filter by Volume</h3>
 		<ul>
@@ -8,12 +9,15 @@
 			<li>Cezanne Paintings and Drawings in the Art Institute of Chicago (10)</li>
 		</ul>
 	</div>
+-->
 	<div id="filter-by-section">
 		<h3>Filter by Section</h3>
 		<ul>
-			<li>Works of Art (30)</li>
-			<li>Collector (10)</li>
-			<li>Section (2)</li>
+        <% _.each(response.facets, function(facet) { %>
+            <li class="facet-section">
+                <a href="#" data-filter="section:<%= facet.section_id %>" class="facet"><%= facet.section %> (<%= facet.count %>)</a>
+            </li>
+        <% }); %>
 		</ul>
 	</div>
 </div>
@@ -22,165 +26,46 @@
 	<div id="search-results">
 		<ul>
 			<li><a href="#search-content" class="results-content-tab active">Content (<%= response.numFound %>)</a></li>
-			<li><a href="#search-notes" class="results-content-tab">Gloria's Notes (10)</a></li>
+			<li><a href="#search-notes" class="results-content-tab">Notes (10)</a></li>
 		</ul>
 		<div id="search-content" class="search-results-content">
-			<div class="search-result">
+        <% _.each(results, function(group) { var first = true; %>
+            <div class="search-result">
+            <% _.each(group, function(result) { %>
+                <% if (first) { %>
 				<div class="search-result-header">
-					<div class="search-result-title">Cat. 1. Auguste Vacquerie. c. 1854.</div>
+					<div class="search-result-title" data-id="<%= result.get('id') %>"><%= result.get("label") %></div>
+                    <!-- 
 					<div class="search-result-relevance">
 						<div class="relevance-bar">&nbsp;</div>
 					</div>
+                    -->
 				</div>
 				<div class="search-result-content">
+                    <!--
 					<div class="search-result-section-image">
 						<img src="/sites/default/files/image_assets/1971.577.15.jpg" data-figure_id="fig-134367-1">
 					</div>
+                    -->
 					<div class="search-result-content-entries">
-						<div class="search-result-content-entry">
+                <% first = false;} %>
+						<div class="search-result-content-entry" data-id="<%= result.get('id') %>">
 							<div class="search-result-content-entry-title">
-								Curatorial Entry
+								<%= result.get('bundle') %>
 							</div>
 							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
+                            <% if (_.isEmpty(result.get('teaser'))) { %>
+                                &nbsp;
+                            <% } else { %>
+                                <%= result.get('teaser') %>
+                            <% } %>
 							</div>
 						</div>
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
+            <% }); %>
 					</div>
 				</div>
-			</div>
-			<div class="search-result">
-				<div class="search-result-header">
-					<div class="search-result-title">Cat. 1. Auguste Vacquerie. c. 1854.</div>
-					<div class="search-result-relevance">
-						<div class="relevance-bar">&nbsp;</div>
-					</div>
-				</div>
-				<div class="search-result-content">
-					<div class="search-result-section-image">
-						<img src="/sites/default/files/image_assets/1971.577.15.jpg" data-figure_id="fig-134367-1">
-					</div>
-					<div class="search-result-content-entries">
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="search-result">
-				<div class="search-result-header">
-					<div class="search-result-title">Cat. 1. Auguste Vacquerie. c. 1854.</div>
-					<div class="search-result-relevance">
-						<div class="relevance-bar">&nbsp;</div>
-					</div>
-				</div>
-				<div class="search-result-content">
-					<div class="search-result-section-image">
-						<img src="/sites/default/files/image_assets/1971.577.15.jpg" data-figure_id="fig-134367-1">
-					</div>
-					<div class="search-result-content-entries">
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="search-result">
-				<div class="search-result-header">
-					<div class="search-result-title">Cat. 1. Auguste Vacquerie. c. 1854.</div>
-					<div class="search-result-relevance">
-						<div class="relevance-bar">&nbsp;</div>
-					</div>
-				</div>
-				<div class="search-result-content">
-					<div class="search-result-section-image">
-						<img src="/sites/default/files/image_assets/1971.577.15.jpg" data-figure_id="fig-134367-1">
-					</div>
-					<div class="search-result-content-entries">
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-						<div class="search-result-content-entry">
-							<div class="search-result-content-entry-title">
-								Curatorial Entry
-							</div>
-							<div class="search-result-content-entry-body">
-								Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+            </div>
+        <% }); %>
 		</div>
 		<div id="search-notes" class="search-results-content" style="display:none;">
 			<div class="search-result">
