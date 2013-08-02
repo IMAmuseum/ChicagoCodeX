@@ -32,9 +32,13 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
 
         $('.search-form').on('submit', function(e) {
             e.preventDefault();
+            var topFormVal = $("#search-toolbar-item").find(".search-keyword").val();
+            that.$el.find('.search-keyword').val(topFormVal);
             that.search();
         });
         $('.search-submit').on('click', function(e) {
+            var topFormVal = $("#search-toolbar-item").find(".search-keyword").val();
+            that.$el.find('.search-keyword').val(topFormVal);
             that.search();
         });
     },
