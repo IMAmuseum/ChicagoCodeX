@@ -59,6 +59,12 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         this.results = _.groupBy(this.response.docs.models, function(doc) {
             return doc.get('ss_section_id');
         });
+        _.each(this.results, function(elem, index, list) {
+            var navItem = app.collections.navigationItems.get(index);
+            var thumbnail = !_.isUndefined(navItem) ? navItem.get("thumbnail") : "";
+            var firstElem = _.first(elem);
+            firstElem.set("thumbnail", thumbnail);
+        });
     },
     submitSearch: function(e) {
         e.preventDefault();
@@ -148,12 +154,15 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
     },
     addFacet: function(e) {
         e.preventDefault();
-        var facet = $(e.currentTarget).data('filter');
+        var item = $(e.currentTarget);
+        $(".facet-section").removeClass("active");
+        var facet = item.data('filter');
         var fExists = _.indexOf(this.query.filters, facet);
         if (fExists > -1) {
             this.query.filters.splice(fExists, 1);
         } else {
             this.query.filters.push(facet);
+            item.parent().addClass("active");
         }
 
         if (this.hasSearched) {

@@ -106,8 +106,13 @@
 }
 #search-facets ul li.active {
 	background-color: #464646;
-	color: #FFF;
 }
+#search-facets ul li.active a {
+    color: #d8d8d8;
+}
+#search-facets ul li a {
+    color: #464646;
+} 
 #filter-by-section {
 	/* margin-top: 20px; */
 }

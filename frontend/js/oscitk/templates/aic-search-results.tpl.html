@@ -14,7 +14,8 @@
 		<h3>Filter by Section</h3>
 		<ul>
         <% _.each(response.facets, function(facet) { %>
-            <li class="facet-section">
+            <% var active = _.indexOf(query.filters, "section:" + facet.section_id) === -1 ? '' : 'active'; %>
+            <li class="facet-section <%= active %>">
                 <a href="#" data-filter="section:<%= facet.section_id %>" class="facet"><%= facet.section %> (<%= facet.count %>)</a>
             </li>
         <% }); %>
