@@ -1,8 +1,8 @@
 <html>
     <head>
-        <link rel="stylesheet" src="<?php echo $path;?>js/external/jquery-ui.custom.css">
-        <link rel="stylesheet" src="/sites/default/ChicagoCodeX/frontend/css/common.css">
-        <link rel="stylesheet" src="/sites/default/ChicagoCodeX/frontend/css/layered_image.css">
+        <link rel="stylesheet" href="<?php echo $path;?>js/external/jquery-ui.custom.css">
+        <link rel="stylesheet" href="/sites/default/ChicagoCodeX/frontend/css/common.css">
+        <link rel="stylesheet" href="/sites/default/ChicagoCodeX/frontend/css/layered_image.css">
         <script type="text/javascript" src="<?php echo $path; ?>js/external/json2.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/jquery.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/jquery-ui-1.8.23.custom.min.js"></script>
