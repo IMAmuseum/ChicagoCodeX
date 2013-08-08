@@ -279,8 +279,12 @@ function aic_custom_figure_window($section_nid, $figIndex=null) {
             $content = drupal_render($view['field_figure'][$figIndex]);
         }
         // wrap in an html doc and link in necessary js
-        $path = variable_get('osci_tk_webapp_base_path');
-        print(theme('aic_custom_figure_window', array('path' => $path, 'content' => $content)));
+        print(theme('aic_custom_figure_window', array(
+            'caption' => $section->field_figure['und'][$figIndex]['value'],
+            'path' => variable_get('osci_tk_webapp_base_path', ''),
+            'content' => $content,
+            'type' => $figure->type
+        )));
         drupal_exit();
     }
     else {
