@@ -92,7 +92,6 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
     $publication = node_load(arg(2));
 
     $vocabulary = _osci_tk_glossary_retrieve_glossaries($publication);
-
     foreach ($vocabulary as $vocab_id) {
         $tree = taxonomy_get_tree($vocab_id);
         foreach ($tree as $leaf) {
@@ -111,10 +110,8 @@ function _aic_custom_glossary_parse_term($match) {
     global $aic_custom_current_tree;
     global $aic_custom_term_count;
 
-    if (isset($aic_custom_term_count[$aic_custom_current_tree->tid]) 
-        && $aic_custom_term_count[$aic_custom_current_tree->tid] == 0) {
-        
-        $aic_custom_term_count[$aic_custom_current_tree->tid]++;
+    if (!isset($aic_custom_term_count[$aic_custom_current_tree->tid])) {
+        $aic_custom_term_count[$aic_custom_current_tree->tid] = TRUE;
         return '<a class="glossary-term" data-tid="' . $aic_custom_current_tree->tid . '">' . $match[0] . '</a>';
     } else {
         return $match[0];
