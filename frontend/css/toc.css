@@ -115,6 +115,7 @@
 	-ms-transform: rotate(90deg);
 }
 #toc-navigation .navTitle {
+	font-family: Arial, Helvetica, sans-serif;
 	padding: 5px 15px 5px 5px;
 	width: 160px;
 	cursor: pointer;

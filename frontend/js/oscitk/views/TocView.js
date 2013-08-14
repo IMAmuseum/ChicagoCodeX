@@ -35,7 +35,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			// reset bold on all section li tags
 			this.$el.find('li[data-section_id]').css('font-weight', 'normal');
 			// set the current sections nav item to bold
-			var li = this.$el.find('li[data-section_id="' + section.id + '"]');
+			var li = this.$el.find('li[data-section_id="' + section.id + '"].navArrow');
 			li.css('font-weight', 'bold');
 			// find any vertical nav arrows and click them to close
 			this.$el.find('li.V').click();
