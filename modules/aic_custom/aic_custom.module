@@ -308,16 +308,16 @@ function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
  * Create the content for a figure based on the asset type
  */
 function aic_custom_osci_tk_figure_content($args) {
+    $asset = node_load($args['item']['asset_reference']);
 
-  $asset = node_load($args['item']['asset_reference']);
+    if (!isset($args['item']['export'])) {
+        $args['item']['export'] = false;
+    }
 
-  if (!isset($args['item']['export'])) {
-      $args['item']['export'] = false;
-  }
-
-  switch($asset->type) {
-    case 'html_figure':
-      return drupal_render(field_view_field('node', $asset, 'field_figure_content', 'epub'));
-      break;
-  }
+    switch($asset->type) {
+        case 'html_figure':
+            $fieldView = field_view_field('node', $asset, 'field_figure_content', 'epub');
+            return drupal_render($fieldView);
+            break;
+    }
 }
