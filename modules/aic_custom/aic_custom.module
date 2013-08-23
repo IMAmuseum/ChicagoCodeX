@@ -321,3 +321,56 @@ function aic_custom_osci_tk_figure_content($args) {
             break;
     }
 }
+
+function aic_custom_osci_tk_citation_alter(&$citation, $section, $publication) {
+    
+    $authorFieldMap = array(
+        'tombstone' => 'field_authors_tombstone',
+        'entry' => 'field_author_curatorial_entry',
+        'report' => 'field_author_technical_report'
+    );
+
+    $titleFieldMap = array(
+        'tombstone' => 'Tombstone',
+        'entry' => 'Curatorial Entry',
+        'report' => 'Technical Report',
+        'provenance' => 'Provenance',
+        'history' => 'Exhibition History',
+        'references' => 'Selected References',
+        'documentation' => 'Other Documentation',
+        'biography' => 'Brief Biography',
+    );
+
+    if (array_key_exists($citation['field'], $titleFieldMap)) {
+        $citation['title'] = $citation['title'] . " : " . $titleFieldMap[$citation['field']];
+    }
+
+    $creatorField = null;
+    if (array_key_exists($citation['field'], $authorFieldMap)) {
+        $creatorField = $authorFieldMap[$citation['field']];
+    }
+
+    //Get the Creator from section if set
+    if (isset($section->$creatorField) && isset($section->{$creatorField}['und'])) {
+        $citation['creator'] = array();
+        foreach($section->{$creatorField}['und'] as $v) {
+            $citation['creator'][] = $v['value'];
+        }
+    }
+
+    //Get the citation Date from publication if set
+    if (isset($publication->field_publication_date) &&
+        isset($publication->field_publication_date['und']) &&
+        strlen($publication->field_publication_date['und'][0]['value']))
+    {
+        $citation['date'] = $publication->field_publication_date['und'][0]['value'];
+    }
+
+    //Get the Editor from publication if set
+    if (isset($publication->field_osci_tk_editor) &&
+        isset($publication->field_osci_tk_editor['und']) &&
+        strlen($publication->field_osci_tk_editor['und'][0]['value']))
+    {
+        $citation['editor'] = $publication->field_osci_tk_editor['und'][0]['value'];
+    }
+}
