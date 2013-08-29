@@ -5,7 +5,11 @@
 		<ul id="footnotes-list">
 			<% _.each(footnotes, function(footnote) { %>
 				<li>
-					<div class="footnote-id"><%= (parseInt(footnote.get('delta'), 10) + 1) %></div>
+					<div class="footnote-id">
+						<a class="view-in-context" href="#" data-footnote-id="<%= footnote.id %>">
+							<%= (parseInt(footnote.get('delta'), 10) + 1) %>
+						</a>
+					</div>
 					<div class="footnote-body"><%= footnote.get('body') %></div>
 				</li>
 			<% }); %>

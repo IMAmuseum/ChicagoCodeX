@@ -81,9 +81,9 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 	onViewInContextClicked: function(event_data) {
 		
 		// find the figure identifier
-		figId = $(event_data.target).parent().attr('data-figure-id');
+		var figId = $(event_data.target).parent().attr('data-figure-id');
 		// find the reference elements that match this figId
-		figRefs = app.views.sectionView.$el.find('a.figure_reference[href="#'+figId+'"]');
+		var figRefs = app.views.sectionView.$el.find('a.figure_reference[href="#'+figId+'"]');
 
 		// determine which of these elements are currently visible
 		var visibleRefs = [];
@@ -96,15 +96,15 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 
 		if (visibleRefs.length > 0) {
 			// navigate to the first instance and highlight
-			this.navigateAndHighlightRef(visibleRefs, 0);
+			this.navigateAndHighlightRef(figId, visibleRefs, 0);
 		}
 		return false;
 	},
-	navigateAndHighlightRef: function(visibleRefs, index) {
+	navigateAndHighlightRef: function(identifier, visibleRefs, index) {
 		$this = this;
 		index = index || 0;
 		// navigate to figure reference
-		Backbone.trigger('navigate', { identifier: figId + '-' + (index + 1) });
+		Backbone.trigger('navigate', { identifier: identifier + '-' + (index + 1) });
 		
 		var ref = $(visibleRefs[index]);
 		this.pulsateText(ref);
