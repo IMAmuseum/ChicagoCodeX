@@ -118,7 +118,7 @@
 	<script src="/frontend/js/oscitk/views/ReferenceImageView.js"></script>
 	<script src="/frontend/js/oscitk/collections/NavigationItemsCollection.js"></script>
 	<script>
-		jQuery(function() { 
+		jQuery(function() {
 			app.bootstrap({
 				packageUrl: 'http://osci-aic.imamuseum.org/api/epub/134834/package.opf',
 				// packageUrl: 'sample/package.opf',
@@ -128,11 +128,10 @@
 					'/sites/default/OSCI-Toolkit-Frontend/js/oscitk/templates/'
 				],
 				endpoints: {
-					'OsciTkNotes': 'http://osci-aic.imamuseum.org/api/notes/',
 					'OsciTkNote': 'http://osci-aic.imamuseum.org/api/notes/',
 					'OsciTkSearch': 'http://osci-aic.imamuseum.org/api/search/',
 					'OsciTkOpenSearch': 'http://osci-aic.imamuseum.org/api/opensearch/',
-					'OsciTkAccount': 'http://osci-aic.imamuseum.org/api/users/'					
+					'OsciTkAccount': 'http://osci-aic.imamuseum.org/api/users/'
 				},
 				toolbarItems: [
 					{view: 'TextEnlarge', text: 'Enlarge'},

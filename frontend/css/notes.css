@@ -1,7 +1,7 @@
 #persistent-notes {
 	position: absolute;
 	width: 100px;
-	top: 175px;
+	top: 215px;
 	right: 10px;
 
 }
@@ -9,9 +9,14 @@
 #persistent-notes .note {
 	background: #FFB51A;
 	font-size: 0.75em;
+	line-height: 1em;
 	padding: 3px 5px;
 	margin-bottom: 10px;
 	opacity: 0.7;
+	height: 2.5em;
+	overflow: hidden;
+	width: 100px;
+	text-overflow: ellipsis;
 }
 
 #persistent-notes .note:hover, #persistent-notes .hovered {

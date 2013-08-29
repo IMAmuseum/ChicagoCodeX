@@ -1,31 +1,31 @@
 OsciTk.views.App = OsciTk.views.BaseView.extend({
 	id: 'reader',
-	
+
 	initialize: function() {
 		$('body').append(this.el);
-		
+
 		OsciTk.templates['navigation'] = OsciTk.templateManager.get('aic-navigation');
 
 		// Add the toolbar to the appView
 		app.views.toolbarView = new OsciTk.views.Toolbar();
 		this.addView(app.views.toolbarView);
-		
+
 		// Add the title view to the appView
 		app.views.titleView = new OsciTk.views.Title();
 		this.addView(app.views.titleView);
-		
+
 		// Add the reference image view to the AppView
 		app.views.referenceImageView = new OsciTk.views.ReferenceImage();
 		this.addView(app.views.referenceImageView);
-		
+
 		// Add the table of contents view
 		app.views.tocView = new OsciTk.views.Toc();
 		this.addView(app.views.tocView);
-		
+
 		// Add the footnotes tab
 		app.views.footnotesView = new OsciTk.views.Footnotes();
 		this.addView(app.views.footnotesView);
-		
+
 		// Add the figures tab
 		app.views.figuresView = new OsciTk.views.Figures();
 		this.addView(app.views.figuresView);
