@@ -94,12 +94,11 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
 
     $doc = new DOMDocument('1.0', 'iso-8859-1');
     $text = mb_convert_encoding($text, 'HTML-ENTITIES', "UTF-8");
-    dpm($text);
     @$doc->loadHTML($text);
 
     $paragraphs = $doc->getElementsByTagName('p');
     foreach($paragraphs as $p) {
-        $pContent = $doc->saveHTML($p);
+        $pContent = $doc->saveXML($p);
         foreach ($vocabulary as $vocab_id) {
             $tree = taxonomy_get_tree($vocab_id);
             foreach ($tree as $leaf) {
@@ -113,9 +112,9 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
         $pContent = mb_convert_encoding($pContent, 'HTML-ENTITIES', "UTF-8");
         $tempDoc = new DOMDocument('1.0', 'iso-8859-1');
         @$tempDoc->loadHTML($pContent);
-        $node = $tempDoc->getElementsByTagName('p')->item(0);
-        if ($node !== null) {
-            $newNode = $doc->importNode($node, true);
+        $n = $tempDoc->getElementsByTagName('p')->item(0);
+        if ($n !== null) {
+            $newNode = $doc->importNode($n, true);
             $p->parentNode->replaceChild($newNode, $p);
         }
     }
@@ -123,6 +122,7 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
     $text = $doc->saveXML($doc->documentElement);
     $text = preg_replace('~<(?:!DOCTYPE|/?(?:html|head|body))[^>]*>\s*~i', '', $text);
     $text = str_replace('<?xml version="1.0" encoding="iso-8859-1"?>', '', $text);
+
     return $text;
 }
 
