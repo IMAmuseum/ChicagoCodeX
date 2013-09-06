@@ -90,16 +90,36 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
     global $aic_custom_term_count;
 
     $publication = node_load(arg(2));
-
     $vocabulary = _osci_tk_glossary_retrieve_glossaries($publication);
-    foreach ($vocabulary as $vocab_id) {
-        $tree = taxonomy_get_tree($vocab_id);
-        foreach ($tree as $leaf) {
-            $aic_custom_current_tree = $leaf;
-            $text = preg_replace_callback('/' . $leaf->name . '\b/i', '_aic_custom_glossary_parse_term', $text);
+
+    $doc = new DOMDocument('1.0', 'iso-8859-1');
+    $text = mb_convert_encoding($text, 'HTML-ENTITIES', "UTF-8");
+    dpm($text);
+    @$doc->loadHTML($text);
+
+    $paragraphs = $doc->getElementsByTagName('p');
+    foreach($paragraphs as $p) {
+        $pContent = $doc->saveHTML($p);
+        foreach ($vocabulary as $vocab_id) {
+            $tree = taxonomy_get_tree($vocab_id);
+            foreach ($tree as $leaf) {
+                $aic_custom_current_tree = $leaf;
+                if (!isset($aic_custom_term_count[$leaf->tid])) {
+                    $pContent = preg_replace_callback('/' . $leaf->name . '\b/i', '_aic_custom_glossary_parse_term', $pContent);
+                }
+            }
         }
+
+        $pContent = mb_convert_encoding($pContent, 'HTML-ENTITIES', "UTF-8");
+        $tempDoc = new DOMDocument('1.0', 'iso-8859-1');
+        @$tempDoc->loadHTML($pContent);
+        $newNode = $doc->importNode($tempDoc->getElementsByTagName('p')->item(0), true);
+        $p->parentNode->replaceChild($newNode, $p);
     }
 
+    $text = $doc->saveXML($doc->documentElement);
+    $text = preg_replace('~<(?:!DOCTYPE|/?(?:html|head|body))[^>]*>\s*~i', '', $text);
+    $text = str_replace('<?xml version="1.0" encoding="iso-8859-1"?>', '', $text);
     return $text;
 }
 
@@ -119,9 +139,9 @@ function _aic_custom_glossary_parse_term($match) {
 }
 
 function aic_custom_navigation_generate_toc_item_list(&$vars) {
-    $depth = -1; 
+    $depth = -1;
     $flag = false;
-    $output = ''; 
+    $output = '';
     foreach ($vars['toc'][0] as $key => $leaf) {
         $node = node_load($leaf['nid']);
 
@@ -129,15 +149,15 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
             $output .= '<ol><li>';
             $flag = false;
             $depth++;
-        }    
+        }
         while ($leaf['depth'] < $depth) {
             $output .= '</li></ol>';
             $depth--;
-        }    
+        }
         if ($flag) {
             $output .= '</li><li>';
             $flag = false;
-        }    
+        }
         if (empty($node->field_active['und']) || (!empty($node->field_active['und']) && $node->field_active['und'][0]['value'])) {
             $link = $vars['for_export'] ? $leaf['filename'] : $leaf['url'];
             $attrs = "data-section_id=\"{$leaf['nid']}\"";
@@ -155,16 +175,16 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
         }
 
         $flag = true;
-    }    
+    }
     while ($depth-- > -1) {
         $output .= '</li></ol>';
-    }    
+    }
     return $output;
 }
 
 function aic_custom_navigation_generate_index(&$vars) {
-    $list = ''; 
-    $output = ''; 
+    $list = '';
+    $output = '';
     if (isset($vars['node']->field_nodetree['und']) && is_array($vars['node']->field_nodetree['und'])) {
         foreach ($vars['node']->field_nodetree['und'] as $nodeTreeItem) {
             $target = $nodeTreeItem['target_nid'];
@@ -174,13 +194,13 @@ function aic_custom_navigation_generate_index(&$vars) {
             $title = $section->title;
             if (isset($section->field_osci_tk_title) && isset($section->field_osci_tk_title['und'][0]['value'])) {
                 $title = $section->field_osci_tk_title['und'][0]['value'];
-            }    
+            }
 
             if (empty($section->field_active['und']) || (!empty($section->field_active['und']) && $section->field_active['und'][0]['value'])) {
                 $list .= "<li><a href='{$link}'>{$title}</a></li>";
 
                 // if section has figures, include them in index
-                if (isset($section->field_figure['und']) && count($section->field_figure['und']) > 0) { 
+                if (isset($section->field_figure['und']) && count($section->field_figure['und']) > 0) {
                     for ($i=0; $i < count($section->field_figure['und']); $i++) {
                         $figure = $section->field_figure['und'][$i];
                         $link = $vars['for_export'] ? _osci_tk_epub_node_figure_filename($section->nid, $i) : _osci_tk_epub_node_figure_url($section->nid, $i, $vars['rev_time'], $vars['node']->nid);
@@ -209,7 +229,7 @@ function aic_custom_ncx_generate_navmap(&$vars) {
         foreach($vars['data']['content_nids'] as $content) {
             $count++;
             $node = node_load($content['nid']);
-            
+
             if (empty($node->field_active['und']) || (!empty($node->field_active['und']) && $node->field_active['und'][0]['value'])) {
                 $url = $vars['for_export'] ? $content['filename'] : $content['url'];
                 $output .= '<navPoint id="section-' . $content['nid'] . '" playOrder="' . $count . '"><navLabel><text>' . $content['title'] . '</text></navLabel><content src="' . $url . '" /></navPoint>';
@@ -293,9 +313,9 @@ function aic_custom_figure_window($section_nid, $figIndex=null) {
 function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     $sectionNode = node_load($data['sectionNid']);
     $cat = '';
-    if ($sectionNode 
-        && isset($sectionNode->field_catalogue_number) 
-        && is_array($sectionNode->field_catalogue_number) 
+    if ($sectionNode
+        && isset($sectionNode->field_catalogue_number)
+        && is_array($sectionNode->field_catalogue_number)
         && $sectionNode->field_catalogue_number['und'][0]['value']) {
 
         $cat = $sectionNode->field_catalogue_number['und'][0]['value'];
@@ -323,7 +343,7 @@ function aic_custom_osci_tk_figure_content($args) {
 }
 
 function aic_custom_osci_tk_citation_alter(&$citation, $section, $publication) {
-    
+
     $authorFieldMap = array(
         'tombstone' => 'field_authors_tombstone',
         'entry' => 'field_author_curatorial_entry',
