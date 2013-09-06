@@ -113,8 +113,11 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
         $pContent = mb_convert_encoding($pContent, 'HTML-ENTITIES', "UTF-8");
         $tempDoc = new DOMDocument('1.0', 'iso-8859-1');
         @$tempDoc->loadHTML($pContent);
-        $newNode = $doc->importNode($tempDoc->getElementsByTagName('p')->item(0), true);
-        $p->parentNode->replaceChild($newNode, $p);
+        $node = $tempDoc->getElementsByTagName('p')->item(0);
+        if ($node !== null) {
+            $newNode = $doc->importNode($node, true);
+            $p->parentNode->replaceChild($newNode, $p);
+        }
     }
 
     $text = $doc->saveXML($doc->documentElement);
