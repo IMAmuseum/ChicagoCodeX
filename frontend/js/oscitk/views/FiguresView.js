@@ -68,6 +68,25 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		// set the max page value
 		this.maxPage = Math.ceil((itemWidth * itemCount) / containerWidth);
 
+		// if any figure thumbnails were smaller than the display size, increase them to fit
+		var maxW = parseInt($('#figures-list .figure-preview').css('max-width'), 10);
+		var maxH = parseInt($('#figures-list .figure-preview').css('max-height'), 10);
+		if (maxW && maxH) {
+			// push this into the stack to increase chance of image being loaded
+			setTimeout(function() {
+				$('#figures-list .figure-preview').each(function(i, elem) {
+					if (elem.width !== 0 && elem.height !== 0 && (elem.width < maxW || elem.height < maxH)) {
+						if (elem.width > elem.height) {
+							$(elem).css('min-width', maxW + 'px');
+						}
+						else {
+							$(elem).css('min-height', maxH + 'px');
+						}
+					}
+				});
+			}, 750);
+		}
+
 		this.setDrawerLastPosition();
 	},
 	onFigurePreviewClicked: function(event_data) {
