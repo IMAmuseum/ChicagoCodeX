@@ -88,10 +88,16 @@
 	max-width: 240px;
 	max-height: 240px;
 	cursor: pointer;
+}
+
+#figures-list .figure-preview.empty {
+	width: 240px;
+	height: 240px;
 	background-position: center;
 	background-size: cover;
 	background: url('../img/osci-default-figure.png');
 }
+
 #figures-list .figure-preview-wrapper {
 	height: 240px;
 	width: 240px;
