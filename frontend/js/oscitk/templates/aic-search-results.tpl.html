@@ -68,15 +68,11 @@
             <% _.each(noteResults, function(note) { %>
 			<div class="search-result">
 				<div class="search-result-header">
-					<div class="search-result-title">Cat. 1. Auguste Vacquerie. c. 1854.</div>
-					<div class="search-result-relevance">
-						<div class="relevance-bar">&nbsp;</div>
-					</div>
+					<div class="search-result-title"><%= note.get('ss_section_title'); %></div>
 				</div>
 				<div class="search-result-content">
-					<div class="search-result-publication">Monet Paintings and Drawings in the Art Institute of Chicago</div>
 					<div class="search-result-note-content">
-						Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus brains sit​​, morbo vel maleficia? De apocalypsi gorger omero undead survivor dictum mauris. Hi mindless mortuis soulless creaturas, imo evil stalking monstra adventus resi dentevil vultus co
+						<%= note.get('ss_body') %>
 					</div>
 				</div>
 			</div>
