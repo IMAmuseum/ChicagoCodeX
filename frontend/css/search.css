@@ -122,8 +122,9 @@
 	vertical-align: top;
 }
 #search-results {
-	margin: 0 0 20px 30px;
-    width: auto;
+	margin: 0;
+	padding: 0 0 20px 30px;
+    width: 100%;
 }
 #search-results ul {
 	height: 32px;
