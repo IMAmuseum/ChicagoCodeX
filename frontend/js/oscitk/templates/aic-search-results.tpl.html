@@ -74,6 +74,9 @@
 					<div class="search-result-note-content">
 						<%= note.get('ss_body') %>
 					</div>
+                    <div class="search-result-note-tags">
+                        Tags: <% _.each(note.get("sm_vid_Note_Tags"), function(tag) { %><%= tag %><% }); %>
+                    </div>
 				</div>
 			</div>
 			<% }); %>
