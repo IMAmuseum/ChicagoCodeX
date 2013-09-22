@@ -164,16 +164,32 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
     },
     gotoSection: function(e) {
         var $elem = $(e.currentTarget);
-        var resultModel = this.response.docs.get($elem.data("id"));
+        var resultModel;
+        var route;
+
+        if ($elem.data("type") === "content") {
+            resultModel = this.response.docs.get($elem.data("id"));
+        } else {
+            resultModel = this.noteResponse.docs.get($elem.data("id"));
+        }
 
         app.router.navigate("section/" + resultModel.get("ss_section_id"), {trigger:true});
         this.close();
     },
     gotoResult: function(e) {
         var $elem = $(e.currentTarget);
-        var resultModel = this.response.docs.get($elem.data("id"));
+        var resultModel;
+        var route;
 
-        app.router.navigate("section/" + resultModel.get("ss_section_id") + "/" + resultModel.get("id"), {trigger: true});
+        if ($elem.data("type") === "content") {
+            resultModel = this.response.docs.get($elem.data("id"));
+            route = "section/" + resultModel.get("ss_section_id") + "/" + resultModel.get("id");
+        } else {
+            resultModel = this.noteResponse.docs.get($elem.data("id"));
+            route = "section/" + resultModel.get("ss_section_id") + "/" + resultModel.get("ss_content_id");
+        }
+
+        app.router.navigate(route, {trigger: true});
         this.close();
     },
     toggleResultsType: function(e) {

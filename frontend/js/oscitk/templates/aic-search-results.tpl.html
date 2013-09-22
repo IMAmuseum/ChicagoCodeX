@@ -36,15 +36,15 @@
             <% _.each(group, function(result) { %>
                 <% if (first) { %>
 				<div class="search-result-header">
-					<div class="search-result-title" data-id="<%= result.get('id') %>"><%= result.get("label") %></div>
+					<div class="search-result-title" data-type="content" data-id="<%= result.get('id') %>"><%= result.get("label") %></div>
 				</div>
 				<div class="search-result-content">
 					<div class="search-result-section-image">
-						<img src="<%= result.get('thumbnail') %>" data-id="<%= result.get('id') %>">
+						<img src="<%= result.get('thumbnail') %>" data-type="content" data-id="<%= result.get('id') %>">
 					</div>
 					<div class="search-result-content-entries">
                 <% first = false;} %>
-						<div class="search-result-content-entry" data-id="<%= result.get('id') %>">
+						<div class="search-result-content-entry" data-type="content" data-id="<%= result.get('id') %>">
 							<div class="search-result-content-entry-body">
                             <% if (_.isEmpty(result.get('teaser'))) { %>
                                 &nbsp;
@@ -68,9 +68,9 @@
             <% _.each(noteResults, function(note) { %>
 			<div class="search-result">
 				<div class="search-result-header">
-					<div class="search-result-title" data-id="<%= note.get('ss_content_id') %>"><%= note.get('ss_section_title') %></div>
+					<div class="search-result-title" data-type="note" data-id="<%= note.get('id') %>"><%= note.get('ss_section_title') %></div>
 				</div>
-				<div class="search-result-content-entry" data-id="<%= note.get('ss_content_id') %>">
+				<div class="search-result-content-entry" data-type="note" data-id="<%= note.get('id') %>">
 					<div class="search-result-note-content">
 						<%= note.get('ss_body') %>
 					</div>
