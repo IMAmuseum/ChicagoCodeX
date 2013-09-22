@@ -253,6 +253,9 @@
     font-size: 80%;
     margin: 0 0 20px 0;
 }
+.search-result-note-tags {
+	font-size: 80%;
+}
 .search-result-note-tags .note-tag {
 	padding: 0 10px 0 0;
 }
