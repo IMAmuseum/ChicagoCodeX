@@ -204,7 +204,7 @@
 	color: #999;
 	padding: 10px 0;
 }
-.search-result-note-content {
+#search-notes .search-result-content-entry {
 	background-color: #ffb51a;
 	padding: 10px;
 	-moz-box-shadow: 2px 2px 2px #ccc;
