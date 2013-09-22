@@ -29,7 +29,8 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         };
         this.results = null;
         this.hasSearched = false;
-        this.isLoading = false;
+        this.searchComplete = false;
+        this.noteSearchComplete = false;
         this.resultsTemplate = OsciTk.templateManager.get('aic-search-results');
 
         this.render();
@@ -45,6 +46,9 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
             that.$el.find('.search-keyword').val(topFormVal);
             that.search(true);
         });
+
+        this.listenTo(Backbone, 'searchComplete', this.renderResults);
+        this.listenTo(Backbone, 'noteSearchComplete', this.renderResults);
     },
     render: function() {
         this.$el.html(this.template(this));
@@ -52,8 +56,10 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         $('#toolbar-items').append(OsciTk.templateManager.get('aic-search-bar'));
     },
     renderResults: function() {
-        this.prepareResults();
-        this.$el.find("#search-results-container").html(this.resultsTemplate(this));
+        if (this.searchComplete && this.noteSearchComplete) {
+            this.prepareResults();
+            this.$el.find("#search-results-container").html(this.resultsTemplate(this));
+        }
     },
     prepareResults: function() {
         this.results = _.groupBy(this.response.docs.models, function(doc) {
@@ -85,6 +91,9 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         // let the template know that we can now display results
         this.hasSearched = true;
 
+        this.searchComplete = false;
+        this.noteSearchComplete = false;
+
         // build query params to send to api
         var queryParams = {
             key: this.query.keyword,
@@ -104,6 +113,8 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
             queryParams['filters'] = this.query.filters.join(' ');
         }
 
+        queryParams['filters'] = queryParams['filters'] + ' type:!notes';
+
         // send search query
         $.ajax({
             url: app.config.get('endpoints')['OsciTkSearch'],
@@ -115,9 +126,35 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
                 that.response.facets = data.facets;
                 that.response.numFound = data.numFound;
                 // re-render the search view
-                that.renderResults();
+                //that.renderResults();
                 // handle container resizing
                 //that.resizeContainers();
+                that.searchComplete = true;
+                Backbone.trigger('searchComplete');
+            },
+            error: function() {
+                // error handling
+            }
+        });
+
+        queryParams['filters'] = queryParams['filters'].replace(' type:!notes', ' type:notes');
+
+        // send search query
+        $.ajax({
+            url: app.config.get('endpoints')['OsciTkSearch'],
+            data: queryParams,
+            success: function(data) {
+                data = JSON.parse(data);
+                // add the incoming docs to the results collection
+                // that.response.docs.reset(data.docs);
+                // that.response.facets = data.facets;
+                // that.response.numFound = data.numFound;
+                // re-render the search view
+                //that.renderResults();
+                // handle container resizing
+                //that.resizeContainers();
+                that.noteSearchComplete = true;
+                Backbone.trigger('noteSearchComplete');
             },
             error: function() {
                 // error handling
