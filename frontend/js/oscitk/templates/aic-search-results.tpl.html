@@ -23,12 +23,13 @@
 	</div>
 </div>
 <div id="search-results-wrapper">
-	<% if (response.numFound !== 0) { %>
+	<% if (response.numFound !== 0 || noteResponse.numFound !== 0) { %>
 	<div id="search-results">
 		<ul>
 			<li><a href="#search-content" class="results-content-tab active">Content (<%= response.numFound %>)</a></li>
-			<li><a href="#search-notes" class="results-content-tab">Notes (10)</a></li>
+			<li><a href="#search-notes" class="results-content-tab">Notes (<%= noteResponse.numFound %>)</a></li>
 		</ul>
+        <% if (response.numFound !== 0) { %>
 		<div id="search-content" class="search-results-content">
         <% _.each(results, function(group) { var first = true; %>
             <div class="search-result">
@@ -36,11 +37,6 @@
                 <% if (first) { %>
 				<div class="search-result-header">
 					<div class="search-result-title" data-id="<%= result.get('id') %>"><%= result.get("label") %></div>
-                    <!-- 
-					<div class="search-result-relevance">
-						<div class="relevance-bar">&nbsp;</div>
-					</div>
-                    -->
 				</div>
 				<div class="search-result-content">
 					<div class="search-result-section-image">
@@ -66,7 +62,10 @@
             </div>
         <% }); %>
 		</div>
+        <% } %>
+        <% if (noteResponse.numFound !== 0) { %>
 		<div id="search-notes" class="search-results-content" style="display:none;">
+            <% _.each(noteResults, function(note) { %>
 			<div class="search-result">
 				<div class="search-result-header">
 					<div class="search-result-title">Cat. 1. Auguste Vacquerie. c. 1854.</div>
@@ -81,21 +80,9 @@
 					</div>
 				</div>
 			</div>
-			<div class="search-result">
-				<div class="search-result-header">
-					<div class="search-result-title">Cat. 1. Auguste Vacquerie. c. 1854.</div>
-					<div class="search-result-relevance">
-						<div class="relevance-bar">&nbsp;</div>
-					</div>
-				</div>
-				<div class="search-result-content">
-					<div class="search-result-publication">Monet Paintings and Drawings in the Art Institute of Chicago</div>
-					<div class="search-result-note-content">
-						Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus brains sit​​, morbo vel maleficia? De apocalypsi gorger omero undead survivor dictum mauris. Hi mindless mortuis soulless creaturas, imo evil stalking monstra adventus resi dentevil vultus co
-					</div>
-				</div>
-			</div>
+			<% }); %>
 		</div>
+        <% } %>
 	</div>
 	<% } %>
 </div>

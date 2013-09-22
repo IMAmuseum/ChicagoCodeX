@@ -28,6 +28,12 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
             facets: null
         };
         this.results = null;
+        this.noteResponse = {
+            numFound: 0,
+            docs: new OsciTk.collections.SearchResults(),
+            facets: null
+        };
+        this.noteResults = null;
         this.hasSearched = false;
         this.searchComplete = false;
         this.noteSearchComplete = false;
@@ -71,6 +77,7 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
             var firstElem = _.first(elem);
             firstElem.set("thumbnail", thumbnail);
         });
+        this.noteResults = this.noteResponse.docs.models;
     },
     submitSearch: function(e) {
         e.preventDefault();
@@ -125,10 +132,7 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
                 that.response.docs.reset(data.docs);
                 that.response.facets = data.facets;
                 that.response.numFound = data.numFound;
-                // re-render the search view
-                //that.renderResults();
-                // handle container resizing
-                //that.resizeContainers();
+
                 that.searchComplete = true;
                 Backbone.trigger('searchComplete');
             },
@@ -146,13 +150,10 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
             success: function(data) {
                 data = JSON.parse(data);
                 // add the incoming docs to the results collection
-                // that.response.docs.reset(data.docs);
-                // that.response.facets = data.facets;
-                // that.response.numFound = data.numFound;
-                // re-render the search view
-                //that.renderResults();
-                // handle container resizing
-                //that.resizeContainers();
+                that.noteResponse.docs.reset(data.docs);
+                that.noteResponse.facets = data.facets;
+                that.noteResponse.numFound = data.numFound;
+
                 that.noteSearchComplete = true;
                 Backbone.trigger('noteSearchComplete');
             },
