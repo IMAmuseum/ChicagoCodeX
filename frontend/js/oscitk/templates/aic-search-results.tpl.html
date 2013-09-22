@@ -68,9 +68,9 @@
             <% _.each(noteResults, function(note) { %>
 			<div class="search-result">
 				<div class="search-result-header">
-					<div class="search-result-title" data-id="<%= result.get('ss_content_id') %>"><%= note.get('ss_section_title') %></div>
+					<div class="search-result-title" data-id="<%= note.get('ss_content_id') %>"><%= note.get('ss_section_title') %></div>
 				</div>
-				<div class="search-result-content-entry" data-id="<%= result.get('ss_content_id') %>">
+				<div class="search-result-content-entry" data-id="<%= note.get('ss_content_id') %>">
 					<div class="search-result-note-content">
 						<%= note.get('ss_body') %>
 					</div>
