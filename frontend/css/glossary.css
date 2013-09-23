@@ -44,7 +44,7 @@
 }
 #glossary-wrapper {
 	padding: 20px;
-	display: table;	
+	display: table;
 	width: 100%;
 }
 #glossary-filter-box {
@@ -102,6 +102,7 @@
 	padding: 0 10px;
 	border-bottom: 1px solid rgba(0,0,0,.2);
 	box-shadow: 0 1px 0 rgba(255,255,255,.5);
+	overflow: hidden;
 }
 #glossary-term-content {
 	display: table-cell;
