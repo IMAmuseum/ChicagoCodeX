@@ -259,3 +259,42 @@
 .search-result-note-tags .note-tag {
 	padding: 0 10px 0 0;
 }
+
+@media screen and (min-width: 50em) {
+    #search-container {
+        max-width: 50em;
+    }
+    #search-container .search-keyword {
+        max-width: 710px;
+    }
+}
+
+@media screen and (min-width: 46.8em) and (max-width: 49.9em) {
+    #search-container {
+        padding: 0 20px 0 40px;
+        max-width: 46.8em;
+    }
+    #search-container .search-keyword {
+        max-width: 600px;
+    }
+}
+
+@media screen and (min-width: 24em) and (max-width: 46.7em) {
+    #search-container {
+        padding: 0 20px 0 40px;
+    }
+    #search-facets {
+        display: block;
+        width: auto;
+    }
+    #search-results-wrapper {
+        display: block;
+    }
+    #search-results {
+        padding: 0 0 20px 0;
+    }
+    #search-container .search-keyword {
+        width: auto;
+        margin: 0 20px 0 0;
+    }
+}
