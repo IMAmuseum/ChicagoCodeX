@@ -140,3 +140,6 @@
 #figures-list a.view-fullscreen:hover {
 	opacity: 1;
 }
+svg image {
+	color-profile: sRGB;
+}
