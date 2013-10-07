@@ -263,6 +263,7 @@ function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
     $css[] = "/frontend/css/search.css";
 
     $js[] = "/frontend/js/oscitk/collections/NavigationItemsCollection.js";
+    $js[] = "/frontend/js/oscitk/collections/FiguresCollection.js";
     $js[] = "/frontend/js/oscitk/views/AppView.js";
     $js[] = "/frontend/js/oscitk/views/TitleView.js";
     $js[] = "/frontend/js/oscitk/views/ToolbarView.js";
