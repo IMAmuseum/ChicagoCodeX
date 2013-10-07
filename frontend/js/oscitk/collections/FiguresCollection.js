@@ -17,10 +17,27 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
      */
     populateFromMarkup: function(data) {
         var figures = [];
-        _.each(data, function(markup) {
 
+        var override = false;
+        var sectionClasses = app.models.section.get('classes');
+        var needsOverride = ['node-signatures'];
+        if (_.isArray(sectionClasses) && _.intersection(sectionClasses, needsOverride).length) {
+            override = true;
+        }
+
+        _.each(data, function(markup) {
             var idComponents = markup.id.match(/\w+-(\d+)-(\d+)/);
             var $markup = $(markup);
+
+            var position;
+            var columns;
+            if (needsOverride) {
+                position = 'i';
+                columns = 1;
+            } else {
+                position = $markup.data('position');
+                columns = $markup.data('columns');
+            }
 
             var figure = {
                 id:         markup.id,
@@ -31,8 +48,8 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
                 title:      $markup.attr('title'),
                 caption:    $markup.find('figcaption').html(),
                 content:    $markup.find('.figure_content').html(),
-                position:   $markup.data('position'),
-                columns:    $markup.data('columns'),
+                position:   position,
+                columns:    columns,
                 options:    $markup.data('options'),
                 thumbnail_url: undefined, // Defaults to image defined in css
                 type:       $markup.data('figure_type'),
