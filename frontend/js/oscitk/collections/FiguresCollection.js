@@ -31,7 +31,7 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
 
             var position;
             var columns;
-            if (needsOverride) {
+            if (override) {
                 position = 'i';
                 columns = 1;
             } else {
