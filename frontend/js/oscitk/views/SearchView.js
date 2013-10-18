@@ -68,14 +68,11 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         }
     },
     prepareResults: function() {
-        this.results = _.groupBy(this.response.docs.models, function(doc) {
-            return doc.get('ss_section_id');
-        });
+        this.results = this.response.docs.models;
         _.each(this.results, function(elem, index, list) {
-            var navItem = app.collections.navigationItems.get(index);
+            var navItem = app.collections.navigationItems.get(elem.get('ss_section_id'));
             var thumbnail = !_.isUndefined(navItem) ? navItem.get("thumbnail") : "";
-            var firstElem = _.first(elem);
-            firstElem.set("thumbnail", thumbnail);
+            elem.set("thumbnail", thumbnail);
         });
         this.noteResults = this.noteResponse.docs.models;
     },
@@ -104,7 +101,7 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         // build query params to send to api
         var queryParams = {
             key: this.query.keyword,
-            group: 'false',
+            //group: 'false',
             page: this.query.page,
             sort: this.query.sort
         };
@@ -222,5 +219,5 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         if (this.hasSearched) {
             this.search();
         }
-    },
+    }
 });

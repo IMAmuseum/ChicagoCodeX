@@ -152,18 +152,7 @@
 #search-results  .search-result {
 	margin: 10px 0 10px 0;
     padding: 0;
-}
-.search-result-header {
-	background-color: #e3e3e3;
-	height: 25px;
-	line-height: 25px;
-	vertical-align: middle;
-	width: 100%;
-	font-weight: bold;
-	position: relative;
-}
-.search-result-header * {
-	display: inline-block;
+    border-bottom: 1px solid #e3e3e3;
 }
 .search-result-title {
 	overflow: hidden;
@@ -171,16 +160,7 @@
 	white-space: nowrap;
 	width: 100%;
 	padding-right: 40px;
-    padding-left: 6px;
-}
-.search-result-relevance {
-	width: 20px;
-	height: 9px;
-	border: 1px solid #464646;
-	background-color: #999;
-	position: absolute;
-	right: 10px;
-	top: 8px;
+    font-weight: bold;
 }
 .relevance-bar {
 	height: 100%;
