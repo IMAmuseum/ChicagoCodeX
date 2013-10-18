@@ -104,7 +104,7 @@ OsciTk.views.Search = OsciTk.views.BaseView.extend({
         // build query params to send to api
         var queryParams = {
             key: this.query.keyword,
-            group: 'true',
+            group: 'false',
             page: this.query.page,
             sort: this.query.sort
         };
