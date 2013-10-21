@@ -20,7 +20,7 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
 
         var override = false;
         var sectionClasses = app.models.section.get('classes');
-        var needsOverride = ['node-signatures'];
+        var needsOverride = ['node-figure-gallery'];
         if (_.isArray(sectionClasses) && _.intersection(sectionClasses, needsOverride).length) {
             override = true;
         }
