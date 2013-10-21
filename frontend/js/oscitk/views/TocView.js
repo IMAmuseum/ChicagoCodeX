@@ -75,6 +75,12 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			referenceImageUrl: this.sectionImageUrl,
 			navTree: this.navTree
 		}));
+
+		var refImg = that.$el.find('#toc-reference-image img').first();
+		if (refImg && this.sectionImageUrl === "") {
+			refImg.hide();
+		}
+
 		this.renderCollapsibleList();
 
 		// bind handle to open/close panel
@@ -162,7 +168,11 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			.bind('mouseleave', function(event) {
 				var refImg = that.$el.find('#toc-reference-image img').first();
 				if (refImg) {
-					refImg.attr('src', that.sectionImageUrl).show();
+					if (that.sectionImageUrl === "") {
+						refImg.hide();
+					} else {
+						refImg.attr('src', that.sectionImageUrl).show();
+					}
 				}
 			});
 
