@@ -76,7 +76,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			navTree: this.navTree
 		}));
 
-		var refImg = that.$el.find('#toc-reference-image img').first();
+		var refImg = this.$el.find('#toc-reference-image img').first();
 		if (refImg && this.sectionImageUrl === "") {
 			refImg.hide();
 		}
