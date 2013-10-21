@@ -150,17 +150,19 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 				var itemId = $(event.currentTarget).attr('data-section_id');
 				var item  = app.collections.navigationItems.get(itemId);
 				var thumb = item.get('thumbnail');
+				var refImg = that.$el.find('#toc-reference-image img').first();
 				if (thumb) {
-					var refImg = that.$el.find('#toc-reference-image img').first();
 					if (refImg) {
-						refImg.attr('src', thumb);
+						refImg.attr('src', thumb).show();
 					}
+				} else {
+					refImg.hide();
 				}
 			})
 			.bind('mouseleave', function(event) {
 				var refImg = that.$el.find('#toc-reference-image img').first();
 				if (refImg) {
-					refImg.attr('src', that.sectionImageUrl);
+					refImg.attr('src', that.sectionImageUrl).show();
 				}
 			});
 
