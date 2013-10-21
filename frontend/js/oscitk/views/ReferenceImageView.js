@@ -13,10 +13,14 @@ OsciTk.views.ReferenceImage = OsciTk.views.BaseView.extend({
 		});
 	},
 	render: function() {
-		this.$el.html(this.template({
-			imageUrl: this.imageUrl,
-			figure_id: this.figure_id
-		}));
+		if (this.imageUrl === "") {
+			this.$el.hide();
+		} else {
+			this.$el.html(this.template({
+				imageUrl: this.imageUrl,
+				figure_id: this.figure_id
+			})).show();
+		}
 	},
 	fullscreen: function() {
 		var url = '/figure/window/' + this.section_id;
