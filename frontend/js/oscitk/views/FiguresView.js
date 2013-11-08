@@ -22,6 +22,14 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 	},
 	render: function() {
 		var that = this;
+		var override = false;
+        var sectionClasses = app.models.section.get('classes');
+        var needsOverride = ['node-figure-gallery'];
+        if (_.isArray(sectionClasses) && _.intersection(sectionClasses, needsOverride).length) {
+            that.$el.hide();
+            return;
+        }
+
 		this.$el.css('display', 'block');
 		// prepare data for display, getting a sorted copy of the figures collection
 		var data = {
@@ -62,7 +70,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 
 		// item width has changed, get it again
 		itemWidth = this.$el.find('#figures-list li').outerWidth();
-		
+
 		// reset list width now that padding has been added
 		this.$el.find('#figures-list').width((itemWidth + paddingToAdd) * itemCount);
 
@@ -108,7 +116,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		return false;
 	},
 	onViewInContextClicked: function(event_data) {
-		
+
 		// find the figure identifier
 		var figId = $(event_data.target).parent().attr('data-figure-id');
 		// find the reference elements that match this figId
@@ -134,7 +142,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		index = index || 0;
 		// navigate to figure reference
 		Backbone.trigger('navigate', { identifier: identifier + '-' + (index + 1) });
-		
+
 		var ref = $(visibleRefs[index]);
 		this.pulsateText(ref);
 		// if there are duplicate references in the text
@@ -144,8 +152,8 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 			// is there a next ref?
 			var next = (visibleRefs.length - 1 > index) ? true : false;
 			// draw a control
-			
-			
+
+
 			var linker = this.linker = $("<div>", { id: "osci_linker" });
 			if (prev) {
 				// create previous control
