@@ -28,18 +28,16 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
         _.each(data, function(markup) {
             var idComponents = markup.id.match(/\w+-(\d+)-(\d+)/);
             var $markup = $(markup);
-            var caption;
 
             var position;
             var columns;
             if (override) {
                 position = 'i';
                 columns = 1;
-                caption = '';
+                $markup.find('.figure_number').remove();
             } else {
                 position = $markup.data('position');
                 columns = $markup.data('columns');
-                caption = $markup.find('figcaption').html();
             }
 
             var figure = {
@@ -49,7 +47,7 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
                 section_id: idComponents[1],
                 delta:      idComponents[2],
                 title:      $markup.attr('title'),
-                caption:    caption,
+                caption:    $markup.find('figcaption').html(),
                 content:    $markup.find('.figure_content').html(),
                 position:   position,
                 columns:    columns,
