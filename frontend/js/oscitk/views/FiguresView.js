@@ -25,7 +25,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
         var sectionClasses = app.models.section.get('classes');
         var needsOverride = ['node-figure-gallery'];
         if (_.isArray(sectionClasses) && _.intersection(sectionClasses, needsOverride).length) {
-            this.$el.hide();
+            thie.$el.hide();
             return;
         }
 
