@@ -73,3 +73,18 @@ div.Search-toolbar-item {
 	width: 143px;
 	text-indent: 9999px;
 }
+.ui-tooltip-toolbar-login .qtip-content {
+	background-color: #464646 !important;
+}
+
+#loginForm .field {
+	padding-bottom: 8px;
+}
+span.cap {
+	text-transform: capitalize;
+}
+#loginError {
+	margin-top: 8px;
+	color: white;
+	background-color: red;
+}
