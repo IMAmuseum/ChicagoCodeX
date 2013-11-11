@@ -21,11 +21,12 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		});
 	},
 	render: function() {
+		var that = this;
 		var override = false;
         var sectionClasses = app.models.section.get('classes');
         var needsOverride = ['node-figure-gallery'];
         if (_.isArray(sectionClasses) && _.intersection(sectionClasses, needsOverride).length) {
-            thie.$el.hide();
+            that.$el.hide();
             return;
         }
 
@@ -81,21 +82,30 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 		var maxH = parseInt($('#figures-list .figure-preview').css('max-height'), 10);
 		if (maxW && maxH) {
 			// push this into the stack to increase chance of image being loaded
-			setTimeout(function() {
-				$('#figures-list .figure-preview').each(function(i, elem) {
-					if (elem.width !== 0 && elem.height !== 0 && (elem.width < maxW || elem.height < maxH)) {
-						if (elem.width > elem.height) {
-							$(elem).css('min-width', maxW + 'px');
-						}
-						else {
-							$(elem).css('min-height', maxH + 'px');
-						}
-					}
-				});
-			}, 750);
+			$('#figures-list .figure-preview').each(function(i, elem) {
+				that.resizeFigurePreview(elem, maxW, maxH);
+			});
 		}
 
 		this.setDrawerLastPosition();
+	},
+	resizeFigurePreview: function(elem, maxW, maxH) {
+		var that = this;
+		if (elem.width !== 0 && elem.height !== 0) {
+			if (elem.width < maxW || elem.height < maxH) {
+				if (elem.width > elem.height) {
+					$(elem).css('min-width', maxW + 'px');
+				}
+				else {
+					$(elem).css('min-height', maxH + 'px');
+				}
+			}
+		}
+		else {
+			setTimeout(function() {
+				that.resizeFigurePreview(elem, maxW, maxH);
+			}, 500);
+		}
 	},
 	onFigurePreviewClicked: function(event_data) {
 		var figId = $(event_data.target).parents('figure').attr('data-figure-id');
