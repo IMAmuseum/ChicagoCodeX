@@ -35,7 +35,7 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
         });
     },
     render: function() {
-        if (this.collection.length) {
+        if (this.collection.length === 0) {
             this.$el.hide();
             return;
         }
