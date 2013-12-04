@@ -102,6 +102,10 @@ OsciTk.views.BottomDrawerView = OsciTk.views.BaseView.extend({
 		var visibleHandles = 0;
 		$(".drawer-handle").each(function() {
 			var $this = $(this);
+			if ($this.attr("id") === "toc-handle") {
+				//continue
+				return 1;
+			}
 			var container = $this.parent();
 
 			if (container.is(":visible")) {
