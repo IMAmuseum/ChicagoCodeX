@@ -44,6 +44,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
 
         if (data.figures.length === 0) {
             that.$el.hide();
+            this.setDrawerHandlePosition();
             return;
         }
 
@@ -94,6 +95,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
         }
 
         this.setDrawerLastPosition();
+        this.setDrawerHandlePosition();
     },
     resizeFigurePreview: function(elem, maxW, maxH) {
         var that = this;

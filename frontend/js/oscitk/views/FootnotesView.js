@@ -37,6 +37,7 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
     render: function() {
         if (this.collection.length === 0) {
             this.$el.hide();
+            this.setDrawerHandlePosition();
             return;
         }
 
@@ -51,6 +52,7 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
         this.$el.find('#footnotes-list li').outerWidth(containerWidth);
 
         this.setDrawerLastPosition();
+        this.setDrawerHandlePosition();
     },
     translateToPage: function() {
         var width = this.$el.find('#footnotes-list-container').width();

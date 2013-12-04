@@ -21,6 +21,13 @@ OsciTk.views.Glossary = OsciTk.views.BottomDrawerView.extend({
 	render: function() {
 		this.$el.css('display', 'block');
 		var that = this;
+
+		if (app.collections.glossaryTerms.length === 0) {
+            this.$el.hide();
+            this.setDrawerHandlePosition();
+            return;
+        }
+
 		this.$el.html(this.template({hasResults: !_.isEmpty(app.collections.glossaryTerms.models)}));
 
 		_.each(app.collections.glossaryTerms.models, function(item) {
@@ -30,6 +37,9 @@ OsciTk.views.Glossary = OsciTk.views.BottomDrawerView.extend({
 			var termViewMobile = OsciTk.templateManager.get('aic-glossary-term-mobile');
 			that.$el.find('#glossary-term-listing-mobile').append(termViewMobile({item: item}));
 		});
+
+		this.setDrawerLastPosition();
+		this.setDrawerHandlePosition();
 	},
 	filterTerms: function() {
 		var that = this,

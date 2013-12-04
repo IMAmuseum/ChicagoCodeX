@@ -29,7 +29,7 @@ OsciTk.views.BottomDrawerView = OsciTk.views.BaseView.extend({
 				this.setInactive();
 			}
 		});
-		
+
 		// listen for other tabs opening or closing
 		this.listenTo(Backbone, 'tabOpening', function() {
 			this.openDrawer();
@@ -96,5 +96,19 @@ OsciTk.views.BottomDrawerView = OsciTk.views.BaseView.extend({
 	setInactive: function() {
 		this.$el.css({'z-index': '100'});
 		this.isActive = false;
+	},
+	setDrawerHandlePosition: function() {
+		var offset = 105;
+		var visibleHandles = 0;
+		$(".drawer-handle").each(function() {
+			var $this = $(this);
+			var container = $this.parent();
+
+			if (container.is(":visible")) {
+				var newOffset = offset * visibleHandles;
+				$this.css({'left': newOffset + 'px'});
+				visibleHandles++;
+			}
+		});
 	}
 });
