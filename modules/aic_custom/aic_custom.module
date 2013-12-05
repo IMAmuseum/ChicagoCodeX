@@ -167,6 +167,12 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
             $output .= '</li><li>';
             $flag = false;
         }
+
+        $title = $leaf['title'];
+        if (isset($node->field_navigation_title) && isset($node->field_navigation_title['und'])) {
+            $title = $node->field_navigation_title['und'][0]['value'];
+        }
+
         if (empty($node->field_active['und']) || (!empty($node->field_active['und']) && $node->field_active['und'][0]['value'])) {
             $link = $vars['for_export'] ? $leaf['filename'] : $leaf['url'];
             $attrs = "data-section_id=\"{$leaf['nid']}\"";
@@ -178,9 +184,9 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
             if (isset($leaf['thumbnail_figure_index'])) {
                 $attrs .= " data-thumbnail_figure_index=\"{$leaf['thumbnail_figure_index']}\"";
             }
-            $output .= "<a href=\"{$link}\" {$attrs}>{$leaf['title']}</a>";
+            $output .= "<a href=\"{$link}\" {$attrs}>{$title}</a>";
         } else {
-            $output .= $leaf['title'];
+            $output .= $title;
         }
 
         $flag = true;
