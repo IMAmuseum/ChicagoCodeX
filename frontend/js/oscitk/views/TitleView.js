@@ -11,8 +11,7 @@ OsciTk.views.Title = OsciTk.views.BaseView.extend({
 			else {
 				section = app.collections.navigationItems.where({id: params.section_id})[0];
 			}
-			this.$el.find('#section-title').text(section.get('title'));
-			
+			this.$el.find('#section-title').html(section.get('title'));
 		});
 
 		this.render();
