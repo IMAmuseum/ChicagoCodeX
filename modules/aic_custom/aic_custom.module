@@ -170,7 +170,7 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
 
         $title = $leaf['title'];
         if (isset($node->field_navigation_title) && isset($node->field_navigation_title['und'])) {
-            $title = $node->field_navigation_title['und'][0]['value'];
+            $title = "<![CDATA[" . $node->field_navigation_title['und'][0]['value'] . "]]>";
         }
 
         if (empty($node->field_active['und']) || (!empty($node->field_active['und']) && $node->field_active['und'][0]['value'])) {
