@@ -331,7 +331,7 @@ function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     $sectionNode = node_load($data['sectionNid']);
 
     if ($data['figure']['position'] === 'plate') {
-        $replace['complete'] = $sectionNode->field_navigation_title['und'][0]['value'];
+        $replace['complete'] = '';
     }
 
     $cat = '';
@@ -344,6 +344,13 @@ function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     }
 
     $replace['cat#'] = $cat;
+}
+
+function aic_custom_osci_tk_figure_formatter(&$vars) {
+    if ($vars['position'] === 'plate') {
+        $sectionNode = node_load($vars['section_id']);
+        $vars['value'] = $sectionNode->field_navigation_title['und'][0]['value'];
+    }
 }
 
 /**
