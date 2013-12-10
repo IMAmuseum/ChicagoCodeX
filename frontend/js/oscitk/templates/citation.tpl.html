@@ -7,7 +7,7 @@
             <li><a href="#citation-format-mla">MLA</a></li>
         </ul>
         <div id="citation-format-chicago" class="citation">
-            <% if (creator.length > 0) { %> <%= creator + ", " %> <% } %>"<em><%= title %></em>," in <em><%= publicationTitle %></em>, ed. <%= editor %> <%= publisher %> <%= formattedDate %>, para <%= paragraphNumber %>.
+            <% if (creator.length > 0) { %> <%= creator + ", " %> <% } %>"<em><%= title %></em>," in <em><%= publicationTitle %></em>, ed. <%= editor %> (<%= publisher %> <%= formattedDate %>), para <%= paragraphNumber %>.
         </div>
         <div id="citation-format-mla" style="display: none;" class="citation">
             <% if (creator.length > 0) { %> <%= creator + ", " %> <% } %>"<em><%= title %></em>," in <span style="text-decoration:underline;"><%= publicationTitle %></span>, ed. <%= editor %> (<%= publisher %>), <%= formattedDate %>, <%= paragraphNumber %>.
