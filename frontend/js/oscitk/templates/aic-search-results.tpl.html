@@ -31,17 +31,14 @@
 		</ul>
         <% if (response.numFound !== 0) { %>
 		<div id="search-content" class="search-results-content">
-        <% _.each(results, function(item) { %>
+        <% _.each(results, function(result) { %>
             <div class="search-result">
-            <% _.each(item, function(result) { %>
-				<div class="search-result-header">
-					<div class="search-result-title" data-type="content" data-id="<%= result.get('id') %>"><%= result.get("label") %></div>
-				</div>
 				<div class="search-result-content">
 					<div class="search-result-section-image">
 						<img src="<%= result.get('thumbnail') %>" data-type="content" data-id="<%= result.get('id') %>">
 					</div>
 					<div class="search-result-content-entries">
+                        <div class="search-result-title" data-type="content" data-id="<%= result.get('id') %>"><%= result.get("label") %></div>
 						<div class="search-result-content-entry" data-type="content" data-id="<%= result.get('id') %>">
 							<div class="search-result-content-entry-body">
                             <% if (_.isEmpty(result.get('teaser'))) { %>
@@ -54,7 +51,6 @@
                                 <%= result.get('bundle') %>
                             </div>
 						</div>
-            <% }); %>
 					</div>
 				</div>
             </div>
