@@ -346,7 +346,7 @@ function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     $replace['cat#'] = $cat;
 }
 
-function aic_custom_osci_tk_figure_formatter(&$vars) {
+function aic_custom_osci_tk_figure_formatter_alter(&$vars) {
     if ($vars['item']['position'] === 'plate') {
         $sectionNode = node_load($vars['item']['section_id']);
         $vars['item']['value'] = $sectionNode->field_navigation_title['und'][0]['value'];
