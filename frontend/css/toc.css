@@ -121,7 +121,7 @@
 	width: 160px;
 	cursor: pointer;
 }
-#toc-navigation {
+#toc-navigation p, #toc-navigation em {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
 }
