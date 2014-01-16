@@ -258,41 +258,43 @@ function aic_custom_ncx_generate_navmap(&$vars) {
 }
 
 function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
-    $css[] = "/frontend/css/common.css";
-    $css[] = "/frontend/css/toolbar.css";
-    $css[] = "/frontend/css/title.css";
-    $css[] = "/frontend/css/section.css";
-    $css[] = "/frontend/css/multiColumnSection.css";
-    $css[] = "/frontend/css/referenceImage.css";
-    $css[] = "/frontend/css/toc.css";
-    $css[] = "/frontend/css/footnotes.css";
-    $css[] = "/frontend/css/figures.css";
-    $css[] = "/frontend/css/layered_image.css";
-    $css[] = "/frontend/css/navigation.css";
-    $css[] = "/frontend/css/paragraphs.css";
-    $css[] = "/frontend/css/notes.css";
-    $css[] = "/frontend/css/glossary.css";
-    $css[] = "/frontend/css/search.css";
+    $basePath = DRUPAL_ROOT;
 
-    $js[] = "/frontend/js/oscitk/collections/NavigationItemsCollection.js";
-    $js[] = "/frontend/js/oscitk/collections/FiguresCollection.js";
-    $js[] = "/frontend/js/oscitk/views/AppView.js";
-    $js[] = "/frontend/js/oscitk/views/TitleView.js";
-    $js[] = "/frontend/js/oscitk/views/ToolbarView.js";
-    $js[] = "/frontend/js/oscitk/views/ToolbarItemView.js";
-    $js[] = "/frontend/js/oscitk/views/TextEnlargeView.js";
-    $js[] = "/frontend/js/oscitk/views/TextReduceView.js";
-    $js[] = "/frontend/js/oscitk/views/PrintView.js";
-    $js[] = "/frontend/js/oscitk/views/AccountView.js";
-    $js[] = "/frontend/js/oscitk/views/SearchView.js";
-    $js[] = "/frontend/js/oscitk/views/TocView.js";
-    $js[] = "/frontend/js/oscitk/views/BottomDrawerView.js";
-    $js[] = "/frontend/js/oscitk/views/FootnotesView.js";
-    $js[] = "/frontend/js/oscitk/views/FiguresView.js";
-    $js[] = "/frontend/js/oscitk/views/GlossaryView.js";
-    $js[] = "/frontend/js/oscitk/views/PersistentNotesView.js";
-    $js[] = "/frontend/js/oscitk/views/ReferenceImageView.js";
-    $js[] = "/frontend/js/oscitk/views/CitationView.js";
+    $css[] = "$basePath/frontend/css/common.css";
+    $css[] = "$basePath/frontend/css/toolbar.css";
+    $css[] = "$basePath/frontend/css/title.css";
+    $css[] = "$basePath/frontend/css/section.css";
+    $css[] = "$basePath/frontend/css/multiColumnSection.css";
+    $css[] = "$basePath/frontend/css/referenceImage.css";
+    $css[] = "$basePath/frontend/css/toc.css";
+    $css[] = "$basePath/frontend/css/footnotes.css";
+    $css[] = "$basePath/frontend/css/figures.css";
+    $css[] = "$basePath/frontend/css/layered_image.css";
+    $css[] = "$basePath/frontend/css/navigation.css";
+    $css[] = "$basePath/frontend/css/paragraphs.css";
+    $css[] = "$basePath/frontend/css/notes.css";
+    $css[] = "$basePath/frontend/css/glossary.css";
+    $css[] = "$basePath/frontend/css/search.css";
+
+    $js[] = "$basePath/frontend/js/oscitk/collections/NavigationItemsCollection.js";
+    $js[] = "$basePath/frontend/js/oscitk/collections/FiguresCollection.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/AppView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/TitleView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/ToolbarView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/ToolbarItemView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/TextEnlargeView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/TextReduceView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/PrintView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/AccountView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/SearchView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/TocView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/BottomDrawerView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/FootnotesView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/FiguresView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/GlossaryView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/PersistentNotesView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/ReferenceImageView.js";
+    $js[] = "$basePath/frontend/js/oscitk/views/CitationView.js";
 }
 
 function aic_custom_figure_window($section_nid, $figIndex=null) {
