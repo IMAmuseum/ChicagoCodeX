@@ -274,25 +274,27 @@ function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
     $css[] = "frontend/css/glossary.css";
     $css[] = "frontend/css/search.css";
 
-    $js[] = "frontend/js/oscitk/collections/NavigationItemsCollection.js";
-    $js[] = "frontend/js/oscitk/collections/FiguresCollection.js";
-    $js[] = "frontend/js/oscitk/views/AppView.js";
-    $js[] = "frontend/js/oscitk/views/TitleView.js";
-    $js[] = "frontend/js/oscitk/views/ToolbarView.js";
-    $js[] = "frontend/js/oscitk/views/ToolbarItemView.js";
-    $js[] = "frontend/js/oscitk/views/TextEnlargeView.js";
-    $js[] = "frontend/js/oscitk/views/TextReduceView.js";
-    $js[] = "frontend/js/oscitk/views/PrintView.js";
-    $js[] = "frontend/js/oscitk/views/AccountView.js";
-    $js[] = "frontend/js/oscitk/views/SearchView.js";
-    $js[] = "frontend/js/oscitk/views/TocView.js";
-    $js[] = "frontend/js/oscitk/views/BottomDrawerView.js";
-    $js[] = "frontend/js/oscitk/views/FootnotesView.js";
-    $js[] = "frontend/js/oscitk/views/FiguresView.js";
-    $js[] = "frontend/js/oscitk/views/GlossaryView.js";
-    $js[] = "frontend/js/oscitk/views/PersistentNotesView.js";
-    $js[] = "frontend/js/oscitk/views/ReferenceImageView.js";
-    $js[] = "frontend/js/oscitk/views/CitationView.js";
+    $jsBasePath = DRUPAL_ROOT . '/';
+
+    $js[] = "{$jsBasePath}frontend/js/oscitk/collections/NavigationItemsCollection.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/collections/FiguresCollection.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/AppView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/TitleView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/ToolbarView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/ToolbarItemView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/TextEnlargeView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/TextReduceView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/PrintView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/AccountView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/SearchView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/TocView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/BottomDrawerView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/FootnotesView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/FiguresView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/GlossaryView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/PersistentNotesView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/ReferenceImageView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/CitationView.js";
 }
 
 function aic_custom_figure_window($section_nid, $figIndex=null) {
