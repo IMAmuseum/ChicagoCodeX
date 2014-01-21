@@ -27,6 +27,9 @@ OsciTk.views.GlossaryTooltip = OsciTk.views.BaseView.extend({
                 }).click(function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    if (!app.views.glossaryView.isOpen) {
+                        app.views.glossaryView.toggleDrawer();
+                    }
                     app.views.glossaryView.selectTerm(e);
                 });
             }
