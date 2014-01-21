@@ -1,7 +1,7 @@
 <?php
 
 function aic_custom_init() {
-    drupal_add_css(drupal_get_path("module", "aic_custom") . "/css/layered_image.css");
+    drupal_add_css(drupal_get_path("module", "aic_custom") . "/css/layered_image_custom.css");
 }
 
 function aic_custom_menu() {
