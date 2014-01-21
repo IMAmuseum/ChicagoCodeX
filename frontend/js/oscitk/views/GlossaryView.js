@@ -76,6 +76,10 @@ OsciTk.views.Glossary = OsciTk.views.BottomDrawerView.extend({
 		this.filterTerms();
 	},
 	selectTerm: function(e) {
+		if (!this.isOpen) {
+			this.openDrawer();
+		}
+
 		var tid = $(e.target).data('tid');
 		var item = app.collections.glossaryTerms.get(tid);
 

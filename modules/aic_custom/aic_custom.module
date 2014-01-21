@@ -299,6 +299,7 @@ function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/PersistentNotesView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/ReferenceImageView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/CitationView.js";
+    $js[] = "{$jsBasePath}frontend/js/oscitk/views/GlossaryTooltipView.js";
 }
 
 function aic_custom_figure_window($section_nid, $figIndex=null) {
