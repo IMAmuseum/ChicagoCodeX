@@ -1,0 +1,16 @@
+.ca-ui-layer span {
+    display: inline-block;
+}
+
+.ca-ui-annotation-selector-list li:first-of-type {
+    border-top: none;
+}
+
+.ca-ui-annotation-selector .title {
+    display: none;
+}
+
+.ca-ui-layer-slider .ui-slider-handle {
+    width: 15px;
+    height: 15px;
+}
