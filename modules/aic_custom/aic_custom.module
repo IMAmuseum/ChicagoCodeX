@@ -1,5 +1,9 @@
 <?php
 
+function aic_custom_init() {
+    drupal_add_css(drupal_get_path("module", "aic_custom") . "/css/layered_image.css");
+}
+
 function aic_custom_menu() {
     $items = array();
     $items['figure/window/%'] = array(
