@@ -351,6 +351,8 @@ function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     }
 
     $replace['cat#'] = $cat;
+
+    $replace['fig#'] = $replace['fig#'] - 1;
 }
 
 function aic_custom_osci_tk_figure_formatter_alter(&$vars) {
