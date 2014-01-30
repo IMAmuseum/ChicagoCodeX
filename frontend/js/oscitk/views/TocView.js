@@ -121,6 +121,9 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		if (!_.isUndefined(subHeadings) && subHeadings.length > 0) {
 			ul = $('<ul></ul>');
 			for (i = 0; i < subHeadings.length; i++) {
+				if (subHeadings[i].label == 'Body' || subHeadings[i].id == 'body') {
+					continue;
+				}
 				var subHead = $('<li></li>')
 					.attr('data-section_id', item.id)
 					.attr('data-active', item.get('active'))
