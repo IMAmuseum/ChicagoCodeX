@@ -64,14 +64,14 @@ h1, h2, h3, h4, h5 {
 	margin-bottom: 0;
 }
 #section h5 {
-	font-weight: bold;
-	font-style: italic;
 	font-size: 1.1em;
+	margin-bottom: .5em;
 }
 #section h6 {
 	font-size: 1.1em;
 	font-weight: bold;
 	font-style: italic;
+	margin-bottom: .5em;
 }
 #section.oscitk_multi_column figure {
 	position: absolute;
