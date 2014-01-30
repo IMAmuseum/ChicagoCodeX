@@ -370,7 +370,8 @@ function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     if ($sectionNode
         && isset($sectionNode->field_catalogue_number)
         && is_array($sectionNode->field_catalogue_number)
-        && $sectionNode->field_catalogue_number['und'][0]['value']) {
+        && isset($sectionNode->field_catalogue_number['und'])
+        && isset($sectionNode->field_catalogue_number['und'][0]['value'])) {
 
         $cat = $sectionNode->field_catalogue_number['und'][0]['value'];
     }
