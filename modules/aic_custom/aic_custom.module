@@ -96,6 +96,11 @@ function aic_custom_filter_info_alter(&$info) {
 function _aic_custom_glossary_filter($text, $filter, $format) {
     if (!is_numeric(arg(2))) return $text;
 
+    $glossary = false;
+    if (arg(3) === "glossary.xhtml") {
+        $glossary = true;
+    }
+
     global $aic_custom_current_tree;
     global $aic_custom_term_count;
 
@@ -113,7 +118,7 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
             $tree = taxonomy_get_tree($vocab_id);
             foreach ($tree as $leaf) {
                 $aic_custom_current_tree = $leaf;
-                if (!isset($aic_custom_term_count[$leaf->tid])) {
+                if (!isset($aic_custom_term_count[$leaf->tid]) || $glossary) {
                     $pContent = preg_replace_callback('/' . preg_quote($leaf->name, '/') . '\b/i', '_aic_custom_glossary_parse_term', $pContent);
                 }
             }
@@ -143,7 +148,12 @@ function _aic_custom_glossary_parse_term($match) {
     global $aic_custom_current_tree;
     global $aic_custom_term_count;
 
-    if (!isset($aic_custom_term_count[$aic_custom_current_tree->tid])) {
+    $glossary = false;
+    if (arg(3) === "glossary.xhtml") {
+        $glossary = true;
+    }
+
+    if (!isset($aic_custom_term_count[$aic_custom_current_tree->tid]) || $glossary) {
         $aic_custom_term_count[$aic_custom_current_tree->tid] = TRUE;
         return '<a class="glossary-term" data-tid="' . $aic_custom_current_tree->tid . '">' . $match[0] . '</a>';
     } else {
