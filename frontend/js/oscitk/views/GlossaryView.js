@@ -76,11 +76,17 @@ OsciTk.views.Glossary = OsciTk.views.BottomDrawerView.extend({
 		this.filterTerms();
 	},
 	selectTerm: function(e) {
+		var that = this;
 		var tid = $(e.currentTarget).data('tid');
 		var item = app.collections.glossaryTerms.get(tid);
 
 		this.$el.find('#glossary-term-content > h4').html(item.get('term'));
-		this.$el.find('#glossary-term-content > p').html(item.get('definition'));
+		this.$el.find('#glossary-term-content > p')
+			.html(item.get('definition'))
+			.find('.glossary-term')
+			.click(function(e) {
+				that.selectTerm(e)
+			});
 	},
 	expandTerm: function(e) {
 		$(e.target).removeClass('active-term');
