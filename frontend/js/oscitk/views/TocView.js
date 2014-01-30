@@ -119,6 +119,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 
 		var subHeadings = item.get('subHeadings');
 		if (!_.isUndefined(subHeadings) && subHeadings.length > 0) {
+			var subHeadingCount = 0;
 			ul = $('<ul></ul>');
 			for (i = 0; i < subHeadings.length; i++) {
 				if (subHeadings[i].label == 'Body' || subHeadings[i].id == 'body') {
@@ -130,8 +131,11 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 					.attr('data-field', subHeadings[i].id)
 					.append('<div class="navTitle">' + subHeadings[i].label + '</div>');
 				ul.append(subHead);
+				subHeadingCount++;
 			}
-			itemMarkup.append(ul);
+			if (subHeadingCount > 0) {
+				itemMarkup.append(ul);
+			}
 		}
 		return itemMarkup;
 	},
