@@ -262,23 +262,38 @@ function aic_custom_ncx_generate_navmap(&$vars) {
 }
 
 function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
-    $css[] = "frontend/css/common.css";
-    $css[] = "frontend/css/toolbar.css";
-    $css[] = "frontend/css/title.css";
-    $css[] = "frontend/css/section.css";
-    $css[] = "frontend/css/multiColumnSection.css";
-    $css[] = "frontend/css/referenceImage.css";
-    $css[] = "frontend/css/toc.css";
-    $css[] = "frontend/css/footnotes.css";
-    $css[] = "frontend/css/figures.css";
-    $css[] = "frontend/css/layered_image.css";
-    $css[] = "frontend/css/navigation.css";
-    $css[] = "frontend/css/paragraphs.css";
-    $css[] = "frontend/css/notes.css";
-    $css[] = "frontend/css/glossary.css";
-    $css[] = "frontend/css/search.css";
+    global $base_url;
 
-    $jsBasePath = DRUPAL_ROOT . '/';
+    $preprocessCss = variable_get("preprocess_css", 1);
+    $preprocessJs = variable_get("preprocess_js", 1);
+
+    if ($preprocessCss) {
+        $cssBasePath = '';
+    } else {
+        $cssBasePath = $base_url . '/';
+    }
+
+    $css[] = "{$cssBasePath}frontend/css/common.css";
+    $css[] = "{$cssBasePath}frontend/css/toolbar.css";
+    $css[] = "{$cssBasePath}frontend/css/title.css";
+    $css[] = "{$cssBasePath}frontend/css/section.css";
+    $css[] = "{$cssBasePath}frontend/css/multiColumnSection.css";
+    $css[] = "{$cssBasePath}frontend/css/referenceImage.css";
+    $css[] = "{$cssBasePath}frontend/css/toc.css";
+    $css[] = "{$cssBasePath}frontend/css/footnotes.css";
+    $css[] = "{$cssBasePath}frontend/css/figures.css";
+    $css[] = "{$cssBasePath}frontend/css/layered_image.css";
+    $css[] = "{$cssBasePath}frontend/css/navigation.css";
+    $css[] = "{$cssBasePath}frontend/css/paragraphs.css";
+    $css[] = "{$cssBasePath}frontend/css/notes.css";
+    $css[] = "{$cssBasePath}frontend/css/glossary.css";
+    $css[] = "{$cssBasePath}frontend/css/search.css";
+
+    if ($preprocessJs) {
+        $jsBasePath = DRUPAL_ROOT . '/';
+    } else {
+        $jsBasePath = $base_url . '/';
+    }
 
     $js[] = "{$jsBasePath}frontend/js/oscitk/collections/NavigationItemsCollection.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/collections/FiguresCollection.js";
