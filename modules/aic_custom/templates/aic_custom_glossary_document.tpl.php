@@ -3,7 +3,7 @@
     <head></head>
     <body>
         <dl>
-        <?php foreach ($terms as $name => $term): ?>
+        <?php foreach ($terms as $k => $term): ?>
         	<dt data-tid="<?php print $term['term_id']; ?>"><dfn><?php print $term['display_name']; ?></dfn></dt>
         	<dd><?php print $term['definition']; ?></dd>
         <?php endforeach; ?>
