@@ -85,6 +85,7 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
     },
     onFootnoteRefClicked: function(event) {
         event.preventDefault();
+        event.stopPropagation();
         var matches = event.target.hash.match(/#(fn-\d+-\d+)/);
         var id = matches[1];
         event.data.caller.navigateTo(id);
@@ -95,8 +96,8 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
         if (!this.isActive) this.setActive();
 
         // figure out which page this footnote is on based on delta
-        var delta = parseInt(app.collections.footnotes.get(id).get('delta'), 10);
-        this.page = delta + 1;
+        var delta = parseInt(app.collections.footnotes.get(id).get('index'), 10);
+        this.page = delta;
         this.translateToPage();
     },
     onViewInContextClicked: function(event_data) {

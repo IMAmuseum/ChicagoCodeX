@@ -7,7 +7,7 @@
 				<li>
 					<div class="footnote-id">
 						<a class="view-in-context" href="#" data-footnote-id="<%= footnote.id %>">
-							<%= (parseInt(footnote.get('delta'), 10) + 1) %>
+							<%= parseInt(footnote.get('index'), 10) %>
 						</a>
 					</div>
 					<div class="footnote-body"><%= footnote.get('body') %></div>
