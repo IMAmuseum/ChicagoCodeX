@@ -9,6 +9,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		this.isOpen = false;
 
 		this.listenTo(Backbone, 'navigationLoaded', function(navigationItems) {
+			this.render();
 			this.navTree = this.renderNavTree();
 		});
 
