@@ -5,14 +5,14 @@ body {
 }
 
 a {
-	color:#52818C;	
+	color:#52818C;
 }
 
 /* apply a natural box layout model to all elements */
-* { 
-	-moz-box-sizing: border-box; 
-	-webkit-box-sizing: border-box; 
-	box-sizing: border-box; 
+* {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 #reader {
@@ -34,14 +34,14 @@ figcaption {
 }
 
 .page {
-	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;	
+	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
 }
 .page p {
 	line-height:150%;
 }
 
 a.figure_reference {
-	
+
 }
 a.footnote-reference {
 	vertical-align:super;
@@ -60,10 +60,10 @@ a.footnote-reference {
 	width:100%;
 }
 .figure_content table thead{
-	
+
 }
 .figure_content table thead tr {
-	
+
 }
 .figure_content table thead th {
 	text-align:left;
@@ -71,13 +71,13 @@ a.footnote-reference {
 }
 
 .figure_content table tbody {
-	
+
 }
 .figure_content table tbody tr {
-	
+
 }
 .figure_content table tbody tr:nth-child(odd) {
-	background: #eee;	
+	background: #eee;
 }
 .figure_content table tbody td {
 	padding:5px;
@@ -94,10 +94,10 @@ a.footnote-reference {
 	width: auto !important;
 	border-radius: 3px;
 }
-.ui-tooltip-toolbar a, 
-.ui-tooltip-toolbar a:active, 
-.ui-tooltip-toolbar a:visited, 
-.ui-tooltip-toolbar a:hover, 
+.ui-tooltip-toolbar a,
+.ui-tooltip-toolbar a:active,
+.ui-tooltip-toolbar a:visited,
+.ui-tooltip-toolbar a:hover,
 .ui-tooltip-toolbar a:link {
 	color: #fff;
 }
@@ -124,7 +124,7 @@ a.footnote-reference {
 	  -webkit-transform: scale(0);
 	  animation-timing-function: ease-in;
 	}
-	to { 
+	to {
 	  -webkit-transform: scale(1.0);
 	  animation-timing-function: ease-out;
 	}
@@ -147,13 +147,13 @@ a.footnote-reference {
 	overflow:hidden;
 	display:block;
 	padding:0;
-	text-indent:-999px; 
+	text-indent:-999px;
 	position:absolute;
 	top:5px;
 	opacity:.7;
 }
 #osci_linker a:hover {
-	opacity:1;	
+	opacity:1;
 }
 #osci_linker .next {
 	background: url('../img/icon-figref-next.png') no-repeat left top;
@@ -169,4 +169,7 @@ a.footnote-reference {
 }
 a {
 	text-decoration: none;
+}
+.toggleCiteDialog, .toggleNoteDialog {
+	font-family:Arial, Helvetica, sans-serif;
 }
