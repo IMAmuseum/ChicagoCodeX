@@ -6,8 +6,8 @@
 	word-wrap: break-word;
 	overflow: hidden;
 	background: #fff;
-	
-	
+
+
 }
 .ui-tooltip .ui-tooltip-tip {
 	background: url('../img/bg-toolbar.gif') repeat!important;
@@ -15,7 +15,7 @@
 }
 .ui-tooltip, .qtip {
 	max-width:auto!important;
-	
+
 	margin-left:-10px;
 }
 
@@ -67,6 +67,7 @@
 }
 .paragraph-controls span {
 	padding:2px 5px;
+	font-family:Arial, Helvetica, sans-serif;
 }
 
 /* paragraph control tooltips */
@@ -75,7 +76,7 @@
 }
 .paragraph-controls .ui-tooltip.qtip {
 	border-radius:4px!important;
-	
+
 }
 .paragraph-controls .ui-tooltip-content {
 	padding:6px;
