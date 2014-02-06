@@ -7,9 +7,9 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		this.sectionImageUrl = null;
 		this.referenceImageUrl = null;
 		this.isOpen = false;
+		this.rendered = false;
 
 		this.listenTo(Backbone, 'navigationLoaded', function(navigationItems) {
-			this.render();
 			this.navTree = this.renderNavTree();
 		});
 
@@ -32,7 +32,11 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 					figure_index: navItems[0].get('thumbnail_figure_index')
 				});
 			}
-			//this.render();
+
+			if (this.rendered == false) {
+				this.render();
+				this.rendered = true;
+			}
 			// reset bold on all section li tags
 			this.$el.find('li[data-section_id]').css('font-weight', 'normal');
 			// set the current sections nav item to bold
