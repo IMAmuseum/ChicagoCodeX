@@ -186,11 +186,15 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		// bind section titles to navigate on click
 		list.find('li div.navTitle').on('click', function(event) {
 			event.preventDefault();
-			var active = $(this).parent().attr('data-active');
+
+			var $this = $(this);
+			$this.parent.find(".navArrowContainer").click();
+
+			var active = $this.parent().attr('data-active');
 			if (active === 'true') {
-				var sectionId = $(this).parent().attr('data-section_id');
+				var sectionId = $this.parent().attr('data-section_id');
 				var routeTo = "/section/" + sectionId;
-				var field = $(this).parent().attr('data-field');
+				var field = $this.parent().attr('data-field');
 				if (field) {
 					routeTo += "/" + field + "_anchor";
 				}
