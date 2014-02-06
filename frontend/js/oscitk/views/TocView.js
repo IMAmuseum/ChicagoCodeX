@@ -194,7 +194,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 				if (field) {
 					routeTo += "/" + field + "_anchor";
 				}
-				that.closeDrawer();
+				//that.closeDrawer();
 				if (field && sectionId === app.views.navigationView.currentNavigationItem.id) {
 					Backbone.trigger('navigate', { identifier: field + "_anchor" });
 				} else if (sectionId !== app.views.navigationView.currentNavigationItem.id) {
