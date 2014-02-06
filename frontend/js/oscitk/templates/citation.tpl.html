@@ -7,10 +7,10 @@
             <li><a href="#citation-format-mla">MLA</a></li>
         </ul>
         <div id="citation-format-chicago" class="citation">
-            <% if (creator.length > 0) { %> <%= creator + ", " %> <% } %>&#8220;<em><%= title %></em>,&#8221; in <em><%= publicationTitle %></em>, ed. <%= editor %> (<%= publisher %>, <%= formattedDate %>), para <%= paragraphNumber %>.
+            <% if (creator.length > 0) { %> <%= creator + ", " %> <% } %>&#8220;<em><%= title %></em>,&#8221; in <em><%= publicationTitle %></em><% if (editor.length > 0) { %>, ed. <%= editor %><% } %> (<%= publisher %>, <%= formattedDate %>), para <%= paragraphNumber %>.
         </div>
         <div id="citation-format-mla" style="display: none;" class="citation">
-            <% if (creator.length > 0) { %> <%= creator + ", " %> <% } %>&#8220;<em><%= title %></em>,&#8221; in <span style="text-decoration:underline;"><%= publicationTitle %></span>, ed. <%= editor %> (<%= publisher %>, <%= formattedDate %>), <%= paragraphNumber %>.
+            <% if (creator.length > 0) { %> <%= creator + ", " %> <% } %>&#8220;<em><%= title %></em>,&#8221; in <span style="text-decoration:underline;"><%= publicationTitle %></span><% if (editor.length > 0) { %>, ed. <%= editor %><% } %> (<%= publisher %>, <%= formattedDate %>), <%= paragraphNumber %>.
         </div>
     </div>
     <div class="citation_url">
