@@ -188,7 +188,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			event.preventDefault();
 
 			var $this = $(this);
-			$this.parent.find(".navArrowContainer").click();
+			$this.parent().find(".navArrowContainer").click();
 
 			var active = $this.parent().attr('data-active');
 			if (active === 'true') {
