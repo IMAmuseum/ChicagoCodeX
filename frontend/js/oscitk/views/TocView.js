@@ -31,18 +31,18 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 					figure_index: navItems[0].get('thumbnail_figure_index')
 				});
 			}
-			this.render();
+			//this.render();
 			// reset bold on all section li tags
 			this.$el.find('li[data-section_id]').css('font-weight', 'normal');
 			// set the current sections nav item to bold
 			var li = this.$el.find('li[data-section_id="' + section.id + '"].navArrow');
 			li.css('font-weight', 'bold');
 			// find any vertical nav arrows and click them to close
-			this.$el.find('li.V').click();
-			// find parents of the li that are horizontal and click
-			li.parents('li.H').each(function() {
-				$(this).click();
-			});
+			// this.$el.find('li.V').click();
+			// // find parents of the li that are horizontal and click
+			// li.parents('li.H').each(function() {
+			// 	$(this).click();
+			// });
 		});
 	},
 	toggleDrawer: function() {
