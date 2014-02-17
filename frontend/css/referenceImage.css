@@ -2,13 +2,13 @@
 	position: absolute;
 	right: 10px;
 	top: 60px;
-	width: 100px;
+	width: 110px;
 	height: auto;
 	z-index: 100;
 }
 
 #referenceImage img {
-	width: 100px;
+	width: 110px;
 	height: auto;
 	-moz-box-shadow: 2px 2px 6px #666;
 	-webkit-box-shadow: 2px 2px 6px #666;

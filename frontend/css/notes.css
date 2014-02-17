@@ -1,24 +1,104 @@
 #persistent-notes {
 	position: absolute;
-	width: 100px;
+	width: 130px;
 	top: 215px;
-	right: 10px;
+	right: 0;
 
 }
 
 #persistent-notes .note {
-	background: #FFB51A;
-	font-size: 0.75em;
-	line-height: 1em;
-	padding: 3px 5px;
-	margin-bottom: 10px;
-	opacity: 0.7;
-	height: 2.3em;
-	overflow: hidden;
-	width: 100px;
-	text-overflow: ellipsis;
+    margin-left: 10px !important;
+    margin-right: 10px!important;
+    background: #FFB51A;
+    font-size: 11px!important;
+    padding: 5px!important;
+    display: block;
+    margin-bottom: 5px!important;
+    color: #000!important;
+    font-family: Arial, Helvetica, sans-serif!important;
+    opacity: 0.5;
+    height: 40px;
+    text-overflow: ellipsis;
+}
+
+#persistent-notes .expand {
+    margin-left: -280px !important;
+    width: 400px;
+    height: auto;
+    opacity: 1;
+    font-size: 14px!important;
+    padding: 10px!important;
+    background:#FFB51A url('../img/icon-minimize.png') no-repeat right 3px top 3px!important;
+}
+
+#persistent-notes .expand .note-tags-p {
+    display: block;
+    color: #555;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#persistent-notes .expand .note-content {
+    height: auto;
+    max-height: none;
+}
+
+#persistent-notes .note-tags-p .note-tags-header {
+    font-weight: bold;
+    border-bottom: 1px solid #444;
+    color: #000;
+}
+
+#persistent-notes .note-content {
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    height: 25px;
+    padding: 0;
+    position: relative;
 }
 
 #persistent-notes .note:hover, #persistent-notes .hovered {
 	opacity: 1;
+    cursor: pointer;
+    background:#FFB51A url('../img/icon-maximize.png') no-repeat right top;
 }
+
+#persistent-notes .note-tags-p {
+    display: none;
+}
+
+.note-popup textarea {
+    background-color: #FFB51A;
+}
+
+#persistent-notes .note-controls {
+    display: none;
+}
+
+#persistent-notes .expand .note-controls {
+    display: block;
+}
+
+#persistent-notes .note-edit, #persistent-notes .note-delete {
+    width: 16px;
+    height: 16px;
+    display: block;
+    overflow: hidden;
+    text-indent: 999px;
+    opacity: 0.7;
+}
+
+#persistent-notes .note-edit {
+    background: url('../img/icon-edit.png') no-repeat left top;
+    position: absolute;
+    bottom: 5px;
+    right: 26px;
+ }
+
+ #persistent-notes .note-delete {
+    background: url('../img/icon-delete.png') no-repeat left top;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+ }

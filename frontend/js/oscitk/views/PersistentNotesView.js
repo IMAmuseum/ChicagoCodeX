@@ -17,7 +17,9 @@ OsciTk.views.PersistentNotesView = OsciTk.views.BaseView.extend({
     events: {
         'click .note'     : 'onClick',
         'mouseenter .note': 'onMouseEnter',
-        'mouseleave .note': 'onMouseLeave'
+        'mouseleave .note': 'onMouseLeave',
+        'click .note-edit': 'onEditClick',
+        'click .note-delete': 'onDeleteClick'
     },
     render: function() {
         // clear the notesToRender array
@@ -36,10 +38,45 @@ OsciTk.views.PersistentNotesView = OsciTk.views.BaseView.extend({
         this.$el.html(this.template({notes: this.notesToRender}));
     },
     onClick: function(e) {
-        // trigger the note popup window for this note
+        // expand note
         var note = $(e.currentTarget);
+        note.toggleClass("expand");
+    },
+    onEditClick: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var note = $(e.currentTarget).parents('.note');
         var contentId = note.attr('data-osci_content_id');
+        note.toggleClass("expand");
         Backbone.trigger('toggleNoteDialog', {contentId: contentId});
+    },
+    onDeleteClick: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var noteDiv = $(e.currentTarget).parents('.note');
+        var noteId = noteDiv.attr('data-osci_note_id');
+        var that = this;
+        var note = app.collections.notes.get(noteId);
+        console.log(note);
+
+        $.ajax({
+            url: app.config.get('endpoints').OsciTkNote,
+            data: {
+                section_id: note.get('section_id'),
+                id: note.get('id'),
+                content_id: note.get('content_id'),
+                note: 'delete',
+                'delete': 1
+            },
+            type: 'POST',
+            dataType: 'json',
+            success: function(data) {
+                if (data.success === true) {
+                    app.collections.notes.remove(note);
+                    that.render();
+                }
+            }
+        });
     },
     onMouseEnter: function(e) {
         // find the associate paragraph control and apply a hover class

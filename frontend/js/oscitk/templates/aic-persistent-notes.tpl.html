@@ -1,5 +1,15 @@
 <% _.each(notes, function(note) { %>
-	<div class="note" data-osci_content_id="<%= note.get('content_id') %>">
-		<%= note.get('note') %>
+	<div class="note" data-osci_content_id="<%= note.get('content_id') %>" data-osci_note_id="<%= note.get('id') %>">
+        <div class="note-content">
+		    <%= note.get('note') %>
+            <div class="note-tags-p">
+                <div class="note-tags-header">TAGS:</div>
+                <%= note.get('tags').join(', ') %>
+            </div>
+            <div class="note-controls">
+                <a href="#" class="note-edit">Edit</a>
+                <a href="" class="note-delete">Delete</a>
+            </div>
+        </div>
 	</div>
 <% }); %>
