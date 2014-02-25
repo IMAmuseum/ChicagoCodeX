@@ -325,8 +325,6 @@ function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/ReferenceImageView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/CitationView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/GlossaryTooltipView.js";
-
-    $js[7] = "{$jsBasePath}sites/default/ChicagoCodeX/modules/aic_custom/polymaps.min.js";
 }
 
 function aic_custom_figure_window($section_nid, $figIndex=null) {
