@@ -174,7 +174,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
                 linkerPrev.bind('click', function(event) {
                     event.preventDefault();
                     linker.remove();
-                    $this.navigateAndHighlightRef(visibleRefs, index - 1);
+                    $this.navigateAndHighlightRef(identifier, visibleRefs, index - 1);
                 });
             }
             if (next) {
@@ -188,7 +188,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
                 linkerNext.bind('click', function(event) {
                     event.preventDefault();
                     linker.remove();
-                    $this.navigateAndHighlightRef(visibleRefs, index + 1);
+                    $this.navigateAndHighlightRef(identifier, visibleRefs, index + 1);
                 });
             }
             // create stop control
