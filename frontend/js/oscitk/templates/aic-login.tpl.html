@@ -1,3 +1,7 @@
+<ul id="userFormLinks">
+	<li><a class="loginToggle active" id="showLoginForm" href="#loginForm">Login</a></li>
+	<li><a class="loginToggle" id="showRegisterForm" href="#registerForm">Register</a></li>
+</ul>
 <form method="post" id="loginForm">
 	<div class="field username">
 		<label for="loginUsername">Username: </label>
@@ -9,4 +13,20 @@
 	</div>
 	<input id="loginSubmit" value="Log In" type="button">
 	<div id="loginError"></div>
+</form>
+<form method="post" id="registerForm" style="display:none;">
+	<div class="field username">
+		<label for="registerUsername">Username: </label>
+		<input id="registerUsername" type="text">
+	</div>
+	<div class="field password">
+		<label for="registerPassword">Password: </label>
+		<input id="registerPassword" type="text" type="password">
+	</div>
+	<div class="field email">
+		<label for="registerEmail">Email: </label>
+		<input id="registerEmail" type="text">
+	</div>
+	<input id="registerSubmit" value="Create Account" type="button">
+	<div id="registerError"></div>
 </form>
