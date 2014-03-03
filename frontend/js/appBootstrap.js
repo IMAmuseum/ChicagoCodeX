@@ -14,7 +14,6 @@ app = {
 		this.collections.footnotes = new OsciTk.collections.Footnotes();
         this.collections.glossaryTerms = new OsciTk.collections.GlossaryTerms();
 		this.collections.navigationItems = new OsciTk.collections.NavigationItems();
-		/*hi it's just a test comment, delete later please*/
 		
 		//setup window resizing, to trigger an event
 		window.onresize = function() {
@@ -28,8 +27,6 @@ app = {
 
 			window.resizeTimer = setTimeout(onWindowResize, 200);
 		};
-		
-		/*test comment*/
 		
 		// init main view
 		this.views.app = new Aic.views.App();
