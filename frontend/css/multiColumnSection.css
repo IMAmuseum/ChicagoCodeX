@@ -90,3 +90,10 @@ h1, h2, h3, h4, h5 {
 .column ol {
 	padding: 0 0 0 40px;
 }
+
+/*adding blockquote styling 3/4/2014 - ts*/
+
+blockquote {
+  margin: 1.5em 0 1.5em 10px;
+  padding: 0.5em 0 .5em 10px;
+}
