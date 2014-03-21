@@ -101,11 +101,19 @@ OsciTk.views.Account = OsciTk.views.BaseView.extend({
 				}
 			});
 		});
+
+        $(document).delegate('#user-profile-link', 'click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log("clicked");
+            var destination = window.location.pathname.substring(1) + window.location.hash;
+            window.location = "/user/" + app.account.id + "/edit?destination=" + destination;
+        });
 	},
 	click: function(e) {
 
 		var content;
-		var destination = window.location.pathname.substring(1) + window.location.hash;
 
 		// determine content based on login status
 		if (parseInt(app.account.id, 10) > 0) {
