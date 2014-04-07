@@ -43,12 +43,14 @@ figcaption {
 a.figure_reference {
 
 }
+
 a.footnote-reference {
 	vertical-align:super;
 	font-size:10px;
 	margin-right:0;
 	text-decoration:none;
 	font-family: Arial, Helvetica, sans-serif;
+	line-height: 0;
 }
 
 #section.oscitk_multi_column figure.html_figure .figure_content {
