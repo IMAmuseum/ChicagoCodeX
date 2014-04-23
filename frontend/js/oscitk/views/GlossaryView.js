@@ -3,6 +3,7 @@ OsciTk.views.Glossary = OsciTk.views.BottomDrawerView.extend({
 	template: OsciTk.templateManager.get('aic-glossary'),
 	events: {
 		'click .drawer-handle': 'toggleDrawer',
+		'click .close-handle': 'toggleDrawer', //close button
 		'keyup #glossary-filter': 'filterTerms',
 		'click #glossary-filter-clear': 'clearFilter',
 		'click #glossary-term-listing li': 'selectTerm',

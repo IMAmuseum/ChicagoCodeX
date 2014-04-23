@@ -109,6 +109,27 @@ a.footnote-reference {
 	cursor: pointer;
 }
 
+/*drawer close*/
+#closeDrawer {
+	border-radius: 50%;
+	width: 30px;
+	height: 30px; 
+	background:#A8C0C5;
+	float:right;
+	margin: 10px;
+	cursor: pointer;
+}
+
+#closeDrawer:before {
+    content: "x";
+	position: relative;
+	left: 11px;
+	top: 4px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	cursor: pointer;
+}
+
 /* misc */
 .fancybox-close {
 	top: 0px!important;

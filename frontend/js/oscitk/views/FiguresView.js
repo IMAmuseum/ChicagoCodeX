@@ -3,6 +3,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
     template: OsciTk.templateManager.get('aic-figures'),
     events: {
         "click .drawer-handle": "toggleDrawer",
+		'click .close-handle': 'toggleDrawer', //close button
         "click a.view-fullscreen": "onFigurePreviewClicked",
         "click img.figure-preview": "onFigurePreviewClicked",
         "click a.view-in-context": "onViewInContextClicked",
