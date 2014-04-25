@@ -3,6 +3,7 @@ OsciTk.views.Footnotes = OsciTk.views.BottomDrawerView.extend({
     template: OsciTk.templateManager.get('aic-footnotes'),
     events: {
         "click .drawer-handle": "toggleDrawer",
+		'click .close-handle': 'toggleDrawer', //close button
         "click #footnotes-nav-next .footnotes-indicator": "onNextPageClicked",
         "click #footnotes-nav-prev .footnotes-indicator": "onPrevPageClicked",
         "click a.view-in-context": "onViewInContextClicked"
