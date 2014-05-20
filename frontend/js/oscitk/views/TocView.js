@@ -112,16 +112,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			.append('<div class="navTitle">' + item.get('title') + '</div>');
 
 		var i, ul;
-		// get the children of this item and render them too
-		var children = app.collections.navigationItems.where({parent: item});
-		if (children.length > 0) {
-			ul = $('<ul></ul>');
-			for (i = 0; i < children.length; i++) {
-				ul.append(this.renderNavSubTree(children[i]));
-			}
-			itemMarkup.append(ul);
-		}
-
+		
 		var subHeadings = item.get('subHeadings');
 		if (!_.isUndefined(subHeadings) && subHeadings.length > 0) {
 			var subHeadingCount = 0;
@@ -142,6 +133,16 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 				itemMarkup.append(ul);
 			}
 		}
+		
+		// get the children of this item and render them too
+		var children = app.collections.navigationItems.where({parent: item});
+		if (children.length > 0) {
+			ul = $('<ul></ul>');
+			for (i = 0; i < children.length; i++) {
+				ul.append(this.renderNavSubTree(children[i]));
+			}
+			itemMarkup.append(ul);
+		}		
 		return itemMarkup;
 	},
 	renderCollapsibleList: function() {
