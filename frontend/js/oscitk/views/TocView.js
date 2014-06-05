@@ -39,6 +39,8 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			}
 			// reset bold on all section li tags
 			this.$el.find('li[data-section_id]').css('font-weight', 'normal');
+			// make first li tag, the title of the pub, bold
+			this.$el.find( 'li' ).first().css('font-weight', 'bold');
 			// set the current sections nav item to bold
 			var li = this.$el.find('li[data-section_id="' + section.id + '"].navArrow');
 			li.css('font-weight', 'bold');
@@ -60,7 +62,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	},
 	closeDrawer: function() {
 		if (this.isOpen) {
-			Backbone.trigger('tocClosing');
+			//Backbone.trigger('tocClosing');
 			this.$el.animate({ left: '-200px' });
 			this.isOpen = false;
 		}
@@ -69,7 +71,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		if (!this.isOpen) {
 			// tell other drawers to close
 			Backbone.trigger('drawersClose', this);
-			Backbone.trigger('tocOpening');
+			//Backbone.trigger('tocOpening');
 			this.$el.animate({ left: '0px'});
 			this.isOpen = true;
 		}
@@ -108,6 +110,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		var itemMarkup = $('<li></li>')
 			.attr('data-section_id', item.id)
 			.attr('data-active', item.get('active'))
+			.attr('data-field', item.id)
 			.append('<div class="navArrowContainer"></div>')
 			.append('<div class="navTitle">' + item.get('title') + '</div>');
 
@@ -192,10 +195,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		// bind section titles to navigate on click
 		list.find('li div.navTitle').on('click', function(event) {
 			event.preventDefault();
-
 			var $this = $(this);
-			$this.parent().find(".navArrowContainer").click();
-
 			var active = $this.parent().attr('data-active');
 			if (active === 'true') {
 				var sectionId = $this.parent().attr('data-section_id');
@@ -211,6 +211,9 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 					app.router.navigate(routeTo, {trigger: true});
 				}
 			}
+			var li = $this.parent().find('li[data-section_id="' + section.id + '"]');
+			li.css('font-weight', 'bold');
+			$this.parent().find(".navArrowContainer").click();			
 		});
 
 		// bind non-active titles to show unavailable message on hover
@@ -251,7 +254,8 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			.children('ul')
 			.removeClass('collapsed')
 			.addClass('expanded')
-			.slideDown();
+			.slideDown()
+			.stopPropagation();		//doesn't belong here but will fix later				
 	},
 	hideCollapsibleList: function(li) {
 		// reclass as Horizontal Arrow and bind the click and open the sibling ul
