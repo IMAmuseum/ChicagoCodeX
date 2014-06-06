@@ -66,31 +66,31 @@
 	width: 180px;
 	line-height: 150%;
 	font-size: .8em;
+	border-top: 1px solid #888;
 }
 #toc-navigation ul.collapsibleList li {
 	width: 100%;
 	list-style-type: none;
 	font-family: Arial, Helvetica, sans-serif;
-	background-color: #ccc;
-	border-bottom: 1px solid #888;
+	background-color: #b8b8b8;
 }
 #toc-navigation ul.collapsibleList > li > ul > li {
-	background-color: #ddd;
+	background-color: #c8c8c8;
 }
 #toc-navigation ul.collapsibleList > li > ul > li > ul > li {
-	background-color: #eee;
+	background-color: #eeeeee;
 }
 #toc-navigation ul.collapsibleList > li > ul > li > ul > li > ul > li {
 	background-color: #fff;
 }
 #toc-navigation ul.collapsibleList li.navArrow {
-	background-color: #999;
+	background-color: #b8b8b8;
 }
 #toc-navigation ul.collapsibleList > li > ul > li.navArrow {
-	background-color: #aaa;
+	background-color: #c8c8c8;
 }
 #toc-navigation ul.collapsibleList > li > ul > li > ul > li.navArrow {
-	background-color: #bbb;
+	background-color: #eeeeee;
 }
 #toc-navigation ul.collapsibleList > li > ul > li > ul > li > ul > li.navArrow {
 	background-color: #ccc;
@@ -106,9 +106,17 @@
 }
 #toc-navigation li.H > .navArrowContainer {
 	background: url('../img/bg-nav-arrow.png') no-repeat center;
+	opacity: .3 !important;
 }
+
+#toc-navigation li.H > .navArrowContainer:hover {
+	background: url('../img/bg-nav-arrow.png') no-repeat center;
+	opacity: .6 !important;
+}
+
 #toc-navigation li.V > .navArrowContainer {
 	background: url('../img/bg-nav-arrow.png') no-repeat center;
+	 opacity: 1 !important;
 	transform: rotate(90deg);
 	-webkit-transform: rotate(90deg);
 	-moz-transform: rotate(90deg);
@@ -118,10 +126,25 @@
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
 	padding: 5px 15px 5px 5px;
-	width: 160px;
+	width: 180px;
+	border-bottom: 1px solid #888;
 	cursor: pointer;
 }
 #toc-navigation p, #toc-navigation em {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
+}
+
+#toc-navigation li.V > .navTitle {
+	/*font-weight:bold;*/
+}
+
+#toc-navigation .pubTitle {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 5px 15px 5px 5px;
+	width: 180px;
+	border-bottom: 1px solid #888;
+	cursor: pointer;
+	font-weight: bold;
 }
