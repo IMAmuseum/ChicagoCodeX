@@ -45,7 +45,7 @@
 	text-align: justify;
 	margin: 0 0 1em 0;
 	font-size: 1em;
-	padding-left: 4px;
+	padding: 0px 2px 0px 4px;
 }
 .column p:hover {
 	border-left: 2px solid #ddd;
