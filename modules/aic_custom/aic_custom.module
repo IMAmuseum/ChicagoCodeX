@@ -94,14 +94,10 @@ function aic_custom_filter_info_alter(&$info) {
 }
 
 function _aic_custom_glossary_filter($text, $filter, $format) {
+    //check path arguement for a number
     if (!is_numeric(arg(2))) return $text;
 
-    $glossary = false;
-    if (arg(3) === "glossary.xhtml") {
-        $glossary = true;
-    }
-
-    global $aic_custom_current_tree;
+   	global $aic_custom_current_tree;
     global $aic_custom_term_count;
 
     $publication = node_load(arg(2));
@@ -116,11 +112,11 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
         $pContent = $doc->saveXML($p);
         foreach ($vocabulary as $vocab_id) {
             $tree = taxonomy_get_tree($vocab_id);
-            foreach ($tree as $leaf) {
+            foreach ($tree as $leaf) {			
                 $aic_custom_current_tree = $leaf;
-                if (!isset($aic_custom_term_count[$leaf->tid]) || $glossary) {
-                    $pContent = preg_replace_callback('/\b' . preg_quote($leaf->name, '/') . '\b/i', '_aic_custom_glossary_parse_term', $pContent);
-                }
+                if (true) {
+					$pContent = preg_replace_callback('/\[glossary:(' . preg_quote($leaf->name, '/') . ')\]/i', '_aic_custom_glossary_parse_term', $pContent);	//removed /b to catch accents
+                }	
             }
         }
 
@@ -137,7 +133,6 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
     $text = $doc->saveXML($doc->documentElement);
     $text = preg_replace('~<(?:!DOCTYPE|/?(?:html|head|body))[^>]*>\s*~i', '', $text);
     $text = str_replace('<?xml version="1.0" encoding="iso-8859-1"?>', '', $text);
-
     return $text;
 }
 
@@ -145,20 +140,16 @@ function _aic_custom_glossary_filter($text, $filter, $format) {
  * Callback for parsing glossary terms
  */
 function _aic_custom_glossary_parse_term($match) {
-    global $aic_custom_current_tree;
+	
+	global $aic_custom_current_tree;
     global $aic_custom_term_count;
-
-    $glossary = false;
-    if (arg(3) === "glossary.xhtml") {
-        $glossary = true;
-    }
-
-    if (!isset($aic_custom_term_count[$aic_custom_current_tree->tid]) || $glossary) {
-        $aic_custom_term_count[$aic_custom_current_tree->tid] = TRUE;
-        return '<a class="glossary-term" data-tid="' . $aic_custom_current_tree->tid . '">' . $match[0] . '</a>';
-    } else {
-        return $match[0];
-    }
+	
+	$glossWikWord = $match[1];
+	
+	if (true) {
+		//make it a link
+        return '<a class="glossary-term" data-tid="' . $aic_custom_current_tree->tid . '">' . $glossWikWord  . '</a>';	
+    } 
 }
 
 function aic_custom_navigation_generate_toc_item_list(&$vars) {
