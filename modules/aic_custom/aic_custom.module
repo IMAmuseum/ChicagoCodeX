@@ -416,18 +416,18 @@ function aic_custom_osci_tk_citation_alter(&$citation, $section, $publication) {
 
     $authorFieldMap = array(
         'tombstone' => 'field_authors_tombstone',
-        'entry' => 'field_author_curatorial_entry',
-        'report' => 'field_author_technical_report'
+        'curatorial_entry' => 'field_author_curatorial_entry',
+        'technical_report' => 'field_author_technical_report',
     );
 
     $titleFieldMap = array(
         'tombstone' => 'Tombstone',
-        'entry' => 'Curatorial Entry',
-        'report' => 'Technical Report',
+        'curatorial_entry' => 'Curatorial Entry',
+        'technical_report' => 'Technical Report',
         'provenance' => 'Provenance',
-        'history' => 'Exhibition History',
+        'exhibitions' => 'Exhibition History',
         'references' => 'Selected References',
-        'documentation' => 'Other Documentation',
+        'other_documentation' => 'Other Documentation',
         'biography' => 'Brief Biography',
     );
 
