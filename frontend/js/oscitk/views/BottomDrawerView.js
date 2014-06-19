@@ -75,11 +75,11 @@ OsciTk.views.BottomDrawerView = OsciTk.views.BaseView.extend({
 		var left = parseInt(handle.css('left'), 10);
 		if (tocOpening) {
 			left += 200;
-			handle.animate({'left': left + 'px'});
+			handle.animate({'left': left + 'px'}, 500);
 			this.lastPosition = left;
 		} else {
 			left -= 200;
-			handle.animate({'left': left + 'px'});
+			handle.animate({'left': left + 'px'}, 1000);
 			this.lastPosition = left;
 		}
 	},
