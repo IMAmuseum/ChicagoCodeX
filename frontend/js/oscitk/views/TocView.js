@@ -62,8 +62,8 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	},
 	closeDrawer: function() {
 		if (this.isOpen) {
-			//Backbone.trigger('tocClosing');
-			this.$el.animate({ left: '-200px' });
+			Backbone.trigger('tocClosing');
+			this.$el.animate({ left: '-200px' }, 1000);
 			this.isOpen = false;
 		}
 	},
@@ -71,8 +71,8 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		if (!this.isOpen) {
 			// tell other drawers to close
 			Backbone.trigger('drawersClose', this);
-			//Backbone.trigger('tocOpening');
-			this.$el.animate({ left: '0px'});
+			Backbone.trigger('tocOpening');
+			this.$el.animate({ left: '0px'}, 500);
 			this.isOpen = true;
 		}
 	},
@@ -204,7 +204,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 				if (field) {
 					routeTo += "/" + field + "_anchor";
 				}
-				//that.closeDrawer();
+				that.closeDrawer();
 				if (field && sectionId === app.views.navigationView.currentNavigationItem.id) {
 					Backbone.trigger('navigate', { identifier: field + "_anchor" });
 				} else if (sectionId !== app.views.navigationView.currentNavigationItem.id) {
