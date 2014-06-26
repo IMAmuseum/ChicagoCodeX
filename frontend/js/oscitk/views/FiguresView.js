@@ -153,6 +153,7 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
         Backbone.trigger('navigate', { identifier: identifier + '-' + (index + 1) });
 
         var ref = $(visibleRefs[index]);
+		Backbone.trigger('drawersClose');
         this.pulsateText(ref);
         // if there are duplicate references in the text
         if (visibleRefs.length > 1) {
