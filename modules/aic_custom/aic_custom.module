@@ -12,7 +12,66 @@ function aic_custom_menu() {
         'access arguments'  => array('access content'),
         'type'              => MENU_CALLBACK
     );
+	
+	$items['reader/%'] = array(
+        'title'             => 'OSCI Toolkit Web-App Preview',
+        'page callback' => 'aic_custom_alias',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK
+    );
+	
     return $items;
+}
+
+/**
+ * Implements hook_url_outbound_alter().
+ */
+ 
+function aic_custom_url_outbound_alter(&$path, $options, $original_path) {
+	//look for paths with node/123456/web-app
+    if (strpos($path, "/web-app") !== false && module_exists('path')) {
+        $pathParts = explode("/", $path);
+		//start new path with 'reader'
+        $newPath = "reader";
+        $parts = count($pathParts);
+        $endOffset = 0;
+        for($i = 1; $i < $parts - $endOffset; $i++) {
+            $part = $pathParts[$i];
+			//find node id
+            if (is_numeric($part)) {
+				//get alias if it exists
+                $alias = drupal_lookup_path("alias", "node/" . $part);
+                if ($alias) {
+                    $newPath .= '/' . $alias;
+                } else {
+                    $newPath .= '/' . $part;
+                }
+            }
+        }
+        for($i = $parts - $endOffset; $i < $parts; $i++) {
+            $newPath .= "/" . $pathParts[$i];
+        }
+		//url path will now begin with 'reader/alias'
+        $path = $newPath;
+    }
+}
+
+//handling paths 'reader/%'
+function aic_custom_alias() {
+    $args = arg();
+    array_shift($args);
+	$alias = implode("/", $args);
+	
+	//get node object
+    $nodePath = drupal_lookup_path('source', $alias);
+	if ($nodePath) {
+		$menu_item = menu_get_item($nodePath);
+		$node = $menu_item['page_arguments'][0];
+		} else {
+			$node = node_load($alias);
+			}
+					
+	return osci_tk_webapp_preview($node);
 }
 
 function aic_custom_theme() {
