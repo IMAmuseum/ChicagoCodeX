@@ -62,7 +62,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 	},
 	closeDrawer: function() {
 		if (this.isOpen) {
-			Backbone.trigger('tocClosing');
+			//Backbone.trigger('tocClosing');
 			this.$el.animate({ left: '-200px' }, 1000);
 			this.isOpen = false;
 		}
@@ -71,7 +71,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		if (!this.isOpen) {
 			// tell other drawers to close
 			Backbone.trigger('drawersClose', this);
-			Backbone.trigger('tocOpening');
+			//Backbone.trigger('tocOpening');
 			this.$el.animate({ left: '0px'}, 500);
 			this.isOpen = true;
 		}
