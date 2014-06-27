@@ -49,7 +49,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			// // find parents of the li that are horizontal and click
 			// li.parents('li.H').each(function() {
 			// 	$(this).click();
-			// });
+			// });		
 		});
 	},
 	toggleDrawer: function() {
@@ -191,7 +191,16 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 					}
 				}
 			});
-
+			
+		//close TOC when clicking on different areas of the publication
+		$('#section, #navigation').click(function() {
+			that.closeDrawer();
+			});
+	
+		this.listenTo(Backbone, "paragraphClicked", function(data) {
+			that.closeDrawer();
+			});
+		
 		// bind section titles to navigate on click
 		list.find('li div.navTitle').on('click', function(event) {
 			event.preventDefault();
@@ -204,7 +213,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 				if (field) {
 					routeTo += "/" + field + "_anchor";
 				}
-				that.closeDrawer();
+				//that.closeDrawer();
 				if (field && sectionId === app.views.navigationView.currentNavigationItem.id) {
 					Backbone.trigger('navigate', { identifier: field + "_anchor" });
 				} else if (sectionId !== app.views.navigationView.currentNavigationItem.id) {
