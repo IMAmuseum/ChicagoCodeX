@@ -358,9 +358,11 @@ function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
     $js[] = "{$jsBasePath}frontend/js/oscitk/collections/NavigationItemsCollection.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/collections/FiguresCollection.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/AppView.js";
+	$js[] = "{$jsBasePath}frontend/js/oscitk/views/MultiColumnSectionView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/TitleView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/ToolbarView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/ToolbarItemView.js";
+	$js[] = "{$jsBasePath}frontend/js/oscitk/views/NavigationView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/TextEnlargeView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/TextReduceView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/PrintView.js";
