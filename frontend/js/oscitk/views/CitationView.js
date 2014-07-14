@@ -3,6 +3,7 @@ OsciTk.views.Citation = OsciTk.views.BaseView.extend({
     initialize: function() {
 
         this.listenTo(Backbone, "toggleCiteDialog", function(data) {
+			ga('send', 'event', 'button', 'click', 'citation');
             this.render(data);
         });
     },
