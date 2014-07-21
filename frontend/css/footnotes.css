@@ -84,6 +84,7 @@
 	overflow-x: hidden;
 	overflow-y: auto;
 	float: left;
+	position: relative;
 }
 .footnote-id {
 	margin-bottom: 10px;

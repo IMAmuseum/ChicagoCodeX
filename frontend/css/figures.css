@@ -83,6 +83,7 @@
 	overflow-x: hidden;
 	overflow-y: hidden;
 	float: left;
+	position: relative;
 }
 #figures-list .figure-preview {
 	max-width: 240px;
