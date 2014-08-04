@@ -23,7 +23,7 @@ OsciTk.views.ReferenceImage = OsciTk.views.BaseView.extend({
 		}
 	},
 	fullscreen: function() {
-		var url = '/figure/window/' + this.section_id;
+		var url = app.config.get("baseUrl") + '/figure/window/' + this.section_id;
 		if (this.figure_index) {
 			url += '/' + this.figure_index;
 		}
