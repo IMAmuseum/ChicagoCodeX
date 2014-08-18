@@ -119,6 +119,14 @@
 	padding: 0 0 0 0;
 }
 
+#glossary-term-content p:nth-child(2) {
+	height: 200px;
+	overflow-y: auto;
+	position: absolute;
+	margin-right: 20px;
+	padding-right: 10px;
+}
+
 #glossary-term-listing-mobile li {
 	height: auto;
 	list-style: none;
