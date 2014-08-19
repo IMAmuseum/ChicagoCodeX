@@ -82,7 +82,8 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
         // reset list width now that padding has been added
         this.$el.find('#figures-list').width((itemWidth + paddingToAdd) * itemCount);
 
-        // set the max page value
+        // set the min and max page values
+		this.page = 1;
         this.maxPage = Math.ceil((itemWidth * itemCount) / containerWidth);
 
         // if any figure thumbnails were smaller than the display size, increase them to fit
