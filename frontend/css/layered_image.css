@@ -14,3 +14,7 @@
 	width: 15px;
 	height: 15px;
 }
+
+figurewindow .ca-ui-fullscreen.collapsed {
+	display: none;
+}
