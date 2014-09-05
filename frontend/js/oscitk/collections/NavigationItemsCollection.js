@@ -16,6 +16,7 @@ OsciTk.collections.NavigationItems = OsciTk.collections.NavigationItems.extend({
 					title: item.a['value'],
 					subtitle: item.a['data-subtitle'],
 					thumbnail: item.a['data-thumbnail'],
+					thumbnail2: item.a['data-thumbnail2'],
 					timestamp: item.a['data-timestamp'],
 					uri: item.a['href'],
 					active: (item.a['data-active'] == "1") ? true : false,

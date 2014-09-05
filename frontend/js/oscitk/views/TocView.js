@@ -6,6 +6,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 		this.navTree = null;
 		this.sectionImageUrl = null;
 		this.referenceImageUrl = null;
+		this.refImageUrl = null; //reference/plate thumbnails
 		this.isOpen = false;
 		this.rendered = false;
 
@@ -24,10 +25,12 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			// set the section image url and render
 			var navItems = app.collections.navigationItems.where({id: section.id});
 			if (navItems.length > 0) {
-				this.sectionImageUrl = navItems[0].get('thumbnail');
+				this.sectionImageUrl = navItems[0].get('thumbnail'); //default plate and reference thumbnail
+				this.refImageUrl = navItems[0].get('thumbnail2'); //separate reference thumnail
 				// let the referenceImageView know about the image
 				Backbone.trigger('referenceImageLoaded', {
 					imageUrl: this.sectionImageUrl,
+					refUrl: this.refImageUrl,
 					section_id: app.models.section.id,
 					figure_index: navItems[0].get('thumbnail_figure_index')
 				});

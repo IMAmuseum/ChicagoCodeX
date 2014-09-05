@@ -243,6 +243,7 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
             $attrs .= " data-subtitle=\"{$leaf['subtitle']}\"";
             $attrs .= " data-timestamp=\"{$leaf['timestamp']}\"";
             $attrs .= " data-thumbnail=\"{$leaf['thumbnail']}\"";
+			$attrs .= " data-thumbnail2=\"{$leaf['thumbnail2']}\"";
             $attrs .= " data-active=\"{$leaf['active']}\"";
             $attrs .= " data-subHead='{$leaf['subHeadings']}'";
             if (isset($leaf['thumbnail_figure_index'])) {
@@ -381,16 +382,25 @@ function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
 
 function aic_custom_figure_window($section_nid, $figIndex=null) {
     $section = node_load($section_nid);
-    if (!$section || !isset($section->field_figure['und'][$figIndex])) {
+	//see if there's a plate figure 0 or a reference image
+    if ((!$section && !isset($section->field_figure['und'][$figIndex])) || (!$section && !isset($section->field_reference_image['und'][$figIndex]))) {
         drupal_not_found();
         return;
     }
-    $figure = node_load($section->field_figure['und'][$figIndex]['asset_reference']);
+	// check for reference image first
+    if (isset($section->field_reference_image['und'][0])) {
+		$figure = node_load($section->field_reference_image['und'][0]['nid']);
+		$caption = $section->field_reference_image_caption['und'][0]['value'];
+		} else {
+			// then check for figure
+			$figure = node_load($section->field_figure['und'][$figIndex]['asset_reference']);
+			$caption = $section->field_figure['und'][$figIndex]['value'];
+		}
     if ($figure) {
         $hook = 'figure_html_' . $figure->type;
         $return = module_invoke_all($hook, $figure);
         if (isset($return[0])) {
-            $content = "<figure>" . $return[0] . "</figure>";
+            $content = "<figurewindow>" . $return[0] . "</figurewindow>";
         }
         else {
             $view = node_view($section, 'epub');
@@ -398,7 +408,7 @@ function aic_custom_figure_window($section_nid, $figIndex=null) {
         }
         // wrap in an html doc and link in necessary js
         print(theme('aic_custom_figure_window', array(
-            'caption' => $section->field_figure['und'][$figIndex]['value'],
+            'caption' => $caption,
             'path' => variable_get('osci_tk_webapp_base_path', ''),
             'content' => $content,
             'type' => $figure->type

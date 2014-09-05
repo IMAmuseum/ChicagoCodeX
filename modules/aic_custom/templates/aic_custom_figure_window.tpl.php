@@ -1,8 +1,9 @@
 <html>
     <head>
-        <link rel="stylesheet" href="<?php echo $path;?>js/external/jquery-ui/jquery-ui.css">
-        <link rel="stylesheet" href="/sites/default/ChicagoCodeX/frontend/css/common.css">
-        <link rel="stylesheet" href="/sites/default/ChicagoCodeX/frontend/css/layered_image.css">
+        <link rel="stylesheet" href="<?php echo $path;?>js/external/jquery-ui/jquery-ui.min.css">
+        <link rel="stylesheet" href="/sites/all/ChicagoCodeX/frontend/css/common.css">
+        <link rel="stylesheet" href="/sites/all/OSCI-Toolkit-Frontend/css/layered_image.css">
+        <link rel="stylesheet" href="/sites/all/ChicagoCodeX/frontend/css/layered_image.css">
         <script type="text/javascript" src="<?php echo $path; ?>js/external/json2.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/jquery.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/jquery-ui/jquery-ui.min.js"></script>
@@ -23,12 +24,13 @@
             $(document).ready(function() {
                 var type = '<?php echo $type;?>';
                 var figure = $('figure');
-                console.log(type, 'type');
-                if (type === 'image_asset') {
+ 				//temporary fix for image_asset not showing up - 9/5/2014
+               /* if (type === 'image_asset') {
                     // remove floating image path text
                     figure.html(figure.children());
                     figure.css('text-align', 'center');
                     var img = figure.find('img');
+					console.log(img, 'img');
                     var imgTimer = setInterval(function() {
                         if (img.height() > 0) {
                             figure.find('figcaption').css({
@@ -46,8 +48,8 @@
                             clearInterval(imgTimer);
                         }
                     }, 100);
-                }
-                if (type === 'iip_asset' || type === 'layered_image') {
+                }*/
+                if (type === 'iip_asset' || type === 'layered_image' || type === 'image_asset') {
                     console.log('<?php echo $caption; ?>', 'caption');
                     // append the caption if present
                     var caption = '<?php echo $caption; ?>';
