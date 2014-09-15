@@ -2,13 +2,14 @@
     <head>
         <link rel="stylesheet" href="<?php echo $path;?>js/external/jquery-ui/jquery-ui.min.css">
         <link rel="stylesheet" href="/sites/all/ChicagoCodeX/frontend/css/common.css">
-        <link rel="stylesheet" href="/sites/all/OSCI-Toolkit-Frontend/css/layered_image.css">
+        <link rel="stylesheet" href="<?php echo $path;?>css/layered_image.css">
         <link rel="stylesheet" href="/sites/all/ChicagoCodeX/frontend/css/layered_image.css">
         <script type="text/javascript" src="<?php echo $path; ?>js/external/json2.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/jquery.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/jquery-ui/jquery-ui.min.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/polymaps.min.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/oscitk/osci_tk_layered_image.js"></script>
+        <script type="text/javascript" src="<?php echo $path;?>js/external/jquery.qtip.js" type="text/javascript"></script>
         <style>
             * {
                 margin: 0;
@@ -50,7 +51,6 @@
                     }, 100);
                 }*/
                 if (type === 'iip_asset' || type === 'layered_image' || type === 'image_asset') {
-                    console.log('<?php echo $caption; ?>', 'caption');
                     // append the caption if present
                     var caption = '<?php echo $caption; ?>';
                     if (caption) {
