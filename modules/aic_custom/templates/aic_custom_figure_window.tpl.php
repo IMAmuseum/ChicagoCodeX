@@ -4,6 +4,8 @@
         <link rel="stylesheet" href="/sites/all/ChicagoCodeX/frontend/css/common.css">
         <link rel="stylesheet" href="<?php echo $path;?>css/layered_image.css">
         <link rel="stylesheet" href="/sites/all/ChicagoCodeX/frontend/css/layered_image.css">
+        <link rel="stylesheet" href="<?php echo $path;?>js/external/jquery.qtip.css">
+        <link rel="stylesheet" href="/sites/all/ChicagoCodeX/frontend/css/figures.css">
         <script type="text/javascript" src="<?php echo $path; ?>js/external/json2.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/jquery.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/external/jquery-ui/jquery-ui.min.js"></script>

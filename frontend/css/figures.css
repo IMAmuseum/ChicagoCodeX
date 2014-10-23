@@ -141,6 +141,45 @@
 #figures-list a.view-fullscreen:hover {
 	opacity: 1;
 }
+
 svg image {
 	color-profile: sRGB;
+}
+
+.layer path {
+  fill: #FFF;
+  fill-opacity: 0;
+  stroke: #FFF;
+  stroke-width: 1.5px;
+}
+
+.qtip-map .qtip-content{
+    max-width: 385px;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	text-align:center;
+	background-color: #333;
+	color: #fff;
+	font-weight:bold;
+	line-height:1.25em;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.qtip-map {
+	border-color: #fff;
+	border-width:1px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.qtip-map .qtip-content {
+	text-align:center;
+}
+
+.qtip-map .qtip-content a {
+	text-decoration:underline;
+	font-family:Arial, Helvetica, sans-serif;
 }
