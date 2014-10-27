@@ -499,6 +499,7 @@ function aic_custom_osci_tk_citation_alter(&$citation, $section, $publication) {
         'tombstone' => 'field_authors_tombstone',
         'curatorial_entry' => 'field_author_curatorial_entry',
         'technical_report' => 'field_author_technical_report',
+		'body' => 'field_authors_body',
     );
 
     $titleFieldMap = array(
