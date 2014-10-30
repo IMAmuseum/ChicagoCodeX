@@ -38,8 +38,14 @@ OsciTk.views.Figures = OsciTk.views.BottomDrawerView.extend({
                 return parseInt(figure.get('order'), 10);
             })
         };
+		
         // remove plate image if present
         if (data.figures.length > 0 && data.figures[0].get('plate') === true) {
+            data.figures.shift();
+        }
+		
+		//remove reference image if present
+		if (data.figures.length > 0 && data.figures[0].attributes.position.vertical == 'reference') {
             data.figures.shift();
         }
 
