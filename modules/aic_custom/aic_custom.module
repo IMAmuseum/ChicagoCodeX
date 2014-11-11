@@ -20,6 +20,13 @@ function aic_custom_menu() {
         'type' => MENU_CALLBACK
     );
 	
+	$items['user/registered'] = array(
+		'title'             => 'Register New User',
+        'page callback'     => 'aic_custom_user_registered',
+        'access arguments'  => array('access content'),
+        'type'              => MENU_CALLBACK
+    );
+	
     return $items;
 }
 
@@ -84,7 +91,10 @@ function aic_custom_theme() {
             'variables' => array(
                 'vocabularies'  => array()
             ),
-        )
+        ),
+		'aic_custom_user_registered' => array(
+			'template'  => 'templates/aic_custom_user_registered',
+		),
     );
 }
 
@@ -429,6 +439,12 @@ function aic_custom_figure_window($section_nid, $figIndex=null) {
 			drupal_not_found();
 			return;
 			}
+}
+
+//after new user registers, show success confirmation
+function aic_custom_user_registered() {	
+		print(theme('aic_custom_user_registered'));
+        drupal_exit();
 }
 
 function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {

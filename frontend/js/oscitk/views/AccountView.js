@@ -3,6 +3,9 @@ OsciTk.views.Account = OsciTk.views.BaseView.extend({
 	template: OsciTk.templateManager.get('aic-login'),
 	loggedInTemplate: OsciTk.templateManager.get('aic-profile'),
 	initialize: function() {
+		
+		baseUrl = app.config.get("baseUrl") + '/user/register';
+		
 		// if the login form is shown, capture the form submission
 		$(document).delegate('#loginSubmit', 'click', function(e) {
 			$('#loginError').empty();
@@ -29,7 +32,8 @@ OsciTk.views.Account = OsciTk.views.BaseView.extend({
 				}
 			});
 		});
-
+		
+/* //old registration form - keep just in case 11/11/2015
 		$(document).delegate('#registerSubmit', 'click', function(e) {
 			$('#registerError').empty();
 			// attempt to log in
@@ -56,7 +60,7 @@ OsciTk.views.Account = OsciTk.views.BaseView.extend({
 				}
 			});
 		});
-
+*/
 		$(document).delegate('a.loginToggle', 'click', function(e) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -108,7 +112,7 @@ OsciTk.views.Account = OsciTk.views.BaseView.extend({
 
             console.log("clicked");
             var destination = window.location.pathname.substring(1) + window.location.hash;
-            window.location = "/user/" + app.account.id + "/edit?destination=" + destination;
+            window.location = app.config.get("baseUrl") + "/user/" + app.account.id + "/edit?destination=" + destination;
         });
 	},
 	click: function(e) {

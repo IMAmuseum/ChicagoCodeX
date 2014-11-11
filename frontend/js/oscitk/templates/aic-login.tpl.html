@@ -1,6 +1,8 @@
 <ul id="userFormLinks">
-	<li><a class="loginToggle active" id="showLoginForm" href="#loginForm">Login</a></li>
-	<li><a class="loginToggle" id="showRegisterForm" href="#registerForm">Register</a></li>
+	<li>Login to add notes about this catalogue.</li>
+    <!--old registration form - keep just in case 11/11/2015-->
+    <!--<li><a class="loginToggle" id="showRegisterForm" href="#registerForm">Register</a></li>-->
+	<li><a href="<%= baseUrl %>" target="_blank" type="button">Register for an account.</a></li>
 </ul>
 <form method="post" id="loginForm">
 	<div class="field username">
@@ -14,6 +16,7 @@
 	<input id="loginSubmit" value="Log In" type="button">
 	<div id="loginError"></div>
 </form>
+<!--
 <form method="post" id="registerForm" style="display:none;">
 	<div class="field username">
 		<label for="registerUsername">Username: </label>
@@ -30,3 +33,4 @@
 	<input id="registerSubmit" value="Create Account" type="button">
 	<div id="registerError"></div>
 </form>
+-->
