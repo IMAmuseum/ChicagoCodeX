@@ -25,7 +25,7 @@
         <div class="region region-content">
         <div id="block-system-main" class="block block-system">
        	<div class="content">
-            <p>Thank you for creating an account on the Art Institute of Chicago's Online Scholarly Catalogues. Now you can log in, take notes within each catalogue, and even export your notes for viewing and printing. Scroll down this page for details or <a href="http://www.artic.edu/collections/books/online-scholarly-catalogues">start exploring one of our online catalogues</a>.</p>
+            <p>Thank you for creating an account on the Art Institute of Chicago's Online Scholarly Catalogues. Now you can log in, take notes within each catalogue, and even export your notes for viewing and printing. Scroll down this page for details or <a href="http://www.artic.edu/collections/books/online-scholarly-catalogues" target="_blank">start exploring one of our online catalogues</a>.</p>
             <ul>
                                     <li><h2>1. Log in.</h2><img src="/sites/all/themes/osci/images/1_login.png" /></li>
                                     
