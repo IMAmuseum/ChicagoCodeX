@@ -1,5 +1,6 @@
 <html>
     <head>
+    	<link rel="shortcut icon" href="/sites/default/files/favicon.ico" type="image/vnd.microsoft.icon">
         <link rel="stylesheet" href="<?php echo $path;?>js/external/jquery-ui/jquery-ui.min.css">
         <link rel="stylesheet" href="/sites/all/ChicagoCodeX/frontend/css/common.css">
         <link rel="stylesheet" href="<?php echo $path;?>css/layered_image.css">
