@@ -87,6 +87,7 @@ div.Search-toolbar-item {
 }
 .ui-tooltip-toolbar-login form {
 	text-align: right;
+	font-size: 12px;
 }
 .ui-tooltip-toolbar-login .field {
 	padding-bottom: 8px;
@@ -94,6 +95,7 @@ div.Search-toolbar-item {
 }
 span.cap {
 	text-transform: capitalize;
+	text-decoration: underline;
 }
 #loginError, #registerError {
 	margin-top: 8px;
@@ -105,11 +107,12 @@ span.cap {
 	width: 180px;
 }
 #userFormLinks {
-	margin: 0 0 20px 0;
+	margin: 0 0 15px 0;
+	font-size: 12px;
 }
 #userFormLinks li {
-	display: inline;
-	margin: 0 10px 0 0;
+	display: block;
+	margin: 0 10px 10px 0;
 }
 #userFormLinks li a {
 	text-decoration: underline;

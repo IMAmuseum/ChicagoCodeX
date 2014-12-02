@@ -45,7 +45,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			// make first li tag, the title of the pub, bold
 			this.$el.find( 'li' ).first().css('font-weight', 'bold');
 			// set the current sections nav item to bold
-			var li = this.$el.find('li[data-section_id="' + section.id + '"].navArrow');
+			var li = this.$el.find('li[data-section_id="' + section.id + '"]');
 			li.css('font-weight', 'bold');
 			// find any vertical nav arrows and click them to close
 			// this.$el.find('li.V').click();
@@ -195,13 +195,15 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 				}
 			});
 			
-		//close TOC when clicking on different areas of the publication
+		//close TOC and other drawers when clicking on different areas of the publication
 		$('#section, #navigation').click(function() {
 			that.closeDrawer();
+			Backbone.trigger('drawersClose');
 			});
 	
 		this.listenTo(Backbone, "paragraphClicked", function(data) {
 			that.closeDrawer();
+			Backbone.trigger('drawersClose');
 			});
 		
 		// bind section titles to navigate on click
@@ -225,6 +227,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			}
 			var li = $this.parent().find('li[data-section_id="' + section.id + '"]');
 			li.css('font-weight', 'bold');
+			
 			$this.parent().find(".navArrowContainer").click();			
 		});
 
@@ -244,16 +247,16 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 
 	},
 	toggleCollapsibleList: function(event) {
-		// only catch the nearest li click
 		if (!event.isDefaultPrevented()) {
 			event.preventDefault();
+			// only catch the nearest li click
+			var li = $(event.target).parent();
 			// determine status of clicked li
-			var li = $(event.currentTarget);
 			var closed = li.hasClass('H');
+			var opened = li.hasClass('V');
 			if (closed) {
 				event.data.view.showCollapsibleList(li);
-			}
-			else {
+			} else if (opened) {
 				event.data.view.hideCollapsibleList(li);
 			}
 		}
@@ -266,8 +269,7 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			.children('ul')
 			.removeClass('collapsed')
 			.addClass('expanded')
-			.slideDown()
-			.stopPropagation();		//doesn't belong here but will fix later				
+			.slideDown();				
 	},
 	hideCollapsibleList: function(li) {
 		// reclass as Horizontal Arrow and bind the click and open the sibling ul

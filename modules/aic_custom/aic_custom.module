@@ -20,6 +20,13 @@ function aic_custom_menu() {
         'type' => MENU_CALLBACK
     );
 	
+	$items['user/registered'] = array(
+		'title'             => 'Register New User',
+        'page callback'     => 'aic_custom_user_registered',
+        'access arguments'  => array('access content'),
+        'type'              => MENU_CALLBACK
+    );
+	
     return $items;
 }
 
@@ -84,7 +91,10 @@ function aic_custom_theme() {
             'variables' => array(
                 'vocabularies'  => array()
             ),
-        )
+        ),
+		'aic_custom_user_registered' => array(
+			'template'  => 'templates/aic_custom_user_registered',
+		),
     );
 }
 
@@ -382,30 +392,41 @@ function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
 
 function aic_custom_figure_window($section_nid, $figIndex=null) {
     $section = node_load($section_nid);
-	//see if there's a plate figure 0 or a reference image
-    if ((!$section && !isset($section->field_figure['und'][$figIndex])) || (!$section && !isset($section->field_reference_image['und'][$figIndex]))) {
+	//see if there's a figure 0
+    if (!$section && !isset($section->field_figure['und'][$figIndex])) {
         drupal_not_found();
         return;
     }
-	// check for reference image first
-    if (isset($section->field_reference_image['und'][0])) {
-		$figure = node_load($section->field_reference_image['und'][0]['nid']);
-		$caption = $section->field_reference_image_caption['und'][0]['value'];
+		
+	foreach($section->field_figure['und'] as $index => $thefigure) {
+		// check for reference image
+		if ($thefigure['position'] === 'reference') {
+			$figure = node_load($section->field_figure['und'][$index]['asset_reference']);
+			$caption = $section->field_figure['und'][$index]['value'];
+			$figureID = 'fig-' . $section->nid . '-' . $index;
+			$figureType = $figure->type;
+			$figureOptions = $section->field_figure['und'][$index]['options'];
+			break;
 		} else {
-			// then check for figure
+			// or check for figure 0/plate image
 			$figure = node_load($section->field_figure['und'][$figIndex]['asset_reference']);
 			$caption = $section->field_figure['und'][$figIndex]['value'];
+			$figureID = 'fig-' . $section->nid . '-' . $figIndex;
+			$figureType = $figure->type;
+			$figureOptions = $section->field_figure['und'][$figIndex]['options'];
 		}
+	}	 
+		
     if ($figure) {
-        $hook = 'figure_html_' . $figure->type;
+		$hook = 'figure_html_' . $figure->type;
         $return = module_invoke_all($hook, $figure);
         if (isset($return[0])) {
-            $content = "<figurewindow>" . $return[0] . "</figurewindow>";
-        }
-        else {
+			$figureInfo =  "<figure id='$figureID' class='$figureType' data-options='$figureOptions'>";
+            $content = "<figurewindow>" . $figureInfo . $return[0]  . "</figure></figurewindow>";
+			} else {
             $view = node_view($section, 'epub');
             $content = drupal_render($view['field_figure'][$figIndex]);
-        }
+			}
         // wrap in an html doc and link in necessary js
         print(theme('aic_custom_figure_window', array(
             'caption' => $caption,
@@ -414,11 +435,16 @@ function aic_custom_figure_window($section_nid, $figIndex=null) {
             'type' => $figure->type
         )));
         drupal_exit();
-    }
-    else {
-        drupal_not_found();
-        return;
-    }
+		} else {
+			drupal_not_found();
+			return;
+			}
+}
+
+//after new user registers, show success confirmation
+function aic_custom_user_registered() {	
+		print(theme('aic_custom_user_registered'));
+        drupal_exit();
 }
 
 function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
@@ -489,6 +515,7 @@ function aic_custom_osci_tk_citation_alter(&$citation, $section, $publication) {
         'tombstone' => 'field_authors_tombstone',
         'curatorial_entry' => 'field_author_curatorial_entry',
         'technical_report' => 'field_author_technical_report',
+		'body' => 'field_authors_body',
     );
 
     $titleFieldMap = array(
