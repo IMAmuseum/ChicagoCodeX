@@ -269,7 +269,8 @@ OsciTk.views.Toc = OsciTk.views.BaseView.extend({
 			.children('ul')
 			.removeClass('collapsed')
 			.addClass('expanded')
-			.slideDown();				
+			.slideDown()	
+			.stopPropagation();		
 	},
 	hideCollapsibleList: function(li) {
 		// reclass as Horizontal Arrow and bind the click and open the sibling ul
