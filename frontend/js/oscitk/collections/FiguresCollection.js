@@ -16,6 +16,7 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
      * Populates the collection from an array of figure markup
      */
     populateFromMarkup: function(data) {
+		
         var figures = [];
 
         var override = false;
@@ -56,7 +57,8 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
                 type:       $markup.data('figure_type'),
                 aspect:     $markup.data('aspect'),
                 order:      $markup.data('order'),
-                count:      $markup.data('count')
+                count:      $markup.data('count'),
+				alt:		$markup.data('alt')
             };
 
             // First, check for a preview uri in the figure options
@@ -70,6 +72,7 @@ OsciTk.collections.Figures = OsciTk.collections.BaseCollection.extend({
                 if (thumbnail.length) {
                     figure.thumbnail_url = thumbnail.attr('src');
                     figure.preview_url = thumbnail.attr('src');
+					figure.alt = thumbnail.attr('alt');
                 }
                 else {
                     // No explicit thumbnail, default to the first image in the figure content

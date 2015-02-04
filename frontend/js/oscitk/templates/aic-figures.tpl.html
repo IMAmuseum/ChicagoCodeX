@@ -8,7 +8,7 @@
 					<figure class="preview" data-figure-id="<%= figure.id %>">
 						<div class="figure-preview-wrapper">
 						<% if (figure.get('thumbnail_url') != undefined) { %>
-							<img class="figure-preview" src="<%= figure.get('thumbnail_url') %>"/>
+							<img class="figure-preview" src="<%= figure.get('thumbnail_url') %>" alt="<%= figure.get('alt') %>" />
 						<% } else { %>
 							<div class="figure-preview empty">&nbsp;</div>
 						<% } %>
