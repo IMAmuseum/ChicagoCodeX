@@ -15,8 +15,9 @@ function aic_custom_menu() {
 	
 	$items['reader/%'] = array(
         'title'             => 'OSCI Toolkit Web-App Preview',
-        'page callback' => 'aic_custom_alias',
-        'access arguments' => array('access content'),
+        'page callback'     => 'aic_custom_alias',
+		'page arguments'    => array(1),
+        'access arguments'  => array('access content'),
         'type' => MENU_CALLBACK
     );
 	
@@ -85,20 +86,15 @@ function aic_custom_preview_nav($nodealias) {
 }
 
 //handling paths 'reader/%'
-function aic_custom_alias() {
-    $args = arg();
-    array_shift($args);
-	$alias = implode("/", $args);
-	
+function aic_custom_alias($alias) {		
 	//get node object
     $nodePath = drupal_lookup_path('source', $alias);
 	if ($nodePath) {
 		$menu_item = menu_get_item($nodePath);
 		$node = $menu_item['page_arguments'][0];
-		} else {
-			$node = node_load($alias);
-			}
-					
+	} else {
+		$node = node_load($alias);
+	}	
 	return osci_tk_webapp_preview($node);
 }
 
