@@ -13,6 +13,7 @@
         <script type="text/javascript" src="<?php echo $path; ?>js/external/polymaps.min.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>js/oscitk/osci_tk_layered_image.js"></script>
         <script type="text/javascript" src="<?php echo $path;?>js/external/jquery.qtip.js" type="text/javascript"></script>
+        <script type="text/javascript" src="/sites/all/ChicagoCodeX/frontend/js/d3.min.js" type="text/javascript"></script>
         <style>
             * {
                 margin: 0;
