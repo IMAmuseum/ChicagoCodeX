@@ -469,8 +469,9 @@ function aic_custom_user_registered() {
 
 function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     $sectionNode = node_load($data['sectionNid']);
-
-    if ($data['figure']['position'] === 'plate') {
+	
+	//no figure numbers for plate images
+    if ($data['figure']['position'] === 'plate' || $data['figure']['position'] === 'platefull') {
         $replace['complete'] = '';
     }
 
