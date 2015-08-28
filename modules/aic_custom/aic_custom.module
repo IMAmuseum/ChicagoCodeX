@@ -124,7 +124,7 @@ function aic_custom_alter_epub_toc($toc) {
         if (isset($section->field_figure['und'])) {
             foreach($section->field_figure['und'] as $index => $figure) {
                 // find the first plate image
-                if ($figure['position'] === 'plate') {
+                if ($figure['position'] === 'plate' || $figure['position'] === 'platefull') {
                     // load asset reference
                     $asset = node_load($figure['asset_reference']);
                     if ($asset) {
