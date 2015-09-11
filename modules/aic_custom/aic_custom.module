@@ -116,6 +116,12 @@ function aic_custom_theme() {
     );
 }
 
+//for reordering TOC items
+function moveElement(&$array, $a, $b) {
+	$out = array_splice($array, $a, 1);
+	array_splice($array, $b, 0, $out);
+}
+
 function aic_custom_alter_epub_toc($toc) {
     // alter the toc to add thumbnails and active/inactive flag for each section
     foreach ($toc as &$tocItem) {
@@ -124,7 +130,7 @@ function aic_custom_alter_epub_toc($toc) {
         if (isset($section->field_figure['und'])) {
             foreach($section->field_figure['und'] as $index => $figure) {
                 // find the first plate image
-                if ($figure['position'] === 'plate' || $figure['position'] === 'platefull') {
+                if ($figure['position'] === 'plate') {
                     // load asset reference
                     $asset = node_load($figure['asset_reference']);
                     if ($asset) {
@@ -156,6 +162,21 @@ function aic_custom_alter_epub_toc($toc) {
                 }
             }
         }
+		
+		for($i = 0; $i < count($subHeadings); ++$i) {
+			//replacing default titles with custom titles
+			if ($subHeadings[$i]['id'] == 'curatorial_entry' && isset($section->field_title_curatorial_entry['und'][0])){
+				$subHeadings[$i]['label'] = $section->field_title_curatorial_entry['und'][0]['value'];
+			}
+			if ($subHeadings[$i]['id'] == 'technical_report' && isset($section->field_title_technical_report['und'][0])){
+				$subHeadings[$i]['label'] = $section->field_title_technical_report['und'][0]['value'];
+			}
+			if ($subHeadings[$i]['id'] == 'curatorial_entry2' && isset($section->field_title_curatorial_entry2['und'][0])){
+				$subHeadings[$i]['label'] = $section->field_title_curatorial_entry2['und'][0]['value'];
+				//moving curatorial entry2 so it appears at the top 
+				moveElement($subHeadings, $i, 1);
+			}
+		}
         $tocItem['subHeadings'] = json_encode($subHeadings);
     }
     return array($toc);
@@ -535,14 +556,16 @@ function aic_custom_osci_tk_citation_alter(&$citation, $section, $publication) {
     $authorFieldMap = array(
         'tombstone' => 'field_authors_tombstone',
         'curatorial_entry' => 'field_author_curatorial_entry',
+		'curatorial_entry2' => 'field_author_curatorial_entry2',
         'technical_report' => 'field_author_technical_report',
 		'body' => 'field_authors_body',
     );
 
     $titleFieldMap = array(
         'tombstone' => 'Tombstone',
-        'curatorial_entry' => 'Curatorial Entry',
-        'technical_report' => 'Technical Report',
+        'curatorial_entry' => $section->field_title_curatorial_entry['und'][0]['value'],
+		'curatorial_entry2' => $section->field_title_curatorial_entry2['und'][0]['value'],
+        'technical_report' => $section->field_title_technical_report['und'][0]['value'],
         'provenance' => 'Provenance',
         'exhibitions' => 'Exhibition History',
         'references' => 'Selected References',
