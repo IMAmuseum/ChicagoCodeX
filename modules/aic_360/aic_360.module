@@ -1,0 +1,73 @@
+<?php
+/**
+ * @file
+ * 360 image slider
+ */
+ 
+ /**
+ * Implements hook_help().
+ *
+ * Displays help and module information.
+ *
+ * @param path 
+ *   Which path of the site we're using to display help
+ * @param arg 
+ *   Array that holds the current path as returned from arg() function
+ */
+
+function aic_360_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#aic_360":
+      return '<p>' . t("Use this module to create a 360 image slider.") . '</p>';
+      break;
+  }
+} 
+
+function aic_360_osci_tk_figure_content($args) {
+
+  $asset = node_load($args['item']['asset_reference']);
+
+  if (!isset($args['item']['export'])) {
+      $args['item']['export'] = false;
+  }
+
+  switch($asset->type) {
+      case '360_slider':
+   	  //get path of image folder
+	  $src = variable_get('file_public_path', conf_path() . '/files') . '/360images/';
+	  $src = _osci_tk_epub_asset_process_uri($src, $args['item']['export']);
+	  //requirements for slider - total number of images, start/end frame, width, height and prefix
+	  $totalImages = $asset->field_number_images['und'][0]['value'];
+	  $startFrame = $asset->field_start_frame['und'][0]['value'];
+	  $endFrame = $asset->field_end_frame['und'][0]['value'];
+	  $image360Width = $asset->field_width_360images['und'][0]['value'];
+	  $image360Height = $asset->field_height_360images['und'][0]['value'];
+	  $filePrefix360 = $asset->field_image_file_prefix['und'][0]['value'];
+	  //html for 360
+	  $threesixtyhtml = 
+	  '<div class = "threesixty" data-360-src = "'.$src.'" data-360-total = "'.$totalImages.'" data-360-start = "'.$startFrame.'" data-360-end = "'.$endFrame.'" data-360-width = "'.$image360Width.'" data-360-height = "'.$image360Height.'" data-360-prefix = "'.$filePrefix360.'"><div class="spinner"><span>0%</span></div><ol class="threesixty_images"></ol></div>
+	  <script>
+	  $(".threesixty").each(function() {
+		  if($(this).hasClass("initialized")) {return;}
+		  var threesixtyCode = $(this).clone(); 
+		  aic_360_initialize(threesixtyCode);
+		  });
+	  </script>';
+	  return $threesixtyhtml;
+      break;     
+      }
+    }
+	
+function aic_360_osci_tk_figure_aspect($figure){
+	return 0;
+}
+	
+function aic_360_osci_tk_webapp_custom_alter(&$js, &$css) {
+	//add required javascript and css files
+	global $base_url; 
+    $js[] = "$base_url/frontend/js/oscitk/views/MultiColumnFigure360View.js";
+	$js[] .= "$base_url/sites/all/modules/aic_360/js/threesixty.js";
+	$js[] .= "$base_url/sites/all/modules/aic_360/js/360render.js";
+	
+	$css[] = "$base_url/sites/all/modules/aic_360/css/threesixty.css";   
+}
