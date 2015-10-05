@@ -31,9 +31,6 @@ function aic_360_initialize(threesixtyCode) {
 		
 		//store data in variable for access on fullscreen
 		var myObj = $(this).data();
-		//add instructions
-		myObj.instructions = $('<div id="instructions">Click and drag to rotate object.</div>')
-			.appendTo(this);
 		//get caption data	
 		var threesixtyObjCaption = $(this).parents('figure:first').find('figcaption');
 		//variable to hold fullscreen status
