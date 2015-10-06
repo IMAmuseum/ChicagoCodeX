@@ -289,7 +289,7 @@
 
     base.next = function(event) {
       if (event) { event.preventDefault(); }
-      AppConfig.endFrame -= 5;
+      AppConfig.endFrame += 5;
       base.refresh();
     };
 
@@ -301,7 +301,7 @@
      */
     base.previous = function(event) {
       if (event) { event.preventDefault(); }
-      AppConfig.endFrame += 5;
+      AppConfig.endFrame -= 5;
       base.refresh();
     };
 
@@ -473,11 +473,10 @@
         if (AppConfig.monitorStartTime < new Date().getTime() - AppConfig.monitorInt) {
           AppConfig.pointerDistance = AppConfig.pointerEndPosX - AppConfig.pointerStartPosX;
           if(AppConfig.pointerDistance > 0){
-          AppConfig.endFrame = AppConfig.currentFrame + Math.ceil((AppConfig.totalFrames - 1) * AppConfig.speedMultiplier * (AppConfig.pointerDistance / base.$el.width()));
+          AppConfig.endFrame = AppConfig.currentFrame - Math.ceil((AppConfig.totalFrames - 1) * AppConfig.speedMultiplier * (AppConfig.pointerDistance / base.$el.width()));
           }else{
-          AppConfig.endFrame = AppConfig.currentFrame + Math.floor((AppConfig.totalFrames - 1) * AppConfig.speedMultiplier * (AppConfig.pointerDistance / base.$el.width()));
-          }
-
+          AppConfig.endFrame = AppConfig.currentFrame - Math.floor((AppConfig.totalFrames - 1) * AppConfig.speedMultiplier * (AppConfig.pointerDistance / base.$el.width()));
+		  }
           if( AppConfig.disableWrap ) {
             AppConfig.endFrame = Math.min(AppConfig.totalFrames - (AppConfig.zeroBased ? 1 : 0), AppConfig.endFrame);
             AppConfig.endFrame = Math.max((AppConfig.zeroBased ? 0 : 1), AppConfig.endFrame);
@@ -790,7 +789,7 @@
        * @cfg {number} autoplayDirection [1]
        * Direction for autoplay the 360 animation. 1 for right spin, and -1 for left spin.
        */
-      autoplayDirection: 1,
+      autoplayDirection: -1,
       /**
        * Property to disable auto spin
        * @type {Boolean}
