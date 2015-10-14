@@ -43,9 +43,10 @@ function aic_360_osci_tk_figure_content($args) {
 	  $image360Width = $asset->field_width_360images['und'][0]['value'];
 	  $image360Height = $asset->field_height_360images['und'][0]['value'];
 	  $filePrefix360 = $asset->field_image_file_prefix['und'][0]['value'];
+	  $isResponsive = 'true';
 	  //html for 360
 	  $threesixtyhtml = 
-	  '<div class = "threesixty" data-360-src = "'.$src.'" data-360-total = "'.$totalImages.'" data-360-start = "'.$startFrame.'" data-360-end = "'.$endFrame.'" data-360-width = "'.$image360Width.'" data-360-height = "'.$image360Height.'" data-360-prefix = "'.$filePrefix360.'"><div class="spinner"><span>0%</span></div><ol class="threesixty_images"></ol></div>
+	  '<div class = "threesixty" data-360-src = "'.$src.'" data-360-total = "'.$totalImages.'" data-360-start = "'.$startFrame.'" data-360-end = "'.$endFrame.'" data-360-width = "'.$image360Width.'" data-360-height = "'.$image360Height.'" data-360-prefix = "'.$filePrefix360.'" data-360-responsive = "'.$isResponsive.'"><div class="spinner"><span>0%</span></div><ol class="threesixty_images"></ol></div>
 	  <script>
 	  $(".threesixty").each(function() {
 		  if($(this).hasClass("initialized")) {return;}
@@ -61,6 +62,22 @@ function aic_360_osci_tk_figure_content($args) {
 function aic_360_osci_tk_figure_aspect($figure){
 	return 0;
 }
+
+function aic_360_figure_html_360_slider ($node) {
+	$src = variable_get('file_public_path', conf_path() . '/files') . '/360images/';
+	$src = _osci_tk_epub_asset_process_uri($src, false);
+	//requirements for slider - total number of images, start/end frame, width, height and prefix
+	$totalImages = $node->field_number_images['und'][0]['value'];
+	$startFrame = $node->field_start_frame['und'][0]['value'];
+	$endFrame = $node->field_end_frame['und'][0]['value'];
+	$image360Width = $node->field_width_360images['und'][0]['value'];
+	$image360Height = $node->field_height_360images['und'][0]['value'];
+	$filePrefix360 = $node->field_image_file_prefix['und'][0]['value'];
+	$isResponsive = 'false';
+	$template = '<div class = "threesixty figurewindow" data-360-src = "'.$src.'" data-360-total = "'.$totalImages.'" data-360-start = "'.$startFrame.'" data-360-end = "'.$endFrame.'" data-360-width = "'.$image360Width.'" data-360-height = "'.$image360Height.'" data-360-prefix = "'.$filePrefix360.'" data-360-responsive = "'.$isResponsive.'"><div class="spinner"><span>0%</span></div><ol class="threesixty_images"></ol></div>
+	<script>aic_360_initialize();</script>';
+	return $template;
+	}
 	
 function aic_360_osci_tk_webapp_custom_alter(&$js, &$css) {
 	//add required javascript and css files
@@ -71,3 +88,5 @@ function aic_360_osci_tk_webapp_custom_alter(&$js, &$css) {
 	
 	$css[] = "$base_url/sites/all/modules/aic_360/css/threesixty.css";   
 }
+
+

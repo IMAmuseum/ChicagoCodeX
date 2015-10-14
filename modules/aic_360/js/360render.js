@@ -12,7 +12,8 @@ function aic_360_initialize(threesixtyCode) {
 		var image360Width = $(this).data('360-width');
 		var image360Height = $(this).data('360-height');
 		var filePrefix360 = $(this).data('360-prefix');
-
+		var isResponsive = $(this).data('360-responsive');
+		
 		$(this).ThreeSixty({
 			totalFrames: totalImages, // Total no. of image you have for 360 slider
 			endFrame: endFrame, // end frame for the auto spin animation
@@ -25,7 +26,7 @@ function aic_360_initialize(threesixtyCode) {
 			height: image360Height, //image height
 			width: image360Width, //image width
 			navigation: true,
-			responsive: true,
+			responsive: isResponsive,
 			disableSpin: true // Default false
 		});
 		
