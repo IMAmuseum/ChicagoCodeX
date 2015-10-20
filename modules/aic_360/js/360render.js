@@ -39,16 +39,14 @@ function aic_360_initialize(threesixtyCode) {
 		
 		if (threesixtyCode && threesixtyObjCaption[0]) {
 			//settings for going fullscreen
-			myObj.markup = threesixtyCode[0].outerHTML + '<script>aic_360_initialize();</script>';
+			myObj.markup = $(this).parents()[0].outerHTML;
 			myObj.caption = threesixtyObjCaption[0].innerHTML;
-			
 			fsClass = 'collapsed';
 			myObj.fsbutton = $('<div id="fullscreenbutton" class="'+fsClass+'"></div>')
 			.bind('click', function(event) {
 				$.fancybox.open({
 				padding: 0,
-				minWidth  : image360Width,
-				minHeight : image360Height,
+				scrolling: 'no',
 				content: myObj.markup,
 				title: myObj.caption,
 				helpers: {

@@ -63,6 +63,7 @@ function aic_360_osci_tk_figure_aspect($figure){
 	return 0;
 }
 
+//for figure window
 function aic_360_figure_html_360_slider ($node) {
 	$src = variable_get('file_public_path', conf_path() . '/files') . '/360images/';
 	$src = _osci_tk_epub_asset_process_uri($src, false);
