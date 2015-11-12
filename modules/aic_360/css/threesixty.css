@@ -68,7 +68,7 @@
   background-position: 0 -37px !important;
 }
 .threesixty .nav_bar a.nav_bar_next {
-  background-position: 0 -104px !important;
+  background-position: -1px -104px !important;
 }
 /* html */
 .threesixty:-webkit-full-screen {
