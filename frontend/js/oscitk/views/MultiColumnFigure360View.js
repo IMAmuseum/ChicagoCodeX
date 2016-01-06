@@ -2,7 +2,7 @@ OsciTk.views.figureTypeRegistry["360_slider"] = "MultiColumnFigure360";
 
 OsciTk.views.MultiColumnFigure360 = OsciTk.views.MultiColumnFigure.extend({
 	events: {},
-	renderContent: function(callback) {
+	renderContent: function() {
 		var container = this.$el.find(".figure_content");
 		var containerHeight = container.height();
 		var containerWidth = container.width();
@@ -14,7 +14,6 @@ OsciTk.views.MultiColumnFigure360 = OsciTk.views.MultiColumnFigure.extend({
 		this.contentRendered = true;
 	},
 	fullscreen:function() {
-		//var content = this.$el.find(".threesixty");
 		var content = this.model.get("content");
 		content = $(content);
 		var width = content[0].getAttribute('data-360-width');
