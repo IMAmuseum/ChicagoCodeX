@@ -115,7 +115,7 @@ function aic_rti_viewer_feature_field_default_fields() {
       'bundle' => 'rti_viewer',
       'default_value' => NULL,
       'deleted' => '0',
-      'description' => 'Path to RTI images on web server. Upload your images to a new folder using the link above, then add the new folder name below.',
+      'description' => 'Path to RTI images on web server. Create a new folder and upload your images to the new folder using ftp, then add the new folder name here.',
       'display' => array(
         'default' => array(
           'label' => 'above',
@@ -229,117 +229,13 @@ function aic_rti_viewer_feature_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-rti_viewer-field_upload_rti_files'.
-  $fields['node-rti_viewer-field_upload_rti_files'] = array(
-    'field_config' => array(
-      'active' => '1',
-      'cardinality' => '-1',
-      'deleted' => '0',
-      'entity_types' => array(),
-      'field_name' => 'field_upload_rti_files',
-      'foreign keys' => array(
-        'fid' => array(
-          'columns' => array(
-            'fid' => 'fid',
-          ),
-          'table' => 'file_managed',
-        ),
-      ),
-      'indexes' => array(
-        'fid' => array(
-          0 => 'fid',
-        ),
-      ),
-      'locked' => '0',
-      'module' => 'file',
-      'settings' => array(
-        'display_default' => 0,
-        'display_field' => 0,
-        'uri_scheme' => 'public',
-      ),
-      'translatable' => '0',
-      'type' => 'file',
-    ),
-    'field_instance' => array(
-      'bundle' => 'rti_viewer',
-      'deleted' => '0',
-      'description' => 'Upload RTI files to new folder using the browse link below.',
-      'display' => array(
-        'default' => array(
-          'label' => 'above',
-          'module' => 'file',
-          'settings' => array(),
-          'type' => 'file_default',
-          'weight' => 3,
-        ),
-        'epub' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-      ),
-      'entity_type' => 'node',
-      'field_name' => 'field_upload_rti_files',
-      'label' => 'Upload RTI files',
-      'required' => 0,
-      'settings' => array(
-        'description_field' => 0,
-        'file_directory' => 'rtiImages',
-        'file_extensions' => 'xml png jpg',
-        'max_filesize' => '',
-        'user_register_form' => FALSE,
-      ),
-      'widget' => array(
-        'active' => 1,
-        'module' => 'file',
-        'settings' => array(
-          'filefield_sources' => array(
-            'filefield_sources' => array(
-              'attach' => 0,
-              'clipboard' => 0,
-              'imce' => 'imce',
-              'plupload' => 0,
-              'reference' => 0,
-              'remote' => 0,
-              'upload' => 0,
-            ),
-            'source_attach' => array(
-              'absolute' => '0',
-              'attach_mode' => 'move',
-              'path' => 'file_attach',
-            ),
-            'source_imce' => array(
-              'imce_mode' => '1',
-            ),
-            'source_reference' => array(
-              'autocomplete' => '0',
-              'search_all_fields' => '0',
-            ),
-          ),
-          'progress_indicator' => 'throbber',
-        ),
-        'type' => 'file_generic',
-        'weight' => '1',
-      ),
-    ),
-  );
-
   // Translatables
   // Included for use with string extractors like potx.
   t('Height of images in pixels.');
-  t('Path to RTI images on web server. Upload your images to a new folder using the link above, then add the new folder name below.');
+  t('Path to RTI images on web server. Create a new folder and upload your images to the new folder using ftp, then add the new folder name here.');
   t('RTI Files Folder Name');
   t('RTI Image Height');
   t('RTI Image Width');
-  t('Upload RTI files');
-  t('Upload RTI files to new folder using the browse link below.');
   t('Width of images in pixels.');
 
   return $fields;
