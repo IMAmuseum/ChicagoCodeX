@@ -124,3 +124,12 @@
 	{
 		width: 30px;
 	}
+	
+	.loading {
+		background-color: white;
+        color: black;
+		font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+		top: 50%;
+        left: 50%;
+		position: absolute;
+	}

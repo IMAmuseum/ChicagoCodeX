@@ -43,7 +43,7 @@ function aic_rti_osci_tk_figure_content($args) {
 	  $rtiHeight = $asset->field_rti_height['und'][0]['value'];
 	  //html for web rti viewer
 	  $rtihtml = 
-	  '<div class="rtiViewer" data-rti-div = "rtiViewer" data-rti-name = "'.$rtiName.'" data-rti-url = "'.$rtiPath.'" data-rti-width = "'.$rtiWidth.'" data-rti-height = "'.$rtiHeight.'" ></div>
+	  '<div class="rtiViewer" data-rti-div = "rtiViewer" data-rti-name = "'.$rtiName.'" data-rti-url = "'.$rtiPath.'" data-rti-width = "'.$rtiWidth.'" data-rti-height = "'.$rtiHeight.'" ><span class="loading">Loading</span></div>
 	  <script>
 	   $(".rtiViewer").each(function() {
 		 if($(this).hasClass("initialized")) {return;}

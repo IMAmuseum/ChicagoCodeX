@@ -219,6 +219,7 @@ function createRtiViewer(fs) {
 	  multiResRTI.resize();
 	}
 	thisRTI.addClass('initialized');
+	thisRTI.find( ".loading" ).css("display", "none");
   });
 }
 
