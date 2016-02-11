@@ -26,16 +26,22 @@
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/> */
 /*************************************************************************/
 
-function createRtiViewer(idDiv, imageUrl, width, height) {	
-  console.log('time to create an rti');
-  $('.rtiViewer').each(function() {
-	if($(this).hasClass('initialized')) {return;}
+function createRtiViewer(fs) {	
+  $(".rtiViewer").each(function() {
+	  
+  	if($(this).hasClass('initialized')) {return;}
+	
 	var thisRTI = $(this);
+	
+	var idDiv = $(this).data('rti-div');
+	var rtiName = $(this).data('rti-name');
+	var imageUrl = $(this).data('rti-url');
+	var width = $(this).data('rti-width');
+	var height = $(this).data('rti-height');
 	
 	var canvasHeight = "auto";
 	var canvasWidth = "100%";
-	var fullscreen = false;
-	//var canvasContainer = thisRTI;
+	var fullscreen = fs;
 	var canvasDiv = document.createElement("div");
 	canvasDiv.id = idDiv + "_div";
 	canvasDiv.style.height = "auto";
@@ -45,7 +51,7 @@ function createRtiViewer(idDiv, imageUrl, width, height) {
 	thisRTI.append(canvasDiv);
 	
 	var canvasNode = thisRTI.find("#"+idDiv + "_div");
-	var canvasName = imageUrl + "_webgl";
+	var canvasName = rtiName + "_webgl";
 	var canvas = document.createElement("canvas");
 	canvas.id = canvasName;
 	canvas.width = width;
@@ -59,15 +65,32 @@ function createRtiViewer(idDiv, imageUrl, width, height) {
 	toolbar.style.right = "0px";
 	toolbar.style.cssFloat = "right";
 	toolbar.style.width = "50px";
-	toolbar.style.height = "200px";
+	toolbar.style.height = "100%";
 	toolbar.style.visibility = "hidden";
 	toolbar.innerHTML = '<button class = "toolbarButton" id = "zoomIn"></button><button class = "toolbarButton" id = "zoomOut"></button><button class = "toolbarButton" id = "light"></button><button class = "toolbarButton" id = "fullscreen"></button><button class = "toolbarButton" id = "help"></button>';
 	canvasNode.append(toolbar);
+	
+	//help button
+	var divHelp = document.createElement("div");
+	divHelp.id = idDiv + "_guide";
+	divHelp.style.width = "100%";
+	divHelp.style.height = "100%";
+	divHelp.style.position = "absolute";
+	divHelp.style.left = "0px";
+	divHelp.style.top = "0px";
+	divHelp.style.color = "#FFFFFF";
+	divHelp.style.backgroundColor="rgba(0, 0, 0, 0.9)";
+	
+	divHelp.innerHTML = '<div id = "guideTable"><div id = "guideCell"> <div id = "guideList"><h3>RTI Viewer Help<br/></h3><ul><li>Pan: LeftMouseButton + MouseMove.</li><li>Zoom in: MouseWhell or press the button <span><img src = "/sites/all/OSCI-Toolkit-Frontend/img/icon-zoom-in.png" alt=""/></span></li><li>Zoom out: MouseWheel or press the button <span><img src = "/sites/all/OSCI-Toolkit-Frontend/img/icon-zoom-out.png" alt=""/></span></li><li>To change the light direction: activate the light with the button <span><img src = "/sites/all/ChicagoCodeX/modules/aic_rti/css/icons/light.png" alt=""/></span> and press LeftMouseButton + MouseMove or Ctrl + LeftMouseButton + MouseMove.</li><li>Fullscreen: press the button <span><img src = "/sites/all/OSCI-Toolkit-Frontend/img/icon-fullscreen.png" alt=""/></span></li></ul></div></div></div>';
+	divHelp.style.display = "none";
+	canvasNode.append(divHelp);
 	
 	thisRTI.zoomInButton = thisRTI.find( "#"+idDiv + "_div #zoomIn" );
 	thisRTI.zoomOutButton = thisRTI.find( "#"+idDiv + "_div #zoomOut" );
 	thisRTI.lightButton = thisRTI.find( "#"+idDiv + "_div #light" );
 	thisRTI.fullscreenButton = thisRTI.find("#"+idDiv + "_div #fullscreen");
+	thisRTI.helpButton = thisRTI.find( "#"+idDiv + "_div #help" );
+	thisRTI.helpScreen = thisRTI.find( "#"+idDiv + "_guide" );
 	
 	thisRTI.zoomInButton.button({
       icons: {
@@ -95,130 +118,72 @@ function createRtiViewer(idDiv, imageUrl, width, height) {
 		var options;
 		if ( $( this ).text() === "Light Off" ) 
 		{
-			options = {
-				label: "Light On",
-				icons: {
-					primary: "lightOnIcon toolbarIcon"
-				}
-			};
-			multiResRTI.setMode(1);
+		  options = {
+		    label: "Light On",
+			icons: {
+			  primary: "lightOnIcon toolbarIcon"
+			  }
+		  };
+		  multiResRTI.setMode(1);
 		} else {
-			options = {
-				label: "Light Off",
-				icons: {
-					primary: "lightIcon toolbarIcon"
-				}
-			};
-			multiResRTI.setMode(0);
+		  options = {
+		    label: "Light Off",
+			icons: {
+			  primary: "lightIcon toolbarIcon"
+			  }
+		  };
+		  multiResRTI.setMode(0);
 		}
 		$( this ).button( "option", options );
 	});
 	
-	function fullScreenOn(){
-		var i = document.getElementById(idDiv + "_div");
-		if (i.requestFullscreen) {
-			i.requestFullscreen();
-		} else if (i.webkitRequestFullscreen) {
-			i.webkitRequestFullscreen();
-		} else if (i.mozRequestFullScreen) {
-			i.mozRequestFullScreen();
-		} else if (i.msRequestFullscreen) {
-			i.msRequestFullscreen();
-		}
-		
-		i.style.height = screen.height + "px";
-		i.style.width = screen.width + "px";
-		var canvas = $("#" + idDiv + "_webgl");
-		canvas.height(screen.height);
-		canvas.width(screen.width);
-		canvas.attr("width", screen.width);
-		canvas.attr("height", screen.height);
-		multiResRTI.resize();
-		fullscreen = true;
-		var options = {
-					label: "Exit Fullscreen",
-					icons: {
-						primary: "fullOnIcon toolbarIcon"
-					}
-				};
-		thisRTI.fullscreenButton.button( "option", options );
-	}
-	
-	function fullScreenOff(){
-		var i = document.getElementById(idDiv + "_div");
-		if (document.exitFullscreen) {
-			document.exitFullscreen();
-		} else if (document.webkitExitFullscreen) {
-			document.webkitExitFullscreen();
-		} else if (document.mozCancelFullScreen) {
-			document.mozCancelFullScreen();
-		} else if (document.msExitFullscreen) {
-			document.msExitFullscreen();
-		}
-		i.style.height = canvasHeight + "px";
-		i.style.width = canvasWidth + "px";
-		var canvas = $("#" + idDiv + "_webgl");
-		canvas.height(canvasHeight);
-		canvas.width(canvasWidth);
-		canvas.attr("width", canvasWidth);
-		canvas.attr("height", canvasHeight);
-		multiResRTI.resize();
-		fullscreen = false;
-		var options = {
-					label: "Active Fullscreen",
-					icons: {
-						primary: "fullIcon toolbarIcon"
-					}
-				};
-		thisRTI.fullscreenButton.button( "option", options );
-	}
-	
-	thisRTI.markup = $(this).parents()[0].outerHTML;
-	
-	thisRTI.fullscreenButton.button({
+	thisRTI.helpButton.button({
       icons: {
-        primary: "fullIcon toolbarIcon"
+        primary: "helpIcon toolbarIcon"
       },
 	  text: false,
-      label: "Active Fullscreen"
-    }).click(
-	function(){
-			/*var options;
-			if (!fullscreen) {
-				console.log('it time for fullscreen');
-				fullScreenOn();
-			} else {
-				fullScreenOff();
-				console.log('it NOT time for fullscreen');
-			}
-			thisRTI.fullscreenButton.removeClass("ui-state-hover");
-			*/
-			
-			console.log('thisRTI.markup', thisRTI.markup);
-			$.fancybox.open({
-				padding: 0,
-				scrolling: 'no',
-				content: thisRTI.markup,
-				//title: myObj.caption,
-				helpers: {
-				title: {
-					type : 'inside'
-						}
-					}
-				});
+      label: "Help"
+    }).click(function(){thisRTI.helpScreen.show();});
+	
+	thisRTI.helpScreen.click(function(){thisRTI.helpScreen.hide();});
+	
+	//for fullscreen
+	var windowWidth = $(window).width() - 200;
+	var windowHeight = $(window).height() - 200;
+	var canvasFullscreenName = thisRTI.data('rti-name') + '_fullscreen';
+	var fullscreenCode = '<div class="figure_content" style="width:'+ windowWidth+'px; height: '+windowHeight+'px;"><div class="rtiViewer" data-rti-div = "rtiViewer" data-rti-name = "'+canvasFullscreenName+'" data-rti-url = "'+thisRTI.data('rti-url')+'" data-rti-width = "'+thisRTI.data('rti-width')+'" data-rti-height = ""'+thisRTI.data('rti-height')+'"" ></div><script>createRtiViewer(true);</script></div>';
+	
+	if (fullscreen == false) {
+	  thisRTI.fullscreenButton.button({
+        icons: {
+          primary: "fullIcon toolbarIcon"
+        },
+	    text: false,
+        label: "Active Fullscreen"
+      }).click(function(){
+	  thisRTI.caption = thisRTI.parents('figure:first').find('figcaption')[0].innerHTML;
+	  $.fancybox.open({
+	    padding: 0,
+		scrolling: 'no',
+		content: fullscreenCode,
+		title: thisRTI.caption,
+		helpers: {
+		  title: { type : 'inside'}
 		}
-	);
-	
-	document.addEventListener("MSFullscreenChange", function () {
-    if(!document.msFullscreenElement) { fullScreenOff(); }
-	}, false);
-	document.addEventListener("mozfullscreenchange", function () {
-		if(!document.mozFullScreen) { fullScreenOff(); }
-	}, false);
-	document.addEventListener("webkitfullscreenchange", function () {
-		if(!document.webkitIsFullScreen) { fullScreenOff(); }
-	}, false);
-	
+	  });
+	});
+	} else if (fullscreen == true) {
+	  thisRTI.fullscreenButton.button({
+        icons: {
+          primary: "fullOnIcon toolbarIcon"
+        },
+	    text: false,
+        label: "Exit Fullscreen"
+        }).click(function(){
+	      $.fancybox.close();
+	  })		
+	}
+
 	var divError = document.createElement("div");
 	divError.id = idDiv + "_error";
 	divError.style.width = "100%";
@@ -234,37 +199,28 @@ function createRtiViewer(idDiv, imageUrl, width, height) {
 	canvasNode.append(divError);
 	if (sglGetCanvasContext("testCanvas") == null)
 	{
-		divError.style.display = "block";
-		divError.innerHTML = '<div id = "contentError" style = "width: 90%; height: 100%; text-align:left; padding:0% 5% 0% 5%; font-family:  Verdana,sans-serif; overflow-y: scroll;"><h3>WebGL is not available or not enabled.</h3><p><a href="http://en.wikipedia.org/wiki/WebGL">WebGL</a> is the technology we use to display the RTI images. It is currently supported, but sometimes not enabled by default, by recent versions of <a href="http://www.mozilla.org/firefox">Firefox</a>, <a href="http://www.google.com/chrome">Chrome</a> and <a href="http://www.apple.com/safari">Safari</a>. An external plugins is available for <a href="http://microsoft.com/ie">Internet  Explorer</a>.<br/> It also requires a moderately recent and capable hardware and up to date drivers.</p><p><b>Chrome</b><br/>Type "chrome://flags" in the address bar.<br/>Disable (yes, it is a confusing double negation!) the WebGL entry.<br/>Click the <em>relaunch now</em> button at the bottom.</p><p><b>Firefox</b><br/>Type "about:config" in the address bar<br/>Type "webgl" in the <em>Filter</em>.<br/>Doubleclick the entry <b>webgl.force-enable</b>, and restart Firefox.</p><p><b>Safari</b><br/>Open the Safari menu and select Preferences.<br/>Then, click the Advanced tab in the Preferences window.<br/>Then, at the bottom of the window, check the Show Develop menu in menu bar checkbox.<br/>Then, open the Develop menu in the menu bar and select Enable WebGL.</p><p><b>Internet Explorer (from version 9.0)</b><br/>Install the <a href="http://www.google.com/chromeframe">Chrome Frame</a> <br/>Open the Tools menu and select Manage add-ons.<br/>Then, enable the ChromeFrame BHO plugins and restart Internet Explorer.<br/></p><p><b>Installing updated drivers</b><br/>If the visualization of the RTI image fails you must update the drivers of your graphics cards.</p></div>';
-	}
-	else
-	{
-		thisRTI.find(idDiv + "_error").innerHTML = '';
-		var multiResRTI = new MultiRes(canvasName);
-		multiResRTI.setImageUrl(imageUrl);
-		function isRelitable(type){
-			if (type == "IMAGE")
-			{
-				thisRTI.find( "#"+idDiv + "_div #light" ).css("display", "none");
-			}
-			thisRTI.find( ".toolbar").css("visibility", "visible");
+	  divError.style.display = "block";
+	  divError.innerHTML = '<div id = "contentError" style = "width: 90%; height: 100%; text-align:left; padding:0% 5% 0% 5%; font-family:  Verdana,sans-serif; overflow-y: scroll;"><h3>WebGL is not available or not enabled.</h3><p><a href="http://en.wikipedia.org/wiki/WebGL">WebGL</a> is the technology we use to display the RTI images. It is currently supported, but sometimes not enabled by default, by recent versions of <a href="http://www.mozilla.org/firefox">Firefox</a>, <a href="http://www.google.com/chrome">Chrome</a> and <a href="http://www.apple.com/safari">Safari</a>. An external plugins is available for <a href="http://microsoft.com/ie">Internet  Explorer</a>.<br/> It also requires a moderately recent and capable hardware and up to date drivers.</p><p><b>Chrome</b><br/>Type "chrome://flags" in the address bar.<br/>Disable (yes, it is a confusing double negation!) the WebGL entry.<br/>Click the <em>relaunch now</em> button at the bottom.</p><p><b>Firefox</b><br/>Type "about:config" in the address bar<br/>Type "webgl" in the <em>Filter</em>.<br/>Doubleclick the entry <b>webgl.force-enable</b>, and restart Firefox.</p><p><b>Safari</b><br/>Open the Safari menu and select Preferences.<br/>Then, click the Advanced tab in the Preferences window.<br/>Then, at the bottom of the window, check the Show Develop menu in menu bar checkbox.<br/>Then, open the Develop menu in the menu bar and select Enable WebGL.</p><p><b>Internet Explorer (from version 9.0)</b><br/>Install the <a href="http://www.google.com/chromeframe">Chrome Frame</a> <br/>Open the Tools menu and select Manage add-ons.<br/>Then, enable the ChromeFrame BHO plugins and restart Internet Explorer.<br/></p><p><b>Installing updated drivers</b><br/>If the visualization of the RTI image fails you must update the drivers of your graphics cards.</p></div>';
+	} else {
+	  thisRTI.find(idDiv + "_error").innerHTML = '';
+	  var multiResRTI = new MultiRes(canvasName);
+	  multiResRTI.setImageUrl(imageUrl);
+	  function isRelitable(type){
+	    if (type == "IMAGE")
+		  {
+		    thisRTI.find( "#"+idDiv + "_div #light" ).css("display", "none");
+		  }
+		  thisRTI.find( ".toolbar").css("visibility", "visible");
 		};
-		multiResRTI.setOnLoadImageCallback(isRelitable);
-		sglRegisterCanvas(canvasName, multiResRTI, 10.0);
+	  multiResRTI.setOnLoadImageCallback(isRelitable);
+	  sglRegisterCanvas(canvasName, multiResRTI, 10.0);
+	  canvas.width = thisRTI.parents('.figure_content').width();
+	  canvas.height = thisRTI.parents('.figure_content').height();
+	  multiResRTI.resize();
 	}
-    canvas.width = thisRTI.parents('.figure_content').width();
-	console.log('thisRTI', thisRTI);
-	console.log('canvas.width', canvas.width);
-	canvas.height = thisRTI.parents('.figure_content').height();
-	console.log('canvas.height', canvas.height);
-	multiResRTI.resize();
-	
 	thisRTI.addClass('initialized');
-	console.log('---------rtiadded--------');
-  }) // test
-
+  });
 }
-
 
 function log(msg) 
 {

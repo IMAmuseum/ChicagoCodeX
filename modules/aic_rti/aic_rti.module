@@ -35,28 +35,21 @@ function aic_rti_osci_tk_figure_content($args) {
       case 'rti_viewer':
    	  //get path of image folder
 	  $src = variable_get('file_public_path', conf_path() . '/files') . '/rtiImages/';
-	  //ChromePhp::log('src1');
-      //ChromePhp::log($src);
 	  $src = _osci_tk_epub_asset_process_uri($src, $args['item']['export']);
-	  //ChromePhp::log('src2');
-      //ChromePhp::log($src);
 	  //requirements for web rti viewer - path to image files, width, height
-	  $rtiPath = $asset->field_rti_path['und'][0]['value'];
-	  //ChromePhp::log('rtiPath');
-      //ChromePhp::log($rtiPath);
+	  $rtiPath = $src . $asset->field_rti_path['und'][0]['value'];
+	  $rtiName = $asset->field_rti_path['und'][0]['value'];
 	  $rtiWidth = $asset->field_rti_width['und'][0]['value'];
 	  $rtiHeight = $asset->field_rti_height['und'][0]['value'];
 	  //html for web rti viewer
 	  $rtihtml = 
-	  '<div class="rtiViewer"><script>
+	  '<div class="rtiViewer" data-rti-div = "rtiViewer" data-rti-name = "'.$rtiName.'" data-rti-url = "'.$rtiPath.'" data-rti-width = "'.$rtiWidth.'" data-rti-height = "'.$rtiHeight.'" ></div>
+	  <script>
 	   $(".rtiViewer").each(function() {
-		 console.log("this", this);
 		 if($(this).hasClass("initialized")) {return;}
-	     createRtiViewer("rtiViewer", "'.$src.'"+"'.$rtiPath.'", "'.$rtiWidth.'", "'.$rtiHeight.'");	
+	     createRtiViewer(false);	
 	   });
-	   </script></div>';
-	  ChromePhp::log('RTIHTML');
-      ChromePhp::log($rtihtml);
+	   </script>';
 	  return $rtihtml;
       break;     
       }
