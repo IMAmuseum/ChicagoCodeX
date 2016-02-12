@@ -1,6 +1,7 @@
 OsciTk.views.figureTypeRegistry["rti_viewer"] = "MultiColumnFigureRTI";
 
 OsciTk.views.MultiColumnFigureRTI = OsciTk.views.MultiColumnFigure.extend({
+	events: {},
 	renderContent: function() {
 		var container = this.$el.find(".figure_content");
 		container.html(this.model.get("content"));
