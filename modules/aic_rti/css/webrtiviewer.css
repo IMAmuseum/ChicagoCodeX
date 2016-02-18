@@ -133,3 +133,8 @@
         left: 50%;
 		position: absolute;
 	}
+	
+	canvas:hover {
+	    cursor: move;	
+	}
+	

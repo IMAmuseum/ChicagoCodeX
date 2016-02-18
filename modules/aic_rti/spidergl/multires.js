@@ -91,6 +91,7 @@ function createRtiViewer(fs) {
 	thisRTI.fullscreenButton = thisRTI.find("#"+idDiv + "_div #fullscreen");
 	thisRTI.helpButton = thisRTI.find( "#"+idDiv + "_div #help" );
 	thisRTI.helpScreen = thisRTI.find( "#"+idDiv + "_guide" );
+	thisRTI.canvascursor = thisRTI.find( "canvas" );
 	
 	thisRTI.zoomInButton.button({
       icons: {
@@ -124,6 +125,7 @@ function createRtiViewer(fs) {
 			  primary: "lightOnIcon toolbarIcon"
 			  }
 		  };
+		  thisRTI.canvascursor.css('cursor', 'url(/sites/all/ChicagoCodeX/modules/aic_rti/css/icons/rtilight.cur), url(/sites/all/ChicagoCodeX/modules/aic_rti/css/icons/rtilight.png), move');	
 		  multiResRTI.setMode(1);
 		} else {
 		  options = {
@@ -132,6 +134,7 @@ function createRtiViewer(fs) {
 			  primary: "lightIcon toolbarIcon"
 			  }
 		  };
+		  thisRTI.canvascursor.css('cursor', 'move');	
 		  multiResRTI.setMode(0);
 		}
 		$( this ).button( "option", options );
