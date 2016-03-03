@@ -111,10 +111,10 @@ function createRtiViewer(fs) {
 	
 	thisRTI.lightButton.button({
       icons: {
-        primary: "lightIcon toolbarIcon"
+        primary: "lightOnIcon toolbarIcon"
       },
       text: false,
-	  label: "Light Off"
+	  label: "Light On"
     }).click(function(){
 		var options;
 		if ( $( this ).text() === "Light Off" ) 
@@ -134,7 +134,7 @@ function createRtiViewer(fs) {
 			  primary: "lightIcon toolbarIcon"
 			  }
 		  };
-		  thisRTI.canvascursor.css('cursor', 'move');	
+		  thisRTI.canvascursor.css('cursor', 'default');	
 		  multiResRTI.setMode(0);
 		}
 		$( this ).button( "option", options );
@@ -220,6 +220,7 @@ function createRtiViewer(fs) {
 	  canvas.width = thisRTI.parents('.figure_content').width();
 	  canvas.height = thisRTI.parents('.figure_content').height();
 	  multiResRTI.resize();
+	  multiResRTI.setMode(1);
 	}
 	thisRTI.addClass('initialized');
 	thisRTI.find( ".loading" ).css("display", "none");
@@ -561,7 +562,10 @@ MultiRes.prototype = {
 				return true;
 			}
 			if (this.mode == 0)
-			{
+			{	
+				var thisCanvas = document.getElementById(this.canvas);
+				$(thisCanvas).css('cursor', 'move');
+		
 				this.endAnimation = false;
 				this.currentPoint = [x, y];
 										
@@ -620,7 +624,9 @@ MultiRes.prototype = {
 		if (button == 0)
 		{
 			if (this.mode == 0) 
-			{
+			{	
+				var thisCanvas = document.getElementById(this.canvas);
+				$(thisCanvas).css('cursor', 'default');
 				this.endAnimation = true;
 				this.renderer.updateData = true;
 				this.isMoving = false;

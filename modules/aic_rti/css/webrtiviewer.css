@@ -135,6 +135,6 @@
 	}
 	
 	canvas:hover {
-	    cursor: move;	
+		cursor: url("/sites/all/ChicagoCodeX/modules/aic_rti/css/icons/rtilight.cur"), url("/sites/all/ChicagoCodeX/modules/aic_rti/css/icons/rtilight.png"), move;	
 	}
 	
