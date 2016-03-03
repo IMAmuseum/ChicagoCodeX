@@ -38,6 +38,11 @@
 		border-bottom: 1px solid #888;
 	}
 	
+	#light, #help, .toolbarIcon
+	{
+		border-right: 1px solid #888;
+	}
+	
 	.zoomInIcon
 	{
 		background-image: url(/sites/all/OSCI-Toolkit-Frontend/img/icon-zoom-in.png) !important;
@@ -76,7 +81,19 @@
 	
 	#fullscreen {
 		position: absolute;
-		bottom: 0px;
+		bottom: 5px;
+	}
+	
+	#help {
+		position: absolute;
+    	bottom: 5px;
+    	right: 48px;
+	}
+	
+	#light {
+		position: absolute;
+    	bottom: 5px;
+    	right: 98px;
 	}
 	
 	
