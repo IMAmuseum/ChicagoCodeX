@@ -1,0 +1,71 @@
+<?php
+/**
+ * @file
+ *  WebRTIViewer
+ */
+ 
+ /**
+ * Implements hook_help().
+ *
+ * Displays help and module information.
+ *
+ * @param path 
+ *   Which path of the site we're using to display help
+ * @param arg 
+ *   Array that holds the current path as returned from arg() function
+ */
+
+function aic_rti_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#aic_rti":
+      return '<p>' . t("Use this module to create a Web RTI Viewer.") . '</p>';
+      break;
+  }
+} 
+
+function aic_rti_osci_tk_figure_content($args) {
+
+  $asset = node_load($args['item']['asset_reference']);
+
+  if (!isset($args['item']['export'])) {
+      $args['item']['export'] = false;
+  }
+
+  switch($asset->type) {
+      case 'rti_viewer':
+   	  //get path of image folder
+	  $src = variable_get('file_public_path', conf_path() . '/files') . '/rtiImages/';
+	  $src = _osci_tk_epub_asset_process_uri($src, $args['item']['export']);
+	  //requirements for web rti viewer - path to image files, width, height
+	  $rtiPath = $src . $asset->field_rti_path['und'][0]['value'];
+	  $rtiName = $asset->field_rti_path['und'][0]['value'];
+	  $rtiWidth = $asset->field_rti_width['und'][0]['value'];
+	  $rtiHeight = $asset->field_rti_height['und'][0]['value'];
+	  //html for web rti viewer
+	  $rtihtml = 
+	  '<div class="rtiViewer" data-rti-div = "rtiViewer" data-rti-name = "'.$rtiName.'" data-rti-url = "'.$rtiPath.'" data-rti-width = "'.$rtiWidth.'" data-rti-height = "'.$rtiHeight.'" ><span class="loading">Loading</span></div>
+	  <script>
+	   $(".rtiViewer").each(function() {
+		 if($(this).hasClass("initialized")) {return;}
+	     createRtiViewer(false);	
+	   });
+	   </script>';
+	  return $rtihtml;
+      break;     
+      }
+    }
+	
+function aic_rti_osci_tk_figure_aspect($figure){
+	return 0;
+}
+	
+function  aic_rti_osci_tk_webapp_custom_alter(&$js, &$css) {
+	global $base_url; 	
+	$js[] = "$base_url/frontend/js/oscitk/views/MultiColumnFigureRTIView.js";
+	$js[] .= "$base_url/sites/all/modules/aic_rti/spidergl/spidergl.js";
+	$js[] .= "$base_url/sites/all/modules/aic_rti/spidergl/multires.js";
+	
+	$css[] = "$base_url/sites/all/modules/aic_rti/css/ui-lightness/jquery-ui-1.10.3.custom.css";   
+	$css[] .= "$base_url/sites/all/modules/aic_rti/css/webrtiviewer.css";   
+	
+}

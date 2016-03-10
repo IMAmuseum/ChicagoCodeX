@@ -1,0 +1,4 @@
+name = AIC WebRTIViewer
+description = Creates a RTI web viewer.
+package = OSCI ToolKit
+core = 7.x

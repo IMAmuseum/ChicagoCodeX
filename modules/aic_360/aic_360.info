@@ -1,0 +1,4 @@
+name = AIC 360
+description = Creates 360 image slider.
+package = OSCI ToolKit
+core = 7.x

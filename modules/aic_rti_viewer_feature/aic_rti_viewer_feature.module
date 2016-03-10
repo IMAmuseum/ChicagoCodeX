@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the AIC RTI Viewer Feature feature.
+ */
+
+include_once 'aic_rti_viewer_feature.features.inc';

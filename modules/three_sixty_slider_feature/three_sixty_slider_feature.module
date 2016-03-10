@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Three Sixty Slider Feature feature.
+ */
+
+include_once 'three_sixty_slider_feature.features.inc';

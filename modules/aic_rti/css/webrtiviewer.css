@@ -1,0 +1,157 @@
+	*
+	{
+		outline: none;
+	}
+
+	body
+	{
+		/*margin: 0px;*/
+		overflow: hidden;
+		/*height: 100%;*/
+	}
+	
+	.toolbarButton
+	{
+		width: 50px !important;
+		height: 50px !important;
+		margin-bottom: 0px !important;
+		background: rgba(0, 0, 0, 0.0) !important;
+		border: 0px !important;
+		border-radius: 0;
+	}
+
+	button
+	{
+		box-shadow: none;
+		text-shadow: none;
+	}
+	
+	.toolbarIcon
+	{
+		width: 50px;
+		height: 50px;
+		background-size: 100%;
+		background: #000 center no-repeat;
+		left: 0px !important;
+		top: 0px !important;
+		margin: 0px !important;
+		border-bottom: 1px solid #888;
+	}
+	
+	#light, #help, .toolbarIcon
+	{
+		border-right: 1px solid #888;
+	}
+	
+	.zoomInIcon
+	{
+		background-image: url(/sites/all/OSCI-Toolkit-Frontend/img/icon-zoom-in.png) !important;
+		
+	}
+
+	.zoomOutIcon
+	{
+		background-image: url(/sites/all/OSCI-Toolkit-Frontend/img/icon-zoom-out.png) !important;
+	}
+	
+	.lightIcon
+	{
+		background-image: url(icons/light.png) !important;
+	}
+	
+	.lightOnIcon
+	{
+		background-image: url(icons/light_on.png) !important;
+	}
+	
+	.helpIcon
+	{
+		background-image: url(icons/help.png) !important;
+	}
+	
+	.fullIcon
+	{
+		background-image: url(/sites/all/OSCI-Toolkit-Frontend/img/icon-fullscreen.png) !important;
+	}
+	
+	.fullOnIcon
+	{
+		background-image: url(/sites/all/OSCI-Toolkit-Frontend/img/icon-collapse.png) !important;
+	}
+	
+	#fullscreen {
+		position: absolute;
+		bottom: 5px;
+	}
+	
+	#help {
+		position: absolute;
+    	bottom: 5px;
+    	right: 48px;
+	}
+	
+	#light {
+		position: absolute;
+    	bottom: 5px;
+    	right: 98px;
+	}
+	
+	
+	.ui-state-hover .toolbarIcon
+	{
+		opacity: 1.0;
+	}
+	
+	
+	#guideTable
+	{
+		display:table;
+		width: 100%;
+		height: 100%;
+		font-size: 15px;
+		font-family: Verdana,sans-serif;
+	}
+	
+	#guideCell
+	{
+		display: table-cell;
+		width: 100%;
+		vertical-align: middle;
+		text-align: left;
+	}
+	
+	#guideList
+	{
+		width: 90%;
+		margin: auto;
+	}
+	
+	#guideList li
+	{
+		margin-bottom: 5px;
+	}
+		
+	#guideList span
+	{
+		width: 30px;
+		height: 30px;
+	}
+	
+	#guideList img
+	{
+		width: 30px;
+	}
+	
+	.loading {
+		background-color: white;
+        color: black;
+		font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+		top: 50%;
+        left: 50%;
+		position: absolute;
+	}
+	
+	canvas:hover {
+		cursor: url("/sites/all/ChicagoCodeX/modules/aic_rti/css/icons/rtilight.cur"), url("/sites/all/ChicagoCodeX/modules/aic_rti/css/icons/rtilight.png"), move;	
+	}
+	

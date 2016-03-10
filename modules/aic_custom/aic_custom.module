@@ -15,8 +15,9 @@ function aic_custom_menu() {
 	
 	$items['reader/%'] = array(
         'title'             => 'OSCI Toolkit Web-App Preview',
-        'page callback' => 'aic_custom_alias',
-        'access arguments' => array('access content'),
+        'page callback'     => 'aic_custom_alias',
+		'page arguments'    => array(1),
+        'access arguments'  => array('access content'),
         'type' => MENU_CALLBACK
     );
 	
@@ -26,6 +27,14 @@ function aic_custom_menu() {
         'access arguments'  => array('access content'),
         'type'              => MENU_CALLBACK
     );
+	
+	$items['reader/%/nav'] = array(
+    	'title'             => 'OSCI Toolkit Web-App Nav',
+		'page callback'     => 'aic_custom_preview_nav',
+		'page arguments'    => array(1),
+		'access arguments'  => array('access content'),
+		'type'              => MENU_CALLBACK
+     );
 	
     return $items;
 }
@@ -63,23 +72,32 @@ function aic_custom_url_outbound_alter(&$path, $options, $original_path) {
     }
 }
 
+//handling paths 'reader/%/nav'
+function aic_custom_preview_nav($nodealias) {
+	//get node object
+    $nodePath = drupal_lookup_path('source', $nodealias);
+	if ($nodePath) {
+		$menu_item = menu_get_item($nodePath);
+		$node = $menu_item['page_arguments'][0];
+		} else {
+			$node = node_load($nodealias);
+			}			
+	return osci_tk_webapp_preview_nav($node);
+}
+
 //handling paths 'reader/%'
-function aic_custom_alias() {
-    $args = arg();
-    array_shift($args);
-	$alias = implode("/", $args);
-	
+function aic_custom_alias($alias) {		
 	//get node object
     $nodePath = drupal_lookup_path('source', $alias);
 	if ($nodePath) {
 		$menu_item = menu_get_item($nodePath);
 		$node = $menu_item['page_arguments'][0];
-		} else {
-			$node = node_load($alias);
-			}
-					
+	} else {
+		$node = node_load($alias);
+	}	
 	return osci_tk_webapp_preview($node);
 }
+
 
 function aic_custom_theme() {
     return array(
@@ -98,6 +116,12 @@ function aic_custom_theme() {
     );
 }
 
+//for reordering TOC items
+function moveElement(&$array, $a, $b) {
+	$out = array_splice($array, $a, 1);
+	array_splice($array, $b, 0, $out);
+}
+
 function aic_custom_alter_epub_toc($toc) {
     // alter the toc to add thumbnails and active/inactive flag for each section
     foreach ($toc as &$tocItem) {
@@ -106,7 +130,7 @@ function aic_custom_alter_epub_toc($toc) {
         if (isset($section->field_figure['und'])) {
             foreach($section->field_figure['und'] as $index => $figure) {
                 // find the first plate image
-                if ($figure['position'] === 'plate') {
+                if ($figure['position'] === 'plate' || $figure['position'] === 'platefull') {
                     // load asset reference
                     $asset = node_load($figure['asset_reference']);
                     if ($asset) {
@@ -138,6 +162,21 @@ function aic_custom_alter_epub_toc($toc) {
                 }
             }
         }
+		
+		for($i = 0; $i < count($subHeadings); ++$i) {
+			//replacing default titles with custom titles
+			if ($subHeadings[$i]['id'] == 'curatorial_entry' && isset($section->field_title_curatorial_entry['und'][0])){
+				$subHeadings[$i]['label'] = $section->field_title_curatorial_entry['und'][0]['value'];
+			}
+			if ($subHeadings[$i]['id'] == 'technical_report' && isset($section->field_title_technical_report['und'][0])){
+				$subHeadings[$i]['label'] = $section->field_title_technical_report['und'][0]['value'];
+			}
+			if ($subHeadings[$i]['id'] == 'curatorial_entry2' && isset($section->field_title_curatorial_entry2['und'][0])){
+				$subHeadings[$i]['label'] = $section->field_title_curatorial_entry2['und'][0]['value'];
+				//moving curatorial entry2 so it appears at the top 
+				moveElement($subHeadings, $i, 1);
+			}
+		}
         $tocItem['subHeadings'] = json_encode($subHeadings);
     }
     return array($toc);
@@ -244,7 +283,7 @@ function aic_custom_navigation_generate_toc_item_list(&$vars) {
 
         $title = $leaf['title'];
         if (isset($node->field_navigation_title) && isset($node->field_navigation_title['und'])) {
-            $title = "<![CDATA[" . $node->field_navigation_title['und'][0]['value'] . "]]>";
+            $title = "<![CDATA[" . $node->field_navigation_title['und'][0]['value'] . "<!--]]>-->";
         }
 
         if (empty($node->field_active['und']) || (!empty($node->field_active['und']) && $node->field_active['und'][0]['value'])) {
@@ -304,8 +343,9 @@ function aic_custom_navigation_generate_index(&$vars) {
     }
 
     $output = "<nav epub:type='index' id='book-{$vars['node']->nid}-index'>";
-    $output .= "<h1>Index</h1>"; // Optional header
-    $output .= "<ol>{$list}</ol>"; // The only other element allowed as a child of <nav>
+    /*//commenting out for now, links to figures go to 404 page, will fix later. 2.15.15.ts
+	$output .= "<h1>Index</h1>"; // Optional header
+    $output .= "<ol>{$list}</ol>"; // The only other element allowed as a child of <nav>*/
     $output .= "</nav>";
     return $output;
 }
@@ -388,6 +428,7 @@ function aic_custom_osci_tk_webapp_custom_alter(&$js, &$css) {
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/ReferenceImageView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/CitationView.js";
     $js[] = "{$jsBasePath}frontend/js/oscitk/views/GlossaryTooltipView.js";
+	$js[] = "{$jsBasePath}frontend/js/d3.min.js";
 }
 
 function aic_custom_figure_window($section_nid, $figIndex=null) {
@@ -449,8 +490,9 @@ function aic_custom_user_registered() {
 
 function aic_custom_osci_tk_figure_number_template_alter(&$replace, $data) {
     $sectionNode = node_load($data['sectionNid']);
-
-    if ($data['figure']['position'] === 'plate') {
+	
+	//no figure numbers for plate images
+    if ($data['figure']['position'] === 'plate' || $data['figure']['position'] === 'platefull') {
         $replace['complete'] = '';
     }
 
@@ -514,14 +556,16 @@ function aic_custom_osci_tk_citation_alter(&$citation, $section, $publication) {
     $authorFieldMap = array(
         'tombstone' => 'field_authors_tombstone',
         'curatorial_entry' => 'field_author_curatorial_entry',
+		'curatorial_entry2' => 'field_author_curatorial_entry2',
         'technical_report' => 'field_author_technical_report',
 		'body' => 'field_authors_body',
     );
 
     $titleFieldMap = array(
         'tombstone' => 'Tombstone',
-        'curatorial_entry' => 'Curatorial Entry',
-        'technical_report' => 'Technical Report',
+        'curatorial_entry' => $section->field_title_curatorial_entry['und'][0]['value'],
+		'curatorial_entry2' => $section->field_title_curatorial_entry2['und'][0]['value'],
+        'technical_report' => $section->field_title_technical_report['und'][0]['value'],
         'provenance' => 'Provenance',
         'exhibitions' => 'Exhibition History',
         'references' => 'Selected References',
